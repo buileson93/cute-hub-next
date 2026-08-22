@@ -522,6 +522,100 @@ function DuAnDetailPage() {
           <TabsContent value="timeline" className="mt-3">
             <ProjectTimeline projectId={id} />
           </TabsContent>
+
+          <TabsContent value="phase-gate" className="mt-3">
+            <div className="bg-card border rounded-xl overflow-hidden min-h-[400px]">
+              <div className="bg-slate-50 border-b p-6 flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">Ma trận Hồ sơ theo Giai đoạn</h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Kiểm soát điều kiện pháp lý để chuyển đổi giai đoạn dự án.
+                  </p>
+                </div>
+                <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 gap-1.5 py-1">
+                  <ShieldAlert className="h-3 w-3" /> Chặn luồng: BẬT
+                </Badge>
+              </div>
+
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+                  {/* Connector lines (Desktop) */}
+                  <div className="hidden md:block absolute top-1/2 left-[30%] w-[5%] h-0.5 bg-slate-200 -translate-y-1/2" />
+                  <div className="hidden md:block absolute top-1/2 left-[63%] w-[5%] h-0.5 bg-slate-200 -translate-y-1/2" />
+
+                  {/* Phase 1 */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">1</div>
+                      <span className="font-bold text-slate-800">Chuẩn bị</span>
+                      <Badge className="bg-emerald-50 text-emerald-700 border-emerald-100 ml-auto">Đạt</Badge>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="p-3 bg-white border border-emerald-200 rounded-xl shadow-sm flex items-center justify-between group cursor-pointer hover:border-emerald-400 transition-colors">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                          <span className="text-xs font-medium">Tờ trình chủ trương</span>
+                        </div>
+                        <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-none">Đã ký</Badge>
+                      </div>
+                      <div className="p-3 bg-white border border-emerald-200 rounded-xl shadow-sm flex items-center justify-between group cursor-pointer hover:border-emerald-400 transition-colors">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                          <span className="text-xs font-medium">Quyết định phê duyệt</span>
+                        </div>
+                        <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-none">Đã ban hành</Badge>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Phase 2 */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm">2</div>
+                      <span className="font-bold text-slate-800">Triển khai</span>
+                      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 ml-auto">Đang thực hiện</Badge>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="p-3 bg-white border border-indigo-200 rounded-xl shadow-sm flex items-center justify-between group cursor-pointer hover:border-indigo-400 transition-colors">
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-indigo-600" />
+                          <span className="text-xs font-medium">Báo cáo kỹ thuật</span>
+                        </div>
+                        <Badge variant="outline" className="text-[10px] bg-indigo-50 text-indigo-700 border-none">Đang soạn</Badge>
+                      </div>
+                      <div className="p-3 bg-slate-50 border border-dashed border-slate-300 rounded-xl flex items-center justify-between group">
+                        <div className="flex items-center gap-2 opacity-60">
+                          <Circle className="h-4 w-4 text-slate-400" />
+                          <span className="text-xs font-medium">Biên bản kiểm tra</span>
+                        </div>
+                        <Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-500 border-none">Trống</Badge>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Phase 3 */}
+                  <div className="space-y-4 opacity-60">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-sm">3</div>
+                      <span className="font-bold text-slate-800">Kết thúc</span>
+                      <Lock className="h-3.5 w-3.5 ml-auto text-slate-400" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="p-3 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Circle className="h-4 w-4 text-slate-300" />
+                          <span className="text-xs font-medium text-slate-400">Biên bản nghiệm thu</span>
+                        </div>
+                      </div>
+                      <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-[10px] text-amber-800 italic flex gap-2">
+                        <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
+                        <span>Luồng công việc bị chặn cho đến khi hoàn thành hồ sơ giai đoạn 2.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
         </Tabs>
       </div>
 
