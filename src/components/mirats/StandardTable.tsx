@@ -21,7 +21,8 @@ import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { useDensity } from "@/components/mirats/DensityToggle";
-import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2, SlidersHorizontal } from "lucide-react";
+import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2 } from "lucide-react";
+import { ColumnVisibilityMenu } from "./ColumnVisibilityMenu";
 
 import { normalize } from "@/lib/mirats/global-search";
 import { parseMinW, calculateOptimalWidths } from "@/lib/mirats/ui/table-geometry";
@@ -543,32 +544,12 @@ export function StandardTable<T>({
             })}
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-7 gap-1.5 px-2 text-[11px] font-medium uppercase tracking-tight">
-                  <SlidersHorizontal className="h-3.5 w-3.5" />
-                  <span>Cột hiển thị</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 max-h-[70vh] overflow-y-auto">
-                <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground">Cấu hình cột</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {columns.map(c => (
-                  <DropdownMenuCheckboxItem
-                    key={c.key}
-                    checked={!prefs.hidden.has(c.key)}
-                    onCheckedChange={() => prefs.toggle(c.key)}
-                    className="text-xs"
-                  >
-                    {c.header || c.label || c.key}
-                  </DropdownMenuCheckboxItem>
-                ))}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={prefs.reset} className="text-xs text-primary font-medium">
-                  Thiết lập mặc định
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <ColumnVisibilityMenu
+              columns={columns}
+              hidden={prefs.hidden}
+              toggle={prefs.toggle}
+              reset={prefs.reset}
+            />
 
             {bulkActions && renderToolbar(bulkActions, {
               filteredRows: fullDisplay,
