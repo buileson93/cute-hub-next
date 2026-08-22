@@ -21,7 +21,7 @@ import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { useDensity } from "@/components/mirats/DensityToggle";
-import { GripVertical, ChevronRight, ChevronDown, MoreVertical } from "lucide-react";
+import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2 } from "lucide-react";
 
 import { normalize } from "@/lib/mirats/global-search";
 import { parseMinW, calculateOptimalWidths } from "@/lib/mirats/ui/table-geometry";
@@ -162,6 +162,13 @@ export interface StandardTableProps<T> {
 
   pagination?: any;
   clientPagination?: any;
+  /** Phase 10R: Infinite scroll support */
+  infiniteScroll?: {
+    hasNextPage?: boolean;
+    fetchNextPage: () => void;
+    isFetchingNextPage?: boolean;
+    totalCount?: number;
+  };
   tableKey?: string;
   countUnit?: string;
   requireFilterToShow?: boolean;
@@ -175,6 +182,7 @@ export interface StandardTableProps<T> {
   expandable?: boolean;
   renderExpansion?: (row: T) => React.ReactNode;
 }
+
 
 export function StandardTableInner<T>({
   className,
@@ -211,9 +219,11 @@ export function StandardTableInner<T>({
   editMode,
   onColumnsChange,
   virtualizerOptions,
+  infiniteScroll,
   expandable,
   renderExpansion,
 }: StandardTableProps<T>) {
+
   // Adapter cho selection state
   const selected = selectedProp ?? selection;
   const setSelected = setSelectedProp ?? setSelection;
@@ -492,15 +502,19 @@ export function StandardTableInner<T>({
 
   const gated = requireFilterToShow && !hasFilter;
   const fullDisplay = useMemo(() => (gated ? [] : sorted), [gated, sorted]);
+  const displayCount = infiniteScroll ? rows.length : fullDisplay.length;
+
 
   const notifyFilteredTotal = clientPagination?.onFilteredTotalChange;
   useEffect(() => {
-    const count = fullDisplay.length;
+    const count = displayCount;
     notifyFilteredTotal?.(count);
+
 
     // Task 25: Thông báo số dòng thay đổi cho screen reader
     if (hasFilter) {
       setLiveAnnouncement(`Tìm thấy ${count} ${countUnit}`);
+
     } else {
       setLiveAnnouncement("");
     }
@@ -509,13 +523,16 @@ export function StandardTableInner<T>({
   const display = useMemo(() => {
     // Nếu có clientPagination NHƯNG virtualizerOptions.enabled=true (hoặc infinite scroll)
     // thì KHÔNG cắt dữ liệu ở đây, để virtualizer quản lý toàn bộ fullDisplay
+    if (infiniteScroll) return rows;
     if (!clientPagination || virtualizerOptions?.enabled === true) return fullDisplay;
+
     
     const { page, pageSize } = clientPagination;
     if (pageSize >= fullDisplay.length) return fullDisplay;
     const start = Math.max(0, (page - 1) * pageSize);
     return fullDisplay.slice(start, start + pageSize);
-  }, [fullDisplay, clientPagination, virtualizerOptions?.enabled]);
+  }, [fullDisplay, clientPagination, virtualizerOptions?.enabled, infiniteScroll, rows]);
+
 
   const toggleCat = (key: string, val: string) => {
     setCatFilters((prev) => {
@@ -563,6 +580,7 @@ export function StandardTableInner<T>({
 
   const rowVirtualizer = useVirtualizer({
     count: gated ? 0 : display.length,
+
     getScrollElement: () => parentRef.current,
     estimateSize: () => estimateRowHeight,
     overscan: isTest ? 100 : 8,
@@ -571,12 +589,35 @@ export function StandardTableInner<T>({
     ...virtualizerOptions,
   });
 
+  // Task 10R: Infinite Scroll Trigger
+  useEffect(() => {
+    if (!infiniteScroll || !infiniteScroll.hasNextPage || infiniteScroll.isFetchingNextPage) return;
+
+
+    const virtualItems = rowVirtualizer.getVirtualItems();
+    if (virtualItems.length === 0) return;
+
+    const lastItem = virtualItems[virtualItems.length - 1];
+    // Threshold: 20 rows from bottom
+    if (lastItem.index >= display.length - 20) {
+      infiniteScroll.fetchNextPage();
+    }
+  }, [
+    rowVirtualizer.getVirtualItems(),
+    infiniteScroll?.hasNextPage,
+    infiniteScroll?.isFetchingNextPage,
+    display.length,
+
+  ]);
+
+
   const isClient = typeof window !== "undefined";
   const useIsomorphicLayoutEffect = isClient ? React.useLayoutEffect : useEffect;
 
   // Task: Force re-measure when display length changes to ensure virtualizer syncs correctly
   useIsomorphicLayoutEffect(() => {
     rowVirtualizer.measure();
+
   }, [display.length, rowVirtualizer]);
 
   // Re-measure when density changes
@@ -884,7 +925,8 @@ export function StandardTableInner<T>({
           <div className="flex items-center gap-1">
             {toolbarLeft &&
               renderToolbar(toolbarLeft, {
-                filteredRows: fullDisplay,
+                filteredRows: infiniteScroll ? rows : fullDisplay,
+
                 visibleColumns: shownCols,
                 allColumns: exportCols,
                 pageRows: display,
@@ -899,7 +941,8 @@ export function StandardTableInner<T>({
                     selectedRows,
                     visibleColumns: shownCols,
                     allColumns: exportCols,
-                    filteredRows: fullDisplay,
+                    filteredRows: infiniteScroll ? rows : fullDisplay,
+
                     pageRows: display,
                     clear: clearSelection,
                   })
@@ -1352,17 +1395,18 @@ export function StandardTableInner<T>({
                     <div className="flex h-full w-full items-center justify-center">
                       <Checkbox
                         checked={
-                          filtered.length > 0 && selected?.size === filtered.length
+                          display.length > 0 && selected?.size === display.length
                             ? true
                             : (selected?.size ?? 0) > 0
                               ? "indeterminate"
                               : false
                         }
                         onCheckedChange={(checked) => {
-                          if (checked) setSelected?.(new Set(filtered.map(getRowIdInternal)));
+                          if (checked) setSelected?.(new Set(display.map(getRowIdInternal)));
                           else clearSelection();
                         }}
-                        aria-label="Chọn tất cả các dòng"
+                        aria-label={infiniteScroll ? "Chọn tất cả dòng đã tải" : "Chọn tất cả dòng đang hiển thị"}
+
                       />
                     </div>
                   </TableHead>
@@ -1727,9 +1771,36 @@ export function StandardTableInner<T>({
                       />
                     </TableRow>
                   )}
+                  {infiniteScroll?.isFetchingNextPage && (
+                    <TableRow className="hover:bg-transparent">
+                      <TableCell
+                        colSpan={
+                          shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)
+                        }
+                        className="p-4 text-center border-0 bg-muted/5 animate-pulse"
+                      >
+                        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                          <Loader2 className="h-3 w-3 animate-spin" /> Đang tải thêm dữ liệu...
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {!infiniteScroll?.hasNextPage && infiniteScroll && display.length > 0 && (
+                    <TableRow className="hover:bg-transparent">
+                      <TableCell
+                        colSpan={
+                          shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)
+                        }
+                        className="py-6 text-center border-0 opacity-40 italic text-[11px] text-muted-foreground"
+                      >
+                        Đã tới cuối danh sách
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </>
               )}
             </TableBody>
+
             </Table>
           </div>
         </div>

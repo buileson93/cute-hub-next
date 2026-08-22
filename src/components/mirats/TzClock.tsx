@@ -44,28 +44,21 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label={`IMPLEMENTATION MODE — TABLE PADDING/BORDER RADIUS ONLY.
+          aria-label={`IMPLEMENTATION MODE — THÀNH PHẦN & TÀI SẢN DATA MODE ONLY.
 
-Thực hiện sau Prompt 10P. Không thay đổi dữ liệu, RLS hoặc navigation.
+Thực hiện sau Prompt 10N và 10Q. Dùng systematic-debugging + TDD + verification-before-completion.
 
-Hiện trạng từ UI audit:
-- Bảng StandardTable và DataTableCore đang có border-radius quá lớn ở hàng (12px), tạo khoảng hở không tự nhiên khi có border;
-- Padding của hàng (h-12) đang cao hơn tiêu chuẩn Dashboard Compact (h-10 cho header, h-9 cho row);
-- Trạng thái hover/selected đang áp dụng shadow cục bộ thay vì dùng background tint đồng nhất;
-- Vi phạm contract U7: một số bảng vẫn dùng raw border thay vì biến CSS.
+Mục tiêu:
+- Bỏ phân trang thủ công ở màn hình “Thành phần & Tài sản”;
+- Cuộn liên tục trong một viewport (Infinite Scroll);
+- Nạp dữ liệu server từng batch (100-300 dòng);
+- Sử dụng Keyset Cursor cho dữ liệu lớn.
 
-Phạm vi chính:
-- src/components/mirats/StandardTable.tsx
-- src/components/mirats/DataTableCore.tsx
-- src/components/ui/table.tsx
-- src/styles.css
-
-KẾT QUẢ CẦN ĐẠT SAU PROMPT 10Q
-- Header table cao chính xác 40px (h-10), Row table cao chính xác 36px (h-9);
-- Border-radius của hàng giảm xuống 4px hoặc 6px để khớp với density cao;
-- Khoảng cách cell (padding-x) đồng bộ 12px (px-3);
-- Loại bỏ hoàn toàn shadow khi hover hàng, thay bằng background tint #0074e2/5;
-- Mọi bảng tuân thủ contract density mới.`}
+KẾT QUẢ CẦN ĐẠT SAU PROMPT 10R
+- Màn hình không còn lựa chọn page size, nút trang hoặc “Trang X/Y”.
+- Người dùng cuộn liên tục qua toàn bộ kết quả mà không chuyển trang.
+- Chỉ batch đầu được tải lúc mở; batch sau tải khi gần cuối.
+- DOM luôn bị giới hạn bởi virtualization.`}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">

@@ -17,10 +17,11 @@ export type ExportCol<T> = {
 export type ExportScope = "selected" | "filtered" | "page";
 
 export const SCOPE_LABEL: Record<ExportScope, string> = {
-  selected: "Các dòng đã chọn",
-  filtered: "Toàn bộ dòng sau khi lọc",
-  page: "Trang đang xem",
+  selected: "Dòng đã chọn",
+  filtered: "Toàn bộ dòng đã tải",
+  page: "Dòng đang hiển thị (viewport)",
 };
+
 
 export function csvCell(v: unknown, sep: string): string {
   const s = v === null || v === undefined ? "" : String(v);
