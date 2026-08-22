@@ -279,7 +279,7 @@ function VatTuPage() {
           )}
           <Card>
             <CardContent className="p-2">
-              <StandardTable
+              <StandardTable<VatTuRow>
                 tableKey="vat_tu_danhmuc_list"
                 rows={vatTu.data ?? []}
                 getRowId={(v) => v.id}
