@@ -75,12 +75,7 @@ function ApprovalHubPage() {
         .from("dossier_documents")
         .update({ 
           status: "complete",
-          sign_date: new Date().toISOString().split('T')[0],
-          // Simulation of electronic seal code storage
-          metadata: { 
-            esign_hash: Math.random().toString(36).substring(7),
-            seal_code: `MIRATS-BATCH-${Date.now()}`
-          } as any
+          sign_date: new Date().toISOString().split('T')[0]
         })
         .in("id", ids);
       
