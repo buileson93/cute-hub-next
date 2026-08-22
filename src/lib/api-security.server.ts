@@ -23,8 +23,12 @@ export async function verifyApiSecret(
   secretEnvName: string = "CRON_SECRET",
   headerName: string = "x-cron-secret"
 ): Promise<{ authorized: boolean; errorStatus: 401 | 404 | null }> {
+  // Ưu tiên đọc từ biến môi trường của Sandbox
   const expected = process.env[secretEnvName];
   
+  console.log(`[API Security Debug] Checking ${secretEnvName}. Configured: ${!!expected}`);
+
+  // Nếu secret không được cấu hình, fail closed bằng 404 để giấu endpoint
   if (!expected || expected.trim() === "") {
     console.warn(`[API Security] Secret ${secretEnvName} is not configured.`);
     return { authorized: false, errorStatus: 404 };
@@ -33,6 +37,7 @@ export async function verifyApiSecret(
   const provided = request.headers.get(headerName);
   
   if (!provided || !safeEqual(provided, expected)) {
+    console.warn(`[API Security] Unauthorized access to ${secretEnvName}. Provided: ${!!provided}`);
     return { authorized: false, errorStatus: 401 };
   }
 
