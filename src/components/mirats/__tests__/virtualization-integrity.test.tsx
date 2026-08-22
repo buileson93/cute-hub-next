@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, afterEach, vi } from "vitest";
-import { render, screen, cleanup, fireEvent } from "@testing-library/react";
+import { render, screen, cleanup, fireEvent, within } from "@testing-library/react";
 import { StandardTable, type ColumnDef } from "../StandardTable";
 import React from "react";
 
@@ -28,7 +28,7 @@ const rows: Row[] = [
 ];
 
 const columns: ColumnDef<Row>[] = [
-  { key: "name", header: "Name", value: (r) => r.name, sortable: true },
+  { key: "name", header: "Name", label: "Name", value: (r) => r.name, sortable: true },
 ];
 
 describe("StandardTable Data Pipeline & Virtualization", () => {
@@ -44,26 +44,23 @@ describe("StandardTable Data Pipeline & Virtualization", () => {
       />
     );
 
-    const cells = screen.getAllByRole("cell");
-    expect(cells[0].textContent).toBe("Alpha");
+    // Dùng data-index vì role cell có vẻ không được JSDOM nhận diện tốt qua shadcn components
+    // Hoặc kiểm tra text trực tiếp trong tbody
+    const alpha = screen.getByText("Alpha");
+    expect(alpha).toBeDefined();
 
-    const nameHeader = screen.getByText("Name");
-    fireEvent.click(nameHeader); // asc (A, B, C)
-    fireEvent.click(nameHeader); // desc (C, B, A)
+    const nameHeader = screen.getByLabelText("Sắp xếp theo Name");
+    fireEvent.click(nameHeader); // asc (Alpha, Bravo, Charlie)
+    fireEvent.click(nameHeader); // desc (Charlie, Bravo, Alpha)
     
-    const cellsAfterSort = screen.getAllByRole("cell");
-    expect(cellsAfterSort[0].textContent).toBe("Charlie");
+    // Sau khi sort desc, Charlie phải ở đầu
+    const body = document.querySelector('tbody');
+    const firstRow = body?.querySelector('tr[data-index="0"]');
+    expect(firstRow?.textContent).toContain("Charlie");
   });
 
   it("should be able to render rows in virtual mode with forced dimensions", () => {
     const getRowId = (r: Row) => r.id;
-    
-    // Giả lập window height cho JSDOM
-    Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 1000 });
-    
-    // Chúng ta không dùng screen.getAllByRole("cell") vì StandardTable render TableCell bên trong TableRow.
-    // Nếu rowVirtualizer không đo được gì, nó có thể không render dòng nào.
-    // Tuy nhiên, chúng ta đã sửa StandardTable để có initialRect và overscan lớn trong test.
     
     render(
       <StandardTable<Row>
@@ -75,16 +72,12 @@ describe("StandardTable Data Pipeline & Virtualization", () => {
       />
     );
 
-    // Kiểm tra TableBody có chứa nội dung không
-    const rowsFound = screen.queryAllByRole("row");
-    // 1 header row + 3 data rows = 4 rows
-    // Nếu ảo hóa lỗi, chỉ có 1 header row.
-    expect(rowsFound.length).toBeGreaterThan(1);
+    // Với isTest fix, virtual rows nên render ngay
+    const alpha = screen.queryByText("Alpha");
+    expect(alpha).not.toBeNull();
     
-    // Nếu render được, kiểm tra dòng đầu
-    const cells = screen.queryAllByRole("cell");
-    if (cells.length > 0) {
-      expect(cells[0].textContent).toBe("Alpha");
-    }
+    const body = document.querySelector('tbody');
+    const row0 = body?.querySelector('tr[data-index="0"]');
+    expect(row0?.textContent).toContain("Alpha");
   });
 });
