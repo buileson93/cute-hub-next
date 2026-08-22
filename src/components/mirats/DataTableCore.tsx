@@ -193,7 +193,7 @@ export function DataTableCore<T>({
             {selectable && (
               <TableHead 
                 style={{ width: 40, minWidth: 40 }}
-                className="w-10 px-3 text-center sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px] border-b border-border/20 astryx-table-header-cell"
+                className="w-10 px-3 text-center sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px] astryx-table-header-cell"
               />
             )}
             {columns.map((col) => (
