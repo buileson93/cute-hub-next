@@ -88,6 +88,29 @@ export function AuditLog({ entityType, entityId }: AuditLogProps) {
     enabled: !!entityId,
   });
 
+  const uniqueUsers = useMemo(() => {
+    const users = new Set<string>();
+    logs.forEach(log => {
+      if (log.user_id) users.add(log.user_id);
+    });
+    return Array.from(users);
+  }, [logs]);
+
+  const filteredLogs = useMemo(() => {
+    return logs.filter(log => {
+      const matchesSearch = searchTerm === "" || 
+        getActionLabel(log.action).toLowerCase().includes(searchTerm.toLowerCase()) ||
+        formatDetail(log).toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesAction = actionFilter === "all" || log.action.includes(actionFilter);
+      
+      const matchesUser = userFilter === "all" || log.user_id === userFilter;
+      
+      return matchesSearch && matchesAction && matchesUser;
+    });
+  }, [logs, searchTerm, actionFilter, userFilter]);
+
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8 text-muted-foreground">
