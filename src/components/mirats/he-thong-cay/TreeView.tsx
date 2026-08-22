@@ -20,7 +20,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { TruncatedNodeLabel } from "./TruncatedNodeLabel";
+
 import { CodeBadge } from "@/components/mirats/CodeBadge";
 import {
   DropdownMenu,
