@@ -1,0 +1,4 @@
+id,ma,ten,mo_ta,thu_tu,active,created_at,updated_at,merged_into,deactivated_at
+7ee92e8c-3871-4421-921f-b9226a6ca8d1,NH-CON-NIEN-H,Còn niên hạn,,1,t,2026-07-08 16:43:11.887052+00,2026-07-08 16:43:11.887052+00,,
+bd0f993c-0550-46aa-8783-3e73ce8fca73,NH-QUA-2-3-NI,Quá 2/3 niên hạn,,2,t,2026-07-08 16:43:12.034203+00,2026-07-08 16:43:12.034203+00,,
+7b9f429c-bcf4-46c1-9822-1c2ef43b3fd8,NH-QUA-NIEN-H,Quá niên hạn,,3,t,2026-07-08 16:43:12.179531+00,2026-07-08 16:43:12.179531+00,,

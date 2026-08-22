@@ -1,0 +1,59 @@
+id,user_id,loai,tieu_de,noi_dung,link,ref_type,ref_id,read_at,created_at
+a3e6d283-9fef-4946-a084-0138d7885714,e5bdd96e-7b1e-4848-80e0-3ed50943662f,tin_nhan_moi,Bùi Lê Sơn,xin chào,/messages/2e2ac78a-cbaa-41d6-ac4b-94c0ede7845b,message,1753942a-ab61-47cf-a8b5-87792f487095,,2026-07-08 08:49:07.045791+00
+cc43d7e6-378f-4edc-856d-d394f923c41c,e5bdd96e-7b1e-4848-80e0-3ed50943662f,tin_nhan_moi,Bùi Lê Sơn,xin chào,/messages/2e2ac78a-cbaa-41d6-ac4b-94c0ede7845b,message,98b29696-5ffc-4126-94cb-62e82129c967,,2026-07-08 08:49:07.04588+00
+689530ab-a690-4c77-baf3-aecb70581209,e5bdd96e-7b1e-4848-80e0-3ed50943662f,tin_nhan_moi,Bùi Lê Sơn,chào mọi người,/messages/2e2ac78a-cbaa-41d6-ac4b-94c0ede7845b,message,32b6a71e-4796-4acd-af12-6b31549f3de3,,2026-07-08 08:49:12.977351+00
+d1180a11-5efb-459e-b5ab-90c0313c2914,e5bdd96e-7b1e-4848-80e0-3ed50943662f,tin_nhan_moi,Bùi Lê Sơn,chào mọi người,/messages/2e2ac78a-cbaa-41d6-ac4b-94c0ede7845b,message,6e013772-6f06-4683-a0c9-380435744ae1,,2026-07-08 08:49:12.980119+00
+b91e5c4c-f64d-4361-9fff-b4890bc9e8ec,7fd569de-c6c5-4040-8758-9c88767bcaec,tin_nhan_moi,Bùi Lê Sơn,chào chu lai,/messages/0040492a-e263-4e28-85ed-3f0a7267b93a,message,dc640842-806c-4194-940b-5f5c788ccad5,,2026-07-08 09:24:47.292464+00
+3f020208-6a6a-4d49-87b9-bf135c10455c,7fd569de-c6c5-4040-8758-9c88767bcaec,tin_nhan_moi,Bùi Lê Sơn,chào chu lai,/messages/0040492a-e263-4e28-85ed-3f0a7267b93a,message,1c8b4f78-f41a-414e-937d-80b70e5352c1,,2026-07-08 09:24:47.294244+00
+33395184-b3c8-4f1b-bbc9-02cd0fd8507c,e5bdd96e-7b1e-4848-80e0-3ed50943662f,tin_nhan_moi,Bùi Lê Sơn,[Tệp] sign up.png,/messages/2e2ac78a-cbaa-41d6-ac4b-94c0ede7845b,message,39bca978-830a-4e12-85fa-28d2bc124724,,2026-07-08 09:34:43.696282+00
+4829ad96-509d-4191-8441-d8829150ece7,3e4602f3-a947-4fe0-81c3-bf16bf3a5da7,tin_nhan_moi,Bùi Lê Sơn,hello,/messages/b261cb40-be1f-4cb5-94ac-eff02def38ad,message,07042101-e92a-4b32-8e5a-e32cb6aaa235,,2026-07-10 09:22:34.265254+00
+3272ef2f-c37f-4f29-a0b4-efb7194734ae,3e4602f3-a947-4fe0-81c3-bf16bf3a5da7,he_thong,Sắp hết hạn giấy phép,3624/GP-CHK còn 10 ngày (hạn 25/07/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+a76cfe1b-0ee3-45c6-be13-34c80e74cd18,e5bdd96e-7b1e-4848-80e0-3ed50943662f,he_thong,Sắp hết hạn giấy phép,3624/GP-CHK còn 10 ngày (hạn 25/07/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+1de4d704-a181-4b3b-9659-e85041574335,201c530d-d2f1-4683-a888-5e42b77a95c6,he_thong,Sắp hết hạn giấy phép,3624/GP-CHK còn 10 ngày (hạn 25/07/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+18370a56-6891-4cdf-8686-f41eea958208,3e4602f3-a947-4fe0-81c3-bf16bf3a5da7,he_thong,Sắp hết hạn giấy phép,4029/GP-CHK còn 31 ngày (hạn 15/08/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+f8a9f44a-a79e-47bc-9c21-75ae487d25de,e5bdd96e-7b1e-4848-80e0-3ed50943662f,he_thong,Sắp hết hạn giấy phép,4029/GP-CHK còn 31 ngày (hạn 15/08/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+172471d9-45ea-45ae-95d0-f57431980e6c,201c530d-d2f1-4683-a888-5e42b77a95c6,he_thong,Sắp hết hạn giấy phép,4029/GP-CHK còn 31 ngày (hạn 15/08/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+f013393f-b944-48ef-9944-7f28a72048fe,3e4602f3-a947-4fe0-81c3-bf16bf3a5da7,he_thong,Sắp hết hạn giấy phép,4856/GP-CHK còn 78 ngày (hạn 01/10/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+8a646f8c-37dc-40c2-9a1f-c2b22d4c676e,e5bdd96e-7b1e-4848-80e0-3ed50943662f,he_thong,Sắp hết hạn giấy phép,4856/GP-CHK còn 78 ngày (hạn 01/10/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+7744ee0c-590e-4224-a8af-9befd85b03ba,201c530d-d2f1-4683-a888-5e42b77a95c6,he_thong,Sắp hết hạn giấy phép,4856/GP-CHK còn 78 ngày (hạn 01/10/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+6e7934d0-c705-4c3c-a662-557e1fb72fcd,3e4602f3-a947-4fe0-81c3-bf16bf3a5da7,he_thong,Sắp hết hạn giấy phép,3781/GP-CHK còn 30 ngày (hạn 14/08/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+c1524da1-40dc-4dfc-844f-afdeed2df3c3,e5bdd96e-7b1e-4848-80e0-3ed50943662f,he_thong,Sắp hết hạn giấy phép,3781/GP-CHK còn 30 ngày (hạn 14/08/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+2d0324b9-98bb-4cf0-b36f-fe5cd86e3871,201c530d-d2f1-4683-a888-5e42b77a95c6,he_thong,Sắp hết hạn giấy phép,3781/GP-CHK còn 30 ngày (hạn 14/08/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+b39f13b1-09df-41d5-8585-5263c85f22bf,3e4602f3-a947-4fe0-81c3-bf16bf3a5da7,he_thong,Sắp hết hạn giấy phép,2270/GP-CHK còn 71 ngày (hạn 24/09/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+7cc68663-58dd-4b6e-891b-c47b14f683a2,e5bdd96e-7b1e-4848-80e0-3ed50943662f,he_thong,Sắp hết hạn giấy phép,2270/GP-CHK còn 71 ngày (hạn 24/09/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+546adda4-8d35-4512-bff6-025610310f6d,201c530d-d2f1-4683-a888-5e42b77a95c6,he_thong,Sắp hết hạn giấy phép,2270/GP-CHK còn 71 ngày (hạn 24/09/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+f407d285-409b-4714-ac28-7ed0dae34ca3,3e4602f3-a947-4fe0-81c3-bf16bf3a5da7,he_thong,Sắp hết hạn giấy phép,2955/GP-CHK còn 8 ngày (hạn 23/07/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+90b358ba-f60f-44e5-ac8c-1c6cf74e62f7,e5bdd96e-7b1e-4848-80e0-3ed50943662f,he_thong,Sắp hết hạn giấy phép,2955/GP-CHK còn 8 ngày (hạn 23/07/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+dd0b9d26-72c6-41da-911e-926e485b3ab9,201c530d-d2f1-4683-a888-5e42b77a95c6,he_thong,Sắp hết hạn giấy phép,2955/GP-CHK còn 8 ngày (hạn 23/07/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+b4346716-6cfb-4096-88c9-7a086856a9f4,3e4602f3-a947-4fe0-81c3-bf16bf3a5da7,he_thong,Sắp hết hạn giấy phép,4548/GP-CHK còn 59 ngày (hạn 12/09/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+f6706524-6195-4655-935d-b9e7ac795e87,e5bdd96e-7b1e-4848-80e0-3ed50943662f,he_thong,Sắp hết hạn giấy phép,4548/GP-CHK còn 59 ngày (hạn 12/09/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+449dc3ca-c80c-40bc-b4e6-b98580436428,201c530d-d2f1-4683-a888-5e42b77a95c6,he_thong,Sắp hết hạn giấy phép,4548/GP-CHK còn 59 ngày (hạn 12/09/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+b8f9c876-5664-494f-85e2-8335898d8c19,3e4602f3-a947-4fe0-81c3-bf16bf3a5da7,he_thong,Sắp hết hạn giấy phép,5129/GP-CHK còn 82 ngày (hạn 05/10/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+c7a694e8-0666-4c30-a0eb-2e45a4bd9278,e5bdd96e-7b1e-4848-80e0-3ed50943662f,he_thong,Sắp hết hạn giấy phép,5129/GP-CHK còn 82 ngày (hạn 05/10/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+1f4fd097-2d86-44b1-9583-986713b68d4d,201c530d-d2f1-4683-a888-5e42b77a95c6,he_thong,Sắp hết hạn giấy phép,5129/GP-CHK còn 82 ngày (hạn 05/10/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+49486d67-fbc4-41bb-83c8-9558ac40180b,3e4602f3-a947-4fe0-81c3-bf16bf3a5da7,he_thong,Sắp hết hạn giấy phép,3314/GP-CHK còn 0 ngày (hạn 15/07/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+37cf9a5a-e89d-46e0-9cb8-98f696667a10,e5bdd96e-7b1e-4848-80e0-3ed50943662f,he_thong,Sắp hết hạn giấy phép,3314/GP-CHK còn 0 ngày (hạn 15/07/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+3110b746-736a-410f-99fb-a36eba7056b4,201c530d-d2f1-4683-a888-5e42b77a95c6,he_thong,Sắp hết hạn giấy phép,3314/GP-CHK còn 0 ngày (hạn 15/07/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+088bde17-07d8-4997-b8fa-97d996663329,3e4602f3-a947-4fe0-81c3-bf16bf3a5da7,he_thong,Sắp hết hạn giấy phép,2953/GP-CHK còn 11 ngày (hạn 26/07/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+373e3197-cdbf-4b99-b9e7-3dd2b7376c2f,e5bdd96e-7b1e-4848-80e0-3ed50943662f,he_thong,Sắp hết hạn giấy phép,2953/GP-CHK còn 11 ngày (hạn 26/07/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+e0ea74e1-f851-41e7-8f5d-38a3e43b4caa,201c530d-d2f1-4683-a888-5e42b77a95c6,he_thong,Sắp hết hạn giấy phép,2953/GP-CHK còn 11 ngày (hạn 26/07/2026),/sap-het-han,sap_het_han,,,2026-07-15 01:00:00.241707+00
+46b78dbb-f5ee-4a4a-8e80-36adc747f836,3e4602f3-a947-4fe0-81c3-bf16bf3a5da7,he_thong,Sắp hết hạn giấy phép,4029/GP-CHK còn 30 ngày (hạn 15/08/2026),/sap-het-han,sap_het_han,,,2026-07-16 01:00:00.269714+00
+b11e0256-8891-4c5c-b016-308199064520,e5bdd96e-7b1e-4848-80e0-3ed50943662f,he_thong,Sắp hết hạn giấy phép,4029/GP-CHK còn 30 ngày (hạn 15/08/2026),/sap-het-han,sap_het_han,,,2026-07-16 01:00:00.269714+00
+6304ca38-ce40-4b23-81b6-fc66990c529b,201c530d-d2f1-4683-a888-5e42b77a95c6,he_thong,Sắp hết hạn giấy phép,4029/GP-CHK còn 30 ngày (hạn 15/08/2026),/sap-het-han,sap_het_han,,,2026-07-16 01:00:00.269714+00
+90415011-2a17-4e40-9e66-e1fd651455af,a264afc0-9cc6-4167-8f5f-e411c1b177e3,he_thong,Sắp hết hạn giấy phép,4029/GP-CHK còn 30 ngày (hạn 15/08/2026),/sap-het-han,sap_het_han,,,2026-07-16 01:00:00.269714+00
+4e03354d-f26e-48c7-b7ca-fbc55b6361a7,fc5ccc5c-76e4-41c3-940e-32132718a9a6,he_thong,Nhật ký 24h: 177 hành động,"Trong 24 giờ qua có 177 hành động từ 1 người dùng.
+
+Top bảng:
+he_thong_thanh_phan: 79
+user_roles: 22
+profiles: 22
+cay_node_edit: 21
+thiet_bi: 13",/admin/audit,audit_digest,,,2026-07-24 07:00:00.643177+00
+56bf6716-2248-447f-bded-f4d8730f80d3,7b178d3c-127b-4bdd-a77c-a3013cdf365b,he_thong,Nhật ký 24h: 177 hành động,"Trong 24 giờ qua có 177 hành động từ 1 người dùng.
+
+Top bảng:
+he_thong_thanh_phan: 79
+user_roles: 22
+profiles: 22
+cay_node_edit: 21
+thiet_bi: 13",/admin/audit,audit_digest,,2026-07-24 09:36:12.867+00,2026-07-24 07:00:00.643177+00
