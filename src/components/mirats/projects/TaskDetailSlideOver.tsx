@@ -20,8 +20,11 @@ import {
   ChevronRight,
   User,
   Calendar,
-  AlertCircle
+  AlertCircle,
+  FileCheck2,
+  Stamp
 } from "lucide-react";
+import { AuditLog } from "./AuditLog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
