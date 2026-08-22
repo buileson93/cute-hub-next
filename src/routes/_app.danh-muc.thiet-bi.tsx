@@ -69,6 +69,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { InfoHint } from "@/components/mirats/InfoHint";
+import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
 import { THIET_BI_PRESETS } from "@/lib/mirats/ui/view-presets";
