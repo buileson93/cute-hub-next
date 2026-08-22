@@ -1390,7 +1390,35 @@ function DanhMucThietBiPage() {
             selectable
             onRowClick={(d) => openDetail(d)}
             rowClassName={() => "cursor-pointer"}
-            emptyText="Không có tài sản phù hợp."
+            emptyText={pagedLoading ? "Đang tải dữ liệu..." : "Không có tài sản phù hợp."}
+            footer={
+              <div className="flex items-center justify-between px-4 py-3 border-t bg-muted/20">
+                <div className="text-xs text-muted-foreground">
+                  Hiển thị {devices.length} / {totalCount} tài sản (Trang {page + 1})
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8"
+                    disabled={page === 0 || pagedLoading}
+                    onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  >
+                    Trước
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8"
+                    disabled={(page + 1) * pageSize >= totalCount || pagedLoading}
+                    onClick={() => setPage((p) => p + 1)}
+                  >
+                    Tiếp
+                  </Button>
+                </div>
+              </div>
+            }
+
             toolbarLeft={
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2">
