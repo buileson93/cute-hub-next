@@ -727,35 +727,6 @@ export function StandardTableInner<T>({
 
     return null;
   };
-                : gated
-                  ? "Vui lòng chọn bộ lọc để xem dữ liệu"
-                  : emptyContent
-                    ? undefined
-                    : emptyText
-            }
-            description={
-              hasFilter
-                ? "Vui lòng thử điều chỉnh hoặc xoá các bộ lọc đang bật"
-                : typeof emptyContent === "string"
-                  ? emptyContent
-                  : undefined
-            }
-            action={
-              hasFilter ? (
-                <Button variant="outline" size="sm" onClick={clearAllFilters} className="mt-4">
-                  Xoá tất cả bộ lọc
-                </Button>
-              ) : undefined
-            }
-            live="polite"
-          />
-          {!hasFilter && typeof emptyContent !== "string" && emptyContent}
-        </div>
-      );
-    }
-
-    return null;
-  };
 
   /** Tự động render ô dựa trên `type` */
   function renderAutoCell(c: ColumnDef<T>, r: T) {
