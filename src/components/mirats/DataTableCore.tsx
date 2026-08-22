@@ -261,6 +261,7 @@ export function DataTableCore<T>({
                     left: 0,
                     width: '100%',
                     willChange: 'transform',
+                    contain: 'layout inline-size', // Tối ưu hóa việc paint cho từng hàng
                   }}
                   onClick={() => onRowClick?.(row)}
                 >
