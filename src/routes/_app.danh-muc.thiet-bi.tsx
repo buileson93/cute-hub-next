@@ -1318,7 +1318,7 @@ function DanhMucThietBiPage() {
                 <div className="flex items-center justify-between gap-2 border-b px-3 py-2">
                   <span className="text-xs font-semibold">Chế độ</span>
                   <Select value={tagMode} onValueChange={(v) => setTagMode(v as CheDoLoc)}>
-                    <SelectTrigger className="h-7 w-[150px] text-xs">
+                    <SelectTrigger className="h-7 w-[150px] text-xs" aria-label="Chọn chế độ lọc nhãn">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
