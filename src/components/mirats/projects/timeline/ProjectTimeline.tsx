@@ -72,7 +72,7 @@ export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
   const selectedEvent = events?.find((e) => e.id === selectedEventId);
 
   return (
-    <div className="flex h-full min-h-[500px] overflow-hidden border border-border rounded-xl bg-background shadow-sm">
+    <div className="flex h-full min-h-[500px] overflow-hidden border-none rounded-none bg-transparent shadow-none">
       <div className="flex-1 flex flex-col min-w-0">
         {/* Toolbar */}
         <div className="flex items-center justify-between p-3 border-b bg-muted/20 gap-3">

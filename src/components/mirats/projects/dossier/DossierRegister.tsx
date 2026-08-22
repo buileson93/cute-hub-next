@@ -77,7 +77,7 @@ export function DossierRegister({ project_id }: { project_id: string }) {
     );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-0">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />

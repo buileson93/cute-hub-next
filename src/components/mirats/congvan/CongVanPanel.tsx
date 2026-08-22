@@ -144,7 +144,7 @@ export function CongVanPanel({ duAnId, canEdit }: { duAnId: string; canEdit: boo
         </div>
       ) : (
         <Tabs defaultValue="timeline" className="w-full">
-          <div className="px-4">
+          <div className="px-0">
             <TabsList variant="underline">
               <TabsTrigger value="timeline">
                 <GitBranch className="mr-1.5 h-4 w-4" /> Timeline
@@ -155,7 +155,7 @@ export function CongVanPanel({ duAnId, canEdit }: { duAnId: string; canEdit: boo
             </TabsList>
           </div>
 
-          <div className="p-4">
+          <div className="py-4 px-0">
             <TabsContent value="timeline" className="mt-0 outline-none">
               <CongVanTimeline congVans={filtered} links={links} teps={teps} onOpen={openCv} />
             </TabsContent>

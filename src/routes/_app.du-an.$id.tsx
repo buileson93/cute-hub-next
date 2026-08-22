@@ -791,8 +791,8 @@ function GanttView({
   }, [mocs, tasks, projectStart, viewMode]);
 
   return (
-    <Card data-density={density}>
-      <CardHeader className="pb-2">
+    <Card data-density={density} className="border-none shadow-none bg-transparent">
+      <CardHeader className="pb-2 px-0 pt-0">
         <div className="flex items-center justify-between gap-2">
           <CardTitle className="text-sm">Sơ đồ Gantt</CardTitle>
           <div className="flex gap-1">
@@ -809,7 +809,7 @@ function GanttView({
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-0">
         {mocs.length === 0 ? (
           <div className="text-sm text-slate-500 py-8 text-center">
             Chưa có mốc/công việc để hiển thị Gantt.
@@ -861,8 +861,8 @@ function ListView({
         const list = tasks.filter((t) => t.moc_id === m.id);
         const tt = CV_TRANG_THAI[m.trang_thai] ?? CV_TRANG_THAI.chua_bat_dau;
         return (
-          <Card key={m.id}>
-            <CardHeader className="pb-2">
+          <Card key={m.id} className="border-none shadow-none bg-transparent">
+            <CardHeader className="pb-2 px-0 pt-0">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <CardTitle className="text-base">{m.ten}</CardTitle>
@@ -916,7 +916,7 @@ function ListView({
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="pt-0">
+            <CardContent className="pt-0 px-0">
               {list.length === 0 ? (
                 <div className="text-xs text-slate-400 italic py-2">Chưa có công việc con.</div>
               ) : (
