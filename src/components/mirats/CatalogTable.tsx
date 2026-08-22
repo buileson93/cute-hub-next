@@ -635,7 +635,7 @@ export function CatalogTable({
                       cell: (r: Row) => {
                         const url = r.logo ? logoUrlMap?.get(r.logo) : undefined;
                         return (
-                          <div className="mx-auto h-8 w-8 overflow-hidden rounded border bg-white shadow-sm">
+                          <div className="mx-auto h-8 w-8 overflow-hidden rounded border bg-card shadow-sm">
                             <AspectRatio ratio={1 / 1}>
                               {url ? (
                                 <img

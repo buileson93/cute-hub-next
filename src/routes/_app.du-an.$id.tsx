@@ -132,7 +132,7 @@ export const Route = createFileRoute("/_app/du-an/$id")({
 const CV_TRANG_THAI: Record<string, { label: string; tone: string; column: string }> = {
   chua_bat_dau: {
     label: "Chưa bắt đầu",
-    tone: "bg-slate-100 text-slate-700 border-slate-200",
+    tone: "bg-slate-100 text-slate-700 border-border",
     column: "Chưa bắt đầu",
   },
   dang_lam: {
@@ -459,14 +459,14 @@ function DuAnDetailPage() {
                 <HillChart project_id={id} />
               </div>
               <div className="space-y-4">
-                <Card className="border-slate-200 shadow-none bg-slate-50/50">
+                <Card className="border-border shadow-none bg-slate-50/50">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-xs uppercase text-slate-500 font-bold">
                       Current Cycle
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="font-bold text-slate-900">Cycle 08: Foundations</div>
+                    <div className="font-bold text-foreground">Cycle 08: Foundations</div>
                     <div className="text-[11px] text-slate-500 mt-1">17/08/2026 → 28/09/2026</div>
                     <Badge className="mt-3 bg-indigo-600">Big Batch (6w)</Badge>
                   </CardContent>
@@ -1399,7 +1399,7 @@ function EditCongViecDialog({
                           "text-xs px-2 py-1 rounded-full border transition",
                           on
                             ? "bg-indigo-600 text-white border-indigo-600"
-                            : "bg-white hover:border-indigo-300",
+                            : "bg-card hover:border-indigo-300",
                         )}
                       >
                         {u.ho_ten ?? u.email}

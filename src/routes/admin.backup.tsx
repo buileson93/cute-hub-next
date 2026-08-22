@@ -500,7 +500,7 @@ function BackupPage() {
                             className={
                               b.loai === "tu_dong"
                                 ? "border-sky-200 bg-sky-50 text-sky-700"
-                                : "border-slate-200 bg-slate-50 text-slate-600"
+                                : "border-border bg-slate-50 text-slate-600"
                             }
                           >
                             {b.loai === "tu_dong" ? "Tự động" : "Thủ công"}

@@ -20,7 +20,7 @@ interface OperationsLaneProps {
 export function OperationsLane({ incidents }: OperationsLaneProps) {
   if (!incidents || incidents.length === 0) {
     return (
-      <Card className="border-slate-200 shadow-none">
+      <Card className="border-border shadow-none">
         <CardContent className="p-8 text-center">
           <div className="text-slate-400 text-sm">Không có sự cố nào cần xử lý.</div>
         </CardContent>
@@ -33,7 +33,7 @@ export function OperationsLane({ incidents }: OperationsLaneProps) {
       {incidents.map((incident) => (
         <Card
           key={incident.id}
-          className="border-slate-200 shadow-none hover:border-slate-300 transition-colors"
+          className="border-border shadow-none hover:border-slate-300 transition-colors"
         >
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">

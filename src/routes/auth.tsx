@@ -173,7 +173,7 @@ function AuthPage() {
 
   return (
     <div className="min-h-dvh bg-[#f8fafc] p-4 lg:p-10 flex items-center justify-center">
-      <div className="w-full max-w-[1280px] grid min-h-[800px] overflow-hidden rounded-[32px] bg-white shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)] ring-1 ring-black/5 lg:grid-cols-2">
+      <div className="w-full max-w-[1280px] grid min-h-[800px] overflow-hidden rounded-[32px] bg-card shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)] ring-1 ring-black/5 lg:grid-cols-2">
         {/* Left: form */}
         <div className="flex flex-col justify-center p-8 sm:p-16 lg:p-20">
           <motion.div
@@ -197,7 +197,7 @@ function AuthPage() {
             <div className="relative mb-10 grid grid-cols-2 rounded-2xl bg-[#f1f5f9] p-1.5">
               <motion.div
                 aria-hidden
-                className="absolute inset-y-1.5 left-1.5 w-[calc(50%-1.5px)] rounded-xl bg-white shadow-sm ring-1 ring-black/5"
+                className="absolute inset-y-1.5 left-1.5 w-[calc(50%-1.5px)] rounded-xl bg-card shadow-sm ring-1 ring-black/5"
                 animate={{ x: mode === "signin" ? "0%" : "100%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               />
@@ -444,7 +444,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="!h-14 w-full !rounded-2xl border border-slate-200 bg-slate-50/30 px-5 font-medium !text-[16px] text-foreground placeholder:text-muted-foreground/60 transition-all outline-none focus:!ring-4 focus:!ring-[#0074e2]/10 focus:!border-[#0074e2]/40 focus:!bg-white"
+        className="!h-14 w-full !rounded-2xl border border-border bg-muted/30 px-5 font-medium !text-[16px] text-foreground placeholder:text-muted-foreground/60 transition-all outline-none focus:!ring-4 focus:!ring-[#0074e2]/10 focus:!border-[#0074e2]/40 focus:!bg-card"
       />
     </div>
   );

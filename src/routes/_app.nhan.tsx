@@ -606,8 +606,8 @@ function LabelCard({
 }) {
   const tenRutGon = ten.length > 24 ? `${ten.slice(0, 23)}…` : ten;
   return (
-    <div className="label-card flex items-center gap-2 rounded-md border bg-white p-2 text-slate-900">
-      <div className="shrink-0 rounded border border-slate-200 bg-white p-0.5">
+    <div className="label-card flex items-center gap-2 rounded-md border bg-card p-2 text-foreground">
+      <div className="shrink-0 rounded border border-border bg-card p-0.5">
         <QRCodeSVG value={url} size={qrPx} level="M" />
       </div>
       <div className="min-w-0 flex-1">

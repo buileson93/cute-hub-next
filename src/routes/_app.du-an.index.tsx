@@ -46,7 +46,7 @@ export const Route = createFileRoute("/_app/du-an/")({
 });
 
 const TRANG_THAI: Record<string, { label: string; tone: string }> = {
-  moi: { label: "Mới", tone: "bg-slate-100 text-slate-700 border-slate-200" },
+  moi: { label: "Mới", tone: "bg-slate-100 text-slate-700 border-border" },
   dang_thuc_hien: { label: "Đang thực hiện", tone: "bg-sky-100 text-sky-700 border-sky-200" },
   tam_dung: { label: "Tạm dừng", tone: "bg-amber-100 text-amber-700 border-amber-200" },
   hoan_thanh: { label: "Hoàn thành", tone: "bg-emerald-100 text-emerald-700 border-emerald-200" },

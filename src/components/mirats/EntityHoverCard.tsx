@@ -27,7 +27,7 @@ function ModelThumbSmall({ url, ten }: { url?: string | null; ten: string }) {
         <img
           src={url}
           alt={ten}
-          className="h-full w-full rounded border bg-white object-contain p-0.5 shadow-sm"
+          className="h-full w-full rounded border bg-card object-contain p-0.5 shadow-sm"
         />
       </AspectRatio>
     </div>

@@ -41,6 +41,6 @@ export function getToken(domain: DomainKey, code: string | null) {
 
   return {
     class:
-      "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700",
+      "bg-slate-100 text-slate-600 border-border dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700",
   };
 }

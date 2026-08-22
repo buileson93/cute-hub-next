@@ -84,7 +84,7 @@ export function LeanUXCanvas({ project_id }: { project_id: string }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">Lean UX Canvas</h2>
+          <h2 className="text-lg font-semibold text-foreground">Lean UX Canvas</h2>
           <Blockquote className="mt-2 text-indigo-700 bg-indigo-50/50 border-indigo-200">
             <div className="flex items-center gap-2 text-[11px] italic">
               <Info className="h-3.5 w-3.5 shrink-0" />
@@ -171,7 +171,7 @@ function CanvasSection({
   placeholder?: string;
 }) {
   return (
-    <Card className="border-slate-200 shadow-none">
+    <Card className="border-border shadow-none">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-bold text-indigo-600 uppercase tracking-wider">
           {title}

@@ -409,6 +409,6 @@ function getEventColor(type: ProjectEventType) {
   return {
     text: "text-slate-600",
     bg: "bg-slate-50",
-    border: "border-slate-200",
+    border: "border-border",
   };
 }

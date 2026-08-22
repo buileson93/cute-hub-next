@@ -28,7 +28,7 @@ export function BettingTable({
   onDecision?: (id: string, decision: "bet" | "hold" | "archive") => void;
 }) {
   return (
-    <div className="rounded-xl border border-slate-200 overflow-hidden bg-white shadow-sm">
+    <div className="rounded-xl border border-border overflow-hidden bg-card shadow-sm">
       <Table>
         <TableHeader className="bg-slate-50/80">
           <TableRow>
@@ -44,7 +44,7 @@ export function BettingTable({
           {candidates.map((c) => (
             <TableRow key={c.id} className="hover:bg-slate-50/50 transition-colors">
               <TableCell>
-                <div className="font-bold text-slate-900">{c.title}</div>
+                <div className="font-bold text-foreground">{c.title}</div>
               </TableCell>
               <TableCell className="text-xs text-slate-600 italic">{c.outcome}</TableCell>
               <TableCell>
@@ -53,7 +53,7 @@ export function BettingTable({
                   className={
                     c.appetite === "big"
                       ? "border-indigo-200 text-indigo-700 bg-indigo-50"
-                      : "border-slate-200 text-slate-600 bg-slate-50"
+                      : "border-border text-slate-600 bg-slate-50"
                   }
                 >
                   {c.appetite === "big" ? "6 Weeks" : "2 Weeks"}

@@ -387,7 +387,7 @@ export function AtcTowerScene() {
           {Array.from({ length: 8 }).map((_, i) => (
             <motion.span
               key={i}
-              className="absolute h-[3px] w-[3px] rounded-full bg-white"
+              className="absolute h-[3px] w-[3px] rounded-full bg-card"
               style={{ left: `${8 + i * 11}%`, boxShadow: "0 0 8px rgba(255,255,255,0.9)" }}
               animate={{ opacity: [0.15, 1, 0.15] }}
               transition={{ duration: 2.4, repeat: Infinity, delay: i * 0.18 }}

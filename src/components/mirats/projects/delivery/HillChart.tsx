@@ -77,7 +77,7 @@ export function HillChart({ project_id }: { project_id: string }) {
 
   return (
     <div className="space-y-4">
-      <Card className="border-slate-200 overflow-hidden shadow-none">
+      <Card className="border-border overflow-hidden shadow-none">
         <CardHeader className="pb-2 bg-slate-50/50 border-b border-slate-100">
           <CardTitle className="text-sm font-semibold">Tiến độ Uncertainty (Hill Chart)</CardTitle>
           <CardDescription className="text-xs">
@@ -85,7 +85,7 @@ export function HillChart({ project_id }: { project_id: string }) {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="relative aspect-[3/1] w-full bg-white p-6">
+          <div className="relative aspect-[3/1] w-full bg-card p-6">
             <svg
               viewBox="0 0 100 100"
               preserveAspectRatio="none"
@@ -168,7 +168,7 @@ export function HillChart({ project_id }: { project_id: string }) {
               "flex items-center justify-between p-2 rounded-lg border text-sm transition",
               selectedMarker === m.id
                 ? "border-indigo-200 bg-indigo-50/50"
-                : "border-slate-100 hover:border-slate-200",
+                : "border-slate-100 hover:border-border",
             )}
             onClick={() => setSelectedMarker(m.id)}
           >

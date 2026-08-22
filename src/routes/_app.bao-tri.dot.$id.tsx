@@ -344,7 +344,7 @@ function DotDetailPage() {
                     ? "border-amber-300 bg-amber-50"
                     : a.muc_do === "hoan_tat"
                       ? "border-emerald-300 bg-emerald-50"
-                      : "border-slate-200 bg-white";
+                      : "border-border bg-card";
               const label =
                 a.muc_do === "qua_han"
                   ? "Quá hạn"

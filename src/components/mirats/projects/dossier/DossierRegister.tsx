@@ -115,7 +115,7 @@ export function DossierRegister({ project_id }: { project_id: string }) {
             {docs.map((doc) => (
               <TableRow key={doc.id} className="hover:bg-slate-50/50 transition-colors">
                 <TableCell>
-                  <div className="font-medium text-slate-900">{doc.title}</div>
+                  <div className="font-medium text-foreground">{doc.title}</div>
                   <div className="text-[11px] text-slate-500 line-clamp-1">{doc.abstract}</div>
                 </TableCell>
                 <TableCell className="text-xs text-slate-600">
@@ -168,7 +168,7 @@ export function DossierRegister({ project_id }: { project_id: string }) {
           </TableBody>
         </Table>
       </div>
-      <Blockquote className="mt-4 border-slate-200 bg-slate-50/50 text-slate-600">
+      <Blockquote className="mt-4 border-border bg-slate-50/50 text-slate-600">
         <div className="flex gap-2">
           <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
           <div className="text-[11px] leading-relaxed italic">

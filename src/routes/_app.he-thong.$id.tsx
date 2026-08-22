@@ -1828,7 +1828,7 @@ function GpktDetailSheet({
                 <iframe
                   src={`${url}#toolbar=1&view=FitH`}
                   title={fileName}
-                  className="h-full w-full border-0 bg-white"
+                  className="h-full w-full border-0 bg-card"
                 />
                 {canDownload && (
                   <a

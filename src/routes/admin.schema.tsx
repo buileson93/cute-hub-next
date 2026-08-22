@@ -258,13 +258,13 @@ const GROUP_COLOR: Record<string, { bg: string; border: string; text: string; do
   "Hệ thống": {
     bg: "bg-slate-50",
     border: "border-slate-300",
-    text: "text-slate-900",
+    text: "text-foreground",
     dot: "bg-slate-500",
   },
   Khác: {
     bg: "bg-slate-50",
     border: "border-slate-300",
-    text: "text-slate-900",
+    text: "text-foreground",
     dot: "bg-slate-400",
   },
 };
@@ -542,7 +542,7 @@ function SchemaWorkspace() {
               {Object.entries(GROUP_COLOR).map(([g, c]) => (
                 <span
                   key={g}
-                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white border"
+                  className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-card border"
                 >
                   <span className={cn("h-2 w-2 rounded-full", c.dot)} /> {g}
                 </span>
@@ -638,7 +638,7 @@ function TableGraphNode({ data, selected }: NodeProps) {
   return (
     <div
       className={cn(
-        "rounded-lg border-2 bg-white shadow-sm overflow-hidden transition-shadow",
+        "rounded-lg border-2 bg-card shadow-sm overflow-hidden transition-shadow",
         d.colorBorder,
         selected && "ring-2 ring-indigo-400",
       )}
@@ -920,7 +920,7 @@ function TableNode({
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
-      <div className={cn("rounded-md border bg-white", open && "shadow-sm")}>
+      <div className={cn("rounded-md border bg-card", open && "shadow-sm")}>
         <div className="flex items-center gap-2 p-2 sm:p-3">
           <CollapsibleTrigger asChild>
             <button className="flex items-center gap-2 flex-1 min-w-0 text-left">
