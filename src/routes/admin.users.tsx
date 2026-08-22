@@ -445,6 +445,10 @@ function UserForm({
       toast.error("Nhập email và mật khẩu");
       return;
     }
+    if (mode === "create" && password.length < 8) {
+      toast.error("Mật khẩu phải có ít nhất 8 ký tự");
+      return;
+    }
     if (!hoTen.trim()) {
       toast.error("Nhập họ tên");
       return;
