@@ -546,33 +546,6 @@ function HeThongCayPage() {
                   aria-label="Chỉnh sửa cây sơ đồ"
                   variant={editMode ? "default" : "outline"}
                   className={cn("h-8 w-8 transition-all shadow-none")}
-        breadcrumbs={[{ label: "Hệ thống", to: "/he-thong/cay" }, { label: "Cấu trúc & Sơ đồ" }]}
-        description="Quản lý phân cấp kỹ thuật và sơ đồ tổng thể hệ thống tài sản."
-        actions={
-          <div className="flex items-center gap-2">
-            <NodeSearch
-              containerClassName="h-8"
-              items={searchItems}
-              onPick={(it) => {
-                setSearchQuery(it.label);
-                if (it.kind === "ht" || it.kind === "tb" || it.kind === "nh" || it.kind === "pl") {
-                  setDisplay("mindmap");
-                  nav({
-                    to: "/he-thong/cay",
-                    search: (prev: any) => ({ ...prev, view: "mindmap" }),
-                    replace: true,
-                  });
-                }
-                setFocus({ ...it, nonce: Math.random() });
-              }}
-            />
-            {canManage && (
-              <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chế độ chỉnh sửa cây"}>
-                <Button
-                  size="icon"
-                  aria-label="Chỉnh sửa cây sơ đồ"
-                  variant={editMode ? "default" : "outline"}
-                  className={cn("h-8 w-8 transition-all shadow-none")}
                   onClick={() => setEditMode(!editMode)}
                 >
                   {editMode ? (
