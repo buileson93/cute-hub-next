@@ -269,13 +269,16 @@ export function TreeView({
             >
               <History className="h-4 w-4" />
             </button>
-            <button
-              onClick={() => onOpenEditor("ht", ht.ma)}
-              className="rounded p-1 hover:bg-muted"
-              title="Thông tin"
-            >
-              <Eye className="h-4 w-4" />
-            </button>
+            {canManageNodes && (
+              <button
+                onClick={() => onOpenEditor("ht", ht.ma)}
+                className="rounded p-1 hover:bg-muted"
+                title="Thông tin"
+              >
+                <Eye className="h-4 w-4" />
+              </button>
+            )}
+
           </div>
         </div>
 
