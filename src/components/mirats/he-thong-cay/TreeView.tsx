@@ -147,8 +147,6 @@ export function TreeView({
           <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
             <TruncatedNodeLabel label={tbLabel(d.tb)} code={d.tb.ma_thiet_bi} />
             {chips.map((c, i) => (
-
-            {chips.map((c, i) => (
               <Badge
                 key={i}
                 variant="outline"
@@ -159,6 +157,7 @@ export function TreeView({
               </Badge>
             ))}
           </div>
+
 
           <div className="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100">
             {canManageNodes && (
