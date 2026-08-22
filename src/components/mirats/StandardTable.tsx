@@ -1286,7 +1286,7 @@ export function StandardTableInner<T>({
       ) : (
         <div
           className={cn(
-            "relative min-h-0 border rounded-xl shadow-none bg-background astryx-table-container flex flex-col h-full",
+            "relative min-h-0 border rounded-md shadow-none bg-background astryx-table-container flex flex-col h-full",
             className,
           )}
         >

@@ -173,7 +173,7 @@ export function DataTableCore<T>({
     <div
       ref={containerRef}
       className={cn(
-        "relative overflow-auto mirats-scroll rounded-xl bg-card mirats-data-table-core h-full",
+        "relative overflow-auto mirats-scroll rounded-md bg-card mirats-data-table-core h-full",
         className,
       )}
     >
