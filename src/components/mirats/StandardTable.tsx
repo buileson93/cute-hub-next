@@ -136,6 +136,7 @@ interface StandardTableProps<T> {
     hasNextPage?: boolean;
     isFetchingNextPage?: boolean;
     fetchNextPage: () => void;
+    totalCount?: number;
   };
   prefKey?: string;
   gated?: boolean;
@@ -462,7 +463,7 @@ export function StandardTable<T>({
       );
     }
 
-    return null;
+    return <div className="hidden" />;
   };
 
   const isMobile = isClient && window.innerWidth < BP_PX.md;
@@ -549,7 +550,9 @@ export function StandardTable<T>({
 
       {isMobile ? (
         <div className="space-y-3">
-          {renderGlobalState() !== null ? renderGlobalState() : (
+          {fullDisplay.length === 0 ? (
+            renderGlobalState()
+          ) : (
             display.map((r, idx) => {
               const rid = getRowIdInternal(r);
               return (
@@ -597,7 +600,7 @@ export function StandardTable<T>({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {renderGlobalState() !== null ? (
+              {fullDisplay.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="p-0 border-0">
                     {renderGlobalState()}
