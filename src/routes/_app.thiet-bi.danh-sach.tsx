@@ -19,7 +19,11 @@ export const Route = createFileRoute("/_app/thiet-bi/danh-sach")({
 });
 
 function ThietBiListPage() {
-  const { data: taxo, isLoading, error } = useDbTaxonomy();
+  const { data: taxo, isLoading: taxoLoading, error } = useDbTaxonomy();
+  const [page, setPage] = useState(0);
+  const { data: pagedData, isLoading: pagedLoading } = useThietBiList(page, 100);
+  const isLoading = taxoLoading || pagedLoading;
+
 
   const columns = useMemo<DataTableColumn<any>[]>(
     () => [
