@@ -192,7 +192,7 @@ export function DataTableCore<T>({
           <TableRow className="bg-transparent border-b-0 border-t-0 astryx-table-row hover:bg-transparent">
             {selectable && (
               <TableHead 
-                style={{ width: 40, minWidth: 40 }}
+                style={{ width: 40, minWidth: 40, flex: '0 0 40px' }}
                 className="w-10 px-3 text-center sticky left-0 z-50 bg-inherit astryx-table-header-cell"
               />
             )}
