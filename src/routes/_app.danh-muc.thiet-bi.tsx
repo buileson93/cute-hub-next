@@ -452,17 +452,17 @@ function DanhMucThietBiPage() {
   // Danh mục lọc nhanh (chủng loại / trạng thái) từ dữ liệu hiện có.
   const loaiOptions = useMemo(
     () =>
-      Array.from(new Set((taxo?.devices ?? []).map((d) => d._loaiTbTen).filter(Boolean))).sort(
+      Array.from(new Set((pagedData?.rows ?? []).map((d) => d._loaiTbTen).filter(Boolean))).sort(
         (a, b) => a.localeCompare(b, "vi"),
       ),
-    [taxo],
+    [pagedData],
   );
   const ttOptions = useMemo(
     () =>
-      Array.from(new Set((taxo?.devices ?? []).map((d) => d.trang_thai).filter(Boolean))).sort(
+      Array.from(new Set((pagedData?.rows ?? []).map((d) => d.trang_thai).filter(Boolean))).sort(
         (a, b) => a.localeCompare(b, "vi"),
       ),
-    [taxo],
+    [pagedData],
   );
 
   const { data: tuongThichRows } = useQuery({
