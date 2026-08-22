@@ -341,6 +341,7 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
       reset,
       isHidden,
       setPreset,
+      resetAllWidths,
     }),
     [
       order,
