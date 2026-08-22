@@ -1268,22 +1268,26 @@ export function StandardTableInner<T>({
             })}
         </div>
       ) : (
-        <Card
-          ref={parentRef}
+        <div
           className={cn(
-            "relative min-h-0 overflow-auto border shadow-none bg-background mirats-scroll astryx-table-container max-w-full overflow-x-auto h-full",
+            "relative min-h-0 border rounded-xl shadow-none bg-background astryx-table-container flex flex-col h-full",
             className,
           )}
         >
-          <Table
-            className={cn(
-              "caption-bottom min-w-full astryx-table",
-              density === "compact" && "text-[12px]",
-              density === "comfortable" && "text-[13px]",
-              density === "spacious" && "text-[14px]",
-              prefs.layoutMode === "auto" ? "w-max table-auto" : "w-full table-fixed",
-            )}
+          <div
+            ref={parentRef}
+            className="flex-1 overflow-auto mirats-scroll w-full"
           >
+            <Table
+              className={cn(
+                "caption-bottom min-w-full astryx-table",
+                density === "compact" && "text-[12px]",
+                density === "comfortable" && "text-[13px]",
+                density === "spacious" && "text-[14px]",
+                prefs.layoutMode === "auto" ? "w-max table-auto" : "w-full table-fixed",
+              )}
+            >
+
             <colgroup>
               {viewMode === "tablet" && <col style={{ width: 40, minWidth: 40 }} />}
               {selectable && <col style={{ width: 40, minWidth: 40 }} />}
@@ -1707,8 +1711,10 @@ export function StandardTableInner<T>({
                 </>
               )}
             </TableBody>
-          </Table>
-        </Card>
+            </Table>
+          </div>
+        </div>
+
       )}
     </div>
   );
