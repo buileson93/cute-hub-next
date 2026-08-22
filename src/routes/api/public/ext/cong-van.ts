@@ -91,16 +91,17 @@ export const Route = createFileRoute("/api/public/ext/cong-van")({
           const data = extCongVanSchema.parse(body);
 
           // Hard Project Check & Privacy: Verify user has access to this project
-          // Return 404 instead of 403 if project doesn't exist or no access to prevent enumeration
+          // Requirement 3: Check actor membership before service-role write
           const { data: projectAccess } = await supabaseAdmin
-            .from("du_an")
-            .select("id")
-            .eq("id", data.project_id)
-            .maybeSingle();
+            .from("du_an_thanh_vien" as any)
+            .select("du_an_id")
+            .eq("du_an_id", data.project_id)
+            .eq("user_id", user_id)
+            .single();
 
           if (!projectAccess) {
-            return new Response(JSON.stringify({ error: "Project not found" }), {
-              status: 404,
+            return new Response(JSON.stringify({ error: "Project not found or access denied" }), {
+              status: 404, // Return 404 to prevent project enumeration
               headers: { ...corsHeaders, "Content-Type": "application/json" },
             });
           }
