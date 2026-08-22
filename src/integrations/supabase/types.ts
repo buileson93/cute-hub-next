@@ -10759,6 +10759,15 @@ export type Database = {
         Args: { p_drop_id: string; p_entity: string }
         Returns: Json
       }
+      update_user_full: {
+        Args: {
+          new_don_vi: string
+          new_ho_ten: string
+          new_roles: Database["public"]["Enums"]["app_role"][]
+          target_uid: string
+        }
+        Returns: undefined
+      }
       user_can: {
         Args: { _action: string; _module: string; _user_id: string }
         Returns: boolean

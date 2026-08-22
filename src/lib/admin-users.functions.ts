@@ -47,13 +47,28 @@ export const listUsers = createServerFn({ method: "GET" })
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
-    const [{ data: profiles }, { data: roles }, { data: authList }] = await Promise.all([
+    // Fetch full list from Auth Admin (handling pagination if needed, though listUsers perPage=1000 is usually enough for most projects)
+    // For extreme case, we loop.
+    let allAuthUsers: any[] = [];
+    let page = 1;
+    let hasMore = true;
+    while (hasMore) {
+      const { data: authList, error: authListErr } = await supabaseAdmin.auth.admin.listUsers({ 
+        page, 
+        perPage: 1000 
+      });
+      if (authListErr) throw authListErr;
+      allAuthUsers = [...allAuthUsers, ...authList.users];
+      hasMore = authList.users.length === 1000;
+      page++;
+    }
+
+    const [{ data: profiles }, { data: roles }] = await Promise.all([
       supabaseAdmin
         .from("profiles")
         .select("id,email,ho_ten,don_vi,active,created_at")
         .order("created_at", { ascending: false }),
       supabaseAdmin.from("user_roles").select("user_id, role"),
-      supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 200 }),
     ]);
 
     const rolesByUser = new Map<string, string[]>();
@@ -62,16 +77,22 @@ export const listUsers = createServerFn({ method: "GET" })
       list.push(r.role);
       rolesByUser.set(r.user_id, list);
     }
-    const banByUser = new Map<string, string | null>();
-    for (const u of authList?.users ?? []) {
-      banByUser.set(u.id, (u as any).banned_until ?? null);
+    
+    const authDataByUser = new Map<string, { banned_until: string | null }>();
+    for (const u of allAuthUsers) {
+      authDataByUser.set(u.id, {
+        banned_until: (u as any).banned_until ?? null,
+      });
     }
 
-    return (profiles ?? []).map((p) => ({
-      ...p,
-      roles: rolesByUser.get(p.id) ?? [],
-      banned_until: banByUser.get(p.id) ?? null,
-    }));
+    return (profiles ?? []).map((p) => {
+      const auth = authDataByUser.get(p.id);
+      return {
+        ...p,
+        roles: rolesByUser.get(p.id) ?? [],
+        banned_until: auth?.banned_until ?? null,
+      };
+    });
   });
 
 // ==================== CREATE USER ====================
@@ -81,7 +102,7 @@ export const createUser = createServerFn({ method: "POST" })
     z
       .object({
         email: z.string().trim().email().max(255),
-        password: z.string().min(6).max(72),
+        password: z.string().min(8).max(72),
         ho_ten: z.string().trim().min(1).max(100),
         don_vi: z.enum(DON_VI).nullable(),
         roles: z.array(z.enum(ROLES)).min(1),
@@ -92,6 +113,7 @@ export const createUser = createServerFn({ method: "POST" })
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
+    // Phase 1: Create Auth User
     const { data: created, error: authErr } = await supabaseAdmin.auth.admin.createUser({
       email: data.email,
       password: data.password,
@@ -104,29 +126,33 @@ export const createUser = createServerFn({ method: "POST" })
     if (authErr || !created.user) throw new Error(authErr?.message ?? "Không tạo được user");
     const uid = created.user.id;
 
-    // profile được tạo bởi trigger. Cập nhật thêm ho_ten & don_vi.
-    await supabaseAdmin
-      .from("profiles")
-      .update({
-        ho_ten: data.ho_ten,
-        don_vi: data.don_vi,
-      })
-      .eq("id", uid);
+    try {
+      // Phase 2: Update Profile and Roles via transactional RPC
+      const { error: rpcErr } = await supabaseAdmin.rpc("update_user_full", {
+        target_uid: uid,
+        new_ho_ten: data.ho_ten,
+        new_don_vi: data.don_vi || "",
+        new_roles: data.roles,
+      });
 
-    // insert roles
-    await supabaseAdmin
-      .from("user_roles")
-      .insert(data.roles.map((role) => ({ user_id: uid, role })));
+      if (rpcErr) throw rpcErr;
 
-    await supabaseAdmin.from("audit_log").insert({
-      user_id: context.userId,
-      action: "create_user",
-      entity: "user",
-      entity_id: uid,
-      detail: { email: data.email, roles: data.roles, don_vi: data.don_vi },
-    });
+      // Phase 3: Audit Log
+      await supabaseAdmin.from("audit_log").insert({
+        user_id: context.userId,
+        action: "create_user",
+        entity: "user",
+        entity_id: uid,
+        detail: { email: data.email, roles: data.roles, don_vi: data.don_vi },
+      });
 
-    return { id: uid };
+      return { id: uid };
+    } catch (err: any) {
+      // SAGA/COMPENSATION: Cleanup auth user on DB failure
+      console.error("Partial failure in createUser, cleaning up auth user:", uid, err);
+      await supabaseAdmin.auth.admin.deleteUser(uid);
+      throw new Error(`Lỗi khởi tạo dữ liệu: ${err.message || "Unknown error"}`);
+    }
   });
 
 // ==================== UPDATE USER ====================
@@ -146,18 +172,15 @@ export const updateUser = createServerFn({ method: "POST" })
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
-    await supabaseAdmin
-      .from("profiles")
-      .update({
-        ho_ten: data.ho_ten,
-        don_vi: data.don_vi,
-      })
-      .eq("id", data.user_id);
+    // Atomic update via RPC
+    const { error: rpcErr } = await supabaseAdmin.rpc("update_user_full", {
+      target_uid: data.user_id,
+      new_ho_ten: data.ho_ten,
+      new_don_vi: data.don_vi || "",
+      new_roles: data.roles,
+    });
 
-    await supabaseAdmin.from("user_roles").delete().eq("user_id", data.user_id);
-    await supabaseAdmin
-      .from("user_roles")
-      .insert(data.roles.map((role) => ({ user_id: data.user_id, role })));
+    if (rpcErr) throw rpcErr;
 
     await supabaseAdmin.from("audit_log").insert({
       user_id: context.userId,
@@ -208,7 +231,7 @@ export const resetUserPassword = createServerFn({ method: "POST" })
     z
       .object({
         user_id: z.string().uuid(),
-        password: z.string().min(6).max(72),
+        password: z.string().min(8).max(72),
       })
       .parse(input),
   )

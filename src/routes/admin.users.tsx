@@ -11,6 +11,8 @@ import {
   ShieldAlert,
   Loader2,
   ArrowLeft,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { AppShell } from "@/components/mirats/app-shell/AppShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -340,8 +342,17 @@ function AdminUsers() {
                     <Button
                       size="sm"
                       variant={u.active ? "outline" : "default"}
-                      onClick={() => toggleM.mutate({ user_id: u.id, active: !u.active })}
+                      onClick={() => {
+                        if (u.active) {
+                          if (confirm(`Bạn có chắc muốn khoá tài khoản ${u.email}?`)) {
+                            toggleM.mutate({ user_id: u.id, active: false });
+                          }
+                        } else {
+                          toggleM.mutate({ user_id: u.id, active: true });
+                        }
+                      }}
                       disabled={toggleM.isPending}
+                      aria-label={u.active ? "Khoá tài khoản" : "Mở khoá tài khoản"}
                     >
                       {u.active ? (
                         <Lock className="h-3.5 w-3.5" />
@@ -377,14 +388,24 @@ function AdminUsers() {
             don_vi: (editing.don_vi as string | null) ?? null,
             roles: (editing.roles as AppRole[]) ?? [],
           }}
-          onSubmit={(v) =>
+          onSubmit={(v) => {
+            const willRemoveAdmin =
+              editing.roles.includes("admin") && !v.roles.includes("admin");
+            if (
+              willRemoveAdmin &&
+              !confirm(
+                "Bạn đang tước quyền Admin của người dùng này. Hành động này có thể gây mất quyền quản trị nếu đây là Admin cuối cùng. Tiếp tục?"
+              )
+            ) {
+              return;
+            }
             updateM.mutate({
               user_id: editing.id,
               ho_ten: v.ho_ten,
               don_vi: v.don_vi,
               roles: v.roles,
-            })
-          }
+            });
+          }}
           mode="edit"
         />
       )}
@@ -425,6 +446,7 @@ function UserForm({
 }) {
   const [email, setEmail] = useState(initial?.email ?? "");
   const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [hoTen, setHoTen] = useState(initial?.ho_ten ?? "");
   const [donVi, setDonVi] = useState<string | null>(initial?.don_vi ?? null);
   const [roles, setRoles] = useState<AppRole[]>(initial?.roles ?? ["ktv"]);
@@ -442,6 +464,10 @@ function UserForm({
   function submit() {
     if (mode === "create" && (!email || !password)) {
       toast.error("Nhập email và mật khẩu");
+      return;
+    }
+    if (mode === "create" && password.length < 8) {
+      toast.error("Mật khẩu phải có ít nhất 8 ký tự");
       return;
     }
     if (!hoTen.trim()) {
@@ -479,12 +505,29 @@ function UserForm({
           {mode === "create" && (
             <div className="space-y-1.5">
               <Label>Mật khẩu ban đầu</Label>
-              <Input
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                type="text"
-                placeholder="Ít nhất 6 ký tự"
-              />
+              <div className="relative">
+                <Input
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  type={showPw ? "text" : "password"}
+                  placeholder="Ít nhất 8 ký tự"
+                  className="pr-10"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowPw(!showPw)}
+                  aria-label={showPw ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+                >
+                  {showPw ? (
+                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </Button>
+              </div>
             </div>
           )}
           <div className="space-y-1.5">
@@ -560,6 +603,7 @@ function ResetPwDialog({
   submitting: boolean;
 }) {
   const [pw, setPw] = useState("");
+  const [showPw, setShowPw] = useState(false);
   return (
     <Dialog open onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-sm">
@@ -571,12 +615,29 @@ function ResetPwDialog({
         </DialogHeader>
         <div className="space-y-1.5">
           <Label>Mật khẩu mới</Label>
-          <Input
-            value={pw}
-            onChange={(e) => setPw(e.target.value)}
-            type="text"
-            placeholder="Ít nhất 6 ký tự"
-          />
+          <div className="relative">
+            <Input
+              value={pw}
+              onChange={(e) => setPw(e.target.value)}
+              type={showPw ? "text" : "password"}
+              placeholder="Ít nhất 8 ký tự"
+              className="pr-10"
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+              onClick={() => setShowPw(!showPw)}
+              aria-label={showPw ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+            >
+              {showPw ? (
+                <EyeOff className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <Eye className="h-4 w-4 text-muted-foreground" />
+              )}
+            </Button>
+          </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
@@ -584,8 +645,8 @@ function ResetPwDialog({
           </Button>
           <Button
             onClick={() => {
-              if (pw.length < 6) {
-                toast.error("Ít nhất 6 ký tự");
+              if (pw.length < 8) {
+                toast.error("Ít nhất 8 ký tự");
                 return;
               }
               onSubmit(pw);
