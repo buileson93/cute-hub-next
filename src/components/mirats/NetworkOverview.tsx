@@ -271,7 +271,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
       })
       .subscribe();
     return () => {
-      supabase.removeChannel(ch);
+      if (ch) supabase.removeChannel(ch);
     };
   }, [qc]);
 
