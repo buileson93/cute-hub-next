@@ -50,9 +50,10 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
     <tr
       ref={ref}
       className={cn(
-        "transition-colors hover:bg-muted/30 data-[state=selected]:bg-primary/5 active:scale-[0.998] astryx-table-row",
+        "transition-mirats-fast astryx-table-row",
         className,
       )}
+
       {...props}
     />
   ),

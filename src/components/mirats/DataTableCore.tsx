@@ -181,7 +181,7 @@ export function DataTableCore<T>({
         className={cn(tableClasses, "mirats-data-table-core-element whitespace-nowrap min-w-full table-fixed block")}
       >
         <TableHeader className="sticky top-0 z-40 block">
-          <TableRow className="hover:bg-transparent border-b-0 border-t-0 flex astryx-table-row">
+          <TableRow className="bg-muted border-b-0 border-t-0 flex astryx-table-row hover:bg-muted">
             {selectable && (
               <TableHead 
                 style={{ flex: '0 0 40px', width: 40 }}
@@ -233,10 +233,11 @@ export function DataTableCore<T>({
                   data-index={virtualRow.index}
                   ref={(el) => rowVirtualizer.measureElement(el)}
                   className={cn(
-                    "group transition-mirats-fast hover:bg-muted/50 absolute top-0 left-0 w-full flex astryx-table-row items-center",
+                    "group flex astryx-table-row items-center",
                     onRowClick && "cursor-pointer",
-                    isSelected && "bg-primary/5",
+                    isSelected && "selected",
                   )}
+
                   style={{
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
@@ -245,7 +246,8 @@ export function DataTableCore<T>({
                   {selectable && (
                     <MemoizedTableCell
                       style={{ flex: '0 0 40px', width: 40 }}
-                       className="w-10 px-2 text-center sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-l border-b border-r border-border/20 astryx-table-cell"
+                       className="w-10 px-2 text-center sticky left-0 z-20 bg-inherit border-l border-b border-r border-border/20 astryx-table-cell"
+
                       onClick={(e) => {
                         e.stopPropagation();
                         onSelect?.(id);
@@ -266,12 +268,14 @@ export function DataTableCore<T>({
                         "astryx-table-cell",
                         col.cellClassName,
                         col.sticky &&
-                          "sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-r border-border/20",
+                          "sticky left-0 z-20 bg-inherit border-r border-border/20",
+
                         selectable && col.sticky && "left-10",
                         col.align === "center" && "text-center",
                         col.align === "right" && "text-right tabular-nums",
                         col.type === "actions" &&
-                          "sticky right-0 z-20 bg-card/80 backdrop-blur-[2px] border-l border-border/20",
+                          "sticky right-0 z-20 bg-inherit border-l border-border/20",
+
                       )}
                     >
                       {renderCellContent(col, row)}
@@ -289,16 +293,17 @@ export function DataTableCore<T>({
                 <MemoizedTableRow
                   key={id || `row-${rows.indexOf(row)}`}
                   className={cn(
-                    "group transition-mirats-fast hover:bg-muted/50 flex",
+                    "group flex astryx-table-row",
                     onRowClick && "cursor-pointer",
-                    isSelected && "bg-primary/5",
+                    isSelected && "selected",
                   )}
+
                   onClick={() => onRowClick?.(row)}
                 >
                   {selectable && (
                     <MemoizedTableCell
                       style={{ flex: '0 0 40px', width: 40 }}
-                      className="w-10 px-2 text-center sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-l border-b border-r border-border/20 astryx-table-cell"
+                      className="w-10 px-2 text-center sticky left-0 z-20 bg-inherit border-l border-b border-r border-border/20 astryx-table-cell"
                       onClick={(e) => {
                         e.stopPropagation();
                         onSelect?.(id);
@@ -319,12 +324,12 @@ export function DataTableCore<T>({
                         "astryx-table-cell",
                         col.cellClassName,
                         col.sticky &&
-                          "sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-r border-border/20",
+                          "sticky left-0 z-20 bg-inherit border-r border-border/20",
                         selectable && col.sticky && "left-10",
                         col.align === "center" && "text-center",
                         col.align === "right" && "text-right tabular-nums",
                         col.type === "actions" &&
-                          "sticky right-0 z-20 bg-card/80 backdrop-blur-[2px] border-l border-border/20",
+                          "sticky right-0 z-20 bg-inherit border-l border-border/20",
                       )}
                     >
                       {renderCellContent(col, row)}

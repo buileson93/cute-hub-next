@@ -44,8 +44,89 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label="sửa lại IMPLEMENTATION MODE — TAXONOMY LABEL REGRESSION ONLY.\n\nDùng systematic-debugging. Không sửa CSS bảng trong prompt này.\n\nPhạm vi chính:\n\n- src/routes/_app.he-thong.cay.tsx\n\n- src/components/mirats/he-thong-cay/CayMindMap.tsx\n\n- src/components/mirats/he-thong-cay/utils.ts\n\n- src/lib/mirats/db-taxonomy.ts\n\n- tests taxonomy/tree/mindmap hiện có.\n\nHiện tượng: các node trong “CÂY PHÂN CẤP / SƠ ĐỒ TỔNG THỂ” hiển thị UUID hoặc mã nghiệp vụ thay vì tên người dùng đọc được.\n\nGiả thuyết đã có bằng chứng source:\n\n- device query gán `_nhKey = nhom_he_thong_id` và `_htId = he_thong_id` — đây thường là UUID;\n\n- realSystems dùng `nhom.ma` và `h.ma` — đây là mã nghiệp vụ;\n\n- buildTree trộn các khóa này trong cùng Set/Map;\n\n- useNhMind/useHtMind fallback trả raw key khi lookup không khớp.\n\nCác bước bắt buộc:\n\n1. Viết characterization test RED với fixture có đầy đủ:\n\n- phân loại `{id, ma, ten}`;\n\n- nhóm `{id UUID, ma, ten}`;\n\n- hệ thống `{id UUID, ma, ten}`;\n\n- thiết bị tham chiếu bằng UUID;\n\n- override tham chiếu bằng mã/composite key.\n\nTest phải dựng cả tree view và mindmap node data rồi chứng minh label hiện tại rơi về UUID/mã.\n\n2. Log có kiểm soát trong DEV hoặc dùng unit fixture để xác định chính xác namespace tại từng tầng; không log dữ liệu nhạy cảm ở production.\n\n3. Tạo resolver thuần, typed, một nguồn sự thật:\n\n- resolvePhanLoai(ref);\n\n- resolveNhom(ref);\n\n- resolveHeThong(ref/compositeRef);\n\n- resolveThietBi(device).\n\nMỗi resolver index theo cả `id` và `ma`, trả `{id, ma, label}`; không đoán bằng format UUID nếu có thể dùng map.\n\n4. Chuẩn hóa tree model trước `buildTree`: dùng canonical ID để quan hệ, dùng `label` để hiển thị, giữ `ma` riêng cho CodeBadge/search/export.\n\n5. Không gọi `htLabel(ma)` hai lần qua composite key đã biến đổi. Tránh tạo duplicate node cho cùng entity do một nhánh dùng UUID, nhánh khác dùng mã.\n\n6. UI node luôn hiển thị `label`; mã chỉ ở CodeBadge/tooltip/detail phụ. Sửa TruncatedNodeLabel để tooltip thật sự render cả tên và mã khi có `code` — biến `content` hiện được tạo nhưng không được dùng.\n\n7. Nếu danh mục thiếu tên thật:\n\n- hiển thị “Chưa có tên” + mã ở secondary text;\n\n- ghi diagnostic có entity kind/ref;\n\n- không dùng UUID làm primary label.\n\n8. Kiểm tra rename, search focus, expand/collapse, move, export CSV và NodeEditor vẫn dùng đúng canonical ID.\n\n9. Test các trường hợp orphan reference, deleted catalog, NONE_HT, HT_KHAC và override draft.\n\nKẾT QUẢ CẦN ĐẠT SAU PROMPT 10L\n\n- Cây phân cấp và mindmap hiển thị tên tiếng Việt ở mọi tầng có dữ liệu tên.\n\n- UUID không xuất hiện như primary label.\n\n- Mã nghiệp vụ chỉ xuất hiện ở tooltip/CodeBadge/secondary metadata.\n\n- Không còn node trùng do cùng entity được tham chiếu bằng UUID và mã.\n\n- Rename một node cập nhật nhất quán tree, table và mindmap sau invalidate.\n\n- Characterization, resolver, tree, mindmap và rename regression tests GREEN.\n\n- Có screenshot ở 1440px chứng minh tên đọc được và tooltip tên+mã đúng.\n\nCommit:\n\n- test(taxonomy): reproduce mindmap label fallback\n\n- fix(taxonomy): normalize entity references and labels"
+          aria-label={`IMPLEMENTATION MODE — TABLE COLOR STATES ONLY.
 
+Không sửa data loading, virtualization hoặc horizontal scroll trong prompt này.
+
+Phạm vi:
+
+- src/styles.css
+
+- src/styles/astryx-component-skins.css
+
+- src/components/ui/table.tsx
+
+- StandardTable/DataTableCore/RawTableWrapper chỉ khi cần bỏ class trùng.
+
+Nguyên nhân đã xác nhận:
+
+- [data-astryx-theme="df3"] --color-accent light = #262626;
+
+- .astryx-table-row:hover dùng var(--color-accent) !important;
+
+- rule này thắng hover muted/primary tint của component và làm row gần đen.
+
+Các bước:
+
+1. Viết visual/DOM test RED cho light và dark:
+
+- default;
+
+- hover;
+
+- selected;
+
+- selected + hover;
+
+- keyboard focus;
+
+- expanded;
+
+- disabled/non-clickable.
+
+2. Không dùng semantic --color-accent của Astryx làm nền row. Tạo token table riêng, ví dụ:
+
+- --table-row-hover;
+
+- --table-row-selected;
+
+- --table-row-selected-hover;
+
+- --table-row-focus-ring.
+
+Các token phải map tới muted/primary tint phù hợp light/dark.
+
+3. Xóa !important khỏi hover row. Chỉ một layer sở hữu row background; không định nghĩa cùng state ở styles.css, skin và component.
+
+4. Đảm bảo text/cell/badge/link/icon giữ contrast tối thiểu WCAG AA ở hover và selected.
+
+5. Sticky cells dùng cùng background state với row; không tạo mảng màu trắng/đen tách khỏi row.
+
+6. Row không clickable không dùng cursor pointer hoặc active scale. Clickable row có focus-visible rõ nhưng không đổi layout.
+
+7. Hover chỉ là enhancement; selected không phụ thuộc hover để nhận biết.
+
+8. Kiểm tra raw table, StandardTable và DataTableCore để không có implementation nào quay lại nền đen.
+
+KẾT QUẢ CẦN ĐẠT SAU PROMPT 10M
+
+- Light mode hover là tint nhẹ, chữ vẫn tối và dễ đọc; không còn nền đen.
+
+- Dark mode hover sáng hơn nền vừa đủ, không lóa và không mất chữ.
+
+- Selected, selected-hover, focus và expanded phân biệt rõ ràng.
+
+- Sticky cells đồng màu với toàn row.
+
+- Không còn .astryx-table-row:hover sử dụng var(--color-accent) !important.
+
+- Contrast tests và visual regression GREEN tại 390/768/1024/1440px.
+
+Commit:
+
+- test(ui): reproduce black table row hover
+
+- fix(ui): define accessible table row states`}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">

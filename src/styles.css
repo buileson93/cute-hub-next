@@ -171,7 +171,14 @@
     --primary-opacity-5: color-mix(in srgb, var(--primary), transparent 95%);
     --primary-opacity-10: color-mix(in srgb, var(--primary), transparent 90%);
     --primary-opacity-20: color-mix(in srgb, var(--primary), transparent 80%);
+
+    /* Table Tokens - Phase 10M */
+    --table-row-hover: oklch(0.58 0.18 250 / 0.08);
+    --table-row-selected: oklch(0.58 0.18 250 / 0.12);
+    --table-row-selected-hover: oklch(0.58 0.18 250 / 0.18);
+    --table-row-focus-ring: var(--primary);
   }
+
 
   .dark {
     /* Astryx Semantic Palette - Dark Mode (OKLCH) */
@@ -210,7 +217,14 @@
     --sidebar: oklch(0.08 0.005 250);
     --sidebar-foreground: oklch(0.9 0.005 250);
     --sidebar-border: oklch(1 0 0 / 0.08);
+
+    /* Table Tokens - Phase 10M */
+    --table-row-hover: oklch(0.65 0.18 250 / 0.15);
+    --table-row-selected: oklch(0.65 0.18 250 / 0.2);
+    --table-row-selected-hover: oklch(0.65 0.18 250 / 0.25);
+    --table-row-focus-ring: var(--primary);
   }
+
 }
 
 @layer base {
@@ -465,10 +479,29 @@
 .astryx-table-row {
   border-bottom: 0 !important;
   background-color: var(--color-background-surface);
+  transition: background-color var(--duration-fast) var(--ease-standard);
+  
   &:hover {
-    background-color: var(--color-accent) !important;
+    background-color: var(--table-row-hover);
+  }
+
+  &[data-state="selected"],
+  &.selected,
+  &.expanded {
+    background-color: var(--table-row-selected);
+    
+    &:hover {
+      background-color: var(--table-row-selected-hover);
+    }
+  }
+
+
+  &:focus-visible {
+    outline: 2px solid var(--table-row-focus-ring);
+    outline-offset: -2px;
   }
 }
+
 
 /* Numeric alignment helper */
 .astryx-table-cell-numeric {
