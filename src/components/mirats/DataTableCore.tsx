@@ -84,8 +84,8 @@ export function DataTableCore<T>({
   );
 
   const estimateRowHeight = useMemo(() => {
-    if (density === "compact") return 28;
-    return 32;
+    if (density === "compact") return 36;
+    return 40;
   }, [density]);
 
   const getScrollElement = useCallback(() => containerRef.current, []);
@@ -187,7 +187,7 @@ export function DataTableCore<T>({
               <TableHead 
                 style={{ width: 40, minWidth: 40 }}
 
-                className="w-10 px-2 text-center sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px] border-l border-t border-b border-r border-border/20 astryx-table-header-cell"
+                className="w-10 px-3 text-center sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px] border-b border-border/20 astryx-table-header-cell"
               >
                 {/* Checkbox "Select All" có thể được thêm ở đây */}
               </TableHead>
@@ -254,7 +254,7 @@ export function DataTableCore<T>({
                     <MemoizedTableCell
                       style={{ width: 40, minWidth: 40 }}
 
-                       className="w-10 px-2 text-center sticky left-0 z-20 bg-inherit border-l border-b border-r border-border/20 astryx-table-cell"
+                       className="w-10 px-3 text-center sticky left-0 z-20 bg-inherit border-b border-border/20 astryx-table-cell"
 
                       onClick={(e) => {
                         e.stopPropagation();

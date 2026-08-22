@@ -39,7 +39,7 @@
 
     /* Spacing & Radius */
     --radius-container: 0.75rem;
-    --radius-element: 0.625rem;
+    --radius-element: 0.375rem; /* 6px for rows/buttons */
 
     /* Motion */
     --duration-fast: 125ms;
@@ -115,8 +115,8 @@
 
 @layer astryx-brand {
   :root {
-    --radius: 0.75rem; /* 12px from DF3 */
-    --radius-control: 0.625rem; /* 10px from DF3 */
+    --radius: 0.75rem; /* 12px for containers */
+    --radius-control: 0.375rem; /* 6px for inputs/rows */
     --border-contrast: 0.08;
 
     /* Astryx Semantic Palette - Light Mode (OKLCH) */
@@ -173,7 +173,7 @@
     --primary-opacity-20: color-mix(in srgb, var(--primary), transparent 80%);
 
     /* Table Tokens - Phase 10M */
-    --table-row-hover: oklch(0.58 0.18 250 / 0.08);
+    --table-row-hover: oklch(0.58 0.18 250 / 0.05);
     --table-row-selected: oklch(0.58 0.18 250 / 0.12);
     --table-row-selected-hover: oklch(0.58 0.18 250 / 0.18);
     --table-row-focus-ring: var(--primary);
@@ -447,33 +447,24 @@
 .astryx-table-header-cell {
   line-height: 1.2;
   font-weight: 700;
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.025em;
   background-color: var(--color-muted);
-  border-top: 1px solid var(--border);
-  border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  &:first-child {
-    border-left: 1px solid var(--border);
-  }
+  height: 40px;
 }
 
 .astryx-table-cell {
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
+  padding-left: 12px;
+  padding-right: 12px;
   font-size: 13px;
   font-weight: 500;
   vertical-align: middle;
   word-break: break-word;
   overflow-wrap: break-word;
-  border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  &:first-child {
-    border-left: 1px solid var(--border);
-  }
+  height: 36px;
 }
 
 .astryx-table-row {
@@ -483,6 +474,7 @@
   
   &:hover {
     background-color: var(--table-row-hover);
+    box-shadow: none !important;
   }
 
   &[data-state="selected"],
