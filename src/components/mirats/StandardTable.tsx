@@ -642,7 +642,7 @@ export function StandardTableInner<T>({
   };
 
   const resetAllWidths = () => {
-    allKeys.forEach((k) => prefs.resetWidth(k));
+    prefs.resetAllWidths();
   };
 
   const renderGlobalState = () => {
