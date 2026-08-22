@@ -2,11 +2,12 @@ import React, { memo } from "react";
 import { TableCell } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
-interface OptimizedCellProps {
+interface OptimizedCellProps extends React.HTMLAttributes<HTMLTableCellElement> {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
   colKey?: string;
+  colSpan?: number;
 }
 
 /**
@@ -17,18 +18,21 @@ export const OptimizedCell = memo(function OptimizedCell({
   children,
   className,
   style,
-  colKey
+  colKey,
+  colSpan,
+  ...props
 }: OptimizedCellProps) {
   return (
     <TableCell
+      {...props}
       data-col={colKey}
+      colSpan={colSpan}
       className={cn(
         "astryx-table-cell transition-colors",
         className
       )}
       style={{
         ...style,
-        // Kích hoạt layer riêng cho cell nếu cần, nhưng thường chỉ nên để ở row
         contain: "content"
       }}
     >
@@ -36,10 +40,11 @@ export const OptimizedCell = memo(function OptimizedCell({
     </TableCell>
   );
 }, (prev, next) => {
-  // Chỉ re-render nếu children (nội dung cell) hoặc các props quan trọng thay đổi
+  // Chỉ re-render nếu các props quan trọng không đổi
   return (
     prev.children === next.children &&
     prev.className === next.className &&
+    prev.colSpan === next.colSpan &&
     JSON.stringify(prev.style) === JSON.stringify(next.style)
   );
 });
