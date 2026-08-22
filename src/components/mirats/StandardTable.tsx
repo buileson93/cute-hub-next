@@ -109,8 +109,22 @@ interface StandardTableProps<T> {
   onSelect?: (ids: Set<string>) => void;
   onRowClick?: (row: T) => void;
   rowClassName?: (row: T) => string;
-  toolbar?: React.ReactNode | ((ctx: any) => React.ReactNode);
-  toolbarRight?: React.ReactNode | ((ctx: any) => React.ReactNode);
+  toolbar?: React.ReactNode | ((ctx: {
+    filteredRows: T[];
+    visibleColumns: ColumnDef<T>[];
+    allColumns: ColumnDef<T>[];
+    pageRows: T[];
+    selectedRows: T[];
+    clear: () => void;
+  }) => React.ReactNode);
+  toolbarRight?: React.ReactNode | ((ctx: {
+    filteredRows: T[];
+    visibleColumns: ColumnDef<T>[];
+    allColumns: ColumnDef<T>[];
+    pageRows: T[];
+    selectedRows: T[];
+    clear: () => void;
+  }) => React.ReactNode);
   emptyContent?: React.ReactNode;
   loadingContent?: React.ReactNode;
   errorContent?: React.ReactNode;
@@ -131,7 +145,14 @@ interface StandardTableProps<T> {
   requireFilterToShow?: boolean;
   setSelected?: (ids: Set<string>) => void;
   countUnit?: string;
-  bulkActions?: React.ReactNode | ((ctx: any) => React.ReactNode);
+  bulkActions?: React.ReactNode | ((ctx: {
+    filteredRows: T[];
+    visibleColumns: ColumnDef<T>[];
+    allColumns: ColumnDef<T>[];
+    pageRows: T[];
+    selectedRows: T[];
+    clear: () => void;
+  }) => React.ReactNode);
   presets?: any[];
   hideReorderToggle?: boolean;
   pagination?: any;
@@ -253,7 +274,14 @@ export function StandardTable<T>({
   }, []);
 
   const renderToolbar = (
-    toolbar: React.ReactNode | ((ctx: any) => React.ReactNode),
+    toolbar: React.ReactNode | ((ctx: {
+      filteredRows: T[];
+      visibleColumns: ColumnDef<T>[];
+      allColumns: ColumnDef<T>[];
+      pageRows: T[];
+      selectedRows: T[];
+      clear: () => void;
+    }) => React.ReactNode),
     ctx: {
       filteredRows: T[];
       visibleColumns: ColumnDef<T>[];
