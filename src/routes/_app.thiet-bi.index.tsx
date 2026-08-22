@@ -84,7 +84,11 @@ interface TreeNode {
 
 function ThietBiPage() {
   const { scopeAll, donViCode } = useScope();
-  const { data: taxo, isLoading, error } = useDbTaxonomy();
+  const { data: taxo, isLoading: taxoLoading, error } = useDbTaxonomy();
+  // TỐI ƯU 10H: Thay thế eager loading devices
+  const { data: pagedData, isLoading: pagedLoading } = useThietBiList(0, 1000);
+  const isLoading = taxoLoading || pagedLoading;
+
   const { data: nameOv } = useSystemNameOverrides();
   const { data: devNameOv } = useDeviceNameOverrides();
   const { ops } = useOperationsData();
