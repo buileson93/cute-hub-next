@@ -15,23 +15,28 @@ Mục tiêu: Chuyển đổi từ mô hình Lean OS sang hệ thống quản lý
     - Triển khai "Hybrid Task Card" trong Kanban: Hiển thị nhãn trạng thái văn bản trực quan (VD: [Chờ ký số], [Thiếu hồ sơ]).
     - Cảnh báo tính pháp lý: Thẻ task đổi màu vàng/đỏ nếu văn bản đính kèm bị từ chối hoặc trễ hạn.
 
-## 3. Chi tiết Công việc & Trình ký (Slide-over UX)
+## 3. Ma trận Hồ sơ theo Giai đoạn (Phase-Gate Dossier View)
+- Màn hình này hiển thị dự án theo dạng các Cột Giai đoạn (Phases), nhưng dưới mỗi cột không chỉ có task mà là Danh mục Hồ sơ bắt buộc:
+    - Giai đoạn 1: Chuẩn bị: [X] Tờ trình chủ trương (Đã ký) | [X] Quyết định phê duyệt (Đã ban hành).
+    - Giai đoạn 2: Triển khai: [!] Báo cáo kỹ thuật (Đang soạn) | [ ] Biên bản kiểm tra.
+- **Quy tắc chặn luồng (Phase Gate)**: Hệ thống không cho phép chuyển dự án sang Giai đoạn 3 nếu các nút hồ sơ bắt buộc của Giai đoạn 2 chưa đạt trạng thái Đã ban hành/Ký số. Đây là tính năng quan trọng nhất để đảm bảo tính pháp lý.
+
+## 4. Chi tiết Công việc & Trình ký (Slide-over UX)
 - Tạo component `src/components/mirats/projects/TaskDetailSlideOver.tsx`:
     - Mở dạng Slide-over từ cạnh phải để không mất ngữ cảnh.
     - Tab 1: Tiến độ & Phối hợp (Checklist, Thảo luận, Time-tracking).
     - Tab 2: Sản phẩm & Trình ký (Live PDF Preview, nút "Trình ký số", Lịch sử luồng duyệt).
 
-## 4. Tự động hóa Luồng việc & Văn bản
-- Triển khai logic "Phase-Gate Dossier": Chặn chuyển giai đoạn dự án nếu danh mục hồ sơ bắt buộc của giai đoạn hiện tại chưa đầy đủ (Đã ban hành/Ký số).
+## 5. Tự động hóa Luồng việc & Văn bản
 - Automation: Khi Lãnh đạo ký số, task tự động chuyển trạng thái "Hoàn thành" và file PDF được lưu vào Kho Hồ sơ.
 
-## 5. Bảng điều khiển Quản trị (Executive Hybrid Dashboard)
+## 6. Bảng điều khiển Quản trị (Executive Hybrid Dashboard)
 - Cập nhật `src/components/mirats/dashboard/grid/DashboardGrid.tsx`:
     - Widget "Độ hoàn thiện Hồ sơ" (Dossier Compliance): Tỷ lệ % bộ hồ sơ pháp lý hợp lệ.
     - Widget "Tiến độ Công việc": % Task hoàn thành vs Trễ hạn.
     - Luồng hoạt động (Activity Stream) tập trung cho các thông báo @mention và thay đổi trạng thái hồ sơ.
 
-## 6. Giao diện & Trải nghiệm Astryx
+## 7. Giao diện & Trải nghiệm Astryx
 - Áp dụng `UI_DENSITY` (thanh cuộn, lề trang) và `LayoutPanel` chuẩn Astryx.
 - Tích hợp Command Palette (Cmd+K) để điều hướng nhanh đến các hồ sơ/công văn cụ thể.
 
