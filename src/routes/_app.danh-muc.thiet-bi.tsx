@@ -253,8 +253,6 @@ function DanhMucThietBiPage() {
   const [exporting, setExporting] = useState(false);
 
   // ---- Bộ lọc lưu trên URL: rời trang & quay lại vẫn giữ đúng lựa chọn ----
-  const sp = Route.useSearch();
-  const navigate = useNavigate({ from: Route.fullPath });
   const patchSearch = useCallback(
     (patch: Partial<TbSearch> | ((prev: TbSearch) => Partial<TbSearch>)) => {
       navigate({
