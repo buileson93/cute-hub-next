@@ -201,8 +201,9 @@ function SubmissionDetail() {
       qc.invalidateQueries({ queryKey: ["my-submissions"] });
       qc.invalidateQueries({ queryKey: ["submissions-all"] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Cập nhật thất bại: " + e.message),
   });
+
 
   const signM = useMutation({
     mutationFn: async (signer_role: "nguoi_thuc_hien" | "phu_trach" | "admin") =>
@@ -212,8 +213,9 @@ function SubmissionDetail() {
       qc.invalidateQueries({ queryKey: ["submission", id] });
       qc.invalidateQueries({ queryKey: ["submission-sigs", id] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Ký số thất bại: " + e.message),
   });
+
 
   const requestOtpM = useMutation({
     mutationFn: async () =>
@@ -223,8 +225,9 @@ function SubmissionDetail() {
       setOtpExpiresAt(r.expires_at);
       toast.success(`Đã gửi OTP tới ${r.sent_to}. Có hạn 5 phút.`);
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Gửi OTP thất bại: " + e.message),
   });
+
 
   const signOtpM = useMutation({
     mutationFn: async () => signOtpFn({ data: { submission_id: id, code: otpCode.trim() } }),
@@ -237,8 +240,9 @@ function SubmissionDetail() {
       qc.invalidateQueries({ queryKey: ["submission", id] });
       qc.invalidateQueries({ queryKey: ["submission-sigs", id] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Ký số thất bại: " + e.message),
   });
+
 
   // Realtime: khi biên bản có cập nhật (ký thêm slot, đổi status) hoặc có chữ ký
   // số mới, mọi người tham gia đều thấy trạng thái mới mà không cần reload.
@@ -294,8 +298,9 @@ function SubmissionDetail() {
       );
       toast.success("Đã xuất Word");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Xuất Word thất bại: " + e.message),
   });
+
 
   const exportPdfM = useMutation({
     mutationFn: async (sign: boolean) =>
@@ -308,8 +313,9 @@ function SubmissionDetail() {
       qc.invalidateQueries({ queryKey: ["submission", id] });
       qc.invalidateQueries({ queryKey: ["submission-sigs", id] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Xuất PDF thất bại: " + e.message),
   });
+
 
   if (loading || isLoading || !data) {
     return (

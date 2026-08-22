@@ -114,7 +114,7 @@ function ApiKeysManagement() {
       toast.success("Đã tạo API key thành công");
     },
     onError: (err) => {
-      toast.error("Lỗi khi tạo API key: " + err.message);
+      toast.error("Tạo API key thất bại: " + err.message);
     },
   });
 
@@ -127,7 +127,7 @@ function ApiKeysManagement() {
       toast.success("Đã thu hồi API key");
     },
     onError: (err) => {
-      toast.error("Lỗi khi thu hồi: " + err.message);
+      toast.error("Thu hồi API key thất bại: " + err.message);
     },
   });
 

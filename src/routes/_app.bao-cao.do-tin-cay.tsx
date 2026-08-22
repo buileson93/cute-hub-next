@@ -281,7 +281,11 @@ function DoTinCayPage() {
     navigate({ search: () => ({ from: f.from, to: f.to, bucket: f.bucket }), replace: true });
     toast.success(`Áp dụng: ${f.name}`);
   };
-  const removeSaved = (id: string) => persistSaved(savedFilters.filter((f) => f.id !== id));
+  const removeSaved = (id: string) => {
+    persistSaved(savedFilters.filter((f) => f.id !== id));
+    toast.success("Đã xoá bộ lọc");
+  };
+
 
   const copyShareLink = async () => {
     const url = new URL(window.location.href);
@@ -289,8 +293,9 @@ function DoTinCayPage() {
     try {
       await navigator.clipboard.writeText(url.toString());
       toast.success("Đã sao chép link chia sẻ");
-    } catch {
-      toast.error("Không sao chép được — sao chép thủ công từ thanh địa chỉ");
+    } catch (err) {
+
+      toast.error("Không sao chép được link: " + (err instanceof Error ? err.message : "không xác định"));
     }
   };
 

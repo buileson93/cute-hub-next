@@ -229,7 +229,8 @@ function ScopeEditor({ user, toChuc, donVi, onClose }: any) {
       qc.invalidateQueries({ queryKey: ["rbac", "users-scope"] });
       onClose();
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => toast.error("Cập nhật phạm vi thất bại: " + e.message),
+
   });
 
   return (
@@ -321,7 +322,7 @@ function MatrixTab() {
     mutationFn: (v: { module: string; action: string; allowed: boolean }) =>
       setFn({ data: { role: role as any, ...v } }) as any,
     onSuccess: () => qc.invalidateQueries({ queryKey: ["rbac", "matrix"] }),
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => toast.error("Cập nhật quyền thất bại: " + e.message),
   });
 
   const matrix = useMemo(() => {

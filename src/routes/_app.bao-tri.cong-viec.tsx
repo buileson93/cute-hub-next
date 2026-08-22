@@ -175,7 +175,7 @@ function CongViecPage() {
         n > 0 ? `Đã sinh ${n} phiếu công việc định kỳ` : "Không có tài sản nào đến hạn",
       );
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Không sinh được phiếu");
+      toast.error("Sinh phiếu thất bại: " + (e instanceof Error ? e.message : "Không xác định"));
     }
   }
 
@@ -184,8 +184,10 @@ function CongViecPage() {
     try {
       await hoanThanh.mutateAsync({ id });
       toast.success("Đã hoàn thành phiếu và cập nhật chu kỳ bảo dưỡng");
+
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Lỗi cập nhật");
+      toast.error("Hoàn thành thất bại: " + (e instanceof Error ? e.message : "Không xác định"));
+
     } finally {
       setBusy(null);
     }
@@ -196,7 +198,7 @@ function CongViecPage() {
     try {
       await capNhat.mutateAsync({ id, trang_thai: "DANG_LAM", ngay_bat_dau: getTodayDateString() });
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Lỗi cập nhật");
+      toast.error("Bắt đầu thất bại: " + (e instanceof Error ? e.message : "Không xác định"));
     } finally {
       setBusy(null);
     }

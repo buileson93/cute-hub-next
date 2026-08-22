@@ -92,7 +92,7 @@ function NhanVienAdminPage() {
       toast.success(editing === "new" ? "Đã thêm nhân viên" : "Đã cập nhật thông tin");
       setEditing(null);
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => toast.error("Lưu nhân viên thất bại: " + e.message),
   });
 
   const deleteMut = useMutation({

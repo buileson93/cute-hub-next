@@ -215,8 +215,13 @@ function DotDetailPage() {
         .eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["dot-bao-duong", id] }),
+    onSuccess: () => {
+      toast.success("Đã lưu thay đổi đợt bảo dưỡng");
+      qc.invalidateQueries({ queryKey: ["dot-bao-duong", id] });
+    },
+    onError: (e: Error) => toast.error("Lỗi cập nhật đợt: " + e.message),
   });
+
 
   const selectedHM = hangMuc?.find((h) => h.id === selHM) ?? null;
 
@@ -242,7 +247,8 @@ function DotDetailPage() {
       qc.invalidateQueries({ queryKey: ["dot-bao-duong-hm", id] });
       qc.invalidateQueries({ queryKey: ["dot-alerts", id] });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Quy trình thất bại: " + e.message),
+
   });
 
   const [noteDialog, setNoteDialog] = useState<{
@@ -789,8 +795,9 @@ function AddHeThongDialog({
       setSel(new Set());
       onDone();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Thêm hạng mục thất bại: " + e.message),
   });
+
   const available = (he_thongs ?? []).filter((h) => !existingHeThongIds.includes(h.id));
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -926,7 +933,8 @@ function UpdateHangMucPanel({
       toast.success("Đã lưu");
       onSaved();
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Lưu kết quả thất bại: " + e.message),
+
   });
 
   const linkBb = useMutation({
@@ -939,7 +947,9 @@ function UpdateHangMucPanel({
     onSuccess: () => {
       toast.success("Đã gắn biên bản");
     },
+    onError: (e: Error) => toast.error("Gắn biên bản thất bại: " + e.message),
   });
+
 
   return (
     <div className="mt-4 space-y-4">
@@ -1119,7 +1129,7 @@ function DeadlinesDialog({
       onDone();
       onOpenChange(false);
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error("Lưu mốc tiến độ thất bại: " + e.message),
   });
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -1198,9 +1208,13 @@ function BaoCaoTab({
             setExporting(true);
             try {
               await exportWord({ dotId, dotName, kpi, perDv, grouped });
+              toast.success("Đã xuất báo cáo Word thành công");
+            } catch (e) {
+              toast.error("Xuất Word thất bại: " + (e as Error).message);
             } finally {
               setExporting(false);
             }
+
           }}
         >
           <FileText className="mr-1 h-4 w-4" />

@@ -172,12 +172,12 @@ function ChoDuyetPage() {
     setBusy(true);
     try {
       await approveChangeRequest(approveTarget.id, approveNote || undefined);
-      toast.success("Đã duyệt");
+      toast.success("Đã duyệt đề xuất");
       setApproveTarget(null);
       setApproveNote("");
       refetch();
     } catch (e) {
-      toast.error((e as Error).message || "Không duyệt được");
+      toast.error("Duyệt thất bại: " + ((e as Error).message || "Không xác định"));
     } finally {
       setBusy(false);
     }
@@ -192,12 +192,12 @@ function ChoDuyetPage() {
     setBusy(true);
     try {
       await rejectChangeRequest(rejectTarget.id, rejectReason.trim());
-      toast.success("Đã từ chối");
+      toast.success("Đã từ chối đề xuất");
       setRejectTarget(null);
       setRejectReason("");
       refetch();
     } catch (e) {
-      toast.error((e as Error).message || "Không từ chối được");
+      toast.error("Từ chối thất bại: " + ((e as Error).message || "Không xác định"));
     } finally {
       setBusy(false);
     }
@@ -210,7 +210,7 @@ function ChoDuyetPage() {
       toast.success("Đã huỷ đề xuất");
       refetch();
     } catch (e) {
-      toast.error((e as Error).message || "Không huỷ được");
+      toast.error("Huỷ thất bại: " + ((e as Error).message || "Không xác định"));
     }
   };
 

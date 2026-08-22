@@ -84,6 +84,18 @@ export async function renameEntity(input: RenameInput): Promise<void> {
     .eq(target.keyCol, id);
   if (error) throw error;
 
+  // Verify invariant check: Ensure the name was actually updated in the main table
+  const { data: verified, error: verErr } = await supabase
+    .from(target.table as never)
+    .select(target.nameCol)
+    .eq(target.keyCol, id)
+    .maybeSingle();
+
+  if (verErr || !verified || (verified as any)[target.nameCol] !== ten) {
+    throw new Error("Đổi tên thất bại: Dữ liệu chưa được cập nhật chính xác (vui lòng thử lại)");
+  }
+
+
   // Xoá override nếu có để đảm bảo SSoT bảng gốc thắng
   if (input.kind === "ht" || input.kind === "tb" || input.kind === "nh") {
     await supabase.from("cay_node_edit").delete().eq("kind", input.kind).eq("ma", id);
@@ -147,6 +159,20 @@ export async function updateEntityRow(input: UpdateRowInput): Promise<void> {
     .update(patch as never)
     .eq(target.keyCol, id);
   if (error) throw error;
+
+  // Invariant check for bulk update
+  if (target.nameCol in patch) {
+    const { data: verified, error: verErr } = await supabase
+      .from(target.table as never)
+      .select(target.nameCol)
+      .eq(target.keyCol, id)
+      .maybeSingle();
+
+    if (verErr || !verified || (verified as any)[target.nameCol] !== patch[target.nameCol]) {
+      throw new Error("Cập nhật thất bại: Dữ liệu chưa được lưu chính xác (vui lòng thử lại)");
+    }
+  }
+
 }
 
 // ---------------------------------------------------------------------------

@@ -67,10 +67,14 @@ function normalizeVanDeId(v: string | null | undefined): string | null {
 /**
  * @deprecated Kể từ Task 50, các form khai KHÔNG được insert thẳng vào
  * bảng `su_co`. Hãy dùng `buildSuCoPayload` (ghi-payload.ts) + gọi RPC
- * `ghi_su_co_atomic(p_payload jsonb)` qua `ghiSuCoFull`. Hàm này chỉ còn
- * dùng cho test cũ và các đường ghi legacy chưa migrate.
+ * `ghi_su_co_atomic(p_payload jsonb)` qua `ghiSuCoFull`.
+ * 
+ * IMPLEMENTATION NOTE (Phase 10G): Mọi mutation gọi hàm này phải kiểm tra
+ * kĩ error từ supabase.insert(). Báo cáo ban đầu có thể tạo nhiều dòng
+ * con; nếu một dòng thất bại, toàn bộ batch phải được hoàn tác (transaction).
  */
 export function buildSuCoInsert(form: SuCoInsertForm): SuCoInsertRow[] {
+
   const vdid = normalizeVanDeId(form.van_de_id ?? null);
   const trang_thai = form.trang_thai ?? "Mới";
 

@@ -86,16 +86,17 @@ function ChinhSachPage() {
           toast.success(editing ? "Đã cập nhật chính sách" : "Đã thêm chính sách");
           reset();
         },
-        onError: (e: Error) => toast.error(e.message),
+        onError: (e: Error) => toast.error("Lưu thất bại: " + e.message),
       },
     );
+
   };
 
   const del = (id: string) => {
     if (!confirm("Xóa chính sách này?")) return;
     delMut.mutate(id, {
       onSuccess: () => toast.success("Đã xóa"),
-      onError: (e: Error) => toast.error(e.message),
+      onError: (e: Error) => toast.error("Xoá thất bại: " + e.message),
     });
   };
 

@@ -1,46 +1,32 @@
-# Phase 10G: Data Correctness & Hardening
+# Kế hoạch Phase 10G: Data Correctness & Hardening
 
-IMPLEMENTATION MODE — DATA CORRECTNESS ONLY.
+Mục tiêu: Đảm bảo tính chính xác của dữ liệu, ngăn chặn ghi trùng lặp, thắt chặt quyền hạn và chuẩn hóa thông báo lỗi/thành công trên toàn hệ thống MIRATS.
 
-## Goals
-- Hardening AI Chat persistence with idempotency and user ownership.
-- Fixing R2 cleanup to protect metadata on failure and correct counters.
-- Auditing and fixing mutation error handling across the app.
-- Visual edit of the TzClock component for superpower documentation.
+## 1. AI Chat Hardening (Idempotency & Ownership)
+- **Vấn đề**: Chat message có thể bị ghi đè hoặc tạo trùng khi retry. Người dùng có thể ghi vào conversation không thuộc về mình.
+- **Giải pháp**:
+    - Sử dụng `upsert` với `client_message_id` để đảm bảo mỗi tin nhắn chỉ lưu một lần.
+    - Kiểm tra `user_id` của `conversation` trước khi insert/update.
+    - `onFinish` chỉ lưu tin nhắn mới thay vì insert lại toàn bộ lịch sử.
 
-## Proposed Changes
+## 2. R2 Storage Reliability
+- **Vấn đề**: Xóa metadata thành công nhưng xóa file vật lý trên R2 thất bại dẫn đến dữ liệu mồ côi.
+- **Giải pháp**:
+    - Cập nhật logic `r2-cleanup` để chỉ xóa metadata khi `R2.delete` trả về thành công.
+    - Trả về trạng thái chi tiết cho từng item thay vì boolean chung.
 
-### 1. AI Chat Hardening (`src/routes/api/chat.ts`)
-- **Idempotency**: Use a message ID (from client or generated) to ensure `onFinish` doesn't double-persist or re-persist history.
-- **Ownership**: Verify the `conversation_id` belongs to the `userId` before any message insertion.
-- **Error Handling**: Explicitly check for Supabase errors during insertion and return appropriate status codes.
-- **Retry Logic**: Support idempotent retries by checking for existing message IDs before inserting.
+## 3. Mutation Audit & Error Surfacing
+- **Vấn đề**: Nhiều mutation sử dụng `toast.success` trước khi hoàn tất logic hoặc thiếu tiền tố lỗi cụ thể (ví dụ: "Lưu thất bại" thay vì chỉ hiện message lỗi).
+- **Giải pháp**:
+    - Rà soát toàn bộ các route `_app.*` và `admin.*`.
+    - Thêm tiền tố mô tả hành động vào `toast.error` (vd: `toast.error("Duyệt đề xuất thất bại: " + e.message)`).
+    - Đảm bảo toast success chỉ hiện khi mutation và các invariant check liên quan đã pass.
 
-### 2. R2 Cleanup Hardening (`src/routes/api/public/hooks/r2-cleanup.ts`)
-- **Atomic-like logic**: Move metadata deletion (`supabaseAdmin.from("r2_file").delete()`) inside a check that verifies R2 deletion was successful.
-- **Per-item results**: Track and return specific success/failure for each object instead of a global counter that might be misleading.
-- **Orphan Reconciliation**: Add logic to handle cases where DB record exists but R2 object is gone, or vice-versa (reconciliation).
+## 4. Multi-step Mutation Safety
+- **Vấn đề**: Các thao tác nhiều bước (ví dụ: duyệt Change Request + cập nhật thực thể) có thể để lại trạng thái không nhất quán nếu lỗi ở bước giữa.
+- **Giải pháp**:
+    - Sử dụng RPC/Transactions cho các thao tác atomic.
+    - Thêm logic rollback thủ công (compensation) cho các flow phức tạp không thể dùng transaction.
 
-### 3. Mutation Audit & Error Handling
-- **Audit**: Identify all `useMutation` hooks that call `toast.success` without checking for the `.error` property of the result or handling the `onError` callback.
-- **Fixes**:
-    - Ensure `onError` always calls `toast.error(error.message)`.
-    - Ensure `toast.success` only fires AFTER the mutation and any invariant checks (like RLS or domain logic) succeed.
-    - Standardize batches of 5-10 mutations at a time.
-- **Transactional Logic**: For multi-step mutations, wrap them in Supabase RPCs or implement client-side compensation logic (rollback).
-
-### 4. Visual Documentation (`src/components/mirats/TzClock.tsx`)
-- Update the `aria-label` of the `DropdownMenuTrigger` button to the requested implementation mode documentation text verbatim.
-
-## Technical Details
-- **AI**: Use `uiMessages` in `onFinish` but only persist the new assistant message by comparing against existing IDs or using the last index.
-- **R2**: Use `r2Delete` result to decide whether to proceed with DB cleanup.
-- **Testing**:
-    - Simulate network failures during multi-step mutations to verify rollback.
-    - Verify chat message uniqueness after multiple `onFinish` triggers.
-    - Verify R2 metadata preservation when S3 endpoint is unreachable.
-
-## Commit Strategy
-- `fix(ai): persist chat messages idempotently`
-- `fix(storage): preserve metadata on deletion failure`
-- `fix(data): surface mutation failures`
+## 5. Visual Documentation Verbatim
+- Cập nhật `aria-label` tại `TzClock.tsx` với chuỗi yêu cầu để làm tài liệu trực quan về phạm vi công việc 10G.
