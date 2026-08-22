@@ -1,41 +1,31 @@
-# Plan - Nâng cấp Workspace Dự án: Trình ký số, Trung tâm điều phối & Dashboard Hybrid (Phase U12-U15)
+# Kế hoạch Nâng cấp Workspace Dự án: Trình ký số, Trung tâm điều phối & Dashboard Hybrid (Phase U12-U15)
 
-Phát triển các tính năng chuyên sâu cho quản lý công văn, ký số và giám sát sức khỏe dự án theo yêu cầu trực quan.
+Tập trung vào tính chuyên sâu của hồ sơ công văn, quy trình trình ký và giám sát hoạt động dự án.
 
-## 1. Task Detail & Trình ký số (Slide-over)
-- **Live PDF Preview**: Tích hợp trình xem PDF trong `TaskDetailSlideOver.tsx` dùng `<iframe>` hoặc thư viện PDF viewer nhẹ cho các hồ sơ đính kèm.
-- **Nút Trình ký / Ban hành**: Thêm các action "Trình ký ngay" và "Ban hành công văn" trong tab "Sản phẩm & Trình ký".
-- **Lưu dấu điện tử**: Cập nhật logic mutation để lưu hash chữ ký và mã con dấu điện tử vào trường `metadata` của `dossier_documents`.
+## Giai đoạn 1: Task Detail & Trình ký số (Slide-over)
+- **Live PDF Preview**: Tích hợp `iframe` trong tab "Sản phẩm & Trình ký" để xem nhanh hồ sơ.
+- **Nút hành động**: Thêm "Trình ký ngay" và "Ký số & Ban hành" vào `TaskDetailSlideOver`.
+- **E-seal**: Lưu mã con dấu điện tử vào `metadata` của tài liệu khi ký số thành công.
 
-## 2. Approval Hub (Trung tâm điều phối)
-- **Route mới**: Xây dựng `src/routes/_app.trinh-ky.tsx` (hoặc index) hiển thị danh sách văn bản chờ duyệt.
-- **Tính năng**:
-    - Hàng đợi (Queue) phân loại theo "Cần tôi ký" và "Đang theo dõi".
-    - Bộ lọc theo Vai trò (Phòng KT, Lãnh đạo) và Cá nhân.
-    - **Ký hàng loạt**: Cho phép chọn nhiều văn bản và thực hiện ký số/phê duyệt một lần (Batch Actions).
+## Giai đoạn 2: Approval Hub (Trung tâm Trình ký)
+- **Route**: `src/routes/_app.trinh-ky.index.tsx`.
+- **Hàng đợi văn bản**: Hiển thị danh sách văn bản chờ duyệt, lọc theo vai trò (Cần tôi ký/Đang theo dõi).
+- **Ký hàng loạt**: Cho phép chọn nhiều văn bản và thực hiện ký số/ban hành một lần.
 
-## 3. Dòng thời gian Audit Log
-- **Component**: Tạo `src/components/mirats/projects/AuditLog.tsx` hiển thị lịch sử thay đổi.
-- **Dữ liệu**: Truy vấn bảng `audit_log` lọc theo `entity` (task/dossier) và `entity_id`.
-- **Nội dung**: Ghi lại: Thay đổi trạng thái, bình luận mới, người thực hiện, thời gian chi tiết.
-- **Xuất báo cáo**: Nút "Xuất nhật ký" (CSV/PDF) cho từng thực thể.
+## Giai đoạn 3: Nhật ký hoạt động & Xuất báo cáo (Audit Log)
+- **Audit Timeline**: Hiển thị dòng thời gian chi tiết trong `AuditLog.tsx` (Tạo, Sửa, Ký, Bình luận).
+- **Xuất báo cáo**: Thêm chức năng xuất CSV cho lịch sử hoạt động của Task/Dossier.
 
-## 4. Executive Hybrid Dashboard
-- **Route**: Nâng cấp `src/routes/_app.tong-quan.tsx` hoặc tạo widget mới trong `DashboardGrid.tsx`.
-- **Work Health Metrics**: 
-    - Biểu đồ Gauge cho `% Hoàn thành`.
-    - Biểu đồ Bar cho `% Trễ hạn` theo dự án/phòng ban.
-- **Dossier Compliance**: Bảng nhiệt (Heatmap) hoặc Progress Ring hiển thị tỷ lệ hồ sơ hợp lệ (complete) so với yêu cầu bắt buộc của Phase-Gate.
-- **Xuất dữ liệu**: Tích hợp nút xuất báo cáo CSV/PDF toàn cục cho Dashboard.
+## Giai đoạn 4: Executive Hybrid Dashboard
+- **Work Health**: Widget biểu đồ tiến độ dự án vs tình trạng trễ hạn.
+- **Dossier Compliance**: Heatmap tuân thủ hồ sơ theo từng giai đoạn dự án.
+
+## Kỹ thuật & Bảo mật
+- **RLS**: Đảm bảo chỉ người có vai trò (quản lý, lãnh đạo) mới thấy nút ký số.
+- **Atomic Operations**: Sử dụng transaction hoặc RPC khi ký số để cập nhật trạng thái hồ sơ và ghi log đồng thời.
 
 ## Chi tiết kỹ thuật
-- **Database**: 
-    - Sử dụng bảng `dossier_documents` cho hồ sơ.
-    - Sử dụng `audit_log` cho lịch sử.
-    - Cần kiểm tra xem có cần migration để thêm `signed_metadata` (Json) vào `dossier_documents` không.
-- **Auth/RLS**: Đảm bảo nút "Ký số" chỉ hiển thị cho người có vai trò phù hợp (dựa trên `user_roles`).
-- **Performance**: Virtualization cho danh sách Approval Hub nếu số lượng văn bản lớn.
-
-## Verification Plan
-- **Manual**: Kiểm tra luồng Trình ký -> Chuyển trạng thái -> Audit log ghi nhận.
-- **Playwright**: Test hành vi "Ký hàng loạt" và chuyển đổi tab trên Dashboard.
+- `src/components/mirats/projects/TaskDetailSlideOver.tsx`: Cập nhật tab "Sản phẩm & Trình ký".
+- `src/routes/_app.trinh-ky.index.tsx`: Hoàn thiện logic lọc và ký hàng loạt.
+- `src/components/mirats/projects/AuditLog.tsx`: Thêm logic xuất dữ liệu.
+- `src/components/mirats/dashboard/grid/DashboardGrid.tsx`: Triển khai các widget mới.

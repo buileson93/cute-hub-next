@@ -17,6 +17,8 @@ export type WidgetType =
   | "su-co-heatmap"
   | "top-he-thong-su-co"
   | "top-thiet-bi-hong-lap"
+  | "project-health-bar"
+  | "dossier-compliance-heatmap"
   | "expiry-timeline";
 
 export interface DashboardWidgetConfig {
@@ -56,6 +58,16 @@ export const AVAILABLE_WIDGETS: Record<
     icon: "entity.asset",
   },
   "expiry-timeline": { title: "Lộ trình hết hạn", defaultWidth: 12, icon: "entity.history" },
+  "project-health-bar": {
+    title: "Sức khỏe dự án (Work Health)",
+    defaultWidth: 6,
+    icon: "entity.chart",
+  },
+  "dossier-compliance-heatmap": {
+    title: "Tuân thủ Hồ sơ (Dossier Compliance)",
+    defaultWidth: 6,
+    icon: "entity.security",
+  },
 };
 
 export const DEFAULT_HOME_LAYOUT: DashboardWidgetConfig[] = [
@@ -82,5 +94,7 @@ export const DEFAULT_OVERVIEW_LAYOUT: DashboardWidgetConfig[] = [
   { id: "ov6", type: "asset-status-pie", w: 4, title: "Trạng thái" },
   { id: "ov7", type: "health-donut", w: 6, title: "Sức khỏe" },
   { id: "ov8", type: "completeness-gauge", w: 6, title: "Hồ sơ" },
-  { id: "ov9", type: "live-timeline", w: 12, title: "Nhật ký" },
+  { id: "ov9", type: "project-health-bar", w: 6, title: "Sức khỏe dự án" },
+  { id: "ov10", type: "dossier-compliance-heatmap", w: 6, title: "Tuân thủ hồ sơ" },
+  { id: "ov11", type: "live-timeline", w: 12, title: "Nhật ký" },
 ];

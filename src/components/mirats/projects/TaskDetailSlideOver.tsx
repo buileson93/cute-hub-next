@@ -20,8 +20,11 @@ import {
   ChevronRight,
   User,
   Calendar,
-  AlertCircle
+  AlertCircle,
+  FileCheck2,
+  Stamp
 } from "lucide-react";
+import { AuditLog } from "./AuditLog";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -115,6 +118,12 @@ export function TaskDetailSlideOver({ taskId, open, onOpenChange, onEdit }: Task
                 className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 py-2 text-sm font-semibold"
               >
                 Sản phẩm & Trình ký
+              </TabsTrigger>
+              <TabsTrigger 
+                value="audit" 
+                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 py-2 text-sm font-semibold"
+              >
+                Nhật ký
               </TabsTrigger>
             </TabsList>
           </div>
@@ -211,40 +220,54 @@ export function TaskDetailSlideOver({ taskId, open, onOpenChange, onEdit }: Task
               <div className="space-y-3">
                 <h4 className="text-sm font-bold">Danh mục hồ sơ nộp</h4>
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between p-3 border rounded-xl bg-card hover:border-primary/30 transition-colors cursor-pointer group">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-8 bg-rose-50 border border-rose-100 rounded flex items-center justify-center shrink-0">
-                        <span className="text-[8px] font-bold text-rose-700">PDF</span>
+                  {docs.map((doc: any) => (
+                    <div key={doc.id} className="flex flex-col p-3 border rounded-xl bg-card hover:border-primary/30 transition-colors group">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="h-10 w-8 bg-rose-50 border border-rose-100 rounded flex items-center justify-center shrink-0">
+                            <span className="text-[8px] font-bold text-rose-700">PDF</span>
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-xs font-semibold truncate group-hover:text-primary transition-colors">{doc.title}</div>
+                            <div className="text-[10px] text-muted-foreground">{doc.status === 'complete' ? 'Đã ký số' : 'Chưa ký'} · {doc.format || 'Điện tử'}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                           <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => window.open(doc.file_path, '_blank')}>
+                            <ExternalLink className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <div className="text-xs font-semibold truncate group-hover:text-primary transition-colors">Tờ trình phê duyệt chủ trương</div>
-                        <div className="text-[10px] text-muted-foreground">Đã ký số · 1.2 MB</div>
+                      
+                      {/* Live PDF Preview Simulation / Quick View */}
+                      <div className="mt-3 aspect-[16/9] bg-slate-100 rounded-lg overflow-hidden border border-slate-200 relative group/preview">
+                         <div className="absolute inset-0 flex items-center justify-center bg-slate-200/50 opacity-0 group-hover/preview:opacity-100 transition-opacity z-20">
+                            <Button size="sm" variant="secondary" className="text-[10px] font-bold" onClick={() => window.open(doc.file_path, '_blank')}>
+                              Mở xem chi tiết
+                            </Button>
+                         </div>
+                         <iframe 
+                            src={`${doc.file_path}#toolbar=0&navpanes=0`} 
+                            className="w-full h-full border-none pointer-events-none"
+                            title={doc.title}
+                         />
                       </div>
                     </div>
-                    <Button size="icon" variant="ghost" className="h-8 w-8">
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
+                  ))}
 
-                  <div className="flex items-center justify-between p-3 border rounded-xl bg-card border-dashed">
-                    <div className="flex items-center gap-3 opacity-60">
-                      <div className="h-10 w-8 bg-slate-50 border border-slate-100 rounded flex items-center justify-center shrink-0">
-                        <FileText className="h-4 w-4 text-slate-400" />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="text-xs font-semibold truncate">Quyết định ban hành (Dự thảo)</div>
-                        <div className="text-[10px] text-muted-foreground italic">Chưa có tệp đính kèm</div>
-                      </div>
+                  {docs.length === 0 && (
+                    <div className="text-center py-8 border border-dashed rounded-xl bg-slate-50/50">
+                       <FileText className="h-8 w-8 text-slate-300 mx-auto mb-2" />
+                       <div className="text-[11px] text-slate-400">Chưa có hồ sơ nào được đính kèm.</div>
                     </div>
-                    <Button size="sm" variant="outline" className="h-7 text-[10px] font-bold">Tải lên</Button>
-                  </div>
+                  )}
                 </div>
               </div>
 
               {/* E-Sign Section */}
               <div className="pt-4 border-t space-y-4">
                 <h4 className="text-sm font-bold flex items-center gap-2">
-                  <ShieldAlert className="h-4 w-4 text-indigo-600" />
+                  <Stamp className="h-4 w-4 text-indigo-600" />
                   Luồng phê duyệt & Ký số
                 </h4>
                 <div className="space-y-4 px-2">
@@ -256,6 +279,10 @@ export function TaskDetailSlideOver({ taskId, open, onOpenChange, onEdit }: Task
                     <div className="pb-6">
                       <div className="text-xs font-bold">Trần Văn A (Trưởng phòng)</div>
                       <div className="text-[10px] text-muted-foreground">Đã thẩm định · 14:30 20/08/2026</div>
+                      <div className="mt-2 flex items-center gap-1.5 text-[9px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded border border-emerald-100 w-fit">
+                        <FileCheck2 className="h-3 w-3" />
+                        Mã con dấu: MIRATS-ESIGN-2026-X892
+                      </div>
                     </div>
                   </div>
                   <div className="flex gap-4 relative">
@@ -266,15 +293,33 @@ export function TaskDetailSlideOver({ taskId, open, onOpenChange, onEdit }: Task
                     <div className="pb-6">
                       <div className="text-xs font-bold">Nguyễn Thị B (Lãnh đạo đơn vị)</div>
                       <div className="text-[10px] text-amber-600 font-medium">Đang chờ ký số...</div>
-                      <div className="mt-3">
+                      <div className="mt-3 flex items-center gap-2">
                         <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-[11px] font-bold h-7">
                           Trình ký ngay
+                        </Button>
+                        <Button size="sm" variant="outline" className="text-[11px] font-bold h-7">
+                          <Stamp className="h-3 w-3 mr-1.5" /> Ký số & Ban hành
                         </Button>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+            </TabsContent>
+
+            <TabsContent value="audit" className="p-6 m-0">
+               <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-bold flex items-center gap-2">
+                      <History className="h-4 w-4 text-primary" />
+                      Lịch sử hoạt động
+                    </h4>
+                    <Button variant="outline" size="sm" className="h-7 text-[10px] font-bold">
+                      Xuất báo cáo
+                    </Button>
+                  </div>
+                  <AuditLog entityType="du_an_cong_viec" entityId={taskId} />
+               </div>
             </TabsContent>
           </ScrollArea>
         </Tabs>
