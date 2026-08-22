@@ -1247,11 +1247,13 @@ function DanhMucThietBiPage() {
           {/* Thanh tìm kiếm & lọc nhanh */}
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <div className="relative min-w-[240px] flex-1 sm:max-w-sm">
-              <Search 
-                aria-label="Tìm kiếm tài sản"
-                className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" 
+              <label htmlFor="search-thiet-bi" className="sr-only">Tìm kiếm tài sản</label>
+              <Search
+                className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                aria-hidden="true"
               />
               <Input
+                id="search-thiet-bi"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Tìm theo tên, mã, S/N, loại, trạng thái…"
@@ -1434,15 +1436,19 @@ function DanhMucThietBiPage() {
           )}
 
           {viewMode === "grid" ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {devices.map(d => (
-                <Card key={d.ma_thiet_bi} className="overflow-hidden hover:ring-1 hover:ring-primary/20 transition-all cursor-pointer" onClick={() => openDetail(d)}>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {devices.map((d) => (
+                <Card
+                  key={d.ma_thiet_bi}
+                  className="cursor-pointer overflow-hidden transition-all hover:ring-1 hover:ring-primary/20"
+                  onClick={() => openDetail(d)}
+                >
                   <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="font-bold text-sm truncate">{d.ten}</div>
+                    <div className="mb-2 flex items-start justify-between">
+                      <div className="truncate text-sm font-bold">{d.ten}</div>
                       <StatusBadge domain="thiet_bi" code={d.trang_thai} />
                     </div>
-                    <div className="text-xs text-muted-foreground mb-3 font-mono">{d.ma_thiet_bi}</div>
+                    <div className="text-muted-foreground mb-3 font-mono text-xs">{d.ma_thiet_bi}</div>
                     <div className="grid grid-cols-2 gap-y-2 text-[11px]">
                       <div className="text-muted-foreground">Chủng loại:</div>
                       <div>{d.loai}</div>
