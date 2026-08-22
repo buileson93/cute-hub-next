@@ -348,17 +348,24 @@ function HeThongCayPage() {
         }
       }
 
-      return allData.map((d: any) => ({
-        ...d,
-        _pl: d.phan_loai_id,
-        _nhKey: d.nhom_he_thong_id,
-        _htId: d.he_thong_id,
-        _thanhPhanId: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.id,
-        _thanhPhanMa: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ma_thanh_phan,
-        _thanhPhanTen: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ten,
-        _loaiTbTen: d._loaiTbTen?.ten,
-        _loaiTbOrder: d._loaiTbOrder?.thu_tu,
-      }));
+      return allData.map((d: any) => {
+        const pl = resolvePhanLoai(d.phan_loai_id, taxonomy);
+        const nh = resolveNhom(d.nhom_he_thong_id, taxonomy);
+        const ht = resolveHeThong(d.he_thong_id, taxonomy);
+        
+        return {
+          ...d,
+          _pl: pl.id,
+          _nhKey: nh.ma, // Canonical business code for grouping
+          _htId: ht.ma,  // Canonical composite code for grouping
+          _thanhPhanId: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.id,
+          _thanhPhanMa: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ma_thanh_phan,
+          _thanhPhanTen: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ten,
+          _loaiTbTen: d._loaiTbTen?.ten,
+          _loaiTbOrder: d._loaiTbOrder?.thu_tu,
+        };
+      });
+
     },
   });
 
