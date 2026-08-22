@@ -113,6 +113,16 @@ export function runAuditLogic() {
       }
     }
 
+    // 8. Icon-only button without label (A11y)
+    if (isCriticalPath) {
+      REGEX_BUTTON_ICON_NO_LABEL.lastIndex = 0;
+      const iconMatches = content.match(REGEX_BUTTON_ICON_NO_LABEL);
+      if (iconMatches) {
+        stats.iconNoLabel += iconMatches.length;
+        fileViolationCount += iconMatches.length;
+      }
+    }
+
     if (fileViolationCount > 0) {
       stats.fileViolations.push({ file, count: fileViolationCount });
     }

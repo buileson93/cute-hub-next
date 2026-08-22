@@ -58,6 +58,21 @@ export default tseslint.config(
         {
           selector: "Literal[value=/#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})\\b/]",
           message: "Cấm dùng mã màu HEX trực tiếp trong TSX/TS. Hãy dùng các biến CSS theme hoặc token màu chuẩn của MIRATS.",
+        },
+        // Hàng rào U10: Chặn raw <button> trong code ứng dụng
+        {
+          selector: "JSXOpeningElement[name.name='button']",
+          message: "Cấm dùng thẻ <button> trực tiếp. Hãy dùng component <Button /> từ @/components/ui/button để đảm bảo tính nhất quán và khả năng truy cập.",
+        },
+        // Hàng rào U10: Chặn raw <table> ngoài components/ui/table
+        {
+          selector: "JSXOpeningElement[name.name='table']",
+          message: "Cấm dùng thẻ <table> trực tiếp. Hãy dùng <DataTableCore /> hoặc các table primitives từ @/components/ui/table.",
+        },
+        // Hàng rào U10: Cảnh báo class mâu thuẫn responsive
+        {
+          selector: "JSXAttribute[name.name='className'] > Literal[value=/\\bhidden\\b.*\\bflex\\b/]",
+          message: "Phát hiện class 'hidden' và 'flex' mâu thuẫn trên cùng một phần tử mà không có tiền tố responsive. Hãy dùng 'hidden md:flex' hoặc tương đương.",
         }
       ],
 
