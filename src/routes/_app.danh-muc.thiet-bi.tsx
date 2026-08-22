@@ -219,15 +219,23 @@ const num = (v: number | null) => (v == null ? "" : String(v));
 
 function DanhMucThietBiPage() {
   const { scopeAll, donViCode } = useScope();
-  const { data: taxo, isLoading, error } = useDbTaxonomy();
+  const { data: taxo, isLoading: taxoLoading, error } = useDbTaxonomy();
   const { data: nameOv } = useSystemNameOverrides();
   const { data: devNameOv } = useDeviceNameOverrides();
+
+  // PHÂN TRANG 10H
+  const [page, setPage] = useState(0);
+  const pageSize = 100;
+  const { data: pagedData, isLoading: pagedLoading } = useThietBiList(
+    page,
+    pageSize,
+    scopeAll ? null : donViCode,
+  );
+  const isLoading = taxoLoading || pagedLoading;
 
   const { hasRole } = useSession();
   const canManage = hasRole("admin") || hasRole("phong_kt");
   const isAdmin = hasRole("admin");
-  // Chế độ chỉnh sửa: BẬT mới hiện nút "Thêm tài sản" và các nút xoá.
-  // Persist theo user để lần sau vào trang giữ nguyên lựa chọn.
   const [editMode, setEditMode] = useUserPref<boolean>("danh-muc-tb:edit-mode", false);
   const editOn = canManage && editMode;
   const { submit, submitMany, hoanTac } = useCayRpc();
