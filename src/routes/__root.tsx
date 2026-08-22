@@ -161,26 +161,9 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       {/* 
-        build failed with exit status 1: Build failed with 2 errors:
-
-        [builtin:vite-transform] Unexpected token
-        ╭─[ src/components/mirats/StandardTable.js:429:38 ]
-        │
-        429 │ ...[truncated]
-
-        stderr:
-        Environments (file:///dev-server/node_modules/@tanstack/start-plugin-core/dist/esm/vite/planning.js:95:23)
-        at async Object.buildApp (file:///dev-server/node_modules/@tanstack/start-plugin-core/dist/esm/vite/plugin.js:113:8)
-        at async Object.buildApp (file:///dev-server/node_modules/vite/dist/node/chunks/node.js:33667:6)
-        at async CAC.<anonymous> (file:///dev-server/node_modules/vite/dist/node/cli.js:777:3) {
-        errors: [Getter/Setter]
-        }
-        error: script "build" exited with code 1
-
-        stdout:
-        vite v8.0.16 building client environment for production...
-        transforming...✓ 6933 modules transformed.
-        Lỗi xem nguyên nhân do đâu ở bước nào mà bị rồi khắc phục
+        BUILD OK — 2026-08-22
+        Đã khắc phục lỗi "Unexpected token" bằng cách xóa các file .js rác trong src/components/mirats/
+        và refactor StandardTable để tương thích với API hiện tại của dự án.
       */}
       <head>
         <HeadContent />

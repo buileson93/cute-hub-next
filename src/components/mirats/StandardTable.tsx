@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback, Fragment } from "react";
 import { cn } from "@/lib/utils";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { Card, CardContent } from "@/components/ui/card";
@@ -227,19 +227,20 @@ export function StandardTable<T>({
       onSelect?.(next);
       setSelected?.(next);
     },
-    [onSelect, selected],
+    [onSelect, selected, setSelected],
   );
 
   const toggleAll = useCallback(() => {
     if (!onSelect || !selected) return;
     if (selected.size === rows.length) {
       onSelect(new Set());
+      setSelected?.(new Set());
     } else {
       const next = new Set(rows.map(getRowIdInternal));
       onSelect?.(next);
       setSelected?.(next);
     }
-  }, [onSelect, selected, rows, getRowIdInternal]);
+  }, [onSelect, selected, rows, getRowIdInternal, setSelected]);
 
   const toggleExpand = useCallback((id: string) => {
     setExpandedRows((prev) => {
@@ -252,7 +253,8 @@ export function StandardTable<T>({
 
   const clearSelection = useCallback(() => {
     onSelect?.(new Set());
-  }, [onSelect]);
+    setSelected?.(new Set());
+  }, [onSelect, setSelected]);
 
   const clearAllFilters = useCallback(() => {
     setTextFilters({});
@@ -380,7 +382,7 @@ export function StandardTable<T>({
     if (lastItem.index >= display.length - 20) {
       infiniteScroll.fetchNextPage();
     }
-  }, [rowVirtualizer.getVirtualItems(), infiniteScroll?.hasNextPage, infiniteScroll?.isFetchingNextPage, display.length]);
+  }, [rowVirtualizer, infiniteScroll?.hasNextPage, infiniteScroll?.isFetchingNextPage, display.length, infiniteScroll]);
 
   const isClient = typeof window !== "undefined";
   const useIsomorphicLayoutEffect = isClient ? React.useLayoutEffect : useEffect;
@@ -430,11 +432,11 @@ export function StandardTable<T>({
     [onHandleMouseMove, onHandleMouseUp],
   );
 
-  const renderGlobalState = () => {
+  const renderGlobalState = useCallback(() => {
     if (trangThai.loi) {
       const err = trangThai.loi;
       if (errorContent) return errorContent;
-      return (
+      const errorInner = (
         <div className="py-20 flex flex-col items-center justify-center text-center gap-4 border rounded-lg bg-card">
           <div className="text-sm text-destructive font-medium">{String(err)}</div>
           {err.retry && (
@@ -444,31 +446,36 @@ export function StandardTable<T>({
           )}
         </div>
       );
+      return errorInner;
     }
 
     if (trangThai.dangTai) {
       if (loadingContent) return loadingContent;
-      return (
+      const loadingInner = (
         <div className="p-4 border rounded-lg bg-card">
           <TableSkeleton cols={columns.length} rows={6} />
         </div>
       );
+      return loadingInner;
     }
 
     if (fullDisplay.length === 0) {
-      return (
-        <div className="py-20 border rounded-lg bg-card text-center">
-          {emptyContent ?? (
-            <div className="text-sm text-muted-foreground italic">
-              {hasFilter ? "Không có dòng nào khớp bộ lọc" : (emptyText || "Không có dữ liệu")}
-            </div>
-          )}
+      const emptyInner = emptyContent ?? (
+        <div className="text-sm text-muted-foreground italic">
+          {hasFilter ? "Không có dòng nào khớp bộ lọc" : (emptyText || "Không có dữ liệu")}
         </div>
       );
+      
+      const emptyContainer = (
+        <div className="py-20 border rounded-lg bg-card text-center">
+          {emptyInner}
+        </div>
+      );
+      return emptyContainer;
     }
 
-    return <div className="hidden" />;
-  };
+    return <div className="hidden" aria-hidden="true" />;
+  }, [trangThai.loi, trangThai.dangTai, errorContent, loadingContent, columns.length, fullDisplay.length, emptyContent, hasFilter, emptyText]);
 
   const isMobile = isClient && window.innerWidth < BP_PX.md;
   const shownCols = useMemo(() => columns.filter(c => !prefs.hidden.has(c.key)), [columns, prefs.hidden]);
@@ -611,9 +618,11 @@ export function StandardTable<T>({
                   </TableCell>
                 </TableRow>
               ) : (
-                <>
+                <Fragment>
                   {paddingTop > 0 && (
-                    <TableRow style={{ height: `${paddingTop}px` }} className="hover:bg-transparent border-0"><TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="p-0 border-0" /></TableRow>
+                    <TableRow style={{ height: `${paddingTop}px` }} className="hover:bg-transparent border-0">
+                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="p-0 border-0" />
+                    </TableRow>
                   )}
                   {virtualRows.map(v => {
                     const r = display[v.index];
@@ -634,9 +643,11 @@ export function StandardTable<T>({
                     );
                   })}
                   {paddingBottom > 0 && (
-                    <TableRow style={{ height: `${paddingBottom}px` }} className="hover:bg-transparent border-0"><TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="p-0 border-0" /></TableRow>
+                    <TableRow style={{ height: `${paddingBottom}px` }} className="hover:bg-transparent border-0">
+                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="p-0 border-0" />
+                    </TableRow>
                   )}
-                </>
+                </Fragment>
               )}
             </TableBody>
           </Table>

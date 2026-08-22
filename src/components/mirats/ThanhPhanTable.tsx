@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
-import { useMemo, useState, useEffect, useRef, useCallback } from "react";
+import React, { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -1167,13 +1167,11 @@ export function ThanhPhanTable({
                 value: (r) => r.taiSanTrangThai,
                 cell: (r) => {
                   if (r.taiSanTrangThai) {
-                    return (
-                      <Badge variant="outline" className="text-[10px]">
-                        {r.taiSanTrangThai}
-                      </Badge>
-                    );
+                    const badge = <Badge variant="outline" className="text-[10px]">{r.taiSanTrangThai}</Badge>;
+                    return badge;
                   }
-                  return <span className="text-xs text-muted-foreground">—</span>;
+                  const dash = <span className="text-xs text-muted-foreground">—</span>;
+                  return dash;
                 },
               },
               {
