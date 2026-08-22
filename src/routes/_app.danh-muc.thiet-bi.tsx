@@ -1440,7 +1440,7 @@ function DanhMucThietBiPage() {
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-2">
                       <div className="font-bold text-sm truncate">{d.ten}</div>
-                      <StatusBadge status={d.trang_thai} />
+                      <StatusBadge domain="thiet_bi" code={d.trang_thai} />
                     </div>
                     <div className="text-xs text-muted-foreground mb-3 font-mono">{d.ma_thiet_bi}</div>
                     <div className="grid grid-cols-2 gap-y-2 text-[11px]">
