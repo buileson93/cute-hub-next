@@ -26,6 +26,8 @@ Cập nhật: 22/08/2026
 | Sticky Header     | ✅         | Không mất border (border-separate)   |
 | Sticky Column     | ✅         | Hoạt động mượt mà                    |
 | Horizontal Scroll | ✅         | Thanh cuộn mỏng (mirats-scroll)      |
+| Virtualization    | ✅         | Render < 100 <tr> cho 1000+ rows    |
+| Infinite Scroll   | ✅         | Trigger onLoadMore khi cuộn cuối     |
 
 ## 4. Guardrails (U10)
 
