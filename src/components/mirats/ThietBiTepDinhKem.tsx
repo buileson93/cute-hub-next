@@ -290,8 +290,23 @@ function DocRow({
   initialOpen?: boolean;
 }) {
   const url = useSignedUrl(row.bucket, row.file_path);
+  const { startOcr, progress, isProcessing, isPaused, pauseOcr, setIsPaused, cancelOcr } =
+    useOcrTask();
   const [viewerOpen, setViewerOpen] = useState(initialOpen || false);
   const canDownload = useCanDownloadAttachments();
+
+  async function handleRetry() {
+    try {
+      const res = await fetch(url!);
+      if (!res.ok) throw new Error("Không thể tải tệp");
+      const blob = await res.blob();
+      await startOcr(blob, "thiet_bi_tep_dinh_kem", row.id);
+      // Success will trigger toast from useOcrTask
+    } catch (e: any) {
+      toast.error("Lỗi: " + e.message);
+    }
+  }
+
   return (
     <div className="flex items-center justify-between rounded-md border p-3 text-sm">
       <div className="flex min-w-0 items-center gap-3">
