@@ -294,7 +294,7 @@ function DoTinCayPage() {
       await navigator.clipboard.writeText(url.toString());
       toast.success("Đã sao chép link chia sẻ");
     } catch {
-      toast.error("Không sao chép được — sao chép thủ công từ thanh địa chỉ");
+      toast.error("Không sao chép được link: " + (e instanceof Error ? e.message : "không xác định"));
     }
   };
 
