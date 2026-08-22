@@ -565,7 +565,7 @@ export function StandardTableInner<T>({
     count: gated ? 0 : display.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => estimateRowHeight,
-    overscan: isTest ? 100 : 15,
+    overscan: isTest ? 100 : 8,
     initialOffset: isTest ? 0 : undefined,
     initialRect: isTest ? { width: 1000, height: 10000 } : undefined,
     ...virtualizerOptions,
@@ -1306,7 +1306,7 @@ export function StandardTableInner<T>({
               })}
             </colgroup>
 
-            <TableHeader className="bg-muted/30 sticky top-0 z-20 shadow-sm shadow-border/50">
+            <TableHeader className="bg-muted/30 sticky top-0 z-30 shadow-sm shadow-border/50">
               <TableRow
                 className={cn(
                   "hover:bg-transparent border-b border-border/60",
@@ -1528,7 +1528,7 @@ export function StandardTableInner<T>({
                           shownCols.length + (selectable ? 1 : 0) + (viewMode === "tablet" ? 1 : 0)
                         }
                         style={{ height: `${paddingTop}px` }}
-                        className="p-0 border-0 pointer-events-none"
+                        className="p-0 border-0 pointer-events-none bg-transparent"
                       />
                     </TableRow>
                   )}
@@ -1549,7 +1549,7 @@ export function StandardTableInner<T>({
                             // Nếu có lineClamp hoặc nội dung phức tạp, TanStack Virtual sẽ tự đo lại qua ref này
                           }}
                           className={cn(
-                            "group border-b border-border/40 transition-mirats-fast hover:bg-muted/60",
+                            "group border-b border-border/40 transition-mirats-fast hover:bg-muted/60 bg-card",
                             (onRowClick || selectable) && "cursor-pointer",
                             isSel && "bg-[#0074e2]/5 !bg-[#0074e2]/5",
                             expandedRows.has(rid) && "bg-muted/40",
@@ -1576,7 +1576,7 @@ export function StandardTableInner<T>({
                                 e.stopPropagation();
                                 toggleExpand(rid);
                               }}
-                              className="sticky left-0 z-10 bg-card border-r border-border/30 p-0 text-center"
+                              className="sticky left-0 z-10 bg-inherit border-r border-border/30 p-0 text-center"
                             >
                               <div className="flex h-full w-full items-center justify-center">
                                 <Button
@@ -1597,7 +1597,7 @@ export function StandardTableInner<T>({
                             <TableCell
                               onClick={(e) => e.stopPropagation()}
                               className={cn(
-                                "sticky left-0 z-10 bg-card border-r border-border/30 p-0",
+                                "sticky left-0 z-10 bg-inherit border-r border-border/30 p-0",
                                 viewMode === "tablet" && "left-10",
                               )}
                             >
@@ -1630,7 +1630,7 @@ export function StandardTableInner<T>({
                                       ? "px-1.5 py-0.5"
                                       : "px-3 py-1.5",
                                   c.sticky &&
-                                    "sticky left-0 z-10 bg-card border-r border-border/30",
+                                    "sticky left-0 z-10 bg-inherit border-r border-border/30",
                                   selectable && c.sticky && "left-10",
                                   c.align === "center" && "text-center",
                                   c.align === "right" && "text-right tabular-nums",
