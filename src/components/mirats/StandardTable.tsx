@@ -1306,7 +1306,7 @@ export function StandardTableInner<T>({
 
       {isMobile ? (
         <div className="space-y-3">
-          {renderGlobalState() ||
+          {renderGlobalState() !== null ? renderGlobalState() :
             display.map((r, idx) => {
               const rid = getRowIdInternal(r);
               return (
@@ -1577,7 +1577,7 @@ export function StandardTableInner<T>({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {renderGlobalState() ? (
+              {renderGlobalState() !== null ? (
                 <TableRow>
                   <TableCell
                     colSpan={
