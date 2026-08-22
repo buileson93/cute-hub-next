@@ -256,6 +256,7 @@ export function ERPChartFrame({
   error,
   empty,
   icon,
+  actions,
 }: {
   title: string;
   subtitle?: string;
@@ -266,16 +267,20 @@ export function ERPChartFrame({
   error?: string;
   empty?: boolean;
   icon?: string;
+  actions?: React.ReactNode;
 }) {
   return (
     <div className={cn("astryx-card flex flex-col p-4 gap-4 bg-card", className)}>
       <div className="flex flex-col gap-0.5">
         <div className="flex items-center justify-between">
-          <h3 className="text-[14px] font-bold tracking-tight text-foreground flex items-center gap-2">
-            {icon && <Icon name={icon as any} size="tiny" className="text-primary" />}
-            {title}
-          </h3>
-          {unit && <span className="text-[10px] font-extrabold uppercase text-muted-foreground/50 tracking-widest">{unit}</span>}
+          <div className="flex flex-col">
+            <h3 className="text-[14px] font-bold tracking-tight text-foreground flex items-center gap-2">
+              {icon && <Icon name={icon as any} size="tiny" className="text-primary" />}
+              {title}
+            </h3>
+            {unit && <span className="text-[9px] font-extrabold uppercase text-muted-foreground/40 tracking-widest mt-0.5">{unit}</span>}
+          </div>
+          {actions && <div className="flex items-center gap-2">{actions}</div>}
         </div>
         {subtitle && <p className="text-[11px] text-muted-foreground/70">{subtitle}</p>}
       </div>
