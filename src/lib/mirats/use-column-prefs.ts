@@ -203,8 +203,20 @@ export function useColumnPrefs(tableKey: string, allKeys: string[], defaultHidde
         layoutMode,
       });
     },
-    [widths, order, hidden, persist, activePreset],
+    [widths, order, hidden, persist, activePreset, layoutMode],
   );
+
+  const resetAllWidths = useCallback(() => {
+    setWidthsState({});
+    persist({
+      order,
+      hidden: [...hidden],
+      widths: {},
+      presetId: activePreset,
+      customized: true,
+      layoutMode,
+    });
+  }, [order, hidden, persist, activePreset, layoutMode]);
 
   const toggle = useCallback(
     (key: string) => {
