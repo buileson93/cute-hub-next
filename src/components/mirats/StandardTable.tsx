@@ -706,13 +706,14 @@ export function StandardTableInner<T>({
     }
 
     if (trangThai.dangTai) {
-      return (
+      if (loadingContent) return loadingContent;
+      const skeleton = (
         <div className="p-4 border rounded-lg bg-card">
-          {loadingContent ?? (
-            <TableSkeleton cols={isMobile ? 1 : shownCols.length} rows={isMobile ? 3 : 6} />
-          )}
+          <TableSkeleton cols={isMobile ? 1 : shownCols.length} rows={isMobile ? 3 : 6} />
         </div>
       );
+      return skeleton;
+    }
     }
 
     if (fullDisplay.length === 0) {
@@ -1306,8 +1307,8 @@ export function StandardTableInner<T>({
 
       {isMobile ? (
         <div className="space-y-3">
-          {renderGlobalState() !== null ? renderGlobalState() :
-            display.map((r, idx) => {
+          {renderGlobalState() !== null ? renderGlobalState() : null}
+          {renderGlobalState() === null && display.map((r, idx) => {
               const rid = getRowIdInternal(r);
               return (
                 <MobileRecordCard
