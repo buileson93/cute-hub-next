@@ -382,15 +382,17 @@ function HeThongCayPage() {
       }
 
       const realSystems = htList.map((h) => {
-        const nhom = nhomList.find((n) => n.id === h.nhomId);
+        const nh = resolveNhom(h.nhomId, taxonomy);
+        const resolved = resolveHeThong(h.ma, taxonomy);
         return {
           ma: h.ma,
           ten: h.ten,
-          nhMa: nhom?.ma || h.nhomId || "KHAC",
-          nhTen: nhom?.ten || taxonomy?.nhomNameMap.get(h.nhomId || "KHAC") || "Khác",
-          plId: h.phanLoaiId || nhom?.phanLoaiId || plList[0]?.id || "KHAC",
+          nhMa: nh.ma,
+          nhTen: nh.label,
+          plId: h.phanLoaiId || plList[0]?.id || "KHAC",
         };
       });
+
 
       const ordNh = (ma: string) => (overrides?.get(okey("nh", ma))?.du_lieu as any)?.thu_tu;
       const ordHt = (ma: string) => (overrides?.get(okey("ht", ma))?.du_lieu as any)?.thu_tu;
