@@ -50,7 +50,7 @@ export async function auditPublicApiCall(
 ) {
   try {
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
-    // Sử dụng try-catch nội bộ để không làm crash endpoint chính nếu logging lỗi
+    // Sử dụng await mà không có .catch để tránh lỗi TS nếu chain không hỗ trợ catch trực tiếp
     await supabaseAdmin.from("audit_log").insert({
       action: `api.public.hook.${endpoint}`,
       detail: {
@@ -58,8 +58,8 @@ export async function auditPublicApiCall(
         timestamp: new Date().toISOString(),
         ...metadata,
       },
-    }).catch(err => console.error(`[Audit Log DB Error] ${endpoint}:`, err));
-  } catch (err) {
-    console.error(`[API Security Audit Failed] ${endpoint}:`, err);
+    });
+  } catch (err: any) {
+    console.error(`[API Security Audit Failed] ${endpoint}:`, err?.message || String(err));
   }
 }
