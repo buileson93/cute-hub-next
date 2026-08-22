@@ -208,7 +208,7 @@ export const resetUserPassword = createServerFn({ method: "POST" })
     z
       .object({
         user_id: z.string().uuid(),
-        password: z.string().min(6).max(72),
+        password: z.string().min(8).max(72),
       })
       .parse(input),
   )
