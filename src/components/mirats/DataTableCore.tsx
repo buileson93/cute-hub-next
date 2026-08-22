@@ -263,7 +263,7 @@ export function DataTableCore<T>({
                         flex: col.width ? `0 0 ${col.width}px` : `1 1 ${col.minWidth || 100}px`
                       }}
                       className={cn(
-                        "mirats-table-cell-base border-b border-r border-border/20",
+                        "mirats-table-cell-base border-b border-r border-border/20 astryx-table-cell",
                         col.cellClassName,
                         col.sticky &&
                           "sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-r border-border/20",
