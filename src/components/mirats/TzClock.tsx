@@ -44,89 +44,30 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label={`IMPLEMENTATION MODE — TABLE COLOR STATES ONLY.
-
-Không sửa data loading, virtualization hoặc horizontal scroll trong prompt này.
-
-Phạm vi:
-
-- src/styles.css
-
-- src/styles/astryx-component-skins.css
-
-- src/components/ui/table.tsx
-
-- StandardTable/DataTableCore/RawTableWrapper chỉ khi cần bỏ class trùng.
-
-Nguyên nhân đã xác nhận:
-
-- [data-astryx-theme="df3"] --color-accent light = #262626;
-
-- .astryx-table-row:hover dùng var(--color-accent) !important;
-
-- rule này thắng hover muted/primary tint của component và làm row gần đen.
-
-Các bước:
-
-1. Viết visual/DOM test RED cho light và dark:
-
-- default;
-
-- hover;
-
-- selected;
-
-- selected + hover;
-
-- keyboard focus;
-
-- expanded;
-
-- disabled/non-clickable.
-
-2. Không dùng semantic --color-accent của Astryx làm nền row. Tạo token table riêng, ví dụ:
-
-- --table-row-hover;
-
-- --table-row-selected;
-
-- --table-row-selected-hover;
-
-- --table-row-focus-ring.
-
-Các token phải map tới muted/primary tint phù hợp light/dark.
-
-3. Xóa !important khỏi hover row. Chỉ một layer sở hữu row background; không định nghĩa cùng state ở styles.css, skin và component.
-
-4. Đảm bảo text/cell/badge/link/icon giữ contrast tối thiểu WCAG AA ở hover và selected.
-
-5. Sticky cells dùng cùng background state với row; không tạo mảng màu trắng/đen tách khỏi row.
-
-6. Row không clickable không dùng cursor pointer hoặc active scale. Clickable row có focus-visible rõ nhưng không đổi layout.
-
-7. Hover chỉ là enhancement; selected không phụ thuộc hover để nhận biết.
-
-8. Kiểm tra raw table, StandardTable và DataTableCore để không có implementation nào quay lại nền đen.
-
-KẾT QUẢ CẦN ĐẠT SAU PROMPT 10M
-
-- Light mode hover là tint nhẹ, chữ vẫn tối và dễ đọc; không còn nền đen.
-
-- Dark mode hover sáng hơn nền vừa đủ, không lóa và không mất chữ.
-
-- Selected, selected-hover, focus và expanded phân biệt rõ ràng.
-
-- Sticky cells đồng màu với toàn row.
-
-- Không còn .astryx-table-row:hover sử dụng var(--color-accent) !important.
-
-- Contrast tests và visual regression GREEN tại 390/768/1024/1440px.
-
-Commit:
-
-- test(ui): reproduce black table row hover
-
-- fix(ui): define accessible table row states`}
+          aria-label={`VERIFICATION MODE — MINDMAP/TABLE ONLY.
+1. Chạy app với dữ liệu có tên, mã, UUID, orphan reference và text dài.
+2. Chụp screenshot trước/sau tại 390/768/1024/1440px, light/dark.
+3. Kiểm tra cả:
+- Cây phân cấp;
+- Sơ đồ tổng thể/mindmap;
+- StandardTable;
+- DataTableCore;
+- ít nhất hai raw table;
+- bảng có sticky selection + action columns;
+- bảng virtualized 1.000+ rows.
+4. Với mindmap: xác minh primary label là tên; code chỉ là metadata; search/rename/expand hoạt động.
+5. Với table: đo computed background/text contrast của default/hover/selected/focus.
+6. Xác minh scrollWidth, clientWidth, thay đổi scrollLeft bằng mouse/trackpad/keyboard/touch.
+7. Chạy test, typecheck, lint, build, ui:audit và Playwright visual tests bằng output fresh.
+8. Nếu không có runtime/browser hoặc DB fixture, báo BLOCKED; không kết luận pass từ source inspection.
+KẾT QUẢ CẦN ĐẠT SAU PROMPT 10O
+- Không còn UUID/mã làm primary label khi entity có tên.
+- Không còn hover row màu đen hoặc mất tương phản.
+- Bảng rộng cuộn ngang được ở desktop/tablet và chỉ có một scroll owner.
+- Không regression mobile, sticky header, virtualization, selection, resize hoặc action đúng record.
+- Có screenshot, computed-style evidence và test output exit 0 cho từng acceptance criterion.
+- Mọi lỗi còn lại được ghi thành ticket riêng; không ghi “10K hoàn tất” nếu thiếu runtime evidence.
+tài khoản test là buileson93@gmail.com pass: 12345`}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">
