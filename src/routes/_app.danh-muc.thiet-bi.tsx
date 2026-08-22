@@ -1458,6 +1458,7 @@ function DanhMucThietBiPage() {
                     <Button
                       variant="outline"
                       size="sm"
+                      aria-label="Trang sau"
                       className="h-7 text-[10px] px-2"
                       disabled={(page + 1) * pageSize >= totalCount || pagedLoading}
                       onClick={(e) => {
