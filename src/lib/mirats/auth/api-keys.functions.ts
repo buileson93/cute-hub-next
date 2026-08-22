@@ -131,6 +131,15 @@ export async function verifyApiKey(
   scopes?: string[];
   key_id?: string;
 }> {
+  const pepper = process.env["MIRATS_API_PEPPER"];
+  const isProd = process.env["NODE_ENV"] === "production";
+
+  // Fail closed if pepper is missing or default in production
+  if (!pepper || (isProd && pepper === "default-pepper-change-me")) {
+    console.error("[auth] MIRATS_API_PEPPER is not configured correctly");
+    return { isValid: false };
+  }
+
   if (!token.startsWith("mrt_ext_live_")) return { isValid: false };
 
   const parts = token.split("_");
@@ -140,8 +149,7 @@ export async function verifyApiKey(
   const secret = parts[4];
 
   // IP Hashing for privacy
-  const crypto = await import("crypto");
-  const ipHash = ip ? crypto.createHash("sha256").update(ip).digest("hex") : null;
+  const ipHash = ip ? createHmac("sha256", pepper).update(ip).digest("hex") : null;
 
   const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
@@ -153,16 +161,13 @@ export async function verifyApiKey(
 
   if (error || !keyData) {
     // Audit Log: Failed attempt (invalid key_id)
-    supabaseAdmin
-      .from("api_audit_log" as any)
-      .insert({
-        key_id: keyId,
-        action: "api_call",
-        result: "failure",
-        ip_hash: ipHash,
-        metadata: { reason: "invalid_key_id" },
-      } as any)
-      .then();
+    await supabaseAdmin.from("api_audit_log" as any).insert({
+      key_id: keyId,
+      action: "api_call",
+      result: "failure",
+      ip_hash: ipHash,
+      metadata: { reason: "invalid_key_id" },
+    } as any);
 
     return { isValid: false };
   }
@@ -171,48 +176,40 @@ export async function verifyApiKey(
 
   if (typedKey.revoked_at || (typedKey.expires_at && new Date(typedKey.expires_at) < new Date())) {
     // Audit Log: Failed attempt (expired/revoked)
-    supabaseAdmin
-      .from("api_audit_log" as any)
-      .insert({
-        key_id: keyId,
-        user_id: typedKey.user_id,
-        action: "api_call",
-        result: "failure",
-        ip_hash: ipHash,
-        metadata: { reason: typedKey.revoked_at ? "revoked" : "expired" },
-      } as any)
-      .then();
+    await supabaseAdmin.from("api_audit_log" as any).insert({
+      key_id: keyId,
+      user_id: typedKey.user_id,
+      action: "api_call",
+      result: "failure",
+      ip_hash: ipHash,
+      metadata: { reason: typedKey.revoked_at ? "revoked" : "expired" },
+    } as any);
 
     return { isValid: false };
   }
 
-  const pepper = process.env["MIRATS_API_PEPPER"] || "default-pepper-change-me";
   const incomingHash = await hashSecret(secret, pepper);
 
   const isValid = timingSafeEqual(Buffer.from(typedKey.secret_hash), Buffer.from(incomingHash));
 
   if (isValid) {
-    // Non-blocking update of last used info
-    supabaseAdmin
+    // Update last used info
+    await supabaseAdmin
       .from("api_keys" as any)
       .update({
         last_used_at: new Date().toISOString(),
         last_used_ip_hash: ipHash,
       } as any)
-      .eq("key_id", keyId)
-      .then();
+      .eq("key_id", keyId);
 
     // Audit Log: API Call
-    supabaseAdmin
-      .from("api_audit_log" as any)
-      .insert({
-        key_id: keyId,
-        user_id: typedKey.user_id,
-        action: "api_call",
-        result: "success",
-        ip_hash: ipHash,
-      } as any)
-      .then();
+    await supabaseAdmin.from("api_audit_log" as any).insert({
+      key_id: keyId,
+      user_id: typedKey.user_id,
+      action: "api_call",
+      result: "success",
+      ip_hash: ipHash,
+    } as any);
 
     return {
       isValid: true,
@@ -223,16 +220,13 @@ export async function verifyApiKey(
   }
 
   // Audit Log: Failed attempt
-  supabaseAdmin
-    .from("api_audit_log" as any)
-    .insert({
-      key_id: keyId,
-      action: "api_call",
-      result: "failure",
-      ip_hash: ipHash,
-      metadata: { reason: "invalid_secret" },
-    } as any)
-    .then();
+  await supabaseAdmin.from("api_audit_log" as any).insert({
+    key_id: keyId,
+    action: "api_call",
+    result: "failure",
+    ip_hash: ipHash,
+    metadata: { reason: "invalid_secret" },
+  } as any);
 
   return { isValid: false };
 }
