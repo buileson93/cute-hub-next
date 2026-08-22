@@ -84,7 +84,9 @@ export function TreeView({
   onMoveGroup: (req: MoveGroupReq) => void;
   onMoveDevice: (req: MoveDeviceReq) => void;
   posByHt: Map<string, any>;
+  canManageNodes?: boolean;
 }) {
+
   const [expanded, setExpanded] = useState<Set<string>>(new Set(["root"]));
   const [selectedTp, setSelectedTp] = useState<{ vt: any; htId: string } | null>(null);
 
