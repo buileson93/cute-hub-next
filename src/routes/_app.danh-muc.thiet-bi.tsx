@@ -1445,6 +1445,7 @@ function DanhMucThietBiPage() {
                     <Button
                       variant="outline"
                       size="sm"
+                      aria-label="Trang trước"
                       className="h-7 text-[10px] px-2"
                       disabled={page === 0 || pagedLoading}
                       onClick={(e) => {
