@@ -3,6 +3,7 @@
 // Module thuần, không phụ thuộc React/DB — dễ test.
 // ============================================================================
 import type { CompiledField, VisibleIfRule } from "./form-schema";
+import { safeEvaluate } from "./expression-parser";
 
 export type FormValues = Record<string, unknown>;
 
