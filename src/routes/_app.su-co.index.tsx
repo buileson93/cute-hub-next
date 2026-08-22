@@ -298,8 +298,28 @@ function SuCoPage() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Đã đóng sự cố & ghi vào sổ lý lịch");
+      toast.success("Đã kết thúc sự cố & ghi vào sổ lý lịch");
       setClosing(null);
+      qc.invalidateQueries({ queryKey: ["operations_data"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const restoreM = useMutation({
+    mutationFn: async (maSuCo: string) => {
+      const { error } = await supabase
+        .from("su_co")
+        .update({
+          trang_thai: "Mới",
+          thoi_diem_khac_phuc: null,
+          thoi_gian_gian_doan: null,
+          bien_phap_xu_ly: null,
+        })
+        .eq("ma_su_co", maSuCo);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Đã khôi phục trạng thái sự cố về ban đầu");
       qc.invalidateQueries({ queryKey: ["operations_data"] });
     },
     onError: (e: Error) => toast.error(e.message),
