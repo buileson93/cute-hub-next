@@ -269,7 +269,7 @@ function DuAnDetailPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col p-4 md:p-6 gap-4">
       {/* Astryx Page Header */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2 text-xs text-slate-500">
@@ -380,7 +380,7 @@ function DuAnDetailPage() {
             {canAddTask && (
               <Button
                 size="sm"
-                className="h-8 px-3 text-xs bg-slate-900 hover:bg-slate-800"
+                className="h-8 px-3 text-xs"
                 onClick={() => {
                   setDefaultMocId(mocs?.[0]?.id ?? null);
                   setEditingCV(null);
@@ -536,22 +536,18 @@ function DuAnDetailPage() {
   );
 }
 
-function Stat({
-  label,
-  value,
-  icon: Icon,
-}: {
-  label: string;
-  value: string;
-  icon: typeof CalendarIcon;
-}) {
+function Stat({ label, value, icon: Icon }: { label: string; value: string; icon: any }) {
   return (
-    <div>
-      <div className="text-[11px] text-slate-500 mb-1 flex items-center gap-1.5">
-        <Icon className="h-3 w-3" />
-        {label}
+    <div className="flex items-center gap-2.5 min-w-[120px]">
+      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 border border-slate-100">
+        <Icon className="h-4 w-4 text-slate-500" />
       </div>
-      <div className="text-sm font-medium truncate">{value}</div>
+      <div className="flex flex-col min-w-0">
+        <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 leading-none mb-1">
+          {label}
+        </span>
+        <span className="text-xs font-semibold text-slate-900 truncate">{value}</span>
+      </div>
     </div>
   );
 }
@@ -1439,3 +1435,5 @@ function EditCongViecDialog({
     </Dialog>
   );
 }
+
+
