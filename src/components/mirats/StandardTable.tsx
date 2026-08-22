@@ -375,7 +375,7 @@ export function StandardTable<T>({
     overscan: 10,
     getItemKey: (index) => {
       const row = display[index];
-      return row ? getRowIdInternal(row) : index;
+      return row ? getRowIdInternal(row) : `row-${index}`;
     },
   });
 
