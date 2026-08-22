@@ -226,6 +226,12 @@ function DanhMucThietBiPage() {
   // PHÂN TRANG 10H
   const [page, setPage] = useState(0);
   const pageSize = 100;
+  
+  // Clear search/filters when they change, reset page
+  useEffect(() => {
+    setPage(0);
+  }, [sp.q, sp.loai, sp.tt, sp.tags, sp.mode, sp.standalone, sp.retired, sp.compatibleSystem]);
+
   const { data: pagedData, isLoading: pagedLoading } = useThietBiList(
     page,
     pageSize,
