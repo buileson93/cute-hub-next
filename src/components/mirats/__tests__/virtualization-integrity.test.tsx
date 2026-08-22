@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, afterEach, vi } from "vitest";
-import { render, screen, cleanup, fireEvent, within } from "@testing-library/react";
+import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { StandardTable, type ColumnDef } from "../StandardTable";
 import React from "react";
 
@@ -28,7 +28,7 @@ const rows: Row[] = [
 ];
 
 const columns: ColumnDef<Row>[] = [
-  { key: "name", header: "Name", label: "Name", value: (r) => r.name, sortable: true },
+  { key: "name", header: "Name", value: (r) => r.name, sortable: true },
 ];
 
 describe("StandardTable Data Pipeline & Virtualization", () => {
@@ -44,8 +44,6 @@ describe("StandardTable Data Pipeline & Virtualization", () => {
       />
     );
 
-    // Dùng data-index vì role cell có vẻ không được JSDOM nhận diện tốt qua shadcn components
-    // Hoặc kiểm tra text trực tiếp trong tbody
     const alpha = screen.getByText("Alpha");
     expect(alpha).toBeDefined();
 
@@ -53,7 +51,6 @@ describe("StandardTable Data Pipeline & Virtualization", () => {
     fireEvent.click(nameHeader); // asc (Alpha, Bravo, Charlie)
     fireEvent.click(nameHeader); // desc (Charlie, Bravo, Alpha)
     
-    // Sau khi sort desc, Charlie phải ở đầu
     const body = document.querySelector('tbody');
     const firstRow = body?.querySelector('tr[data-index="0"]');
     expect(firstRow?.textContent).toContain("Charlie");
@@ -72,7 +69,6 @@ describe("StandardTable Data Pipeline & Virtualization", () => {
       />
     );
 
-    // Với isTest fix, virtual rows nên render ngay
     const alpha = screen.queryByText("Alpha");
     expect(alpha).not.toBeNull();
     
