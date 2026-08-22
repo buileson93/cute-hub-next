@@ -30,3 +30,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Security & Data
+.env
+supabase/dump/data/*.csv
+*.bak
+*.sql
+*.dump
+*.pem
+*.key

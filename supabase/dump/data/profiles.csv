@@ -1,9 +1,0 @@
-id,email,ho_ten,don_vi,active,created_at,updated_at,avatar_url,tour_hoan_thanh
-2d032b63-b724-48ff-99e4-70210a1b4a53,ktv.pba@demo.mirats.vn,KTV PBA,,t,2026-07-16 03:35:51.715456+00,2026-07-16 03:35:51.715456+00,,f
-02d965ba-2503-4b25-8cbc-46a8361c3077,ktv.mkt@demo.mirats.vn,KTV MKT,,t,2026-07-16 03:35:51.715456+00,2026-07-16 03:35:51.715456+00,,f
-27f06c5f-acaf-4285-b282-b9dfbf1f3d0c,phutrach.pba@demo.mirats.vn,Phụ trách PBA,,t,2026-07-16 03:35:51.715456+00,2026-07-16 03:35:51.715456+00,,f
-48fcf807-9275-4edf-b354-c7568065900b,phutrach.mkt@demo.mirats.vn,Phụ trách MKT,,t,2026-07-16 03:35:51.715456+00,2026-07-16 03:35:51.715456+00,,f
-af51a41f-360d-4342-bb83-d7ac83a7dee8,phongkt@demo.mirats.vn,Phòng Kỹ thuật,,t,2026-07-16 03:35:51.715456+00,2026-07-16 03:35:51.715456+00,,f
-caa50827-fb03-483d-8026-5894f8737398,readonly@demo.mirats.vn,Chỉ đọc,,t,2026-07-16 03:35:51.715456+00,2026-07-16 03:35:51.715456+00,,f
-fc5ccc5c-76e4-41c3-940e-32132718a9a6,admin@demo.mirats.vn,Quản trị hệ thống,,t,2026-07-16 03:35:51.715456+00,2026-07-16 03:42:40.064772+00,,t
-7b178d3c-127b-4bdd-a77c-a3013cdf365b,buileson93@gmail.com,Bùi Lê Sơn,,t,2026-07-16 03:35:51.715456+00,2026-07-16 03:59:31.28077+00,,t

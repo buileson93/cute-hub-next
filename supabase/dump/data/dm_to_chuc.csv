@@ -1,9 +1,0 @@
-id,ma,ten,loai,to_chuc_cha_id,mau_sac,ghi_chu,thu_tu,active,created_at,updated_at,merged_into,deactivated_at
-11836c21-7578-420d-a3ec-a2a3aa6b939e,VATM,Tổng công ty Quản lý bay Việt Nam,tong_cong_ty,,#2563eb,,0,t,2026-07-14 06:01:03.358926+00,2026-07-14 06:01:03.358926+00,,
-22e9f4a5-2377-499b-a10d-9cc036258ad8,QLBMT,Công ty Quản lý bay miền Trung,don_vi_thanh_vien,11836c21-7578-420d-a3ec-a2a3aa6b939e,#059669,,1,t,2026-07-14 06:01:03.358926+00,2026-07-14 06:01:03.358926+00,,
-a54fed54-ea80-4ff6-a545-eab50f6e92ad,QLBMN,Công ty Quản lý bay miền Nam,don_vi_thanh_vien,11836c21-7578-420d-a3ec-a2a3aa6b939e,#d97706,,2,t,2026-07-14 06:01:03.358926+00,2026-07-14 06:01:03.358926+00,,
-09b7c810-d71c-419c-9adf-817c7ac088f8,QLBMB,Công ty Quản lý bay miền Bắc,don_vi_thanh_vien,11836c21-7578-420d-a3ec-a2a3aa6b939e,#dc2626,,3,t,2026-07-14 06:01:03.358926+00,2026-07-14 06:01:03.358926+00,,
-f6418950-b307-4ef0-a918-64f42d609d69,CTQLLKL,Công ty Quản lý luồng không lưu,don_vi_thanh_vien,11836c21-7578-420d-a3ec-a2a3aa6b939e,#7c3aed,,4,t,2026-07-14 06:01:03.358926+00,2026-07-14 06:01:03.358926+00,,
-25e079bd-bbbe-4cff-967c-13d51b410ea7,TTTBTTHK,Trung tâm Thông báo tin tức hàng không,don_vi_thanh_vien,11836c21-7578-420d-a3ec-a2a3aa6b939e,#0891b2,,5,t,2026-07-14 06:01:03.358926+00,2026-07-14 06:01:03.358926+00,,
-fda64a1b-3d38-4d15-a53e-a00c8ef041e9,ACV,Tổng công ty Cảng hàng không Việt Nam (ACV),co_quan_ngoai,,#64748b,,10,t,2026-07-14 06:01:03.358926+00,2026-07-14 06:01:03.358926+00,,
-c1a5704b-62aa-4c43-877b-4f654ec30399,TCKTTV,Tổng cục Khí tượng Thủy văn,co_quan_ngoai,,#94a3b8,,11,t,2026-07-14 06:01:03.358926+00,2026-07-14 06:01:03.358926+00,,

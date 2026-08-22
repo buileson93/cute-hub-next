@@ -1,5 +1,0 @@
-msg
-service_role: 42501 permission denied for table dm_don_vi
-authenticator: 42501 permission denied for schema public
-anon: 42501 permission denied for table dm_don_vi
-authenticated: 42501 permission denied for table dm_don_vi
