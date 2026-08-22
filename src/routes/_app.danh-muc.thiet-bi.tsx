@@ -1431,7 +1431,7 @@ function DanhMucThietBiPage() {
                     </Label>
                   </div>
                 </div>
-                <div className="flex items-center justify-between mt-2 pt-2 border-t border-dashed">
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-dashed w-full">
                   <div className="text-[11px] text-muted-foreground italic">
                     Hiển thị {devices.length} / {totalCount} tài sản (Trang {page + 1})
                   </div>
@@ -1441,7 +1441,10 @@ function DanhMucThietBiPage() {
                       size="sm"
                       className="h-7 text-[10px] px-2"
                       disabled={page === 0 || pagedLoading}
-                      onClick={() => setPage((p) => Math.max(0, p - 1))}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPage((p) => Math.max(0, p - 1));
+                      }}
                     >
                       Trước
                     </Button>
@@ -1450,7 +1453,10 @@ function DanhMucThietBiPage() {
                       size="sm"
                       className="h-7 text-[10px] px-2"
                       disabled={(page + 1) * pageSize >= totalCount || pagedLoading}
-                      onClick={() => setPage((p) => p + 1)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPage((p) => p + 1);
+                      }}
                     >
                       Tiếp
                     </Button>
