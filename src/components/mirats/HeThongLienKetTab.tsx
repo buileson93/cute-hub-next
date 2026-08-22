@@ -18,6 +18,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useLienKetCuaHeThong, usePhanTichTacDong, LOP_LABEL } from "@/lib/mirats/lien-ket";
+import { useCan } from "@/hooks/use-permissions";
+
 import { LOAI_LIEN_KET_LABEL, type DoThiRow, type LoaiLienKetMa } from "@/lib/mirats/system-graph";
 
 /**
