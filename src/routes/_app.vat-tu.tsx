@@ -103,7 +103,7 @@ function VatTuPage() {
 
   const detail = useDetailPanel();
   const vatTuById = useMemo(
-    () => new Map((vatTu.data ?? []).map((v) => [v.id, v] as const)),
+    () => new Map((vatTu.data ?? []).map((v: VatTuRow) => [v.id, v] as const)),
     [vatTu.data],
   );
   const detailRow =
