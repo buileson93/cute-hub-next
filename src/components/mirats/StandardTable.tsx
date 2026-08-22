@@ -692,7 +692,7 @@ export function StandardTableInner<T>({
     if (trangThai.loi) {
       const err = trangThai.loi;
       if (errorContent) return errorContent;
-      const content = (
+      return (
         <div className="py-20 flex flex-col items-center justify-center text-center gap-4 border rounded-lg bg-card">
           <div className="text-sm text-destructive font-medium">{String(err)}</div>
           {err.retry && (
@@ -702,27 +702,31 @@ export function StandardTableInner<T>({
           )}
         </div>
       );
-      return content;
     }
 
     if (trangThai.dangTai) {
       if (loadingContent) return loadingContent;
-      const skeleton = (
+      return (
         <div className="p-4 border rounded-lg bg-card">
           <TableSkeleton cols={isMobile ? 1 : shownCols.length} rows={isMobile ? 3 : 6} />
         </div>
       );
-      return skeleton;
-    }
     }
 
     if (fullDisplay.length === 0) {
       return (
-        <div className="py-20 border rounded-lg bg-card">
-          <EmptyState
-            title={
-              hasFilter
-                ? "Không có dòng nào khớp bộ lọc"
+        <div className="py-20 border rounded-lg bg-card text-center">
+          {emptyContent ?? (
+            <div className="text-sm text-muted-foreground italic">
+              {hasFilter ? "Không có dòng nào khớp bộ lọc" : "Không có dữ liệu"}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return null;
+  };
                 : gated
                   ? "Vui lòng chọn bộ lọc để xem dữ liệu"
                   : emptyContent
