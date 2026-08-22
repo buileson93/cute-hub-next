@@ -1027,6 +1027,22 @@ export function StandardTableInner<T>({
                       )}
 
                       <DropdownMenuSeparator />
+                      <div className="flex flex-col gap-1 p-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 px-2 justify-start text-xs font-normal"
+                          onClick={() => {
+                            Object.keys(prefs.widths).forEach((k) => prefs.resetWidth(k));
+                          }}
+                        >
+                          <Icon name="action.reset" size="small" className="mr-2 h-3.5 w-3.5" />
+                          Đặt lại độ rộng
+                        </Button>
+                      </div>
+
+                      <DropdownMenuSeparator />
+
 
                       {/* Nhóm các cột theo 'group' nếu có, hoặc không nhóm */}
                       {Object.entries(
@@ -1313,9 +1329,10 @@ export function StandardTableInner<T>({
             <TableHeader className="bg-muted/30 sticky top-0 z-30 shadow-sm shadow-border/50">
               <TableRow
                 className={cn(
-                  "hover:bg-transparent border-b border-border/60 align-middle",
+                  "hover:bg-transparent border-b border-border/60 align-middle active:scale-100",
                   UI_DENSITY.TABLE_ROW_H,
                   "astryx-table-header",
+
                 )}
               >
                 {viewMode === "tablet" && (
@@ -1549,6 +1566,8 @@ export function StandardTableInner<T>({
                         <TableRow
                           key={virtualRow.key}
                           data-index={virtualRow.index}
+                          className="active:scale-100"
+
                           ref={(el) => {
                             rowVirtualizer.measureElement(el);
                             // Nếu có lineClamp hoặc nội dung phức tạp, TanStack Virtual sẽ tự đo lại qua ref này
