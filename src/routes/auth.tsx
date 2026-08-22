@@ -194,10 +194,10 @@ function AuthPage() {
             </motion.div>
 
             {/* Tabs */}
-            <div className="relative mb-10 grid grid-cols-2 rounded-2xl bg-[#f1f5f9] p-1.5">
+            <div className="relative mb-10 grid grid-cols-2 rounded-2xl bg-muted/50 p-1.5">
               <motion.div
                 aria-hidden
-                className="absolute inset-y-1.5 left-1.5 w-[calc(50%-1.5px)] rounded-xl bg-card shadow-sm ring-1 ring-black/5"
+                className="absolute inset-y-1.5 left-1.5 w-[calc(50%-1.5px)] rounded-xl bg-card shadow-sm ring-1 ring-border/50"
                 animate={{ x: mode === "signin" ? "0%" : "100%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               />
