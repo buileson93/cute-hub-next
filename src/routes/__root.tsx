@@ -161,7 +161,7 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       {/* 
-        Đã tối ưu translate3d (GPU), OptimizedCell (Memo) và hình học bảng (Table Geometry) để đảm bảo cuộn ngang mượt và thanh cuộn luôn hiển thị trong viewport. Đã sửa lỗi sticky columns và z-index để không bị chồng lấp khi cuộn.
+        Đã tối ưu hình học bảng (Flex-stretch), GPU acceleration (translate3d) và sticky columns để đảm bảo cuộn ngang mượt mà và thanh cuộn luôn hiển thị trong viewport. Đã sửa lỗi layout header và hàng dữ liệu không khớp khi dùng ảo hóa.
       */}
       <head>
         <HeadContent />
