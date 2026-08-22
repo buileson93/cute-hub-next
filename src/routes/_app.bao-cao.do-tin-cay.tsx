@@ -281,7 +281,11 @@ function DoTinCayPage() {
     navigate({ search: () => ({ from: f.from, to: f.to, bucket: f.bucket }), replace: true });
     toast.success(`Áp dụng: ${f.name}`);
   };
-  const removeSaved = (id: string) => persistSaved(savedFilters.filter((f) => f.id !== id));
+  const removeSaved = (id: string) => {
+    persistSaved(savedFilters.filter((f) => f.id !== id));
+    toast.success("Đã xoá bộ lọc");
+  };
+
 
   const copyShareLink = async () => {
     const url = new URL(window.location.href);

@@ -123,8 +123,9 @@ function HeThongPage() {
         `Đã xoá ${deleted} hệ thống${blocked ? ` · bỏ qua ${blocked} còn tài sản` : ""}.`,
       );
     },
-    onError: (e) => toast.error((e as Error).message),
+    onError: (e) => toast.error("Xoá thất bại: " + (e as Error).message),
   });
+
 
   const toggleActiveMut = useMutation({
     mutationFn: async ({ list, active }: { list: Row[]; active: boolean }) => {
@@ -142,8 +143,9 @@ function HeThongPage() {
       invalidateTaxonomy(qc);
       toast.success(`Đã ${vars.active ? "kích hoạt" : "tạm dừng"} ${n} hệ thống.`);
     },
-    onError: (e) => toast.error((e as Error).message),
+    onError: (e) => toast.error("Thao tác thất bại: " + (e as Error).message),
   });
+
 
   return (
     <div className={`space-y-4 ${UI_DENSITY.PAGE_PADDING}`}>
