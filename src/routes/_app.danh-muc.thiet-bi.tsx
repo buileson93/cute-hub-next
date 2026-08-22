@@ -1105,11 +1105,14 @@ function DanhMucThietBiPage() {
   // ---- KPI Stats & Click-to-filter ----
   const kpiStats = useMemo(() => {
     const total = totalCount;
+    // TỐI ƯU 10H: Chỉ đếm trên trang hiện tại để tránh heavy fetch
+    // Thực tế nên dùng server-side RPC để lấy count chính xác theo condition
     const inService = devices.filter((d) => d.trang_thai === "Đang sử dụng").length;
     const warranty = devices.filter(
       (d) => d.han_bao_hanh && new Date(d.han_bao_hanh) > new Date(),
     ).length;
     const lowLife = devices.filter((d) => d._tyLeTuoiTho !== null && d._tyLeTuoiTho < 20).length;
+
 
     return [
       {
