@@ -81,6 +81,34 @@ export function DataTableCore<T>({
   const [calculatedMaxHeight, setCalculatedMaxHeight] = useState<string | number | undefined>(
     initialMaxHeight,
   );
+  const [adaptiveOverscan, setAdaptiveOverscan] = useState(8);
+  const lastScrollTime = useRef(0);
+  const frameCount = useRef(0);
+
+  // Kỹ thuật Adaptive Overscan: Theo dõi FPS đơn giản để điều chỉnh overscan
+  useEffect(() => {
+    if (!virtualize) return;
+    
+    let frameId: number;
+    const checkFps = () => {
+      frameCount.current++;
+      const now = performance.now();
+      if (now - lastScrollTime.current > 1000) {
+        const fps = frameCount.current;
+        // Nếu FPS thấp (< 40), giảm overscan để giảm DOM nodes
+        if (fps < 40) setAdaptiveOverscan(prev => Math.max(4, prev - 1));
+        // Nếu FPS cao (> 55), tăng overscan để mượt hơn
+        else if (fps > 55) setAdaptiveOverscan(prev => Math.min(15, prev + 1));
+        
+        frameCount.current = 0;
+        lastScrollTime.current = now;
+      }
+      frameId = requestAnimationFrame(checkFps);
+    };
+    
+    frameId = requestAnimationFrame(checkFps);
+    return () => cancelAnimationFrame(frameId);
+  }, [virtualize]);
 
   const estimateRowHeight = useMemo(() => {
     if (density === "compact") return 36;
@@ -93,7 +121,7 @@ export function DataTableCore<T>({
     count: rows.length,
     getScrollElement,
     estimateSize: useCallback(() => estimateRowHeight, [estimateRowHeight]),
-    overscan: 8, // Giảm overscan xuống một chút để tối ưu DOM node khi cuộn chậm
+    overscan: adaptiveOverscan,
     enabled: virtualize,
     getItemKey: useCallback((index: number) => {
       const row = rows[index];
@@ -282,6 +310,8 @@ export function DataTableCore<T>({
                     <OptimizedCell
                       key={col.key}
                       colKey={col.key}
+                      rowId={id}
+                      dataHash={String((row as any)[col.key] ?? '')}
                       style={{
                         width: col.width,
                         minWidth: col.minWidth || (col.width ? undefined : 100),

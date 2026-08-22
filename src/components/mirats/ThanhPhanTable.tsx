@@ -360,7 +360,7 @@ export type ThanhPhanTableProps = {
 
 export function ThanhPhanTable({
   hideHeader = false,
-  tableKey = "he-thong:thanh-phan-toan-cuc",
+  tableKey = "mirats:unified-tp-table", // Sử dụng key chung để share preference
   externalEditMode,
 }: ThanhPhanTableProps) {
   const [q, setQ] = useState("");

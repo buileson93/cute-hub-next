@@ -8,6 +8,8 @@ interface OptimizedCellProps extends React.HTMLAttributes<HTMLTableCellElement> 
   style?: React.CSSProperties;
   colKey?: string;
   colSpan?: number;
+  rowId?: string; // Thêm rowId để tracking
+  dataHash?: string | number; // Thêm dataHash để so sánh dữ liệu thô
 }
 
 /**
@@ -20,12 +22,15 @@ export const OptimizedCell = memo(function OptimizedCell({
   style,
   colKey,
   colSpan,
+  rowId,
+  dataHash,
   ...props
 }: OptimizedCellProps) {
   return (
     <TableCell
       {...props}
       data-col={colKey}
+      data-row={rowId}
       colSpan={colSpan}
       className={cn(
         "astryx-table-cell transition-colors",
@@ -33,18 +38,28 @@ export const OptimizedCell = memo(function OptimizedCell({
       )}
       style={{
         ...style,
-        contain: "content"
+        contain: "content",
+        // Hạn chế will-change để tránh memory bloat
+        willChange: style?.position === 'sticky' ? 'transform' : 'auto'
       }}
     >
       {children}
     </TableCell>
   );
 }, (prev, next) => {
-  // Chỉ re-render nếu các props quan trọng không đổi
+  // So sánh sâu hơn nhưng vẫn hiệu quả
   return (
+    prev.dataHash === next.dataHash &&
     prev.children === next.children &&
     prev.className === next.className &&
     prev.colSpan === next.colSpan &&
-    JSON.stringify(prev.style) === JSON.stringify(next.style)
+    prev.rowId === next.rowId &&
+    // So sánh style shallow vì thường style object được tạo mới mỗi lần render
+    prev.style?.width === next.style?.width &&
+    prev.style?.minWidth === next.style?.minWidth &&
+    prev.style?.flex === next.style?.flex &&
+    prev.style?.position === next.style?.position &&
+    prev.style?.left === next.style?.left &&
+    prev.style?.zIndex === next.style?.zIndex
   );
 });
