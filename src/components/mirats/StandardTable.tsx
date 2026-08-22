@@ -371,7 +371,11 @@ export function StandardTable<T>({
     count: display.length,
     getScrollElement: () => scrollContainerRef.current,
     estimateSize: () => (density === "compact" ? 36 : 44),
-    overscan: 15, // Tăng overscan để mượt hơn
+    overscan: 10,
+    getItemKey: (index) => {
+      const row = display[index];
+      return row ? getRowIdInternal(row) : index;
+    },
   });
 
   useEffect(() => {

@@ -128,7 +128,7 @@ export function useInfiniteTaiSanRows(q: string = "", bucket: string = "all", en
         sortField: "ma",
         dir: "asc",
         cursor: pageParam,
-        kichThuoc: 200,
+        kichThuoc: 100,
       });
       return res;
     },
@@ -211,7 +211,7 @@ export function useInfiniteThanhPhanRows(q: string = "", enabled: boolean = true
         sortField: "ma",
         dir: "asc",
         cursor: pageParam,
-        kichThuoc: 200,
+        kichThuoc: 100,
       });
       return res;
     },
