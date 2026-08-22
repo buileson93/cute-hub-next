@@ -114,7 +114,7 @@ function VatTuPage() {
     const kw = q.trim().toLowerCase();
     if (!kw) return list;
     return list.filter(
-      (r) =>
+      (r: TonKhoRow) =>
         r.ten_vat_tu.toLowerCase().includes(kw) ||
         (r.ma_vat_tu ?? "").toLowerCase().includes(kw) ||
         r.ten_kho.toLowerCase().includes(kw),
