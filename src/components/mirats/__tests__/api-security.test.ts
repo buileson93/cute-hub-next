@@ -2,46 +2,42 @@ import { test, expect } from 'vitest';
 
 const BASE_URL = 'http://localhost:8080';
 
-// Mock secret for testing environment if needed, 
-// but we want to test against the ACTUAL environment to see if it's currently open.
 const TARGETS = [
-  '/api/public/hooks/test-email-alerts',
-  '/api/public/hooks/pm-generate',
-  '/api/public/hooks/scan-canh-bao',
-  '/api/public/hooks/r2-cleanup',
-  '/api/public/hooks/reliability-report',
+  { path: '/api/public/hooks/test-email-alerts', secretHeader: 'x-test-secret' },
+  { path: '/api/public/hooks/pm-generate', secretHeader: 'x-cron-secret' },
+  { path: '/api/public/hooks/scan-canh-bao', secretHeader: 'x-cron-secret' },
+  { path: '/api/public/hooks/r2-cleanup', secretHeader: 'x-cron-secret' },
+  { path: '/api/public/hooks/reliability-report', secretHeader: 'x-cron-secret' },
 ];
 
-test.each(TARGETS)('%s should be secured', async (path) => {
+test.each(TARGETS)('%s should be secured', async ({ path, secretHeader }) => {
   // Test 1: No header
   const resNoHeader = await fetch(`${BASE_URL}${path}`, { method: 'POST' });
-  // Should not be 200. Expected 401 or 404.
-  expect(resNoHeader.status, `Endpoint ${path} should not be public (no auth)` ).not.toBe(200);
+  // If secret not configured -> 404, if configured but missing -> 401
+  expect([401, 404]).toContain(resNoHeader.status);
 
   // Test 2: Wrong secret
+  const headers: Record<string, string> = {};
+  headers[secretHeader] = 'wrong-secret-value';
+  
   const resWrongSecret = await fetch(`${BASE_URL}${path}`, {
     method: 'POST',
-    headers: {
-      'x-cron-secret': 'wrong',
-      'x-backup-secret': 'wrong',
-      'apikey': 'wrong',
-      'Authorization': 'Bearer wrong'
-    }
+    headers
   });
-  expect(resWrongSecret.status, `Endpoint ${path} should reject wrong secret`).toBe(401);
+  
+  // Should NOT be 500. Should be 401 or 404.
+  expect(resWrongSecret.status, `Endpoint ${path} should reject wrong secret with 401/404, not ${resWrongSecret.status}`).toBeTypeOf('number');
+  expect([401, 404]).toContain(resWrongSecret.status);
 });
 
 test('/api/public/hooks/test-email-alerts restriction', async () => {
   const path = '/api/public/hooks/test-email-alerts';
-  // Try to send to an arbitrary email
+  // Try to send to an arbitrary email without valid secret first
   const res = await fetch(`${BASE_URL}${path}`, {
     method: 'POST',
     body: JSON.stringify({ to: 'attacker@example.com' }),
     headers: { 'Content-Type': 'application/json' }
   });
   
-  if (res.status === 200) {
-    const data = await res.json();
-    expect(data.recipient).not.toBe('attacker@example.com');
-  }
+  expect([401, 404]).toContain(res.status);
 });
