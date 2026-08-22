@@ -1277,7 +1277,7 @@ export function StandardTableInner<T>({
         >
           <Table
             className={cn(
-              "border-separate border-spacing-0 caption-bottom min-w-full",
+              "caption-bottom min-w-full astryx-table",
               density === "compact" && "text-[12px]",
               density === "comfortable" && "text-[13px]",
               density === "spacious" && "text-[14px]",
@@ -1366,7 +1366,7 @@ export function StandardTableInner<T>({
                         sortActive ? (sort!.dir === "asc" ? "ascending" : "descending") : "none"
                       }
                       className={cn(
-                        "group relative bg-muted/30 border-r border-border/50 last:border-r-0 p-0",
+                        "group relative astryx-table-header-cell p-0",
                         c.sticky && "sticky left-0 z-30",
                         selectable && c.sticky && "left-10",
                         c.align === "center" && "text-center",
