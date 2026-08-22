@@ -92,13 +92,13 @@ export function DossierRegister({ project_id }: { project_id: string }) {
           <Button variant="outline" size="sm">
             <Filter className="h-4 w-4 mr-2" /> Bộ lọc
           </Button>
-          <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700">
+          <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
             <Plus className="h-4 w-4 mr-2" /> Thêm hồ sơ
           </Button>
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 overflow-hidden bg-white">
+      <div className="rounded-xl border border-border overflow-hidden bg-card">
         <Table>
           <TableHeader className="bg-slate-50/50">
             <TableRow>
