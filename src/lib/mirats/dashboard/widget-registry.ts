@@ -94,5 +94,7 @@ export const DEFAULT_OVERVIEW_LAYOUT: DashboardWidgetConfig[] = [
   { id: "ov6", type: "asset-status-pie", w: 4, title: "Trạng thái" },
   { id: "ov7", type: "health-donut", w: 6, title: "Sức khỏe" },
   { id: "ov8", type: "completeness-gauge", w: 6, title: "Hồ sơ" },
-  { id: "ov9", type: "live-timeline", w: 12, title: "Nhật ký" },
+  { id: "ov9", type: "project-health-bar", w: 6, title: "Sức khỏe dự án" },
+  { id: "ov10", type: "dossier-compliance-heatmap", w: 6, title: "Tuân thủ hồ sơ" },
+  { id: "ov11", type: "live-timeline", w: 12, title: "Nhật ký" },
 ];
