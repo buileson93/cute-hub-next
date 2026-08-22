@@ -765,14 +765,14 @@ export function StandardTableInner<T>({
 
       case "number":
         return (
-          <span className="tabular-nums font-mono text-right w-full inline-block pr-1">
+          <span className="tabular-nums font-mono text-right w-full inline-block pr-1 truncate">
             {fmtSo(Number(val))}
           </span>
         );
 
       case "currency":
         return (
-          <span className="tabular-nums font-mono text-right w-full inline-block pr-1">
+          <span className="tabular-nums font-mono text-right w-full inline-block pr-1 truncate">
             {fmtVND(Number(val))}
           </span>
         );
@@ -797,7 +797,7 @@ export function StandardTableInner<T>({
       case "date":
         return (
           <AppTooltip noiDung={String(val)}>
-            <span className="text-[11px] tabular-nums font-mono text-right w-full inline-block pr-1 opacity-80">
+            <span className="text-[11px] tabular-nums font-mono text-right w-full inline-block pr-1 opacity-80 truncate">
               {fmtNgay(val)}
             </span>
           </AppTooltip>
@@ -1309,7 +1309,7 @@ export function StandardTableInner<T>({
             <TableHeader className="bg-muted/30 sticky top-0 z-30 shadow-sm shadow-border/50">
               <TableRow
                 className={cn(
-                  "hover:bg-transparent border-b border-border/60",
+                  "hover:bg-transparent border-b border-border/60 align-middle",
                   UI_DENSITY.TABLE_ROW_H,
                   "astryx-table-header",
                 )}
@@ -1653,7 +1653,7 @@ export function StandardTableInner<T>({
                                       : undefined,
                                 }}
                               >
-                                <div className="truncate w-full max-w-full">
+                                <div className="truncate w-full max-w-full flex items-center">
                                   {renderCellContent(c, r)}
                                 </div>
                               </TableCell>

@@ -152,7 +152,7 @@ export function PageHeader({
 
             <h1
               data-testid="page-header-title"
-              className={cn("truncate text-foreground uppercase flex-1 min-w-0", TYPO.H1)}
+              className={cn("truncate text-foreground uppercase flex-1 min-w-0 leading-tight", TYPO.H1)}
             >
               {title}
             </h1>
