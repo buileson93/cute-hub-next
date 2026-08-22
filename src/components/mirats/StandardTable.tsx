@@ -99,7 +99,6 @@ export interface ColumnDef<T> {
 }
 
 export type StdColumn<T> = ColumnDef<T>;
-}
 
 interface StandardTableProps<T> {
   rows: T[];
