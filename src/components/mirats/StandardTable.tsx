@@ -130,6 +130,15 @@ interface StandardTableProps<T> {
   className?: string;
   requireFilterToShow?: boolean;
   setSelected?: (ids: Set<string>) => void;
+  countUnit?: string;
+  bulkActions?: React.ReactNode | ((ctx: any) => React.ReactNode);
+  presets?: any[];
+  hideReorderToggle?: boolean;
+  pagination?: any;
+  toolbarLeft?: React.ReactNode;
+  expandable?: boolean;
+  renderExpansion?: (row: T) => React.ReactNode;
+  virtualizerOptions?: any;
 }
 
 export function StandardTable<T>({
@@ -155,6 +164,15 @@ export function StandardTable<T>({
   className,
   requireFilterToShow,
   setSelected,
+  countUnit,
+  bulkActions,
+  presets,
+  hideReorderToggle,
+  pagination,
+  toolbarLeft,
+  expandable,
+  renderExpansion,
+  virtualizerOptions,
 }: StandardTableProps<T>) {
   const [textFilters, setTextFilters] = useState<Record<string, string>>({});
   const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
@@ -470,6 +488,7 @@ export function StandardTable<T>({
       {(toolbar || toolbarRight) && (
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-1">
           <div className="flex items-center gap-2 flex-1 w-full sm:w-auto">
+            {toolbarLeft}
             {toolbar && renderToolbar(toolbar, {
               filteredRows: fullDisplay,
               visibleColumns: shownCols,
@@ -480,6 +499,14 @@ export function StandardTable<T>({
             })}
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            {bulkActions && renderToolbar(bulkActions, {
+              filteredRows: fullDisplay,
+              visibleColumns: shownCols,
+              allColumns: exportCols,
+              pageRows: display,
+              selectedRows,
+              clear: clearSelection,
+            })}
             {toolbarRight && renderToolbar(toolbarRight, {
               filteredRows: fullDisplay,
               visibleColumns: shownCols,
