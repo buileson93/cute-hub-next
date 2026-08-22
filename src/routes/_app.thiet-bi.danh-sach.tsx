@@ -44,9 +44,10 @@ function ThietBiListPage() {
     ? "loading"
     : error
       ? "error"
-      : !taxo?.devices.length
+      : !(pagedData?.rows.length)
         ? "empty"
         : "success";
+
 
   return (
     <PageBody className="flex flex-col">
