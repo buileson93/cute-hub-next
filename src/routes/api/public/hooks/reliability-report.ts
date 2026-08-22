@@ -1,35 +1,40 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { verifyApiSecret, auditPublicApiCall } from "@/lib/api-security.server";
 
-/**
- * Cron hook: gửi báo cáo độ tin cậy định kỳ qua Telegram.
- * POST /api/public/hooks/reliability-report
- * Header: x-cron-secret: <CRON_SECRET>
- * Body:   { "type": "weekly" | "monthly" }
- */
 export const Route = createFileRoute("/api/public/hooks/reliability-report")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const endpoint = "reliability-report";
+        const requestId = request.headers.get("x-request-id") || crypto.randomUUID();
+
         try {
-          const expectedCron = process.env.CRON_SECRET;
-          const expectedKey = process.env.SUPABASE_PUBLISHABLE_KEY;
-          const providedCron =
-            request.headers.get("x-cron-secret") ?? request.headers.get("X-Cron-Secret") ?? "";
-          const providedKey = request.headers.get("apikey") ?? "";
-          const okCron = !!expectedCron && providedCron === expectedCron;
-          const okKey = !!expectedKey && providedKey === expectedKey;
-          if (!okCron && !okKey) {
-            return Response.json({ error: "Unauthorized" }, { status: 401 });
+          // 1. Bảo mật: Yêu cầu CRON_SECRET (bỏ apikey fallback)
+          const { authorized, errorStatus } = await verifyApiSecret(request, "CRON_SECRET", "x-cron-secret");
+          if (!authorized) {
+            await auditPublicApiCall(endpoint, "unauthorized", { requestId, status: errorStatus });
+            return new Response(JSON.stringify({ error: "Unauthorized" }), { 
+              status: errorStatus || 401,
+              headers: { "Content-Type": "application/json" }
+            });
           }
+
           const body = (await request.json().catch(() => ({}))) as { type?: string };
           const type = body.type === "monthly" ? "monthly" : "weekly";
+          
           const { runReliabilityReport } = await import("@/lib/reliability-report.server");
           const result = await runReliabilityReport(type);
+
+          await auditPublicApiCall(endpoint, "success", { requestId, type });
           return Response.json({ success: true, type, ...result });
         } catch (e) {
           const msg = e instanceof Error ? e.message : String(e);
-          console.error("[reliability-report]", msg);
-          return Response.json({ error: msg }, { status: 500 });
+          console.error(`[${endpoint}]`, msg);
+          await auditPublicApiCall(endpoint, "error", { requestId, error: msg });
+          return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          });
         }
       },
     },
