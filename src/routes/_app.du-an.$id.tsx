@@ -13,6 +13,7 @@ import {
   User as UserIcon,
   CheckCircle2,
   Clock,
+  CalendarClock,
   AlertTriangle,
   Mails,
   Pencil,
@@ -23,6 +24,8 @@ import {
   TrendingUp,
   Info,
   ShieldAlert,
+  FolderArchive,
+  type LucideIcon,
 } from "lucide-react";
 import "@/vendor/frappe-gantt.css";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -76,6 +79,21 @@ import { getTodayDateString } from "@/lib/mirats/calendar-date";
 
 const SUPPORTED_VIEWS = ["kanban", "gantt", "list", "timeline", "hoso", "cong-van"] as const;
 type ProjectView = (typeof SUPPORTED_VIEWS)[number];
+
+const PROJECT_VIEWS: ReadonlyArray<{
+  value: ProjectView;
+  label: string;
+  icon: LucideIcon;
+}> = [
+  { value: "kanban", label: "Board", icon: KanbanSquare },
+  { value: "gantt", label: "Gantt", icon: GanttChart },
+  { value: "list", label: "Danh sách", icon: ListTree },
+  { value: "timeline", label: "Timeline", icon: CalendarClock },
+  { value: "hoso", label: "Hồ sơ", icon: FolderArchive },
+  { value: "cong-van", label: "Công văn", icon: Mails },
+];
+
+const WORK_VIEWS: ProjectView[] = ["kanban", "gantt", "list", "timeline"];
 
 export const Route = createFileRoute("/_app/du-an/$id")({
   validateSearch: (search: Record<string, unknown>) => {
@@ -337,56 +355,53 @@ function DuAnDetailPage() {
             onValueChange={(v) =>
               nav({ search: { view: v, q: currentSearch.q } as any, replace: true })
             }
+            className="w-full lg:w-auto"
           >
             <TabsList
-              className="bg-slate-100 p-1 border border-slate-200"
+              className="bg-slate-100 p-1 border border-slate-200 w-full lg:w-auto"
               data-density="comfortable"
             >
-              <TabsTrigger value="kanban" className="px-3 h-7 text-xs font-medium">
-                Board
-              </TabsTrigger>
-              <TabsTrigger value="gantt" className="px-3 h-7 text-xs font-medium">
-                Gantt
-              </TabsTrigger>
-              <TabsTrigger value="list" className="px-3 h-7 text-xs font-medium">
-                Danh sách
-              </TabsTrigger>
-              <TabsTrigger value="timeline" className="px-3 h-7 text-xs font-medium">
-                Timeline
-              </TabsTrigger>
-              <TabsTrigger value="hoso" className="px-3 h-7 text-xs font-medium">
-                Hồ sơ
-              </TabsTrigger>
-              <TabsTrigger value="cong-van" className="px-3 h-7 text-xs font-medium">
-                Công văn
-              </TabsTrigger>
+              {PROJECT_VIEWS.map((view) => (
+                <TabsTrigger
+                  key={view.value}
+                  value={view.value}
+                  className="flex-1 lg:flex-none px-3 h-7 text-xs font-medium gap-1.5"
+                >
+                  <view.icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                  <span>{view.label}</span>
+                </TabsTrigger>
+              ))}
             </TabsList>
           </Tabs>
 
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <SearchIcon className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
-              <Input
-                placeholder="Tìm công việc..."
-                className="h-8 pl-8 text-xs w-[180px] bg-white border-slate-200"
-                value={currentSearch.q}
-                onChange={(e) =>
-                  nav({ search: { ...currentSearch, q: e.target.value } as any, replace: true })
-                }
-              />
-            </div>
-            {canAddTask && (
-              <Button
-                size="sm"
-                className="h-8 px-3 text-xs"
-                onClick={() => {
-                  setDefaultMocId(mocs?.[0]?.id ?? null);
-                  setEditingCV(null);
-                  setOpenCV(true);
-                }}
-              >
-                <Plus className="h-3.5 w-3.5 mr-1.5" /> Thêm việc
-              </Button>
+          <div className="flex items-center gap-2 ml-auto">
+            {WORK_VIEWS.includes(activeTab) && (
+              <>
+                <div className="relative">
+                  <SearchIcon className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
+                  <Input
+                    placeholder="Tìm công việc..."
+                    className="h-8 pl-8 text-xs w-[180px] bg-white border-slate-200"
+                    value={currentSearch.q}
+                    onChange={(e) =>
+                      nav({ search: { ...currentSearch, q: e.target.value } as any, replace: true })
+                    }
+                  />
+                </div>
+                {canAddTask && (
+                  <Button
+                    size="sm"
+                    className="h-8 px-3 text-xs"
+                    onClick={() => {
+                      setDefaultMocId(mocs?.[0]?.id ?? null);
+                      setEditingCV(null);
+                      setOpenCV(true);
+                    }}
+                  >
+                    <Plus className="h-3.5 w-3.5 mr-1.5" /> Thêm việc
+                  </Button>
+                )}
+              </>
             )}
           </div>
         </div>
