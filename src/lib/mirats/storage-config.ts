@@ -99,6 +99,17 @@ export function useSaveStorageConfig() {
       if (error) throw error;
       return cfg;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["storage-config"] }),
+    onSuccess: () => {
+      import("sonner").then(({ toast }) => {
+        toast.success("Đã lưu cấu hình lưu trữ. Áp dụng cho các lượt upload tiếp theo.");
+      });
+      qc.invalidateQueries({ queryKey: ["storage-config"] });
+    },
+    onError: (e: any) => {
+      import("sonner").then(({ toast }) => {
+        toast.error("Lưu thất bại: " + e.message);
+      });
+    },
   });
 }
+
