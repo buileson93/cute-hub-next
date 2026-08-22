@@ -1245,7 +1245,10 @@ function DanhMucThietBiPage() {
           {/* Thanh tìm kiếm & lọc nhanh */}
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <div className="relative min-w-[240px] flex-1 sm:max-w-sm">
-              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Search 
+                aria-label="Tìm kiếm tài sản"
+                className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" 
+              />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
