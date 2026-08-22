@@ -64,7 +64,7 @@ function SignatureImg({ src, alt }: { src: SigLike; alt: string }) {
     <img
       src={resolved}
       alt={alt}
-      className="mt-2 h-14 w-full rounded border bg-white object-contain"
+      className="mt-2 h-14 w-full rounded border bg-card object-contain"
     />
   );
 }
@@ -135,7 +135,7 @@ export function SingleSignatureView({
     typeof value === "string" || isAttachment(value as SigLike) ? (value as SigLike) : null;
   if (!src) return <span className="text-xs text-muted-foreground">Chưa ký.</span>;
   return (
-    <div className="inline-block rounded border bg-white p-1">
+    <div className="inline-block rounded border bg-card p-1">
       <SignatureImg src={src} alt="chữ ký" />
       {signedAt && (
         <p className="mt-1 text-[11px] text-muted-foreground">

@@ -344,8 +344,8 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
                   <Tooltip
                     cursor={{ fill: "rgba(0,0,0,0.05)" }}
                     contentStyle={{
-                      backgroundColor: "hsl(var(--popover))",
-                      borderColor: "hsl(var(--border))",
+                      backgroundColor: "var(--popover)",
+                      borderColor: "var(--border)",
                       fontSize: "11px",
                       borderRadius: "10px",
                     }}
@@ -416,15 +416,15 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
                     <Tooltip
                       cursor={{ fill: "rgba(0,0,0,0.05)" }}
                       contentStyle={{
-                        backgroundColor: "hsl(var(--popover))",
-                        borderColor: "hsl(var(--border))",
+                        backgroundColor: "var(--popover)",
+                        borderColor: "var(--border)",
                         fontSize: "11px",
                         borderRadius: "10px",
                       }}
                     />
                     <Bar
                       dataKey="value"
-                      fill="hsl(var(--primary))"
+                      fill="var(--primary)"
                       radius={[0, 4, 4, 0]}
                       barSize={12}
                     />
@@ -534,8 +534,8 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "hsl(var(--popover))",
-                      borderColor: "hsl(var(--border))",
+                      backgroundColor: "var(--popover)",
+                      borderColor: "var(--border)",
                       fontSize: "11px",
                       borderRadius: "10px",
                     }}

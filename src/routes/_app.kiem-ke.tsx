@@ -51,7 +51,7 @@ export const Route = createFileRoute("/_app/kiem-ke")({
 });
 
 function trangThaiHan(ngay: string | null): { label: string; cls: string; qua: boolean } {
-  if (!ngay) return { label: "Chưa kiểm kê", cls: "bg-slate-100 text-slate-700", qua: false };
+  if (!ngay) return { label: "Chưa kiểm kê", cls: "bg-muted text-slate-700", qua: false };
   const today = new Date().toISOString().slice(0, 10);
   const days = Math.round((new Date(today).getTime() - new Date(ngay).getTime()) / 86400000);
   if (days > 0) return { label: `Quá hạn ${days} ngày`, cls: "bg-red-100 text-red-700", qua: true };

@@ -46,7 +46,7 @@ export const Route = createFileRoute("/_app/du-an/")({
 });
 
 const TRANG_THAI: Record<string, { label: string; tone: string }> = {
-  moi: { label: "Mới", tone: "bg-slate-100 text-slate-700 border-slate-200" },
+  moi: { label: "Mới", tone: "bg-muted text-slate-700 border-border" },
   dang_thuc_hien: { label: "Đang thực hiện", tone: "bg-sky-100 text-sky-700 border-sky-200" },
   tam_dung: { label: "Tạm dừng", tone: "bg-amber-100 text-amber-700 border-amber-200" },
   hoan_thanh: { label: "Hoàn thành", tone: "bg-emerald-100 text-emerald-700 border-emerald-200" },
@@ -146,12 +146,12 @@ function DuAnListPage() {
         </Card>
 
         {isLoading ? (
-          <div className="flex items-center gap-2 p-8 text-slate-500">
+          <div className="flex items-center gap-2 p-8 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> Đang tải…
           </div>
         ) : filtered.length === 0 ? (
           <Card>
-            <CardContent className="py-12 text-center text-slate-500 text-sm">
+            <CardContent className="py-12 text-center text-muted-foreground text-sm">
               Chưa có dự án nào phù hợp. {canCreate && "Nhấn “Tạo dự án” để bắt đầu."}
             </CardContent>
           </Card>
@@ -182,20 +182,20 @@ function DuAnListPage() {
                       {d.ma && <div className="text-[11px] font-mono text-slate-400">{d.ma}</div>}
                     </CardHeader>
                     <CardContent className="space-y-2 pt-0">
-                      {d.mo_ta && <p className="text-xs text-slate-600 line-clamp-2">{d.mo_ta}</p>}
-                      <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
+                      {d.mo_ta && <p className="text-xs text-muted-foreground line-clamp-2">{d.mo_ta}</p>}
+                      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
                         <Calendar className="h-3 w-3" />
                         <span>
                           {d.ngay_bat_dau ?? "—"} → {d.ngay_ket_thuc_du_kien ?? "—"}
                         </span>
                       </div>
                       {d.don_vi_id && (
-                        <div className="text-[11px] text-slate-500">
+                        <div className="text-[11px] text-muted-foreground">
                           Đơn vị: {donViMap[d.don_vi_id] ?? "—"}
                         </div>
                       )}
                       <div className="pt-1">
-                        <div className="flex justify-between text-[11px] text-slate-500 mb-1">
+                        <div className="flex justify-between text-[11px] text-muted-foreground mb-1">
                           <span>Tiến độ</span>
                           <span>{d.tien_do}%</span>
                         </div>

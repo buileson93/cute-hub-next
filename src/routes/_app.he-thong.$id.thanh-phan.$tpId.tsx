@@ -221,7 +221,7 @@ function ThanhPhanSoLyLich() {
                 <Line
                   type="monotone"
                   dataKey="value"
-                  stroke="hsl(var(--primary))"
+                  stroke="var(--primary)"
                   strokeWidth={2}
                   dot
                 />

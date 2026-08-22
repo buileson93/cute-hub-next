@@ -26,11 +26,11 @@ export type SavedFilter = {
 export const SAVED_KEY = "mirats:reliability-filters";
 
 export const SEVERITY_COLORS = [
-  "hsl(var(--destructive))",
-  "hsl(var(--primary))",
-  "hsl(var(--chart-3, 32 95% 55%))",
-  "hsl(var(--muted-foreground))",
-  "hsl(var(--chart-5, 262 60% 60%))",
+  "var(--destructive)",
+  "var(--primary)",
+  "var(--chart-3, 32 95% 55%)",
+  "var(--muted-foreground)",
+  "var(--chart-5, 262 60% 60%)",
 ];
 
 export const DOW_SHORT = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];

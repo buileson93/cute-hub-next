@@ -144,7 +144,7 @@ export function ZoomableImage({
         <Button
           size="icon"
           variant="ghost"
-          className="h-8 w-8 text-white hover:bg-white/15 hover:text-white"
+          className="h-8 w-8 text-white hover:bg-card/15 hover:text-white"
           onClick={() => zoomAt(-STEP)}
           disabled={t.scale <= MIN_SCALE}
           title="Thu nhỏ"
@@ -157,18 +157,18 @@ export function ZoomableImage({
         <Button
           size="icon"
           variant="ghost"
-          className="h-8 w-8 text-white hover:bg-white/15 hover:text-white"
+          className="h-8 w-8 text-white hover:bg-card/15 hover:text-white"
           onClick={() => zoomAt(STEP)}
           disabled={t.scale >= MAX_SCALE}
           title="Phóng to"
         >
           <ZoomIn className="h-4 w-4" />
         </Button>
-        <div className="mx-0.5 h-5 w-px bg-white/15" />
+        <div className="mx-0.5 h-5 w-px bg-card/15" />
         <Button
           size="icon"
           variant="ghost"
-          className="h-8 w-8 text-white hover:bg-white/15 hover:text-white"
+          className="h-8 w-8 text-white hover:bg-card/15 hover:text-white"
           onClick={() => setT(RESET)}
           disabled={t.scale === 1 && t.x === 0 && t.y === 0}
           title="Về ban đầu"

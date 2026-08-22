@@ -637,12 +637,12 @@ function ShapeNode({
           commit();
         }
       }}
-      className="nodrag h-full w-full resize-none border-none bg-transparent text-center text-sm text-slate-900 outline-none"
+      className="nodrag h-full w-full resize-none border-none bg-transparent text-center text-sm text-foreground outline-none"
     />
   ) : (
     <span
       onDoubleClick={start}
-      className="cursor-text break-words px-1 text-center text-sm font-medium text-slate-900"
+      className="cursor-text break-words px-1 text-center text-sm font-medium text-foreground"
     >
       {label}
     </span>

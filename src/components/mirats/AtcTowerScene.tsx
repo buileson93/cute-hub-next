@@ -290,13 +290,13 @@ export function AtcTowerScene() {
       {!reduce && (
         <motion.div className="pointer-events-none absolute inset-0" style={{ x: cloudX }}>
           <motion.div
-            className="absolute h-24 w-[60%] rounded-full bg-white/10 blur-3xl"
+            className="absolute h-24 w-[60%] rounded-full bg-card/10 blur-3xl"
             style={{ top: "22%", left: "-20%" }}
             animate={mounted ? { x: ["0%", "180%"] } : { x: "0%" }}
             transition={{ duration: 55, repeat: Infinity, ease: "linear" }}
           />
           <motion.div
-            className="absolute h-16 w-[40%] rounded-full bg-white/8 blur-2xl"
+            className="absolute h-16 w-[40%] rounded-full bg-card/8 blur-2xl"
             style={{ top: "38%", left: "-20%" }}
             animate={mounted ? { x: ["0%", "200%"] } : { x: "0%" }}
             transition={{ duration: 80, repeat: Infinity, ease: "linear", delay: -20 }}
@@ -387,7 +387,7 @@ export function AtcTowerScene() {
           {Array.from({ length: 8 }).map((_, i) => (
             <motion.span
               key={i}
-              className="absolute h-[3px] w-[3px] rounded-full bg-white"
+              className="absolute h-[3px] w-[3px] rounded-full bg-card"
               style={{ left: `${8 + i * 11}%`, boxShadow: "0 0 8px rgba(255,255,255,0.9)" }}
               animate={{ opacity: [0.15, 1, 0.15] }}
               transition={{ duration: 2.4, repeat: Infinity, delay: i * 0.18 }}

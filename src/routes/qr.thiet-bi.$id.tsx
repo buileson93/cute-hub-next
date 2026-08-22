@@ -44,8 +44,8 @@ function LegacyQrRedirect() {
   }
   if (authLoading || isLoading) {
     return (
-      <div className="min-h-dvh flex items-center justify-center bg-slate-50">
-        <div className="flex items-center gap-2 text-slate-600">
+      <div className="min-h-dvh flex items-center justify-center bg-muted">
+        <div className="flex items-center gap-2 text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" /> Đang tra mã…
         </div>
       </div>
@@ -55,14 +55,14 @@ function LegacyQrRedirect() {
     return <Navigate to="/q/$maThietBi" params={{ maThietBi: data.ma_thiet_bi }} replace />;
   }
   return (
-    <div className="min-h-dvh flex items-center justify-center bg-slate-50 p-6">
+    <div className="min-h-dvh flex items-center justify-center bg-muted p-6">
       <Card className="max-w-md w-full">
         <CardContent className="p-6 space-y-3 text-center">
-          <div className="mx-auto h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center">
-            <QrCode className="h-6 w-6 text-slate-500" />
+          <div className="mx-auto h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+            <QrCode className="h-6 w-6 text-muted-foreground" />
           </div>
           <h1 className="text-lg font-semibold">Không có quyền xem hoặc tài sản không tồn tại</h1>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-muted-foreground">
             Mã tham chiếu <span className="font-mono">{id}</span> không truy cập được.
           </p>
           {isError && (

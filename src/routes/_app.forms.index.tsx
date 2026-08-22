@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_app/forms/")({
 });
 
 const STATUS_LABEL: Record<string, { label: string; cls: string }> = {
-  draft: { label: "Nháp", cls: "bg-slate-100 text-slate-700" },
+  draft: { label: "Nháp", cls: "bg-muted text-slate-700" },
   submitted: { label: "Chờ duyệt", cls: "bg-amber-100 text-amber-700" },
   approved: { label: "Đã duyệt", cls: "bg-success/10 text-success border-success/20" },
   returned: { label: "Trả lại", cls: "bg-rose-100 text-rose-700" },

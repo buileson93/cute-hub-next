@@ -1,3 +1,4 @@
+import { ThemeSync } from "@/components/mirats/ThemeSync";
 import {
   Outlet,
   createFileRoute,
@@ -82,12 +83,14 @@ function AppLayout() {
       {embed ? (
         <div className="min-h-dvh bg-background">
           <PageTransition>
+        <ThemeSync />
             <Outlet />
           </PageTransition>
         </div>
       ) : (
         <AppShell>
           <PageTransition>
+        <ThemeSync />
             <Outlet />
           </PageTransition>
         </AppShell>

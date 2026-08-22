@@ -364,7 +364,7 @@ export function ViTriMediaViewer({
                   <span
                     className={cn(
                       "ml-0.5 rounded-full px-1.5 text-[10px]",
-                      tab === id ? "bg-white/20 text-white" : "bg-success/10 text-success",
+                      tab === id ? "bg-card/20 text-white" : "bg-success/10 text-success",
                     )}
                   >
                     {diemGps.length}

@@ -132,7 +132,7 @@ export function MultiSignatureFlow({
               <img
                 src={s.data_url}
                 alt="chữ ký"
-                className="mt-2 h-16 rounded border bg-white object-contain"
+                className="mt-2 h-16 rounded border bg-card object-contain"
               />
             )}
             {signed && (

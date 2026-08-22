@@ -16,6 +16,8 @@ const badgeVariants = cva(
           "border-transparent bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/80",
         outline:
           "text-foreground border-border bg-background hover:bg-accent hover:text-accent-foreground",
+        "mirats-outline":
+          "border border-primary/40 bg-background/50 backdrop-blur-sm text-foreground hover:bg-primary/10 hover:border-primary",
         success: "bg-success/10 text-success border-success/20 dark:bg-success/20",
         warning: "bg-warning/10 text-warning border-warning/20 dark:bg-warning/20",
         error: "bg-destructive/10 text-destructive border-destructive/20 dark:bg-destructive/20",

@@ -1463,7 +1463,7 @@ function MergeModelsDialog({
               <input
                 type="radio"
                 name="merge-target"
-                className="h-4 w-4 accent-[hsl(var(--primary))]"
+                className="h-4 w-4 accent-[var(--primary)]"
                 checked={m.id === targetId}
                 onChange={() => setTargetId(m.id)}
               />

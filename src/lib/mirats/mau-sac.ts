@@ -62,7 +62,7 @@ export const BANG_MAU: MauPreset[] = [
   {
     token: "xam",
     ten: "Xám",
-    lop: "bg-slate-100 text-slate-800 border-slate-200 dark:bg-slate-800/60 dark:text-slate-200 dark:border-slate-700",
+    lop: "bg-muted text-slate-800 border-border dark:bg-slate-800/60 dark:text-slate-200 dark:border-slate-700",
   },
   {
     token: "nau",

@@ -115,7 +115,7 @@ export const Route = createFileRoute("/_app/du-an/$id")({
     <Card>
       <CardContent className="p-6 space-y-3">
         <div className="text-rose-600 font-medium">Không tải được dự án</div>
-        <div className="text-xs text-slate-500">{(error as Error).message}</div>
+        <div className="text-xs text-muted-foreground">{(error as Error).message}</div>
         <Button size="sm" onClick={reset}>
           Thử lại
         </Button>
@@ -132,7 +132,7 @@ export const Route = createFileRoute("/_app/du-an/$id")({
 const CV_TRANG_THAI: Record<string, { label: string; tone: string; column: string }> = {
   chua_bat_dau: {
     label: "Chưa bắt đầu",
-    tone: "bg-slate-100 text-slate-700 border-slate-200",
+    tone: "bg-muted text-slate-700 border-border",
     column: "Chưa bắt đầu",
   },
   dang_lam: {
@@ -280,7 +280,7 @@ function DuAnDetailPage() {
 
   if (loadingDA) {
     return (
-      <div className="p-8 text-slate-500 flex items-center gap-2">
+      <div className="p-8 text-muted-foreground flex items-center gap-2">
         <Loader2 className="h-4 w-4 animate-spin" />
         Đang tải…
       </div>
@@ -298,7 +298,7 @@ function DuAnDetailPage() {
     <div className={cn("flex flex-col gap-6", UI_DENSITY.PAGE_PADDING)}>
       {/* Astryx Page Header */}
       <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2 text-xs text-slate-500">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Link to="/du-an" className="hover:text-primary transition-colors">
             Dự án
           </Link>
@@ -359,7 +359,7 @@ function DuAnDetailPage() {
             className="w-full lg:w-auto overflow-hidden"
           >
             <TabsList
-              className="bg-muted p-1 border border-border w-full lg:w-auto overflow-x-auto overflow-y-hidden"
+              className="bg-muted/50 p-1 border border-border/50 w-full lg:w-auto overflow-x-auto overflow-y-hidden"
               data-density="comfortable"
             >
               {PROJECT_VIEWS.map((view) => (
@@ -459,15 +459,15 @@ function DuAnDetailPage() {
                 <HillChart project_id={id} />
               </div>
               <div className="space-y-4">
-                <Card className="border-slate-200 shadow-none bg-slate-50/50">
+                <Card className="border-border shadow-none bg-muted/50">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-xs uppercase text-slate-500 font-bold">
+                    <CardTitle className="text-xs uppercase text-muted-foreground font-bold">
                       Current Cycle
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="font-bold text-slate-900">Cycle 08: Foundations</div>
-                    <div className="text-[11px] text-slate-500 mt-1">17/08/2026 → 28/09/2026</div>
+                    <div className="font-bold text-foreground">Cycle 08: Foundations</div>
+                    <div className="text-[11px] text-muted-foreground mt-1">17/08/2026 → 28/09/2026</div>
                     <Badge className="mt-3 bg-indigo-600">Big Batch (6w)</Badge>
                   </CardContent>
                 </Card>
@@ -616,12 +616,12 @@ function KanbanView({
                             : "bg-slate-300",
                   )}
                 />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   {col.label}
                 </span>
                 <Badge
                   variant="secondary"
-                  className="text-[10px] px-1.5 py-0 bg-slate-100 text-slate-600 border-none rounded-full"
+                  className="text-[10px] px-1.5 py-0 bg-muted text-muted-foreground border-none rounded-full"
                 >
                   {list.length}
                 </Badge>
@@ -666,13 +666,13 @@ function KanbanView({
                     </div>
 
                     {t.mo_ta && (
-                      <div className="text-[11px] text-slate-500 line-clamp-2 leading-relaxed italic">
+                      <div className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed italic">
                         {t.mo_ta}
                       </div>
                     )}
 
                     <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-border mt-2">
-                      <div className="flex items-center gap-1.5 text-[10px] text-slate-500">
+                      <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                         <UserIcon className="h-3 w-3 text-slate-400" />
                         <span className="max-w-[80px] truncate">{nameOf(t.nguoi_xu_ly_chinh)}</span>
                       </div>
@@ -682,7 +682,7 @@ function KanbanView({
                             "flex items-center gap-1.5 text-[10px]",
                             t.trang_thai === "qua_han"
                               ? "text-rose-600 font-medium"
-                              : "text-slate-500",
+                              : "text-muted-foreground",
                           )}
                         >
                           <CalendarIcon className="h-3 w-3 text-slate-400" />
@@ -811,7 +811,7 @@ function GanttView({
       </CardHeader>
       <CardContent className="px-0">
         {mocs.length === 0 ? (
-          <div className="text-sm text-slate-500 py-8 text-center">
+          <div className="text-sm text-muted-foreground py-8 text-center">
             Chưa có mốc/công việc để hiển thị Gantt.
           </div>
         ) : (
@@ -849,7 +849,7 @@ function ListView({
   if (mocs.length === 0) {
     return (
       <Card>
-        <CardContent className="py-8 text-center text-slate-500 text-sm">
+        <CardContent className="py-8 text-center text-muted-foreground text-sm">
           Chưa có mốc nào. Người quản lý hãy thêm mốc chính đầu tiên.
         </CardContent>
       </Card>
@@ -867,7 +867,7 @@ function ListView({
                 <div className="min-w-0">
                   <CardTitle className="text-base">{m.ten}</CardTitle>
                   {m.mo_ta && <CardDescription>{m.mo_ta}</CardDescription>}
-                  <div className="text-[11px] text-slate-500 mt-1">
+                  <div className="text-[11px] text-muted-foreground mt-1">
                     {m.ngay_bat_dau ?? "—"} → {m.ngay_ket_thuc_du_kien ?? "—"} · {list.length} công
                     việc
                   </div>
@@ -927,25 +927,25 @@ function ListView({
                       <button
                         key={t.id}
                         onClick={() => onEdit(t)}
-                        className="w-full text-left py-2 grid grid-cols-12 gap-2 hover:bg-slate-50 rounded px-2"
+                        className="w-full text-left py-2 grid grid-cols-12 gap-2 hover:bg-muted rounded px-2"
                       >
                         <div className="col-span-5 min-w-0">
                           <div className="font-medium text-sm truncate">{t.ten}</div>
                           {t.mo_ta && (
-                            <div className="text-[11px] text-slate-500 truncate">{t.mo_ta}</div>
+                            <div className="text-[11px] text-muted-foreground truncate">{t.mo_ta}</div>
                           )}
                         </div>
-                        <div className="col-span-2 text-xs text-slate-600 truncate flex items-center gap-1">
+                        <div className="col-span-2 text-xs text-muted-foreground truncate flex items-center gap-1">
                           <UserIcon className="h-3 w-3 shrink-0" />
                           {nameOf(t.nguoi_xu_ly_chinh)}
                         </div>
-                        <div className="col-span-2 text-xs text-slate-500 flex items-center gap-1">
+                        <div className="col-span-2 text-xs text-muted-foreground flex items-center gap-1">
                           <CalendarIcon className="h-3 w-3" />
                           {t.ngay_ket_thuc_du_kien ?? "—"}
                         </div>
                         <div className="col-span-2 flex items-center gap-2">
                           <Progress value={t.tien_do} className="h-1.5 flex-1" />
-                          <span className="text-[11px] text-slate-500 tabular-nums">
+                          <span className="text-[11px] text-muted-foreground tabular-nums">
                             {t.tien_do}%
                           </span>
                         </div>
@@ -1386,7 +1386,7 @@ function EditCongViecDialog({
                 <Users className="h-4 w-4" />
                 Người phối hợp
               </Label>
-              <div className="mt-2 flex flex-wrap gap-1.5 max-h-32 overflow-y-auto p-2 rounded border bg-slate-50">
+              <div className="mt-2 flex flex-wrap gap-1.5 max-h-32 overflow-y-auto p-2 rounded border bg-muted">
                 {(users ?? [])
                   .filter((u) => u.id !== form.nguoi_xu_ly_chinh)
                   .map((u) => {
@@ -1399,7 +1399,7 @@ function EditCongViecDialog({
                           "text-xs px-2 py-1 rounded-full border transition",
                           on
                             ? "bg-indigo-600 text-white border-indigo-600"
-                            : "bg-white hover:border-indigo-300",
+                            : "bg-card hover:border-indigo-300",
                         )}
                       >
                         {u.ho_ten ?? u.email}

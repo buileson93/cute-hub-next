@@ -122,7 +122,7 @@ export function CapPhatControl({
             className={
               daKy
                 ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-                : "border-slate-300 bg-slate-50 text-slate-600"
+                : "border-slate-300 bg-muted text-muted-foreground"
             }
           >
             <PenLine className="mr-1 h-3 w-3" />

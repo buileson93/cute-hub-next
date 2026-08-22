@@ -87,13 +87,13 @@ export const LOAI_META: Record<
   khac: {
     label: "Khác",
     short: "Khác",
-    tone: "bg-slate-50 text-slate-700 border-slate-200",
+    tone: "bg-muted text-slate-700 border-border",
     dot: "bg-slate-400",
   },
 };
 
 export const TRANG_THAI_META: Record<CongVanTrangThai, { label: string; tone: string }> = {
-  moi: { label: "Mới", tone: "bg-slate-100 text-slate-700 border-slate-200" },
+  moi: { label: "Mới", tone: "bg-muted text-slate-700 border-border" },
   dang_xu_ly: { label: "Đang xử lý", tone: "bg-sky-100 text-sky-700 border-sky-200" },
   cho_duyet: { label: "Chờ duyệt", tone: "bg-amber-100 text-amber-700 border-amber-200" },
   da_duyet: { label: "Đã duyệt", tone: "bg-indigo-100 text-indigo-700 border-indigo-200" },

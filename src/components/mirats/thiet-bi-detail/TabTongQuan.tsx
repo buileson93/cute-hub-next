@@ -246,7 +246,7 @@ export default function TabTongQuan({
             <CardTitle className="astryx-text-label">Mã QR</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-3 p-4">
-            <div className="rounded-md border bg-white p-3">
+            <div className="rounded-md border bg-card p-3">
               <QRCodeSVG value={`MIRATS:${ma}`} size={120} />
             </div>
             <div className="text-xs font-mono text-muted-foreground">MIRATS:{ma}</div>

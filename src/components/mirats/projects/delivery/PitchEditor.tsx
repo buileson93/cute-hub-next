@@ -40,8 +40,8 @@ export function PitchEditor({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">Shaping a Pitch</h2>
-          <p className="text-sm text-slate-500">
+          <h2 className="text-lg font-semibold text-foreground">Shaping a Pitch</h2>
+          <p className="text-sm text-muted-foreground">
             Định hình tính năng cốt lõi trước khi vào Build Cycle.
           </p>
         </div>
@@ -62,11 +62,11 @@ export function PitchEditor({
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2 space-y-6">
-          <Card className="border-slate-200 shadow-none">
+          <Card className="border-border shadow-none">
             <CardHeader className="pb-4">
               <div className="space-y-4">
                 <div>
-                  <Label className="text-xs uppercase text-slate-500 font-bold">
+                  <Label className="text-xs uppercase text-muted-foreground font-bold">
                     Tiêu đề Pitch
                   </Label>
                   <Input
@@ -78,7 +78,7 @@ export function PitchEditor({
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="w-48">
-                    <Label className="text-xs uppercase text-slate-500 font-bold">
+                    <Label className="text-xs uppercase text-muted-foreground font-bold">
                       Appetite (Ngân sách)
                     </Label>
                     <Select
@@ -146,12 +146,12 @@ export function PitchEditor({
                 value={data.rabbit_holes}
                 onChange={(e) => setData({ ...data, rabbit_holes: e.target.value })}
                 placeholder="Những thứ có thể làm chệch hướng cycle..."
-                className="min-h-[120px] text-sm bg-white"
+                className="min-h-[120px] text-sm bg-card"
               />
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200 bg-slate-50/50 shadow-none">
+          <Card className="border-border bg-muted/50 shadow-none">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-bold text-slate-700 flex items-center gap-2">
                 <XCircle className="h-4 w-4" /> 4. No-Gos
@@ -165,7 +165,7 @@ export function PitchEditor({
                 value={data.no_gos}
                 onChange={(e) => setData({ ...data, no_gos: e.target.value })}
                 placeholder="Để bảo vệ appetite, chúng tôi sẽ KHÔNG..."
-                className="min-h-[120px] text-sm bg-white"
+                className="min-h-[120px] text-sm bg-card"
               />
             </CardContent>
           </Card>

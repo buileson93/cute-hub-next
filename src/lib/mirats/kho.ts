@@ -47,7 +47,7 @@ export const LOAI_GD_META: Record<LoaiGiaoDich, { label: string; cls: string; nh
   CHUYEN_NHAP: { label: "Chuyển đến", cls: "bg-emerald-100 text-emerald-700", nhap: true },
   CHUYEN_XUAT: { label: "Chuyển đi", cls: "bg-orange-100 text-orange-700", nhap: false },
   DIEU_CHINH_TANG: { label: "Kiểm kê +", cls: "bg-sky-100 text-sky-700", nhap: true },
-  DIEU_CHINH_GIAM: { label: "Kiểm kê −", cls: "bg-slate-100 text-slate-600", nhap: false },
+  DIEU_CHINH_GIAM: { label: "Kiểm kê −", cls: "bg-muted text-muted-foreground", nhap: false },
 };
 
 // ---------------------------------------------------------------------------

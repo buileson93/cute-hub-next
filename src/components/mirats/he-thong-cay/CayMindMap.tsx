@@ -103,7 +103,7 @@ const KIND_STYLE: Record<string, string> = {
   lv: "border-primary/40 bg-primary/5",
   nh: "border-violet-500/40 bg-violet-500/5",
   ht: "border-blue-500/40 bg-blue-500/5",
-  tb: "border-slate-400 bg-slate-50/50",
+  tb: "border-slate-400 bg-muted/50",
   tp: "border-emerald-500/40 bg-emerald-500/5",
   vtg: "border-sky-500/40 bg-sky-500/5",
   vt: "border-sky-500/35 bg-sky-500/5",

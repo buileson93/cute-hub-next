@@ -369,7 +369,7 @@ function BanQuyenPage() {
                 Theo dõi hiệu lực và cấp phát license theo ghế (Seats)
               </CardDescription>
             </div>
-            <div className="text-[10px] font-medium text-muted-foreground bg-white dark:bg-slate-900 px-2 py-0.5 rounded-full border border-muted/60 tabular-nums shadow-sm">
+            <div className="text-[10px] font-medium text-muted-foreground bg-card dark:bg-slate-900 px-2 py-0.5 rounded-full border border-muted/60 tabular-nums shadow-sm">
               Đã nạp {rows.length} mục
             </div>
           </CardHeader>
@@ -554,7 +554,7 @@ function Kpi({
     primary: "text-primary bg-primary/10 border-primary/20",
     warning: "text-amber-600 bg-amber-50 border-amber-200",
     destructive: "text-red-600 bg-red-50 border-red-200",
-    slate: "text-slate-600 bg-slate-50 border-slate-200",
+    slate: "text-muted-foreground bg-muted border-border",
   };
 
   return (
@@ -562,7 +562,7 @@ function Kpi({
       <CardContent className="flex items-center gap-4 p-5">
         <div
           className={cn(
-            "flex h-12 w-12 items-center justify-center rounded-2xl border transition-colors group-hover:bg-white dark:group-hover:bg-slate-800",
+            "flex h-12 w-12 items-center justify-center rounded-2xl border transition-colors group-hover:bg-card dark:group-hover:bg-slate-800",
             colorMap[color],
           )}
         >

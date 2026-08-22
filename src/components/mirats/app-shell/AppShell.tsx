@@ -153,7 +153,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             {/* Rail (Desktop) */}
             <aside
               className={cn(
-                "h-full shrink-0 flex-col items-center py-3 flex transition-[width] border-r border-[#0074e2]/10 bg-background/50 z-20",
+                "h-full shrink-0 flex-col items-center py-3 flex transition-[width] border-r border-[#0074e2]/10 bg-background/80 z-20",
                 UI_DENSITY.RAIL_W,
               )}
             >
@@ -248,7 +248,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="flex min-w-0 flex-1 flex-col h-full">
             <header
               className={cn(
-                "sticky top-0 z-10 flex items-center justify-between gap-3 px-4 border-b border-[#0074e2]/10 bg-background/80 backdrop-blur-md",
+                "sticky top-0 z-10 flex items-center justify-between gap-3 px-4 border-b border-[#0074e2]/10 bg-background/95 backdrop-blur-md",
                 UI_DENSITY.APP_HEADER_H,
               )}
             >
