@@ -436,7 +436,7 @@
   overflow-wrap: break-word;
 }
 
-.mirats-data-table-core-element {
+.mirats-data-table-core .mirats-data-table-core-element {
   border-collapse: separate !important;
   border-spacing: 0 !important;
   border-left: 1px solid var(--border);
