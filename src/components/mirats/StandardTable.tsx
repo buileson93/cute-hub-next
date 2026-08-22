@@ -21,7 +21,7 @@ import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { useDensity } from "@/components/mirats/DensityToggle";
-import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2 } from "lucide-react";
+import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2, SlidersHorizontal } from "lucide-react";
 
 import { normalize } from "@/lib/mirats/global-search";
 import { parseMinW, calculateOptimalWidths } from "@/lib/mirats/ui/table-geometry";
