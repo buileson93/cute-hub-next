@@ -625,38 +625,50 @@ export function StandardTable<T>({
             <TableBody>
               {fullDisplay.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="p-0 border-0">
+                  <OptimizedCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="p-0 border-0">
                     {renderGlobalState()}
-                  </TableCell>
+                  </OptimizedCell>
                 </TableRow>
               ) : (
                 <Fragment>
                   {paddingTop > 0 && (
                     <TableRow style={{ height: `${paddingTop}px` }} className="hover:bg-transparent border-0">
-                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="p-0 border-0" />
+                      <OptimizedCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="p-0 border-0" />
                     </TableRow>
                   )}
                   {virtualRows.map(v => {
                     const r = display[v.index];
                     const rid = getRowIdInternal(r);
                     return (
-                      <TableRow key={rid} className={cn("group transition-colors border-b", rowClassName?.(r))} onClick={() => onRowClick?.(r)}>
+                      <TableRow 
+                        key={rid} 
+                        className={cn("group transition-colors border-b", rowClassName?.(r))} 
+                        onClick={() => onRowClick?.(r)}
+                        style={{
+                          willChange: 'transform'
+                        }}
+                      >
                         {selectable && (
-                          <TableCell className="px-2 text-center w-[40px]" onClick={e => e.stopPropagation()}>
+                          <OptimizedCell colKey="selection" className="px-2 text-center w-[40px]" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                             <Checkbox checked={selected?.has(rid)} onCheckedChange={() => toggleRow(rid)} />
-                          </TableCell>
+                          </OptimizedCell>
                         )}
                         {shownCols.map(c => (
-                          <TableCell key={c.key} className={cn("px-3 py-2 text-[13px] truncate", c.cellClassName)} style={{ width: prefs.widths[c.key] || 150 }}>
+                          <OptimizedCell 
+                            key={c.key} 
+                            colKey={c.key}
+                            className={cn("px-3 py-2 text-[13px] truncate", c.cellClassName)} 
+                            style={{ width: prefs.widths[c.key] || 150 }}
+                          >
                             {renderCellContent(c, r)}
-                          </TableCell>
+                          </OptimizedCell>
                         ))}
                       </TableRow>
                     );
                   })}
                   {paddingBottom > 0 && (
                     <TableRow style={{ height: `${paddingBottom}px` }} className="hover:bg-transparent border-0">
-                      <TableCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="p-0 border-0" />
+                      <OptimizedCell colSpan={shownCols.length + (selectable ? 1 : 0)} className="p-0 border-0" />
                     </TableRow>
                   )}
                 </Fragment>
