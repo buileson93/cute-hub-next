@@ -379,7 +379,7 @@ export function TreeView({
         <ThanhPhanChiTietDialog
           viTri={selectedTp.vt}
           heThongId={selectedTp.htId}
-          canManage={canManageNodes}
+          canManage={!!canManageNodes}
           onClose={() => setSelectedTp(null)}
           onOpenDevice={(ma) => onRecord("tb", ma, "")}
         />
