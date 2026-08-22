@@ -56,6 +56,11 @@ import {
   Users,
   Laptop,
   Cpu,
+  FileCheck,
+  Inbox,
+  CheckCircle2,
+  FolderArchive,
+  Mails,
 } from "lucide-react";
 
 import type { AppRole } from "@/hooks/use-session";
@@ -192,8 +197,18 @@ export const workspaces: Workspace[] = [
     icon: FolderKanban,
     groups: [
       {
-        header: "Dự án & Tiến độ",
-        items: [{ to: "/du-an", label: "Danh sách dự án", icon: FolderKanban }],
+        header: "Điều phối & Công việc",
+        items: [
+          { to: "/du-an", label: "Danh sách dự án", icon: FolderKanban },
+          { to: "/du-an/viec-cua-toi", label: "Việc của tôi", icon: CheckCircle2 },
+        ],
+      },
+      {
+        header: "Trung tâm Trình ký",
+        items: [
+          { to: "/trinh-ky", label: "Approval Hub", icon: FileCheck },
+          { to: "/trinh-ky/da-ky", label: "Văn bản đã ký", icon: FileText },
+        ],
       },
     ],
   },
@@ -208,6 +223,7 @@ export const workspaces: Workspace[] = [
         items: [
           { to: "/tickets", label: "Yêu cầu hỗ trợ", icon: Ticket },
           { to: "/messages", label: "Tin nhắn", icon: MessageSquare },
+          { to: "/inbox", label: "Hộp thư hoạt động", icon: Inbox },
         ],
       },
     ],
@@ -232,6 +248,8 @@ export const workspaces: Workspace[] = [
         items: [
           { to: "/forms", label: "Biên bản", icon: FileText },
           { to: "/admin/forms", label: "Mẫu biên bản", icon: FilePlus2, roles: MANAGER_ROLES },
+          { to: "/kho-ho-so", label: "Kho hồ sơ dự án", icon: FolderArchive },
+          { to: "/so-cong-van", label: "Sổ công văn", icon: Mails },
         ],
       },
     ],
@@ -355,9 +373,15 @@ export const routeTitles: Record<string, { crumb: string; title: string }> = {
   "/so-do": { crumb: "Vận hành", title: "Sơ đồ hệ thống" },
   "/topology": { crumb: "Sơ đồ hệ thống", title: "Đấu nối" },
   "/du-an": { crumb: "Dự án", title: "Dự án & Tiến độ" },
+  "/du-an/viec-cua-toi": { crumb: "Cá nhân", title: "Việc của tôi" },
+  "/trinh-ky": { crumb: "Hệ thống", title: "Trung tâm Trình ký" },
+  "/trinh-ky/da-ky": { crumb: "Hệ thống", title: "Văn bản đã ký" },
   "/tickets": { crumb: "Trao đổi", title: "Yêu cầu hỗ trợ" },
   "/messages": { crumb: "Trao đổi", title: "Tin nhắn" },
+  "/inbox": { crumb: "Trao đổi", title: "Hộp thư hoạt động" },
   "/forms": { crumb: "Hồ sơ", title: "Biên bản" },
+  "/kho-ho-so": { crumb: "Hồ sơ", title: "Kho hồ sơ dự án" },
+  "/so-cong-van": { crumb: "Hồ sơ", title: "Sổ công văn" },
   "/admin/forms": { crumb: "Hồ sơ", title: "Mẫu biên bản" },
   "/admin/tich-hop": { crumb: "Quản trị", title: "Tích hợp Browser Extension" },
   "/vat-tu": { crumb: "Kho", title: "Vật tư & Kho" },
