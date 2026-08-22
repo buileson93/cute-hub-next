@@ -507,12 +507,15 @@ export function StandardTableInner<T>({
   }, [fullDisplay.length, notifyFilteredTotal, hasFilter, countUnit]);
 
   const display = useMemo(() => {
-    if (!clientPagination) return fullDisplay;
+    // Nếu có clientPagination NHƯNG virtualizerOptions.enabled=true (hoặc infinite scroll)
+    // thì KHÔNG cắt dữ liệu ở đây, để virtualizer quản lý toàn bộ fullDisplay
+    if (!clientPagination || virtualizerOptions?.enabled === true) return fullDisplay;
+    
     const { page, pageSize } = clientPagination;
     if (pageSize >= fullDisplay.length) return fullDisplay;
     const start = Math.max(0, (page - 1) * pageSize);
     return fullDisplay.slice(start, start + pageSize);
-  }, [fullDisplay, clientPagination]);
+  }, [fullDisplay, clientPagination, virtualizerOptions?.enabled]);
 
   const toggleCat = (key: string, val: string) => {
     setCatFilters((prev) => {
