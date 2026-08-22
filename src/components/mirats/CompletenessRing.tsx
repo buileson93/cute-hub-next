@@ -31,7 +31,7 @@ export function CompletenessRing({
       className={cn("relative inline-flex items-center justify-center", className)}
       style={{ width: size, height: size }}
     >
-      <svg width={size} height={size} className="rotate-[-90deg]">
+      <svg width={size} height={size} className="rotate-[-90deg] block">
         <circle
           cx={size / 2}
           cy={size / 2}
