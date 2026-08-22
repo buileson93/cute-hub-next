@@ -3,8 +3,10 @@ import { PageBody } from "@/components/mirats/PageBody";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { DataTableCore, type DataTableColumn } from "@/components/mirats/DataTableCore";
 import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
+import { useThietBiList } from "@/lib/mirats/db-thiet-bi";
 import { DataState } from "@/components/mirats/DataState";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+
 
 export const Route = createFileRoute("/_app/thiet-bi/danh-sach")({
   head: () => ({
