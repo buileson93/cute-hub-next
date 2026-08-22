@@ -1165,14 +1165,16 @@ export function ThanhPhanTable({
                 inherited: true,
                 group: "Tài sản",
                 value: (r) => r.taiSanTrangThai,
-                cell: (r) =>
-                  r.taiSanTrangThai ? (
-                    <Badge variant="outline" className="text-[10px]">
-                      {r.taiSanTrangThai}
-                    </Badge>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">—</span>
-                  ),
+                cell: (r) => {
+                  if (r.taiSanTrangThai) {
+                    return (
+                      <Badge variant="outline" className="text-[10px]">
+                        {r.taiSanTrangThai}
+                      </Badge>
+                    );
+                  }
+                  return <span className="text-xs text-muted-foreground">—</span>;
+                },
               },
               {
                 key: "namSanXuat",
