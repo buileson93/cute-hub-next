@@ -58,6 +58,7 @@ import { Route as AppBaoTriRouteImport } from './routes/_app.bao-tri'
 import { Route as AppBanGiaoRouteImport } from './routes/_app.ban-giao'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as AppTrinhKyIndexRouteImport } from './routes/_app.trinh-ky.index'
 import { Route as AppThietBiIndexRouteImport } from './routes/_app.thiet-bi.index'
 import { Route as AppSuCoIndexRouteImport } from './routes/_app.su-co.index'
 import { Route as AppSoDoIndexRouteImport } from './routes/_app.so-do.index'
@@ -385,6 +386,11 @@ const Char91DotmcpChar93ListToolsRoute =
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AppTrinhKyIndexRoute = AppTrinhKyIndexRouteImport.update({
+  id: '/trinh-ky/',
+  path: '/trinh-ky/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppThietBiIndexRoute = AppThietBiIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -908,6 +914,7 @@ export interface FileRoutesByFullPath {
   '/so-do/': typeof AppSoDoIndexRoute
   '/su-co/': typeof AppSuCoIndexRoute
   '/thiet-bi/': typeof AppThietBiIndexRoute
+  '/trinh-ky/': typeof AppTrinhKyIndexRoute
   '/admin/forms/$id': typeof AppAdminFormsIdRouteWithChildren
   '/bao-tri/dot/$id': typeof AppBaoTriDotIdRoute
   '/forms/new/$code': typeof AppFormsNewCodeRoute
@@ -1031,6 +1038,7 @@ export interface FileRoutesByTo {
   '/so-do': typeof AppSoDoIndexRoute
   '/su-co': typeof AppSuCoIndexRoute
   '/thiet-bi': typeof AppThietBiIndexRoute
+  '/trinh-ky': typeof AppTrinhKyIndexRoute
   '/admin/forms/$id': typeof AppAdminFormsIdRouteWithChildren
   '/bao-tri/dot/$id': typeof AppBaoTriDotIdRoute
   '/forms/new/$code': typeof AppFormsNewCodeRoute
@@ -1163,6 +1171,7 @@ export interface FileRoutesById {
   '/_app/so-do/': typeof AppSoDoIndexRoute
   '/_app/su-co/': typeof AppSuCoIndexRoute
   '/_app/thiet-bi/': typeof AppThietBiIndexRoute
+  '/_app/trinh-ky/': typeof AppTrinhKyIndexRoute
   '/_app/admin/forms/$id': typeof AppAdminFormsIdRouteWithChildren
   '/_app/bao-tri/dot/$id': typeof AppBaoTriDotIdRoute
   '/_app/forms/new/$code': typeof AppFormsNewCodeRoute
@@ -1295,6 +1304,7 @@ export interface FileRouteTypes {
     | '/so-do/'
     | '/su-co/'
     | '/thiet-bi/'
+    | '/trinh-ky/'
     | '/admin/forms/$id'
     | '/bao-tri/dot/$id'
     | '/forms/new/$code'
@@ -1418,6 +1428,7 @@ export interface FileRouteTypes {
     | '/so-do'
     | '/su-co'
     | '/thiet-bi'
+    | '/trinh-ky'
     | '/admin/forms/$id'
     | '/bao-tri/dot/$id'
     | '/forms/new/$code'
@@ -1549,6 +1560,7 @@ export interface FileRouteTypes {
     | '/_app/so-do/'
     | '/_app/su-co/'
     | '/_app/thiet-bi/'
+    | '/_app/trinh-ky/'
     | '/_app/admin/forms/$id'
     | '/_app/bao-tri/dot/$id'
     | '/_app/forms/new/$code'
@@ -1946,6 +1958,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/.mcp/list-tools'
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_app/trinh-ky/': {
+      id: '/_app/trinh-ky/'
+      path: '/trinh-ky'
+      fullPath: '/trinh-ky/'
+      preLoaderRoute: typeof AppTrinhKyIndexRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/thiet-bi/': {
       id: '/_app/thiet-bi/'
@@ -2761,6 +2780,7 @@ interface AppRouteChildren {
   AppThongKeLaptopRoute: typeof AppThongKeLaptopRoute
   AppDuAnIndexRoute: typeof AppDuAnIndexRoute
   AppSoDoIndexRoute: typeof AppSoDoIndexRoute
+  AppTrinhKyIndexRoute: typeof AppTrinhKyIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -2828,6 +2848,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppThongKeLaptopRoute: AppThongKeLaptopRoute,
   AppDuAnIndexRoute: AppDuAnIndexRoute,
   AppSoDoIndexRoute: AppSoDoIndexRoute,
+  AppTrinhKyIndexRoute: AppTrinhKyIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
