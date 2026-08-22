@@ -1303,7 +1303,7 @@ function DanhMucThietBiPage() {
             {/* Lọc theo Nhãn tài sản (đa trị) — song song với "Chủng loại" (đơn trị). */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" className="h-9 gap-1.5">
+                <Button variant="outline" size="sm" className="h-9 gap-1.5" aria-label="Lọc theo nhãn tài sản">
                   <Tag className="h-3.5 w-3.5" />
                   Nhãn tài sản
                   {tagSelected.length > 0 && (
