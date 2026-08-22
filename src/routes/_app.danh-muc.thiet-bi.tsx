@@ -545,10 +545,10 @@ function DanhMucThietBiPage() {
   );
   const deviceNameByMa = useCallback(
     (ma: string) => {
-      const d = (taxo?.devices ?? []).find((x) => x.ma_thiet_bi === ma);
+      const d = (pagedData?.rows ?? []).find((x) => x.ma_thiet_bi === ma);
       return d ? tbName(d) : ma;
     },
-    [taxo, tbName],
+    [pagedData, tbName],
   );
   const hasActiveFilter =
     search.trim() !== "" || filterLoai !== "all" || filterTt !== "all" || tagSelected.length > 0;
