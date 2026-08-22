@@ -160,11 +160,8 @@ export function useGlobalSearch(rawTerm: string): UseGlobalSearchResult {
     }
     return { devSys, systems };
   }, [taxo, overrides]);
-    for (const h of taxo.htList) {
-      systems.push({ id: h.id, ten: htName(h.id, h.ten), count: sysCount.get(h.id) ?? 0 });
-    }
-    return { devSys, systems };
-  }, [taxo, overrides]);
+
+
 
   const enabled = debounced.length >= SEARCH_MIN_LEN;
 
