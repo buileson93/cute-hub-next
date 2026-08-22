@@ -68,17 +68,14 @@ import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-// Experimental features hidden for production
-// import { LeanUXCanvas } from "@/components/mirats/projects/discovery/LeanUXCanvas";
-// import { HillChart } from "@/components/mirats/projects/delivery/HillChart";
-// import { PitchEditor } from "@/components/mirats/projects/delivery/PitchEditor";
-// import { OperationsLane } from "@/components/mirats/projects/operations/OperationsLane";
+// Standard features
 import { DossierRegister } from "@/components/mirats/projects/dossier/DossierRegister";
 import { ProjectTimeline } from "@/components/mirats/projects/timeline/ProjectTimeline";
 import { getTodayDateString } from "@/lib/mirats/calendar-date";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
+import { TaskDetailSlideOver } from "@/components/mirats/projects/TaskDetailSlideOver";
 
-const SUPPORTED_VIEWS = ["kanban", "gantt", "list", "timeline", "hoso", "cong-van"] as const;
+const SUPPORTED_VIEWS = ["kanban", "gantt", "list", "timeline", "hoso", "cong-van", "phase-gate"] as const;
 type ProjectView = (typeof SUPPORTED_VIEWS)[number];
 
 const PROJECT_VIEWS: ReadonlyArray<{
@@ -92,9 +89,10 @@ const PROJECT_VIEWS: ReadonlyArray<{
   { value: "timeline", label: "Timeline", icon: CalendarClock },
   { value: "hoso", label: "Hồ sơ", icon: FolderArchive },
   { value: "cong-van", label: "Công văn", icon: Mails },
+  { value: "phase-gate", label: "Ma trận Hồ sơ", icon: ShieldAlert },
 ];
 
-const WORK_VIEWS: ProjectView[] = ["kanban", "gantt", "list", "timeline"];
+const WORK_VIEWS: ProjectView[] = ["kanban", "gantt", "list", "timeline", "phase-gate"];
 
 export const Route = createFileRoute("/_app/du-an/$id")({
   validateSearch: (search: Record<string, unknown>) => {
@@ -277,6 +275,8 @@ function DuAnDetailPage() {
   const [openCV, setOpenCV] = useState(false);
   const [defaultMocId, setDefaultMocId] = useState<string | null>(null);
   const [editingCV, setEditingCV] = useState<CongViec | null>(null);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [showTaskDetail, setShowTaskDetail] = useState(false);
 
   if (loadingDA) {
     return (
@@ -419,9 +419,8 @@ function DuAnDetailPage() {
               }
               nameOf={nameOf}
               onEdit={(t) => {
-                setEditingCV(t);
-                setDefaultMocId(t.moc_id);
-                setOpenCV(true);
+                setSelectedTaskId(t.id);
+                setShowTaskDetail(true);
               }}
               canAdd={canAddTask}
               onAddIn={(mocId) => {
@@ -493,9 +492,8 @@ function DuAnDetailPage() {
               tasks={congViecs ?? []}
               nameOf={nameOf}
               onEdit={(t) => {
-                setEditingCV(t);
-                setDefaultMocId(t.moc_id);
-                setOpenCV(true);
+                setSelectedTaskId(t.id);
+                setShowTaskDetail(true);
               }}
               canAdd={canAddTask}
               onAddIn={(mocId) => {
