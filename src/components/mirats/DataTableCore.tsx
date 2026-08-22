@@ -254,6 +254,11 @@ export function DataTableCore<T>({
                   {columns.map((col) => (
                     <TableCell
                       key={col.key}
+                      style={{
+                        width: col.width,
+                        minWidth: col.minWidth || (col.width ? undefined : 100),
+                        flex: col.width ? `0 0 ${col.width}px` : `1 1 ${col.minWidth || 100}px`
+                      }}
                       className={cn(
                         "mirats-table-cell-base border-b border-r border-border/20",
                         col.cellClassName,
