@@ -379,7 +379,7 @@ export function StandardTable<T>({
     const virtualItems = rowVirtualizer.getVirtualItems();
     if (virtualItems.length === 0) return;
     const lastItem = virtualItems[virtualItems.length - 1];
-    if (lastItem.index >= display.length - 20) {
+    if (lastItem.index >= display.length - 5) { // Load sớm hơn (5 dòng cuối thay vì 20)
       infiniteScroll.fetchNextPage();
     }
   }, [rowVirtualizer, infiniteScroll?.hasNextPage, infiniteScroll?.isFetchingNextPage, display.length, infiniteScroll]);
