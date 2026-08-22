@@ -11,9 +11,27 @@ async def main():
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(headless=True)
         context = await browser.new_context(viewport={"width": 1280, "height": 1800})
+
+        # Restore Supabase session from env if available
+        storage_key = os.environ.get("LOVABLE_BROWSER_SUPABASE_STORAGE_KEY")
+        session_json = os.environ.get("LOVABLE_BROWSER_SUPABASE_SESSION_JSON")
+        cookies_json = os.environ.get("LOVABLE_BROWSER_SUPABASE_COOKIES_JSON")
+
+        if cookies_json:
+            cookies = json.loads(cookies_json)
+            for c in cookies:
+                c["url"] = "http://localhost:8080"
+            await context.add_cookies(cookies)
+
         page = await context.new_page()
 
         # Step 1: Login & Navigation
+        await page.goto("http://localhost:8080")
+        if storage_key and session_json:
+            await page.evaluate(
+                f"window.localStorage.setItem({json.dumps(storage_key)}, {json.dumps(session_json)})"
+            )
+
         print("Navigating to /he-thong/thanh-phan...")
         await page.goto("http://localhost:8080/he-thong/thanh-phan", wait_until="networkidle")
         await page.screenshot(path=str(SCREENSHOTS / "1_initial_load.png"))
