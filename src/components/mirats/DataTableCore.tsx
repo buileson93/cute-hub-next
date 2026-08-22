@@ -220,9 +220,11 @@ export function DataTableCore<T>({
         }}>
 
           {rows.length === 0 ? (
-            <div className="flex h-32 items-center justify-center text-center text-muted-foreground italic w-full">
-              Không có dữ liệu hiển thị
-            </div>
+            <TableRow>
+              <TableCell colSpan={columns.length + (selectable ? 1 : 0)} className="h-32 text-center text-muted-foreground italic">
+                Không có dữ liệu hiển thị
+              </TableCell>
+            </TableRow>
           ) : virtualize ? (
             rowVirtualizer.getVirtualItems().map((virtualRow) => {
               const row = rows[virtualRow.index];
