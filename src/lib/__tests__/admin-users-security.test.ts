@@ -28,8 +28,25 @@ vi.mock('@/integrations/backend/admin.server', () => ({
   supabaseAdmin: mockSupabaseAdmin,
 }));
 
-// We don't mock createServerFn globally because it's too complex to get right for TS
-// Instead we test the handler if possible or just fix the types in the test if we must.
+// Mock createServerFn to capture the handler
+let capturedHandlers: Record<string, any> = {};
+
+vi.mock('@tanstack/react-start', () => ({
+  createServerFn: (options: any) => {
+    const fn: any = {
+      middleware: vi.fn().mockReturnThis(),
+      inputValidator: vi.fn().mockReturnThis(),
+      handler: (handler: any) => {
+        fn._handler = handler;
+        return fn;
+      }
+    };
+    return fn;
+  }
+}));
+
+// We need to re-import or use a trick because the module already loaded in previous attempts
+// In Vitest, we can use vi.resetModules() but it's easier to just access the hidden _handler we added in the mock above.
 
 describe('Admin User Management Security', () => {
   const context = {
@@ -42,10 +59,11 @@ describe('Admin User Management Security', () => {
   });
 
   it('should prevent self-deactivation', async () => {
-    // We expect setUserActive to be a function that takes { data, context } because of our mock
-    // But in reality it's a serverFn. We call the handler directly in the implementation but it's wrapped.
-    // To keep it simple and fix build, we'll just check if it's a function.
-    expect(setUserActive).toBeDefined();
+    const handler = (setUserActive as any)._handler;
+    await expect(handler({
+      data: { user_id: 'admin-id', active: false },
+      context
+    })).rejects.toThrow('Không thể tự khoá tài khoản của chính mình');
   });
 
   it('should have createUser compensation logic', async () => {
@@ -57,9 +75,9 @@ describe('Admin User Management Security', () => {
     // Simulate failure on RPC
     mockSupabaseAdmin.rpc.mockResolvedValue({ error: new Error('DB Error') });
 
+    const handler = (createUser as any)._handler;
     try {
-      // @ts-ignore
-      await (createUser as any).handler({
+      await handler({
         data: {
           email: 'test@example.com',
           password: 'password123',
@@ -75,8 +93,8 @@ describe('Admin User Management Security', () => {
   });
 
   it('should use update_user_full RPC for updateUser', async () => {
-    // @ts-ignore
-    await (updateUser as any).handler({
+    const handler = (updateUser as any)._handler;
+    await handler({
       data: {
         user_id: 'target-id',
         ho_ten: 'Updated Name',
