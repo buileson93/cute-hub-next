@@ -514,6 +514,69 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
             </CardContent>
           </Card>
         );
+      case "project-health-bar":
+        return (
+          <ERPChartFrame
+            title="Sức khỏe dự án (% Hoàn thành)"
+            icon="entity.chart"
+            loading={projectHealthQ.isLoading}
+            empty={!(projectHealthQ.data?.length)}
+          >
+            <ChartContainer config={{ progress: { label: "Tiến độ %", color: "#3b82f6" } }}>
+              <BarChart
+                layout="vertical"
+                data={projectHealthQ.data}
+                margin={{ left: 10, right: 20, top: 0, bottom: 0 }}
+              >
+                <XAxis type="number" domain={[0, 100]} hide />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  fontSize={10}
+                  width={120}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <ChartTooltip content={<ChartTooltipContent hideIndicator unit="%" />} />
+                <Bar
+                  dataKey="progress"
+                  radius={[0, 4, 4, 0]}
+                  barSize={12}
+                >
+                  {(projectHealthQ.data || []).map((entry: any, index: number) => (
+                    <Cell key={`cell-${index}`} fill={entry.isOverdue ? "#ef4444" : "#3b82f6"} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ChartContainer>
+          </ERPChartFrame>
+        );
+      case "dossier-compliance-heatmap":
+        return (
+          <ERPChartFrame
+            title="Dossier Compliance by Phase"
+            icon="entity.security"
+            loading={dossierCompQ.isLoading}
+          >
+             <ChartContainer config={{ value: { label: "Tỷ lệ tuân thủ", color: "#10b981" } }}>
+              <BarChart
+                data={dossierCompQ.data}
+                margin={{ left: -20, right: 0, top: 0, bottom: 0 }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis dataKey="phase" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} domain={[0, 100]} />
+                <ChartTooltip content={<ChartTooltipContent unit="%" />} />
+                <Bar
+                  dataKey="value"
+                  fill="#10b981"
+                  radius={[4, 4, 0, 0]}
+                  barSize={30}
+                />
+              </BarChart>
+            </ChartContainer>
+          </ERPChartFrame>
+        );
       case "live-timeline":
         return (
           <Card className="astryx-card h-full flex flex-col">
