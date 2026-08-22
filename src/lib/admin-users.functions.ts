@@ -81,7 +81,7 @@ export const createUser = createServerFn({ method: "POST" })
     z
       .object({
         email: z.string().trim().email().max(255),
-        password: z.string().min(6).max(72),
+        password: z.string().min(8).max(72),
         ho_ten: z.string().trim().min(1).max(100),
         don_vi: z.enum(DON_VI).nullable(),
         roles: z.array(z.enum(ROLES)).min(1),
