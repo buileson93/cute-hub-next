@@ -284,8 +284,9 @@
     background-color: var(--color-card);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-container);
-    overflow: hidden;
+    overflow: clip; /* Clip content for border-radius but allow internal overflow */
   }
+
 
   .astryx-table-header {
     background-color: var(--muted);
