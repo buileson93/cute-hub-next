@@ -1491,6 +1491,7 @@ function DanhMucThietBiPage() {
                   className="h-8 gap-1.5"
                   disabled={exporting || filteredRows.length === 0}
                   onClick={() => exportRows(filteredRows, visibleColumns)}
+                  aria-label="Xuất các tài sản đang hiển thị theo bộ lọc & cài đặt cột hiện tại"
                   title="Xuất các tài sản đang hiển thị theo bộ lọc & cài đặt cột hiện tại"
                 >
                   {exporting ? (
