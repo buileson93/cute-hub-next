@@ -284,6 +284,13 @@ export function buildTree(
         const ma = htSysMa(nhMa, sysId);
         let donViMa: string | null = htDonVi(sysId);
 
+        // Phase 10L - Debug label fallback
+        const currentLabel = htLabel(ma);
+        if (process.env.NODE_ENV === "development" && currentLabel === ma) {
+          console.warn(`[Taxonomy] Fallback detected for system: ${ma}`);
+        }
+
+
         // Dự phòng đơn vị từ tài sản bên trong nếu htDonVi không trả về
         if (!donViMa && devs.length > 0) {
           const dvCount = new Map<string, number>();
