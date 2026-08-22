@@ -27,15 +27,36 @@ export function evalVisible(rule: VisibleIfRule, values: FormValues): boolean {
   const v = values[rule.field_key];
   const target = rule.value;
   switch (rule.op) {
-    case "eq":  return eq(v, target);
-    case "neq": return !eq(v, target);
-    case "gt":  { const a = toNum(v), b = toNum(target); return a != null && b != null && a > b; }
-    case "lt":  { const a = toNum(v), b = toNum(target); return a != null && b != null && a < b; }
-    case "gte": { const a = toNum(v), b = toNum(target); return a != null && b != null && a >= b; }
-    case "lte": { const a = toNum(v), b = toNum(target); return a != null && b != null && a <= b; }
-    case "in":  return Array.isArray(target) && target.some((t) => eq(v, t));
-    case "not_in": return Array.isArray(target) && !target.some((t) => eq(v, t));
-    default: return true;
+    case "eq":
+      return eq(v, target);
+    case "neq":
+      return !eq(v, target);
+    case "gt": {
+      const a = toNum(v),
+        b = toNum(target);
+      return a != null && b != null && a > b;
+    }
+    case "lt": {
+      const a = toNum(v),
+        b = toNum(target);
+      return a != null && b != null && a < b;
+    }
+    case "gte": {
+      const a = toNum(v),
+        b = toNum(target);
+      return a != null && b != null && a >= b;
+    }
+    case "lte": {
+      const a = toNum(v),
+        b = toNum(target);
+      return a != null && b != null && a <= b;
+    }
+    case "in":
+      return Array.isArray(target) && target.some((t) => eq(v, t));
+    case "not_in":
+      return Array.isArray(target) && !target.some((t) => eq(v, t));
+    default:
+      return true;
   }
 }
 
@@ -48,13 +69,15 @@ export function evalFormula(formula: string, values: FormValues): number | null 
   let missing = false;
   const substituted = formula.replace(/\{([a-zA-Z0-9_]+)\}/g, (_, key: string) => {
     const n = toNum(values[key]);
-    if (n == null) { missing = true; return "0"; }
+    if (n == null) {
+      missing = true;
+      return "0";
+    }
     return String(n);
   });
   if (missing) return null;
   if (!/^[\d+\-*/().\s]+$/.test(substituted)) return null;
   try {
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
     const fn = new Function(`"use strict"; return (${substituted});`);
     const r = fn();
     return typeof r === "number" && Number.isFinite(r) ? r : null;
@@ -73,7 +96,10 @@ export function evalPredicate(expr: string, values: FormValues): boolean | null 
   let missing = false;
   const substituted = expr.replace(/\{([a-zA-Z0-9_]+)\}/g, (_, key: string) => {
     const v = values[key];
-    if (v == null || v === "") { missing = true; return "null"; }
+    if (v == null || v === "") {
+      missing = true;
+      return "null";
+    }
     const n = toNum(v);
     if (n != null) return String(n);
     if (typeof v === "boolean") return v ? "true" : "false";
@@ -85,7 +111,6 @@ export function evalPredicate(expr: string, values: FormValues): boolean | null 
   // Cho phép: chữ số, phép toán, so sánh, logic, quote đơn giản.
   if (!/^[\w\s+\-*/().<>=!&|"',:.@]+$/.test(substituted)) return null;
   try {
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
     const fn = new Function(`"use strict"; return (${substituted});`);
     const r = fn();
     return typeof r === "boolean" ? r : Boolean(r);
@@ -120,10 +145,7 @@ export type FieldError = { key: string; label: string; message: string };
  * Validate toàn bộ form: (1) required/required_if với field đang HIỂN THỊ,
  * (2) constraint_formula predicate, (3) min/max ngưỡng.
  */
-export function validateForm(
-  fields: readonly CompiledField[],
-  values: FormValues,
-): FieldError[] {
+export function validateForm(fields: readonly CompiledField[], values: FormValues): FieldError[] {
   const errors: FieldError[] = [];
   for (const f of fields) {
     if (!evalVisible(f.visible_if, values)) continue;
@@ -132,7 +154,8 @@ export function validateForm(
 
     const v = values[f.key];
     const isEmpty =
-      v == null || v === "" ||
+      v == null ||
+      v === "" ||
       (Array.isArray(v) && v.length === 0) ||
       (typeof v === "object" && !Array.isArray(v) && Object.keys(v ?? {}).length === 0);
 
@@ -140,21 +163,28 @@ export function validateForm(
       errors.push({ key: f.key, label: f.label, message: `Thiếu trường bắt buộc: ${f.label}` });
       continue;
     }
-    if (!isEmpty && f.kind === "number" || f.kind === "measure") {
+    if ((!isEmpty && f.kind === "number") || f.kind === "measure") {
       const th = checkThreshold(f, v);
       if (th === "fail") {
         const rng = [
           f.min_value != null ? `≥ ${f.min_value}` : null,
           f.max_value != null ? `≤ ${f.max_value}` : null,
-        ].filter(Boolean).join(", ");
-        errors.push({ key: f.key, label: f.label, message: `${f.label} ngoài ngưỡng cho phép (${rng}).` });
+        ]
+          .filter(Boolean)
+          .join(", ");
+        errors.push({
+          key: f.key,
+          label: f.label,
+          message: `${f.label} ngoài ngưỡng cho phép (${rng}).`,
+        });
       }
     }
     if (f.constraint_formula && f.constraint_formula.trim()) {
       const ok = evalPredicate(f.constraint_formula, values);
       if (ok === false) {
         errors.push({
-          key: f.key, label: f.label,
+          key: f.key,
+          label: f.label,
           message: f.constraint_message?.trim() || `${f.label}: vi phạm điều kiện kiểm tra chéo.`,
         });
       }
@@ -162,4 +192,3 @@ export function validateForm(
   }
   return errors;
 }
-

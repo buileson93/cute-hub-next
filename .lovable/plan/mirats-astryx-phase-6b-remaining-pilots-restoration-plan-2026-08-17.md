@@ -7,16 +7,18 @@ type: feature
 # MIRATS ASTRYX — Phase 6B: Remaining Pilots Restoration Plan
 
 ## Decision Matrix (S/H/I/R/F)
-| Route | Strategy | Criticality | Fallback |
-|-------|----------|-------------|----------|
-| `thiet-bi.index` (List) | **S (Static Skin)** | High | Browser native |
-| `forms.new.$code` (Form) | **S/B-S (Hybrid Skin)** | High | Tailwind default |
-| `he-thong.$id` (Details) | **S (Static Skin)** | Medium | CSS Reset |
-| `so-do.$id` (Diagram) | **H/I (Hydration Island)** | Medium | Loading Skeleton |
+
+| Route                    | Strategy                   | Criticality | Fallback         |
+| ------------------------ | -------------------------- | ----------- | ---------------- |
+| `thiet-bi.index` (List)  | **S (Static Skin)**        | High        | Browser native   |
+| `forms.new.$code` (Form) | **S/B-S (Hybrid Skin)**    | High        | Tailwind default |
+| `he-thong.$id` (Details) | **S (Static Skin)**        | Medium      | CSS Reset        |
+| `so-do.$id` (Diagram)    | **H/I (Hydration Island)** | Medium      | Loading Skeleton |
 
 ## Checkpoint Matrix & Metrics
 
 ### C1: Device List (`src/routes/_app.thiet-bi.index.tsx`)
+
 - **Changes**:
   1. Map `PageHeader` typography to `astryx-heading-1`.
   2. Map filter buttons to `astryx-control`.
@@ -27,6 +29,7 @@ type: feature
 - **Gate**: Dashboard regression, direct refresh `/thiet-bi`.
 
 ### C2: Form New (`src/routes/_app.forms.new.$code.tsx`)
+
 - **Changes**:
   1. Map form container to `astryx-surface`.
   2. Map field labels to `astryx-text-label`.
@@ -37,6 +40,7 @@ type: feature
 - **Gate**: Form submission workflow, hydration console.
 
 ### C3: System Details (`src/routes/_app.he-thong.$id.tsx`)
+
 - **Changes**:
   1. Map KPI summary to `astryx-surface`.
   2. Map Tabs trigger to `astryx-control` variant.
@@ -47,6 +51,7 @@ type: feature
 - **Gate**: Direct refresh, tab switching stability.
 
 ### C4: Manual Diagram (`src/routes/_app.so-do.$id.tsx`)
+
 - **Changes**:
   1. Map toolbar to `astryx-surface` (floating).
   2. Map sidebar panels to `astryx-card`.
@@ -57,6 +62,7 @@ type: feature
 - **Gate**: React Flow interaction, SVG export parity.
 
 ## Full Gate Requirements
+
 - Production build success.
 - 0 SSR errors on target routes.
 - Dark mode parity via semantic vars.

@@ -56,7 +56,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <p className="mt-2 text-sm text-muted-foreground">
           Đã có lỗi không mong muốn xảy ra. Bạn có thể thử tải lại trang hoặc quay về trang chủ.
         </p>
-        
+
         {isDev && (
           <div className="mt-4 p-4 bg-red-50 dark:bg-red-950/20 rounded-lg text-left overflow-auto max-h-[300px] border border-red-200 dark:border-red-900">
             <p className="text-xs font-mono text-red-600 dark:text-red-400 font-bold mb-1">
@@ -118,9 +118,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "MIRATS — VATM Middle Region CMMS" },
-      { name: "twitter:description", content: "Hệ thống quản lý tài sản kỹ thuật của Công ty Quản lý bay miền Trung. Vận hành 1.486 tài sản trên 6 đài kiểm soát không lưu." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8cfa19cc-e31a-45f0-aae3-9f880fc5b3b3/id-preview-d301bd18--56d952f4-c039-4fe2-859c-da5794db3823.lovable.app-1783491132295.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8cfa19cc-e31a-45f0-aae3-9f880fc5b3b3/id-preview-d301bd18--56d952f4-c039-4fe2-859c-da5794db3823.lovable.app-1783491132295.png" },
+      {
+        name: "twitter:description",
+        content:
+          "Hệ thống quản lý tài sản kỹ thuật của Công ty Quản lý bay miền Trung. Vận hành 1.486 tài sản trên 6 đài kiểm soát không lưu.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8cfa19cc-e31a-45f0-aae3-9f880fc5b3b3/id-preview-d301bd18--56d952f4-c039-4fe2-859c-da5794db3823.lovable.app-1783491132295.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8cfa19cc-e31a-45f0-aae3-9f880fc5b3b3/id-preview-d301bd18--56d952f4-c039-4fe2-859c-da5794db3823.lovable.app-1783491132295.png",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -137,7 +149,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
       { rel: "manifest", href: "/site.webmanifest" },
     ],
-
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -169,7 +180,7 @@ import { useBanQuyenAlertScanner } from "@/lib/mirats/ban-quyen-alerts";
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  
+
   useBanQuyenAlertScanner();
 
   useEffect(() => {
@@ -189,7 +200,6 @@ function RootComponent() {
   }, []);
 
   useEffect(() => {
-
     // Task 35 — bắt lỗi hết phiên global để đăng xuất mềm, không vòng redirect.
     let cleanup: (() => void) | undefined;
     void import("@/lib/mirats/auth/soft-signout").then((m) => {

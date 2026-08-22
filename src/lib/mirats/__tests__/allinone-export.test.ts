@@ -63,9 +63,27 @@ beforeEach(() => {
     { id: "ht2", ma: "HT2", ten: "Hệ thống 2", phan_loai_id: "pl1" },
   ];
   store["thiet_bi"] = [
-    { id: "tb1", ma_thiet_bi: "TB1", ten_thiet_bi: "Máy A", he_thong_id: "ht1", updated_at: "2025-07-01T00:00:00Z" },
-    { id: "tb2", ma_thiet_bi: "TB2", ten_thiet_bi: "Máy B", he_thong_id: "ht1", updated_at: "2025-07-02T00:00:00Z" },
-    { id: "tb3", ma_thiet_bi: "TB3", ten_thiet_bi: "Máy C", he_thong_id: "ht2", updated_at: "2025-07-03T00:00:00Z" },
+    {
+      id: "tb1",
+      ma_thiet_bi: "TB1",
+      ten_thiet_bi: "Máy A",
+      he_thong_id: "ht1",
+      updated_at: "2025-07-01T00:00:00Z",
+    },
+    {
+      id: "tb2",
+      ma_thiet_bi: "TB2",
+      ten_thiet_bi: "Máy B",
+      he_thong_id: "ht1",
+      updated_at: "2025-07-02T00:00:00Z",
+    },
+    {
+      id: "tb3",
+      ma_thiet_bi: "TB3",
+      ten_thiet_bi: "Máy C",
+      he_thong_id: "ht2",
+      updated_at: "2025-07-03T00:00:00Z",
+    },
   ];
 });
 
@@ -100,7 +118,9 @@ describe("buildAllInOneWorkbook — mẫu TRỐNG", () => {
   });
 
   it("không có dòng dữ liệu ở mẫu trống", async () => {
-    const parsed = await parseAllInOneXlsx(await toFile((await buildAllInOneWorkbook({ withData: false })).wb));
+    const parsed = await parseAllInOneXlsx(
+      await toFile((await buildAllInOneWorkbook({ withData: false })).wb),
+    );
     for (const p of parsed) expect(p.rows).toHaveLength(0);
   });
 });
@@ -111,7 +131,10 @@ describe("Sheet ① Hướng dẫn — skill card cho AI agent", () => {
     const ws = wb.getWorksheet("① Hướng dẫn")!;
     const text: string[] = [];
     ws.eachRow((row) => {
-      row.eachCell((c) => { const v = c.value; if (typeof v === "string") text.push(v); });
+      row.eachCell((c) => {
+        const v = c.value;
+        if (typeof v === "string") text.push(v);
+      });
     });
     const joined = text.join("\n");
     for (const block of GUIDE_BLOCKS) expect(joined).toContain(block);

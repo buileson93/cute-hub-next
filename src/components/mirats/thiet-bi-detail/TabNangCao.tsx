@@ -5,8 +5,12 @@ import { ThietBiAllFields } from "@/components/mirats/ThietBiAllFields";
 import { ChangeLogPanel } from "@/components/mirats/ChangeLogPanel";
 import { DeviceDetailTabProps } from "./types";
 
-export default function TabNangCao({ 
-  ma, tb, canEdit, LifecyclePanel, editMode
+export default function TabNangCao({
+  ma,
+  tb,
+  canEdit,
+  LifecyclePanel,
+  editMode,
 }: DeviceDetailTabProps & { LifecyclePanel?: any }) {
   return (
     <Tabs defaultValue="fields" className="w-full">
@@ -32,7 +36,9 @@ export default function TabNangCao({
         {LifecyclePanel ? (
           <LifecyclePanel thietBiId={tb.id} />
         ) : (
-          <p className="py-8 text-center text-sm text-muted-foreground italic">Component LifecyclePanel chưa sẵn sàng.</p>
+          <p className="py-8 text-center text-sm text-muted-foreground italic">
+            Component LifecyclePanel chưa sẵn sàng.
+          </p>
         )}
       </TabsContent>
 

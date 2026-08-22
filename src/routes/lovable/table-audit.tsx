@@ -4,7 +4,14 @@ import { PageBody } from "@/components/mirats/PageBody";
 import { StandardTable, ColumnDef } from "@/components/mirats/StandardTable";
 import { CatalogTable } from "@/components/mirats/CatalogTable";
 import { RawTableWrapper } from "@/components/mirats/ui/RawTableWrapper";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DataTableCore, DataTableColumn } from "@/components/mirats/DataTableCore";
@@ -37,21 +44,21 @@ const COLUMNS_CORE: DataTableColumn<SampleData>[] = [
   { key: "status", header: "Trạng thái", type: "status", width: 120 },
   { key: "date", header: "Ngày cập nhật", type: "date", width: 120 },
   { key: "value", header: "Giá trị (VND)", type: "currency", width: 150, align: "right" },
-  { 
-    key: "actions", 
-    header: "Thao tác", 
-    type: "actions", 
-    width: 100, 
+  {
+    key: "actions",
+    header: "Thao tác",
+    type: "actions",
+    width: 100,
     align: "center",
-    render: () => <Badge variant="outline">Xem</Badge>
+    render: () => <Badge variant="outline">Xem</Badge>,
   },
 ];
 
 function TableAuditFixture() {
   return (
     <PageBody className="space-y-12 pb-20">
-      <PageHeader 
-        title="Table Architecture Audit (Phase U9)" 
+      <PageHeader
+        title="Table Architecture Audit (Phase U9)"
         description="Kiểm tra độ ổn định, hiệu năng và responsive của các kiến trúc bảng MIRATS."
       />
 

@@ -7,12 +7,19 @@ export function LifecyclePanel({ thietBiId }: { thietBiId: string }) {
   const { data = [], isLoading } = useLifecycle(thietBiId);
   const { data: ttMap } = useTrangThaiMap();
 
-  if (isLoading) return <div className="py-8 text-center text-sm text-muted-foreground">Đang tải nhật ký vòng đời...</div>;
+  if (isLoading)
+    return (
+      <div className="py-8 text-center text-sm text-muted-foreground">
+        Đang tải nhật ký vòng đời...
+      </div>
+    );
 
   return (
     <div className="space-y-4">
       {data.length === 0 ? (
-        <p className="py-8 text-center text-sm text-muted-foreground italic">Chưa có nhật ký vòng đời cho tài sản này.</p>
+        <p className="py-8 text-center text-sm text-muted-foreground italic">
+          Chưa có nhật ký vòng đời cho tài sản này.
+        </p>
       ) : (
         <ol className="relative ml-3 border-l border-border pl-6 space-y-4">
           {data.map((row) => {
@@ -29,7 +36,12 @@ export function LifecyclePanel({ thietBiId }: { thietBiId: string }) {
                     <span className="text-xs font-mono text-muted-foreground">
                       {new Date(row.thoi_diem).toLocaleString("vi-VN")}
                     </span>
-                    <Badge variant="outline" className="text-[10px] px-1.5 h-4 bg-primary/10 border-primary/20 text-primary">Vòng đời</Badge>
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] px-1.5 h-4 bg-primary/10 border-primary/20 text-primary"
+                    >
+                      Vòng đời
+                    </Badge>
                   </div>
                   <div className="flex items-center gap-2 font-medium">
                     <span className="text-muted-foreground">{tuTen}</span>
@@ -54,8 +66,18 @@ export function LifecyclePanel({ thietBiId }: { thietBiId: string }) {
 
 function ArrowIcon() {
   return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground/50">
-      <path d="M5 12h14M12 5l7 7-7 7"/>
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="text-muted-foreground/50"
+    >
+      <path d="M5 12h14M12 5l7 7-7 7" />
     </svg>
   );
 }

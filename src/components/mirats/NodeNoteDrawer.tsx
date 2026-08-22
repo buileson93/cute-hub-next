@@ -2,7 +2,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -73,7 +79,6 @@ export function NodeNoteDrawer(props: Props) {
   const saveFn = useServerFn(upsertNodeNote);
   const searchFn = useServerFn(searchNotes);
 
-
   const queryKey = ["node_note", nodeType, nodeId] as const;
   const noteQuery = useQuery({
     queryKey,
@@ -89,7 +94,7 @@ export function NodeNoteDrawer(props: Props) {
   const { heThongList } = useHeThongPickList();
   const { loaiList } = useLoaiLienKet();
   const isHeThong = nodeType === "he_thong";
-  const existingLinks = useLienKetCuaHeThong(isHeThong ? nodeId ?? undefined : undefined);
+  const existingLinks = useLienKetCuaHeThong(isHeThong ? (nodeId ?? undefined) : undefined);
   const addLienKet = useAddLienKet();
 
   const [mentionQuery, setMentionQuery] = useState<string | null>(null);
@@ -103,9 +108,7 @@ export function NodeNoteDrawer(props: Props) {
       .filter((h) => h.id !== nodeId) // không tự trỏ vào chính mình
       .filter(
         (h) =>
-          q === "" ||
-          h.ten.toLowerCase().includes(q) ||
-          (h.ma?.toLowerCase() ?? "").includes(q),
+          q === "" || h.ten.toLowerCase().includes(q) || (h.ma?.toLowerCase() ?? "").includes(q),
       )
       .slice(0, 8);
   }, [heThongList, mentionQuery, nodeId]);
@@ -300,7 +303,10 @@ export function NodeNoteDrawer(props: Props) {
             <TabsTrigger value="split">Soạn + Xem trước</TabsTrigger>
             <TabsTrigger value="edit">Soạn</TabsTrigger>
             <TabsTrigger value="preview">Xem trước</TabsTrigger>
-            <TabsTrigger value="search"><Search className="h-3 w-3 mr-1" />Tìm ghi chú</TabsTrigger>
+            <TabsTrigger value="search">
+              <Search className="h-3 w-3 mr-1" />
+              Tìm ghi chú
+            </TabsTrigger>
           </TabsList>
 
           {/* SPLIT VIEW — editor + live preview cạnh nhau, cuộn độc lập */}
@@ -310,7 +316,9 @@ export function NodeNoteDrawer(props: Props) {
                 <Textarea
                   ref={textareaRef}
                   value={draft}
-                  onChange={(e) => onDraftChange(e.target.value, e.target.selectionStart ?? e.target.value.length)}
+                  onChange={(e) =>
+                    onDraftChange(e.target.value, e.target.selectionStart ?? e.target.value.length)
+                  }
                   onKeyDown={onKeyDownTextarea}
                   placeholder={`# ${nodeTen ?? "Ghi chú"}\n\nGõ @ để liên kết nhanh tới hệ thống khác.\nCtrl+S để lưu.`}
                   className="h-full min-h-[320px] font-mono text-sm resize-none"
@@ -325,11 +333,16 @@ export function NodeNoteDrawer(props: Props) {
                       <button
                         type="button"
                         key={opt.id}
-                        onMouseDown={(e) => { e.preventDefault(); insertMention(opt); }}
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          insertMention(opt);
+                        }}
                         onMouseEnter={() => setMentionIdx(i)}
                         className={`w-full text-left px-2 py-1.5 flex items-center gap-2 ${i === mentionIdx ? "bg-accent" : ""}`}
                       >
-                        <span className="font-mono text-[10px] text-muted-foreground w-14 truncate">{opt.ma}</span>
+                        <span className="font-mono text-[10px] text-muted-foreground w-14 truncate">
+                          {opt.ma}
+                        </span>
                         <span className="truncate">{opt.ten}</span>
                       </button>
                     ))}
@@ -342,7 +355,9 @@ export function NodeNoteDrawer(props: Props) {
                     <ReactMarkdown>{mdWithMentions(draft)}</ReactMarkdown>
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground italic">Xem trước sẽ xuất hiện ở đây khi bạn nhập nội dung.</p>
+                  <p className="text-sm text-muted-foreground italic">
+                    Xem trước sẽ xuất hiện ở đây khi bạn nhập nội dung.
+                  </p>
                 )}
               </div>
             </div>
@@ -352,7 +367,9 @@ export function NodeNoteDrawer(props: Props) {
             <div className="relative h-full">
               <Textarea
                 value={draft}
-                onChange={(e) => onDraftChange(e.target.value, e.target.selectionStart ?? e.target.value.length)}
+                onChange={(e) =>
+                  onDraftChange(e.target.value, e.target.selectionStart ?? e.target.value.length)
+                }
                 onKeyDown={onKeyDownTextarea}
                 placeholder={`# ${nodeTen ?? "Ghi chú"}\n\nGõ @ để liên kết nhanh tới hệ thống khác.\nCtrl+S để lưu.`}
                 className="h-full min-h-[320px] font-mono text-sm resize-none"
@@ -361,7 +378,10 @@ export function NodeNoteDrawer(props: Props) {
             </div>
           </TabsContent>
 
-          <TabsContent value="preview" className="flex-1 min-h-0 mt-2 overflow-auto rounded-md border bg-muted/20 p-4">
+          <TabsContent
+            value="preview"
+            className="flex-1 min-h-0 mt-2 overflow-auto rounded-md border bg-muted/20 p-4"
+          >
             {draft.trim() ? (
               <div className="prose prose-sm dark:prose-invert max-w-none">
                 <ReactMarkdown>{mdWithMentions(draft)}</ReactMarkdown>
@@ -395,13 +415,17 @@ export function NodeNoteDrawer(props: Props) {
             </div>
             <div className="flex-1 min-h-0 overflow-auto rounded-md border">
               {searchDeb.length < 2 ? (
-                <p className="text-sm text-muted-foreground italic p-3">Nhập ít nhất 2 ký tự để tìm.</p>
+                <p className="text-sm text-muted-foreground italic p-3">
+                  Nhập ít nhất 2 ký tự để tìm.
+                </p>
               ) : searchQuery.isLoading ? (
                 <p className="text-sm text-muted-foreground italic p-3 flex items-center gap-2">
                   <Loader2 className="h-3.5 w-3.5 animate-spin" /> Đang tìm…
                 </p>
               ) : !searchQuery.data || searchQuery.data.length === 0 ? (
-                <p className="text-sm text-muted-foreground italic p-3">Không tìm thấy ghi chú nào khớp.</p>
+                <p className="text-sm text-muted-foreground italic p-3">
+                  Không tìm thấy ghi chú nào khớp.
+                </p>
               ) : (
                 <ul className="divide-y">
                   {searchQuery.data.map((r) => (
@@ -428,8 +452,6 @@ export function NodeNoteDrawer(props: Props) {
             </div>
           </TabsContent>
         </Tabs>
-
-
 
         {mentions.length > 0 && (
           <div className="mt-2 rounded-md border bg-muted/20 p-2 space-y-1">
@@ -458,7 +480,8 @@ export function NodeNoteDrawer(props: Props) {
             </div>
             {!isHeThong && (
               <p className="text-[10px] text-muted-foreground italic">
-                Node hiện tại là Thành phần — @mention chỉ tạo tham chiếu trong ghi chú, không tự tạo liên kết.
+                Node hiện tại là Thành phần — @mention chỉ tạo tham chiếu trong ghi chú, không tự
+                tạo liên kết.
               </p>
             )}
           </div>
@@ -469,18 +492,24 @@ export function NodeNoteDrawer(props: Props) {
             {dirty ? "Có thay đổi chưa lưu" : "Đã đồng bộ"}
           </span>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>Đóng</Button>
+            <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
+              Đóng
+            </Button>
             <Button
               size="sm"
               onClick={() => saveMut.mutate()}
               disabled={!dirty || saveMut.isPending || !nodeType || !nodeId}
             >
-              {saveMut.isPending
-                ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
-                : <Save className="h-3.5 w-3.5 mr-1.5" />}
+              {saveMut.isPending ? (
+                <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+              ) : (
+                <Save className="h-3.5 w-3.5 mr-1.5" />
+              )}
               Lưu ghi chú
               {isHeThong && missingMentions.length > 0 && (
-                <span className="ml-1 text-[10px] opacity-80">+{missingMentions.length} liên kết</span>
+                <span className="ml-1 text-[10px] opacity-80">
+                  +{missingMentions.length} liên kết
+                </span>
               )}
             </Button>
           </div>

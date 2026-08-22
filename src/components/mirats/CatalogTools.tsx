@@ -12,19 +12,31 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { toCsv, parseCsv, noAccent } from "@/lib/mirats/import-config";
 import { invalidateTaxonomy } from "@/lib/mirats/db-taxonomy";
-import { ImportPreviewDialog, type ImportPreviewRowStatus } from "@/components/mirats/ImportPreviewDialog";
+import {
+  ImportPreviewDialog,
+  type ImportPreviewRowStatus,
+} from "@/components/mirats/ImportPreviewDialog";
 import { FileDropZone } from "@/components/mirats/FileDropZone";
 import { useServerImportEngine } from "@/lib/mirats/use-import-engine";
 import { buildRunOptions } from "@/lib/mirats/import-engine";
 import { isFeatureEnabled } from "@/lib/mirats/feature-flags";
-import { exportCatalogTemplateXlsx, readXlsxFirstSheet, validateCatalogRows } from "@/lib/mirats/catalog-template";
+import {
+  exportCatalogTemplateXlsx,
+  readXlsxFirstSheet,
+  validateCatalogRows,
+} from "@/lib/mirats/catalog-template";
 import type { ImportPreviewStep } from "@/components/mirats/ImportPreviewDialog";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -86,7 +98,10 @@ type Row = {
 };
 
 function slug(name: string, prefix: string): string {
-  const s = noAccent(name).toUpperCase().replace(/[^A-Z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  const s = noAccent(name)
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
   return s.slice(0, 40) || `${prefix}_` + Date.now().toString(36).toUpperCase();
 }
 
@@ -100,19 +115,17 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
   const [mergeOpen, setMergeOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const [importing, setImporting] = useState(false);
-  const [preview, setPreview] = useState<
-    {
-      title: string;
-      headers: string[];
-      rows: Array<Record<string, unknown>>;
-      statuses?: ImportPreviewRowStatus[];
-      note?: string;
-      steps?: ImportPreviewStep[];
-      fileWarnings?: string[];
-      onDownloadErrors?: () => void;
-      commit: () => Promise<void>;
-    } | null
-  >(null);
+  const [preview, setPreview] = useState<{
+    title: string;
+    headers: string[];
+    rows: Array<Record<string, unknown>>;
+    statuses?: ImportPreviewRowStatus[];
+    note?: string;
+    steps?: ImportPreviewStep[];
+    fileWarnings?: string[];
+    onDownloadErrors?: () => void;
+    commit: () => Promise<void>;
+  } | null>(null);
 
   const textKeys = config.textCols?.map((c) => c.key) ?? [];
   const refCols = config.refs ?? [];
@@ -160,11 +173,20 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
         for (const rc of refCols) {
           const fid = (r[rc.col] as string) ?? null;
           refId[rc.col] = fid;
-          ref[rc.col] = fid ? refNameMaps[rc.col]?.get(fid) ?? null : null;
+          ref[rc.col] = fid ? (refNameMaps[rc.col]?.get(fid) ?? null) : null;
         }
         const counts: Record<string, number> = {};
         for (const c of config.counts) counts[c.key] = countMaps[c.key]?.get(id) ?? 0;
-        return { id, ma: (r.ma as string) ?? null, ten: r.ten as string, active: r.active as boolean, text, ref, refId, counts };
+        return {
+          id,
+          ma: (r.ma as string) ?? null,
+          ten: r.ten as string,
+          active: r.active as boolean,
+          text,
+          ref,
+          refId,
+          counts,
+        };
       });
     },
   });
@@ -176,7 +198,11 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
     const csv = toCsv(
       headers,
       (rows ?? []).map((r) => {
-        const rec: Record<string, string> = { ma: r.ma ?? "", ten: r.ten, active: r.active ? "1" : "0" };
+        const rec: Record<string, string> = {
+          ma: r.ma ?? "",
+          ten: r.ten,
+          active: r.active ? "1" : "0",
+        };
         for (const k of textKeys) rec[k] = r.text[k] ?? "";
         for (const rc of refCols) rec[rc.csvKey] = r.ref[rc.col] ?? "";
         return rec;
@@ -212,7 +238,12 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
         rows: dataRows,
         refDropdowns: refCols.map((r) => ({ csvKey: r.csvKey, refTable: r.refTable })),
         required: ["ten"],
-        notes: Object.fromEntries(refCols.map((r) => [r.csvKey, `Chọn ${r.header} từ danh mục sống. Bỏ trống = giữ nguyên.`])),
+        notes: Object.fromEntries(
+          refCols.map((r) => [
+            r.csvKey,
+            `Chọn ${r.header} từ danh mục sống. Bỏ trống = giữ nguyên.`,
+          ]),
+        ),
       });
       toast.success("Đã xuất mẫu XLSX (có dropdown).");
     } catch (e) {
@@ -230,8 +261,18 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
     setExportingChild(true);
     try {
       const childRefs = ce.refs ?? [];
-      const childCols = ["id", "ma", "ten", ...ce.cols.map((c) => c.key), ...childRefs.map((r) => r.col), ce.fkCol];
-      const { data: children, error } = await sb.from(ce.table).select(childCols.join(",")).order("ten");
+      const childCols = [
+        "id",
+        "ma",
+        "ten",
+        ...ce.cols.map((c) => c.key),
+        ...childRefs.map((r) => r.col),
+        ce.fkCol,
+      ];
+      const { data: children, error } = await sb
+        .from(ce.table)
+        .select(childCols.join(","))
+        .order("ten");
       if (error) throw error;
 
       // Bản đồ tên cho khoá ngoại của bản con.
@@ -252,8 +293,12 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
       const pMaKey = `${config.slugPrefix.toLowerCase()}_ma`;
       const pTenKey = `${config.slugPrefix.toLowerCase()}_ten`;
       const headers = [
-        pIdKey, pMaKey, pTenKey,
-        "mau_id", "mau_ma", "mau_ten",
+        pIdKey,
+        pMaKey,
+        pTenKey,
+        "mau_id",
+        "mau_ma",
+        "mau_ten",
         ...ce.cols.map((c) => c.key),
         ...childRefs.map((r) => r.csvKey),
       ];
@@ -275,7 +320,7 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
         for (const c of ce.cols) rec[c.key] = (ch[c.key] as string) ?? "";
         for (const r of childRefs) {
           const fid = ch[r.col] as string | null;
-          rec[r.csvKey] = fid ? refNameMaps[r.col]?.get(fid) ?? "" : "";
+          rec[r.csvKey] = fid ? (refNameMaps[r.col]?.get(fid) ?? "") : "";
         }
         out.push(rec);
       }
@@ -286,13 +331,14 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
           [pIdKey]: p.id,
           [pMaKey]: p.ma ?? "",
           [pTenKey]: p.ten,
-          mau_id: "", mau_ma: "", mau_ten: "",
+          mau_id: "",
+          mau_ma: "",
+          mau_ten: "",
         };
         for (const c of ce.cols) rec[c.key] = "";
         for (const r of childRefs) rec[r.csvKey] = "";
         out.push(rec);
       }
-
 
       const csv = toCsv(headers, out);
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -302,7 +348,9 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
       a.download = `${ce.filePrefix}-${new Date().toISOString().slice(0, 10)}.csv`;
       a.click();
       URL.revokeObjectURL(url);
-      toast.success(`Đã xuất ${childList.length} ${ce.childLabel} kèm ${config.labelSingular} ra CSV.`);
+      toast.success(
+        `Đã xuất ${childList.length} ${ce.childLabel} kèm ${config.labelSingular} ra CSV.`,
+      );
     } catch (e) {
       toast.error("Xuất thất bại: " + (e as Error).message);
     } finally {
@@ -310,13 +358,13 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
     }
   }
 
-
-
   /* ---------------- Nhập lại file "Xuất kèm mẫu" (loại + mẫu) ---------------- */
   async function importCombined(headers: string[], parsed: Record<string, string>[]) {
     const ce = config.childExport!;
     const prefix = config.slugPrefix.toLowerCase();
-    const pIdKey = `${prefix}_id`, pMaKey = `${prefix}_ma`, pTenKey = `${prefix}_ten`;
+    const pIdKey = `${prefix}_id`,
+      pMaKey = `${prefix}_ma`,
+      pTenKey = `${prefix}_ten`;
 
     // 1) Upsert bản mẹ (loại) — gộp trùng theo id → mã → tên trong file.
     type P = { id?: string; ma: string; ten: string };
@@ -366,7 +414,8 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
     type C = Record<string, unknown> & { id?: string; ma: string; ten: string };
     const cWithId: C[] = [];
     const cNoId: C[] = [];
-    let unmatchedParents = 0, unmatchedRefs = 0;
+    let unmatchedParents = 0,
+      unmatchedRefs = 0;
     for (const r of parsed) {
       const cTen = (r.mau_ten ?? "").trim();
       if (!cTen) continue; // dòng chỉ có loại (không có mẫu) → bỏ qua ở bước con
@@ -384,7 +433,10 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
       for (const c of ce.cols) base[c.key] = r[c.key]?.trim() || null;
       for (const rf of childRefs) {
         const nm = (r[rf.csvKey] ?? "").trim();
-        if (!nm) { base[rf.col] = null; continue; }
+        if (!nm) {
+          base[rf.col] = null;
+          continue;
+        }
         const fid = refIdMaps[rf.col]?.get(noAccent(nm)) ?? null;
         if (!fid) unmatchedRefs++;
         base[rf.col] = fid;
@@ -404,7 +456,8 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
     toast.success(
       `Đã nhập lại: ${parentByKey.size} ${config.labelSingular}, ${cWithId.length + cNoId.length} ${ce.childLabel}` +
         (unmatchedParents > 0 ? ` · ${unmatchedParents} mẫu chưa khớp loại` : "") +
-        (unmatchedRefs > 0 ? ` · ${unmatchedRefs} liên kết trống` : "") + ".",
+        (unmatchedRefs > 0 ? ` · ${unmatchedRefs} liên kết trống` : "") +
+        ".",
     );
     qc.invalidateQueries({ queryKey: ["catalog", config.table] });
     qc.invalidateQueries({ queryKey: ["catalog-tools", config.table] });
@@ -458,7 +511,9 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
       }
 
       if (!headers.includes("ten")) {
-        toast.error('File phải có cột "ten". Hãy xuất mẫu XLSX/CSV trước để lấy khung chuẩn.', { id: t });
+        toast.error('File phải có cột "ten". Hãy xuất mẫu XLSX/CSV trước để lấy khung chuẩn.', {
+          id: t,
+        });
         return;
       }
 
@@ -483,7 +538,10 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
       // Validate theo dòng — báo cột thiếu, giá trị lạ ở active, ref không khớp.
       const rowIssues = validateCatalogRows(headers, parsed, {
         required: ["ten"],
-        refCols: refCols.map((rc) => ({ csvKey: rc.csvKey, allowed: refAllowed[rc.col] ?? new Set() })),
+        refCols: refCols.map((rc) => ({
+          csvKey: rc.csvKey,
+          allowed: refAllowed[rc.col] ?? new Set(),
+        })),
       });
 
       type ImpRow = Record<string, unknown> & { ma: string; ten: string; active: boolean };
@@ -511,7 +569,10 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
         for (const k of textKeys) base[k] = r[k]?.trim() || null;
         for (const rc of refCols) {
           const name = (r[rc.csvKey] ?? "").trim();
-          if (!name) { base[rc.col] = null; continue; }
+          if (!name) {
+            base[rc.col] = null;
+            continue;
+          }
           const fid = refIdMaps[rc.col]?.get(noAccent(name)) ?? null;
           if (!fid) unmatchedRefs++;
           base[rc.col] = fid;
@@ -529,7 +590,10 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
       // Ngữ cảnh màn hình tự điền entity/danh mục theo bảng đang mở.
       const unified = isFeatureEnabled("importEngineUnified");
       const isModel = config.table === "dm_model";
-      const ctx = { entity: isModel ? "dm_model" : "danh_muc", catTable: isModel ? undefined : config.table };
+      const ctx = {
+        entity: isModel ? "dm_model" : "danh_muc",
+        catTable: isModel ? undefined : config.table,
+      };
       const engineRows = parsed.map((r) => {
         const ten = (r.ten ?? "").trim();
         const row: Record<string, string> = {
@@ -562,9 +626,20 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
         const ma = (r.ma?.trim() || slug((r.ten ?? "").trim(), config.slugPrefix)).toUpperCase();
         const before = beforeByMa.get(ma);
         if (iss.errors.length > 0) {
-          return { action: "error", messages: iss.errors, warnings: iss.warnings, issues: iss.issues, before };
+          return {
+            action: "error",
+            messages: iss.errors,
+            warnings: iss.warnings,
+            issues: iss.issues,
+            before,
+          };
         }
-        return { action: before ? "update" : "create", warnings: iss.warnings, issues: iss.issues, before };
+        return {
+          action: before ? "update" : "create",
+          warnings: iss.warnings,
+          issues: iss.issues,
+          before,
+        };
       });
       let engineNote = "";
       try {
@@ -582,7 +657,10 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
             };
           }
         });
-        engineNote = ` · Xem trước engine: +${pre.create} tạo · ~${pre.update} cập nhật` + (pre.error ? ` · ${pre.error} lỗi` : "") + ".";
+        engineNote =
+          ` · Xem trước engine: +${pre.create} tạo · ~${pre.update} cập nhật` +
+          (pre.error ? ` · ${pre.error} lỗi` : "") +
+          ".";
       } catch (e) {
         fileWarnings.push(`Không lấy được xem trước từ engine: ${(e as Error).message}`);
       }
@@ -590,10 +668,14 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
       const errorCount = statuses.filter((s) => s.action === "error").length;
       const createCount = statuses.filter((s) => s.action === "create").length;
       const updateCount = statuses.filter((s) => s.action === "update").length;
-      toast.success(`Đã xem trước: ${createCount} tạo · ${updateCount} cập nhật · ${errorCount} lỗi.`, { id: t });
+      toast.success(
+        `Đã xem trước: ${createCount} tạo · ${updateCount} cập nhật · ${errorCount} lỗi.`,
+        { id: t },
+      );
 
-      const previewHeaders = ["ma", "ten", ...textKeys, ...refCols.map((r) => r.csvKey)]
-        .filter((h) => headers.includes(h) || h === "ma");
+      const previewHeaders = ["ma", "ten", ...textKeys, ...refCols.map((r) => r.csvKey)].filter(
+        (h) => headers.includes(h) || h === "ma",
+      );
 
       const steps: ImportPreviewStep[] = [
         { label: `Đọc file (${parsed.length} dòng)`, status: "done" },
@@ -636,7 +718,10 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
       setPreview({
         title: `Nhập lại ${config.labelSingular}`,
         headers: previewHeaders,
-        rows: parsed.map((r) => ({ ...r, ma: (r.ma?.trim() || slug((r.ten ?? "").trim(), config.slugPrefix)).toUpperCase() })),
+        rows: parsed.map((r) => ({
+          ...r,
+          ma: (r.ma?.trim() || slug((r.ten ?? "").trim(), config.slugPrefix)).toUpperCase(),
+        })),
         statuses,
         steps,
         fileWarnings,
@@ -645,13 +730,19 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
         commit: async () => {
           if (unified) {
             const res = await engine.commit(buildRunOptions(ctx, engineRows));
-            toast.success(`Đã nhập ${config.labelSingular}: tạo ${res.create}, cập nhật ${res.update}` + (res.error ? ` · ${res.error} lỗi` : "") + ".");
+            toast.success(
+              `Đã nhập ${config.labelSingular}: tạo ${res.create}, cập nhật ${res.update}` +
+                (res.error ? ` · ${res.error} lỗi` : "") +
+                ".",
+            );
           } else {
             // Khóa tự nhiên duy nhất = `ma` (thống nhất với Nhập/Xuất hàng loạt).
             // Chỉ upsert các dòng KHÔNG có lỗi validate cục bộ.
             const safe = upserts.filter((_, k) => statuses[upsertOrigIndex[k]]?.action !== "error");
             if (safe.length === 0) throw new Error("Không có dòng hợp lệ để ghi.");
-            const { error } = await sb.from(config.table).upsert(safe as never, { onConflict: "ma" });
+            const { error } = await sb
+              .from(config.table)
+              .upsert(safe as never, { onConflict: "ma" });
             if (error) throw error;
             toast.success(
               `Đã nhập/cập nhật ${safe.length} ${config.labelSingular} (theo mã)` +
@@ -671,14 +762,17 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
     }
   }
 
-
-
   if (!canManage) return null;
 
   return (
     <>
       <AppTooltip noiDung="Gộp bản trùng (an toàn, giữ liên kết)">
-        <Button size="sm" variant="outline" className="h-7 w-7 p-0" onClick={() => setMergeOpen(true)}>
+        <Button
+          size="sm"
+          variant="outline"
+          className="h-7 w-7 p-0"
+          onClick={() => setMergeOpen(true)}
+        >
           <GitMerge className="h-4 w-4" />
           <span className="sr-only">Gộp trùng</span>
         </Button>
@@ -692,16 +786,36 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
       </AppTooltip>
 
       <AppTooltip noiDung="Xuất mẫu XLSX (có sẵn danh sách dropdown)">
-        <Button size="sm" variant="outline" className="h-7 w-7 p-0" onClick={exportXlsxTemplate} disabled={exportingXlsx}>
-          {exportingXlsx ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+        <Button
+          size="sm"
+          variant="outline"
+          className="h-7 w-7 p-0"
+          onClick={exportXlsxTemplate}
+          disabled={exportingXlsx}
+        >
+          {exportingXlsx ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Download className="h-4 w-4" />
+          )}
           <span className="sr-only">Xuất mẫu XLSX</span>
         </Button>
       </AppTooltip>
 
       {config.childExport && (
         <AppTooltip noiDung={config.childExport.label}>
-          <Button size="sm" variant="outline" className="h-7 w-7 p-0" onClick={exportWithChildren} disabled={exportingChild}>
-            {exportingChild ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 w-7 p-0"
+            onClick={exportWithChildren}
+            disabled={exportingChild}
+          >
+            {exportingChild ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="h-4 w-4" />
+            )}
             <span className="sr-only">{config.childExport.label}</span>
           </Button>
         </AppTooltip>
@@ -709,8 +823,18 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
 
       <FileDropZone onFile={importCsv} disabled={importing} hint="Kéo-thả file CSV/XLSX để nhập">
         <AppTooltip noiDung="Nhập dữ liệu từ file CSV hoặc XLSX">
-          <Button size="sm" variant="outline" className="h-7 w-7 p-0" onClick={() => fileRef.current?.click()} disabled={importing}>
-            {importing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 w-7 p-0"
+            onClick={() => fileRef.current?.click()}
+            disabled={importing}
+          >
+            {importing ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Upload className="h-4 w-4" />
+            )}
             <span className="sr-only">Nhập CSV/XLSX</span>
           </Button>
         </AppTooltip>
@@ -719,7 +843,10 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
           type="file"
           accept=".csv,text/csv,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           className="hidden"
-          onChange={(e) => { const f = e.target.files?.[0]; if (f) importCsv(f); }}
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) importCsv(f);
+          }}
         />
       </FileDropZone>
 
@@ -752,15 +879,22 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
         />
       )}
     </>
-
   );
 }
 
 /* ============================ Hộp thoại gộp trùng ============================ */
 
 function MergeDialog({
-  config, rows, onClose, onDone,
-}: { config: CatalogToolsConfig; rows: Row[]; onClose: () => void; onDone: () => void }) {
+  config,
+  rows,
+  onClose,
+  onDone,
+}: {
+  config: CatalogToolsConfig;
+  rows: Row[];
+  onClose: () => void;
+  onDone: () => void;
+}) {
   const [q, setQ] = useState("");
   const [targetId, setTargetId] = useState<string>("");
   const [sourceIds, setSourceIds] = useState<Set<string>>(new Set());
@@ -777,7 +911,9 @@ function MergeDialog({
       arr.push(r);
       m.set(key, arr);
     }
-    return Array.from(m.values()).filter((g) => g.length > 1).sort((a, b) => b.length - a.length);
+    return Array.from(m.values())
+      .filter((g) => g.length > 1)
+      .sort((a, b) => b.length - a.length);
   }, [rows]);
 
   const filtered = useMemo(() => {
@@ -796,7 +932,8 @@ function MergeDialog({
   function toggleSource(id: string) {
     setSourceIds((prev) => {
       const n = new Set(prev);
-      if (n.has(id)) n.delete(id); else n.add(id);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
       return n;
     });
   }
@@ -812,12 +949,19 @@ function MergeDialog({
     if (!target || sources.length === 0) return;
     setSaving(true);
     try {
-      const { data, error } = await sb.rpc(config.rpc as never, {
-        p_source_ids: sources.map((r) => r.id),
-        p_target_id: target.id,
-      } as never);
+      const { data, error } = await sb.rpc(
+        config.rpc as never,
+        {
+          p_source_ids: sources.map((r) => r.id),
+          p_target_id: target.id,
+        } as never,
+      );
       if (error) throw error;
-      const res = (data ?? {}) as { models_moved?: number; devices_moved?: number; deleted?: number };
+      const res = (data ?? {}) as {
+        models_moved?: number;
+        devices_moved?: number;
+        deleted?: number;
+      };
       toast.success(
         `Đã gộp vào "${target.ten}": chuyển ${res.devices_moved ?? 0} tài sản` +
           (res.models_moved ? `, ${res.models_moved} mẫu` : "") +
@@ -835,37 +979,69 @@ function MergeDialog({
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2"><GitMerge className="h-5 w-5" /> Gộp {config.labelSingular} trùng</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <GitMerge className="h-5 w-5" /> Gộp {config.labelSingular} trùng
+          </DialogTitle>
           <DialogDescription>
-            Chọn <b>bản giữ lại</b> (radio) và các <b>bản trùng cần gộp vào</b> (tích chọn). Toàn bộ liên kết
-            đang có sẽ được chuyển sang bản giữ lại, không mất dữ liệu.
+            Chọn <b>bản giữ lại</b> (radio) và các <b>bản trùng cần gộp vào</b> (tích chọn). Toàn bộ
+            liên kết đang có sẽ được chuyển sang bản giữ lại, không mất dữ liệu.
           </DialogDescription>
         </DialogHeader>
 
         {groups.length > 0 && (
           <div className="rounded-md border bg-muted/40 p-2.5">
-            <p className="mb-1.5 text-xs font-medium text-muted-foreground">Gợi ý bản có tên gần trùng — bấm để chọn nhanh:</p>
+            <p className="mb-1.5 text-xs font-medium text-muted-foreground">
+              Gợi ý bản có tên gần trùng — bấm để chọn nhanh:
+            </p>
             <div className="flex flex-wrap gap-1.5">
               {groups.slice(0, 8).map((g, i) => (
-                <Button key={i} size="sm" variant="secondary" className="h-7 gap-1 text-xs" onClick={() => applyGroup(g)}>
-                  {g[0].ten} <Badge variant="outline" className="ml-0.5 h-4 px-1 text-[10px]">{g.length}</Badge>
+                <Button
+                  key={i}
+                  size="sm"
+                  variant="secondary"
+                  className="h-7 gap-1 text-xs"
+                  onClick={() => applyGroup(g)}
+                >
+                  {g[0].ten}{" "}
+                  <Badge variant="outline" className="ml-0.5 h-4 px-1 text-[10px]">
+                    {g.length}
+                  </Badge>
                 </Button>
               ))}
             </div>
           </div>
         )}
 
-        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={`Tìm ${config.labelSingular}, mã…`} />
+        <Input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder={`Tìm ${config.labelSingular}, mã…`}
+        />
 
         <div className="max-h-[38vh] overflow-x-auto rounded-md border">
-          <RadioGroup value={targetId} onValueChange={(v) => { setTargetId(v); setSourceIds((p) => { const n = new Set(p); n.delete(v); return n; }); setConfirm(false); }}>
+          <RadioGroup
+            value={targetId}
+            onValueChange={(v) => {
+              setTargetId(v);
+              setSourceIds((p) => {
+                const n = new Set(p);
+                n.delete(v);
+                return n;
+              });
+              setConfirm(false);
+            }}
+          >
             <table className="w-full text-sm">
               <thead className="sticky top-0 bg-background">
                 <tr className="border-b text-xs text-muted-foreground">
                   <th className="w-16 p-2 text-center">Giữ lại</th>
                   <th className="w-16 p-2 text-center">Gộp</th>
                   <th className="p-2 text-left">{config.labelSingular}</th>
-                  {config.counts.map((c) => <th key={c.key} className="w-20 p-2 text-center">{c.header}</th>)}
+                  {config.counts.map((c) => (
+                    <th key={c.key} className="w-20 p-2 text-center">
+                      {c.header}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -873,16 +1049,35 @@ function MergeDialog({
                   const isTarget = r.id === targetId;
                   const isSource = sourceIds.has(r.id) && !isTarget;
                   return (
-                    <tr key={r.id} className={cn("border-b last:border-0", isTarget && "bg-primary/5", isSource && "bg-destructive/5")}>
-                      <td className="p-2 text-center"><RadioGroupItem value={r.id} /></td>
+                    <tr
+                      key={r.id}
+                      className={cn(
+                        "border-b last:border-0",
+                        isTarget && "bg-primary/5",
+                        isSource && "bg-destructive/5",
+                      )}
+                    >
                       <td className="p-2 text-center">
-                        <Checkbox checked={isSource} disabled={isTarget} onCheckedChange={() => toggleSource(r.id)} />
+                        <RadioGroupItem value={r.id} />
+                      </td>
+                      <td className="p-2 text-center">
+                        <Checkbox
+                          checked={isSource}
+                          disabled={isTarget}
+                          onCheckedChange={() => toggleSource(r.id)}
+                        />
                       </td>
                       <td className="p-2">
                         <div className="font-medium">{r.ten}</div>
-                        <div className="font-mono text-[11px] text-muted-foreground">{r.ma ?? "—"}</div>
+                        <div className="font-mono text-[11px] text-muted-foreground">
+                          {r.ma ?? "—"}
+                        </div>
                       </td>
-                      {config.counts.map((c) => <td key={c.key} className="p-2 text-center text-xs">{r.counts[c.key] ?? 0}</td>)}
+                      {config.counts.map((c) => (
+                        <td key={c.key} className="p-2 text-center text-xs">
+                          {r.counts[c.key] ?? 0}
+                        </td>
+                      ))}
                     </tr>
                   );
                 })}
@@ -894,15 +1089,25 @@ function MergeDialog({
         {target && sources.length > 0 && (
           <div className="rounded-md border border-amber-500/40 bg-amber-500/5 p-3 text-sm">
             <div className="flex flex-wrap items-center gap-2">
-              {sources.map((s) => <Badge key={s.id} variant="outline" className="text-xs line-through">{s.ten}</Badge>)}
+              {sources.map((s) => (
+                <Badge key={s.id} variant="outline" className="text-xs line-through">
+                  {s.ten}
+                </Badge>
+              ))}
               <ArrowRight className="h-4 w-4 text-muted-foreground" />
               <Badge className="text-xs">{target.ten}</Badge>
             </div>
             <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
-              {movedTotals.filter((m) => m.n > 0).map((m) => (
-                <span key={m.header}>Chuyển {m.n} {m.header.toLowerCase()}</span>
-              ))}
-              <span className="flex items-center gap-1 text-destructive"><AlertTriangle className="h-3.5 w-3.5" /> Xoá {sources.length} bản trùng</span>
+              {movedTotals
+                .filter((m) => m.n > 0)
+                .map((m) => (
+                  <span key={m.header}>
+                    Chuyển {m.n} {m.header.toLowerCase()}
+                  </span>
+                ))}
+              <span className="flex items-center gap-1 text-destructive">
+                <AlertTriangle className="h-3.5 w-3.5" /> Xoá {sources.length} bản trùng
+              </span>
             </div>
             <label className="mt-2 flex items-center gap-2 text-xs">
               <Checkbox checked={confirm} onCheckedChange={(v) => setConfirm(!!v)} />
@@ -912,9 +1117,19 @@ function MergeDialog({
         )}
 
         <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>Huỷ</Button>
-          <Button disabled={!target || sources.length === 0 || !confirm || saving} onClick={doMerge} className="gap-1.5">
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <GitMerge className="h-4 w-4" />}
+          <Button variant="ghost" onClick={onClose}>
+            Huỷ
+          </Button>
+          <Button
+            disabled={!target || sources.length === 0 || !confirm || saving}
+            onClick={doMerge}
+            className="gap-1.5"
+          >
+            {saving ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <GitMerge className="h-4 w-4" />
+            )}
             Gộp {sources.length > 0 ? `${sources.length} bản` : ""}
           </Button>
         </DialogFooter>

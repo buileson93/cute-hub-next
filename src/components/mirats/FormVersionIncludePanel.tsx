@@ -17,12 +17,23 @@ import { Loader2, Plus, Trash2, Rocket, Eye, Link2, Lock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { supabase } from "@/integrations/backend/client";
 import { previewFormVersion, publishFormVersion } from "@/lib/mirats/form-include-repo";
 
 type VersionRow = { id: string; version: number; status: string };
-type IncludeRow = { id: string; child_version_id: string; position: number; section_code: string | null };
+type IncludeRow = {
+  id: string;
+  child_version_id: string;
+  position: number;
+  section_code: string | null;
+};
 type ChildOption = { version_id: string; label: string };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -69,10 +80,12 @@ export function FormVersionIncludePanel({ templateId }: { templateId: string }) 
         .eq("status", "published")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return (data ?? []).map((r): ChildOption => ({
-        version_id: r.id as string,
-        label: `${(r.form_template?.code as string) ?? ""} — ${(r.form_template?.ten as string) ?? ""} (v${r.version})`,
-      }));
+      return (data ?? []).map(
+        (r): ChildOption => ({
+          version_id: r.id as string,
+          label: `${(r.form_template?.code as string) ?? ""} — ${(r.form_template?.ten as string) ?? ""} (v${r.version})`,
+        }),
+      );
     },
   });
 
@@ -96,7 +109,12 @@ export function FormVersionIncludePanel({ templateId }: { templateId: string }) 
       const nextVersion = ((versions ?? [])[0]?.version ?? 0) + 1;
       const { data, error } = await supabase
         .from("form_template_version")
-        .insert({ template_id: templateId, version: nextVersion, status: "draft", compiled_schema: {} })
+        .insert({
+          template_id: templateId,
+          version: nextVersion,
+          status: "draft",
+          compiled_schema: {},
+        })
         .select("id")
         .single();
       if (error) throw error;
@@ -159,7 +177,10 @@ export function FormVersionIncludePanel({ templateId }: { templateId: string }) 
       return publish({ data: { versionId: selectedVer } });
     },
     onSuccess: (res) => {
-      if (res) toast.success(`Đã phát hành — gộp ${res.included_codes.length} mẫu, ${res.field_count} trường`);
+      if (res)
+        toast.success(
+          `Đã phát hành — gộp ${res.included_codes.length} mẫu, ${res.field_count} trường`,
+        );
       qc.invalidateQueries({ queryKey: ["form-versions", templateId] });
       qc.invalidateQueries({ queryKey: ["include-child-options"] });
     },
@@ -177,14 +198,24 @@ export function FormVersionIncludePanel({ templateId }: { templateId: string }) 
           <Link2 className="h-4 w-4" />
           Phiên bản & Mẫu lồng nhau (include)
         </CardTitle>
-        <Button size="sm" variant="outline" onClick={() => createDraft.mutate()} disabled={createDraft.isPending}>
-          {createDraft.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => createDraft.mutate()}
+          disabled={createDraft.isPending}
+        >
+          {createDraft.isPending ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Plus className="mr-2 h-4 w-4" />
+          )}
           Tạo phiên bản nháp
         </Button>
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          Publish sẽ biên dịch cây include thành 1 snapshot cố định. Phiếu tạo về sau đọc snapshot này, không đổi khi mẫu con thay đổi.
+          Publish sẽ biên dịch cây include thành 1 snapshot cố định. Phiếu tạo về sau đọc snapshot
+          này, không đổi khi mẫu con thay đổi.
         </p>
 
         {/* Chọn phiên bản */}
@@ -196,13 +227,21 @@ export function FormVersionIncludePanel({ templateId }: { templateId: string }) 
             <button
               key={v.id}
               type="button"
-              onClick={() => { setSelectedVer(v.id); setPreviewMsg(null); }}
+              onClick={() => {
+                setSelectedVer(v.id);
+                setPreviewMsg(null);
+              }}
               className={`flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm transition ${
-                selectedVer === v.id ? "border-primary bg-primary/10 text-primary" : "hover:bg-secondary"
+                selectedVer === v.id
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "hover:bg-secondary"
               }`}
             >
               <span className="font-mono">v{v.version}</span>
-              <Badge variant={v.status === "draft" ? "secondary" : "outline"} className="text-[10px]">
+              <Badge
+                variant={v.status === "draft" ? "secondary" : "outline"}
+                className="text-[10px]"
+              >
                 {v.status !== "draft" && <Lock className="mr-1 h-2.5 w-2.5" />}
                 {STATUS_LABEL[v.status] ?? v.status}
               </Badge>
@@ -229,10 +268,18 @@ export function FormVersionIncludePanel({ templateId }: { templateId: string }) 
                 <p className="text-xs text-muted-foreground">Chưa include mẫu con nào.</p>
               )}
               {(includes ?? []).map((inc) => (
-                <div key={inc.id} className="flex items-center justify-between rounded bg-secondary/50 px-2 py-1.5 text-sm">
+                <div
+                  key={inc.id}
+                  className="flex items-center justify-between rounded bg-secondary/50 px-2 py-1.5 text-sm"
+                >
                   <span>{childLabel(inc.child_version_id)}</span>
                   {isDraft && (
-                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => removeInclude.mutate(inc.id)}>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-7 w-7"
+                      onClick={() => removeInclude.mutate(inc.id)}
+                    >
                       <Trash2 className="h-3.5 w-3.5 text-rose-600" />
                     </Button>
                   )}
@@ -244,36 +291,61 @@ export function FormVersionIncludePanel({ templateId }: { templateId: string }) 
             {isDraft && (
               <div className="flex gap-2">
                 <Select value={childToAdd} onValueChange={setChildToAdd}>
-                  <SelectTrigger className="flex-1"><SelectValue placeholder="Chọn mẫu con (đã publish)…" /></SelectTrigger>
+                  <SelectTrigger className="flex-1">
+                    <SelectValue placeholder="Chọn mẫu con (đã publish)…" />
+                  </SelectTrigger>
                   <SelectContent>
                     {(childOptions ?? []).length === 0 && (
-                      <div className="px-2 py-1.5 text-xs text-muted-foreground">Không có mẫu con đã publish.</div>
+                      <div className="px-2 py-1.5 text-xs text-muted-foreground">
+                        Không có mẫu con đã publish.
+                      </div>
                     )}
                     {(childOptions ?? []).map((c) => (
-                      <SelectItem key={c.version_id} value={c.version_id}>{c.label}</SelectItem>
+                      <SelectItem key={c.version_id} value={c.version_id}>
+                        {c.label}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
-                <Button size="sm" onClick={() => addInclude.mutate()} disabled={!childToAdd || addInclude.isPending}>
+                <Button
+                  size="sm"
+                  onClick={() => addInclude.mutate()}
+                  disabled={!childToAdd || addInclude.isPending}
+                >
                   <Plus className="mr-1 h-4 w-4" /> Gắn
                 </Button>
               </div>
             )}
 
             {previewMsg && (
-              <div className={`rounded-md px-3 py-2 text-sm ${previewMsg.startsWith("✓") ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : "bg-rose-500/10 text-rose-700 dark:text-rose-400"}`}>
+              <div
+                className={`rounded-md px-3 py-2 text-sm ${previewMsg.startsWith("✓") ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" : "bg-rose-500/10 text-rose-700 dark:text-rose-400"}`}
+              >
                 {previewMsg}
               </div>
             )}
 
             <div className="flex gap-2">
-              <Button size="sm" variant="outline" onClick={() => previewM.mutate()} disabled={previewM.isPending}>
-                {previewM.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Eye className="mr-2 h-4 w-4" />}
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => previewM.mutate()}
+                disabled={previewM.isPending}
+              >
+                {previewM.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Eye className="mr-2 h-4 w-4" />
+                )}
                 Xem trước biên dịch
               </Button>
               {isDraft && (
                 <Button size="sm" onClick={() => publishM.mutate()} disabled={publishM.isPending}>
-                  {publishM.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Rocket className="mr-2 h-4 w-4" />}
+                  {publishM.isPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Rocket className="mr-2 h-4 w-4" />
+                  )}
                   Phát hành (khoá phiên bản)
                 </Button>
               )}

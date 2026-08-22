@@ -7,7 +7,21 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-  Plus, Pencil, PowerOff, HardDrive, PackageOpen, Wrench, ArrowRightLeft, CircleSlash, Cpu, History, ChevronDown, RefreshCw, Trash2, ArrowUp, ArrowDown,
+  Plus,
+  Pencil,
+  PowerOff,
+  HardDrive,
+  PackageOpen,
+  Wrench,
+  ArrowRightLeft,
+  CircleSlash,
+  Cpu,
+  History,
+  ChevronDown,
+  RefreshCw,
+  Trash2,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { ChevronRight, Layers } from "lucide-react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
@@ -20,24 +34,47 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
-  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Combobox } from "@/components/mirats/Combobox";
 import { supabase } from "@/integrations/backend/client";
 import {
-  useViTriChucNang, useThietBiDangLap,
-  useLuuViTri, useNgungViTri, useXoaViTri, useXoaViTriForce, useDemLichSuThanhPhan, useDoiThuTuViTri,
-  useXemTruocXoaThanhPhan, useKhoiPhucThanhPhan, useThanhPhanDaXoa,
+  useViTriChucNang,
+  useThietBiDangLap,
+  useLuuViTri,
+  useNgungViTri,
+  useXoaViTri,
+  useXoaViTriForce,
+  useDemLichSuThanhPhan,
+  useDoiThuTuViTri,
+  useXemTruocXoaThanhPhan,
+  useKhoiPhucThanhPhan,
+  useThanhPhanDaXoa,
   useLyLichViTri,
-  type ViTriChucNang, type ThietBiDangLap,
+  type ViTriChucNang,
+  type ThietBiDangLap,
 } from "@/lib/mirats/he-thong-thanh-phan";
 import {
-  buildThanhPhanTree, flattenThanhPhanTree, isDescendantOf, useMultiRoleMap,
+  buildThanhPhanTree,
+  flattenThanhPhanTree,
+  isDescendantOf,
+  useMultiRoleMap,
   type ThanhPhanNode,
 } from "@/lib/mirats/he-thong-thanh-phan";
 import { colorForThietBi } from "@/lib/mirats/multi-role-color";
@@ -49,19 +86,27 @@ import { thongDiepLoi, kickNeuHetPhien } from "@/lib/mirats/errors";
 import { useMyPermissions, useCan } from "@/hooks/use-permissions";
 import { useIsMutating } from "@tanstack/react-query";
 
-
 function useLoaiThietBi() {
   return useQuery({
     queryKey: ["dm-loai-thiet-bi-all"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("dm_loai_thiet_bi").select("id, ten").order("thu_tu");
+      const { data, error } = await supabase
+        .from("dm_loai_thiet_bi")
+        .select("id, ten")
+        .order("thu_tu");
       if (error) throw error;
       return (data ?? []) as Array<{ id: string; ten: string }>;
     },
   });
 }
 
-export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; canManage: boolean }) {
+export function ThanhPhanManager({
+  heThongId,
+  canManage,
+}: {
+  heThongId: string;
+  canManage: boolean;
+}) {
   const { data: viTri = [], isLoading } = useViTriChucNang(heThongId);
   const { data: dangLap } = useThietBiDangLap(heThongId);
   const { data: loaiList = [] } = useLoaiThietBi();
@@ -84,13 +129,12 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
   const [opTarget, setOpTarget] = useState<any | null>(null);
   const [openLichSu, setOpenLichSu] = useState<string | null>(null);
 
-
   const ngungMut = useNgungViTri(heThongId);
   const xoaMut = useXoaViTri(heThongId);
   const xoaForceMut = useXoaViTriForce(heThongId);
   const khoiPhucMut = useKhoiPhucThanhPhan(heThongId);
   const doiThuTuMut = useDoiThuTuViTri(heThongId);
-  
+
   const [xoaTarget, setXoaTarget] = useState<ViTriChucNang | null>(null);
   const [xoaReason, setXoaReason] = useState("");
   const { data: perms } = useMyPermissions();
@@ -98,17 +142,27 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
   const canForceDelete = useCan("he_thong", "force_delete");
   const { data: histCount } = useDemLichSuThanhPhan(xoaTarget?.id ?? null);
   const { data: xoaPreview } = useXemTruocXoaThanhPhan(xoaTarget?.id ?? null);
-  const hasHistory = !!histCount && (histCount.gan + histCount.suCo + histCount.baoTri + histCount.hongHoc) > 0;
+  const hasHistory =
+    !!histCount && histCount.gan + histCount.suCo + histCount.baoTri + histCount.hongHoc > 0;
   const { data: daXoaList = [] } = useThanhPhanDaXoa(heThongId);
   // Bất kỳ mutation nào ĐANG chạy tại hệ thống này → chặn xoá để tránh xung đột.
   const busy =
-    xoaMut.isPending || xoaForceMut.isPending || khoiPhucMut.isPending ||
-    ngungMut.isPending || doiThuTuMut.isPending;
+    xoaMut.isPending ||
+    xoaForceMut.isPending ||
+    khoiPhucMut.isPending ||
+    ngungMut.isPending ||
+    doiThuTuMut.isPending;
 
   const inflightAll = useIsMutating() > 0;
 
-  const openCreate = () => { setEditTarget(null); setFormOpen(true); };
-  const openEdit = (v: ViTriChucNang) => { setEditTarget(v); setFormOpen(true); };
+  const openCreate = () => {
+    setEditTarget(null);
+    setFormOpen(true);
+  };
+  const openEdit = (v: ViTriChucNang) => {
+    setEditTarget(v);
+    setFormOpen(true);
+  };
 
   const onNgung = (v: ViTriChucNang) => {
     ngungMut.mutate(v.id, {
@@ -118,26 +172,42 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
   };
   const onXoa = (v: ViTriChucNang, force: boolean) => {
     if (force) {
-      xoaForceMut.mutate({ viTriId: v.id, lyDo: xoaReason || null as any }, {
-        onSuccess: (res) => {
-          const a = res?.affected;
-          const parts = a ? [
-            a.gan_chuc_nang_detached ? `${a.gan_chuc_nang_detached} bản ghi lắp đã đóng` : null,
-            a.su_co ? `${a.su_co} sự cố` : null,
-            a.bao_tri ? `${a.bao_tri} bảo dưỡng` : null,
-            a.hong_hoc ? `${a.hong_hoc} hỏng hóc` : null,
-          ].filter(Boolean).join(" · ") : "";
-          toast.success(`Đã xoá cưỡng bức "${v.ma_thanh_phan} · ${v.ten}"`, {
-            description: parts ? `Ảnh hưởng: ${parts}. Có thể khôi phục trong 30 ngày.` : "Có thể khôi phục trong 30 ngày ở mục 'Đã xoá gần đây'.",
-          });
-          setXoaTarget(null); setXoaReason("");
+      xoaForceMut.mutate(
+        { viTriId: v.id, lyDo: xoaReason || (null as any) },
+        {
+          onSuccess: (res) => {
+            const a = res?.affected;
+            const parts = a
+              ? [
+                  a.gan_chuc_nang_detached
+                    ? `${a.gan_chuc_nang_detached} bản ghi lắp đã đóng`
+                    : null,
+                  a.su_co ? `${a.su_co} sự cố` : null,
+                  a.bao_tri ? `${a.bao_tri} bảo dưỡng` : null,
+                  a.hong_hoc ? `${a.hong_hoc} hỏng hóc` : null,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")
+              : "";
+            toast.success(`Đã xoá cưỡng bức "${v.ma_thanh_phan} · ${v.ten}"`, {
+              description: parts
+                ? `Ảnh hưởng: ${parts}. Có thể khôi phục trong 30 ngày.`
+                : "Có thể khôi phục trong 30 ngày ở mục 'Đã xoá gần đây'.",
+            });
+            setXoaTarget(null);
+            setXoaReason("");
+          },
+          onError: (e) => toast.error(e instanceof Error ? e.message : "Không xoá được thành phần"),
         },
-        onError: (e) => toast.error(e instanceof Error ? e.message : "Không xoá được thành phần"),
-      });
+      );
       return;
     }
     xoaMut.mutate(v.id, {
-      onSuccess: () => { toast.success(`Đã xoá thành phần "${v.ten}"`); setXoaTarget(null); setXoaReason(""); },
+      onSuccess: () => {
+        toast.success(`Đã xoá thành phần "${v.ten}"`);
+        setXoaTarget(null);
+        setXoaReason("");
+      },
       onError: (e) => toast.error(e instanceof Error ? e.message : "Không xoá được thành phần"),
     });
   };
@@ -154,9 +224,12 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
     const j = idx + dir;
     if (idx < 0 || j < 0 || j >= ordered.length) return;
     [ordered[idx], ordered[j]] = [ordered[j], ordered[idx]];
-    doiThuTuMut.mutate(ordered.map((x) => x.id), {
-      onError: (e) => toast.error(e instanceof Error ? e.message : "Không đổi thứ tự được"),
-    });
+    doiThuTuMut.mutate(
+      ordered.map((x) => x.id),
+      {
+        onError: (e) => toast.error(e instanceof Error ? e.message : "Không đổi thứ tự được"),
+      },
+    );
   };
   const onThao = (v: ViTriChucNang) => {
     setOpTarget({
@@ -168,12 +241,13 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
     setOpMode("thao");
   };
 
-
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-end">
         {canManage && (
-          <Button size="sm" onClick={openCreate}><Plus className="mr-1 h-4 w-4" /> Khai thêm thành phần</Button>
+          <Button size="sm" onClick={openCreate}>
+            <Plus className="mr-1 h-4 w-4" /> Khai thêm thành phần
+          </Button>
         )}
       </div>
 
@@ -201,12 +275,15 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                 >
                   {hasChildren ? (
                     <Button
-                      size="sm" variant="ghost"
+                      size="sm"
+                      variant="ghost"
                       className="h-6 w-6 shrink-0 p-0"
                       onClick={() => toggleCollapse(v.id)}
                       title={isCollapsed ? "Mở nhánh" : "Thu nhánh"}
                     >
-                      <ChevronRight className={`h-3.5 w-3.5 transition-transform ${isCollapsed ? "" : "rotate-90"}`} />
+                      <ChevronRight
+                        className={`h-3.5 w-3.5 transition-transform ${isCollapsed ? "" : "rotate-90"}`}
+                      />
                     </Button>
                   ) : (
                     <span className="inline-block h-6 w-6 shrink-0" aria-hidden />
@@ -214,22 +291,32 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                   {v.depth === 0 ? (
                     <Cpu className="h-4 w-4 shrink-0 text-primary" />
                   ) : (
-                    <span title="Thành phần con" className="shrink-0"><Layers className="h-4 w-4 text-muted-foreground" /></span>
+                    <span title="Thành phần con" className="shrink-0">
+                      <Layers className="h-4 w-4 text-muted-foreground" />
+                    </span>
                   )}
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs text-muted-foreground">{v.ma_thanh_phan}</span>
+                      <span className="font-mono text-xs text-muted-foreground">
+                        {v.ma_thanh_phan}
+                      </span>
                       <span className="font-medium">{v.ten}</span>
                       {hasChildren && (
                         <Badge variant="outline" className="text-[10px]" title="Số thành phần con">
                           {v.children.length} con
                         </Badge>
                       )}
-                      {ngung && <Badge variant="outline" className="border-muted-foreground/40">Đã ngừng</Badge>}
+                      {ngung && (
+                        <Badge variant="outline" className="border-muted-foreground/40">
+                          Đã ngừng
+                        </Badge>
+                      )}
                       {!ngung && v.bat_buoc && <Badge variant="secondary">Bắt buộc</Badge>}
                     </div>
                     {v.loai_thiet_bi_yeu_cau && (
-                      <div className="text-xs text-muted-foreground">Yêu cầu loại: {loaiTen.get(v.loai_thiet_bi_yeu_cau) ?? "—"}</div>
+                      <div className="text-xs text-muted-foreground">
+                        Yêu cầu loại: {loaiTen.get(v.loai_thiet_bi_yeu_cau) ?? "—"}
+                      </div>
                     )}
                   </div>
 
@@ -255,33 +342,59 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                               />
                               <HardDrive className="h-3 w-3" />
                               <span className="font-mono">{tb.ma_thiet_bi}</span>
-                              {tb.ma_serial && <span className="opacity-70">· SN {tb.ma_serial}</span>}
-                              <span className="ml-1 rounded px-1 text-[10px] font-semibold" style={{ backgroundColor: col!.border, color: "white" }}>
+                              {tb.ma_serial && (
+                                <span className="opacity-70">· SN {tb.ma_serial}</span>
+                              )}
+                              <span
+                                className="ml-1 rounded px-1 text-[10px] font-semibold"
+                                style={{ backgroundColor: col!.border, color: "white" }}
+                              >
                                 ×{mr!.count}
                               </span>
                             </Badge>
                           </HoverCardTrigger>
                           <HoverCardContent className="w-80 p-3 text-xs" side="left">
                             <div className="mb-2 flex items-center gap-2 font-medium">
-                              <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: col!.dot }} />
+                              <span
+                                className="inline-block h-2.5 w-2.5 rounded-full"
+                                style={{ backgroundColor: col!.dot }}
+                              />
                               Tài sản đa vai trò ({mr!.count})
                             </div>
                             <div className="mb-1 font-mono text-[11px] text-muted-foreground">
-                              {tb.ma_thiet_bi}{tb.ma_serial ? ` · SN ${tb.ma_serial}` : ""}
+                              {tb.ma_thiet_bi}
+                              {tb.ma_serial ? ` · SN ${tb.ma_serial}` : ""}
                             </div>
                             <ul className="space-y-1.5">
                               {mr!.roles.map((r) => {
                                 const here = r.thanh_phan_id === v.id;
                                 return (
-                                  <li key={r.thanh_phan_id} className={here ? "rounded bg-muted/60 px-1.5 py-1" : ""}>
+                                  <li
+                                    key={r.thanh_phan_id}
+                                    className={here ? "rounded bg-muted/60 px-1.5 py-1" : ""}
+                                  >
                                     <div className="flex items-baseline gap-1.5">
                                       <span className="font-medium">{r.ten_thanh_phan}</span>
-                                      {here && <span className="text-[10px] text-primary">(vai trò này)</span>}
+                                      {here && (
+                                        <span className="text-[10px] text-primary">
+                                          (vai trò này)
+                                        </span>
+                                      )}
                                     </div>
                                     <div className="text-[11px] text-muted-foreground">
                                       {r.ma_thanh_phan}
                                       {r.ten_he_thong && (
-                                        <> · <Link to="/he-thong/$id" params={{ id: r.he_thong_id }} className="text-primary hover:underline">{r.ten_he_thong}</Link></>
+                                        <>
+                                          {" "}
+                                          ·{" "}
+                                          <Link
+                                            to="/he-thong/$id"
+                                            params={{ id: r.he_thong_id }}
+                                            className="text-primary hover:underline"
+                                          >
+                                            {r.ten_he_thong}
+                                          </Link>
+                                        </>
                                       )}
                                     </div>
                                   </li>
@@ -294,7 +407,9 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                         <Badge variant="outline" className="gap-1 font-normal">
                           <HardDrive className="h-3 w-3" />
                           <span className="font-mono">{tb.ma_thiet_bi}</span>
-                          {tb.ma_serial && <span className="text-muted-foreground">· SN {tb.ma_serial}</span>}
+                          {tb.ma_serial && (
+                            <span className="text-muted-foreground">· SN {tb.ma_serial}</span>
+                          )}
                         </Badge>
                       )
                     ) : (
@@ -307,20 +422,39 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                   {canManage && (
                     <div className="flex w-full items-center gap-1 border-t pt-2 md:w-auto md:border-0 md:pt-0">
                       {!ngung && !tb && (
-                        <Button size="sm" variant="outline" onClick={() => {
-                          setOpTarget({ heThongId, thanhPhanId: v.id, maThanhPhan: v.ma_thanh_phan, tenThanhPhan: v.ten, loaiYeuCau: v.loai_thiet_bi_yeu_cau });
-                          setOpMode("lap");
-                        }}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setOpTarget({
+                              heThongId,
+                              thanhPhanId: v.id,
+                              maThanhPhan: v.ma_thanh_phan,
+                              tenThanhPhan: v.ten,
+                              loaiYeuCau: v.loai_thiet_bi_yeu_cau,
+                            });
+                            setOpMode("lap");
+                          }}
+                        >
                           <PackageOpen className="mr-1 h-3.5 w-3.5" /> Lắp
                         </Button>
-
                       )}
                       {!ngung && tb && (
                         <>
-                          <Button size="sm" variant="outline" onClick={() => {
-                            setOpTarget({ heThongId, thanhPhanId: v.id, maThanhPhan: v.ma_thanh_phan, tenThanhPhan: v.ten, loaiYeuCau: v.loai_thiet_bi_yeu_cau });
-                            setOpMode("thay");
-                          }}>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setOpTarget({
+                                heThongId,
+                                thanhPhanId: v.id,
+                                maThanhPhan: v.ma_thanh_phan,
+                                tenThanhPhan: v.ten,
+                                loaiYeuCau: v.loai_thiet_bi_yeu_cau,
+                              });
+                              setOpMode("thay");
+                            }}
+                          >
                             <Wrench className="mr-1 h-3.5 w-3.5" /> Thay thế
                           </Button>
 
@@ -330,35 +464,63 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                         </>
                       )}
                       <span className="flex items-center">
-                        <Button size="sm" variant="ghost" title="Lên trên"
-                          disabled={doiThuTuMut.isPending || viTri.findIndex((x) => x.id === v.id) === 0}
-                          onClick={() => onMove(v, -1)}>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          title="Lên trên"
+                          disabled={
+                            doiThuTuMut.isPending || viTri.findIndex((x) => x.id === v.id) === 0
+                          }
+                          onClick={() => onMove(v, -1)}
+                        >
                           <ArrowUp className="h-3.5 w-3.5" />
                         </Button>
-                        <Button size="sm" variant="ghost" title="Xuống dưới"
-                          disabled={doiThuTuMut.isPending || viTri.findIndex((x) => x.id === v.id) === viTri.length - 1}
-                          onClick={() => onMove(v, 1)}>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          title="Xuống dưới"
+                          disabled={
+                            doiThuTuMut.isPending ||
+                            viTri.findIndex((x) => x.id === v.id) === viTri.length - 1
+                          }
+                          onClick={() => onMove(v, 1)}
+                        >
                           <ArrowDown className="h-3.5 w-3.5" />
                         </Button>
                       </span>
-                      <Button size="sm" variant="ghost" onClick={() => openEdit(v)} title="Sửa"><Pencil className="h-3.5 w-3.5" /></Button>
+                      <Button size="sm" variant="ghost" onClick={() => openEdit(v)} title="Sửa">
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
                       {!ngung && !tb && (
-                        <Button size="sm" variant="ghost" className="text-muted-foreground" title="Ngừng thành phần" onClick={() => onNgung(v)} disabled={ngungMut.isPending}>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-muted-foreground"
+                          title="Ngừng thành phần"
+                          onClick={() => onNgung(v)}
+                          disabled={ngungMut.isPending}
+                        >
                           <PowerOff className="h-3.5 w-3.5" />
                         </Button>
                       )}
                       <Button
-                        size="sm" variant="ghost"
+                        size="sm"
+                        variant="ghost"
                         className="text-destructive opacity-100"
                         title={
                           busy || inflightAll
                             ? "Đang có thao tác lắp/tháo/cập nhật — vui lòng đợi hoàn tất"
                             : tb && !canForceDelete
                               ? "Đang có tài sản lắp — cần quyền he_thong.force_delete để xoá cưỡng bức"
-                              : (canForceDelete ? "Xoá thành phần (có thể xoá cưỡng bức)" : "Xoá thành phần")
+                              : canForceDelete
+                                ? "Xoá thành phần (có thể xoá cưỡng bức)"
+                                : "Xoá thành phần"
                         }
                         disabled={(tb && !canForceDelete) || busy || inflightAll}
-                        onClick={() => { setXoaReason(""); setXoaTarget(v); }}
+                        onClick={() => {
+                          setXoaReason("");
+                          setXoaTarget(v);
+                        }}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
@@ -367,12 +529,15 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
 
                   <div className="w-full border-t pt-2">
                     <Button
-                      size="sm" variant="ghost"
+                      size="sm"
+                      variant="ghost"
                       className="h-7 px-2 text-xs text-muted-foreground"
                       onClick={() => setOpenLichSu((cur) => (cur === v.id ? null : v.id))}
                     >
                       <History className="mr-1 h-3.5 w-3.5" /> Lý lịch thành phần
-                      <ChevronDown className={`ml-1 h-3.5 w-3.5 transition-transform ${openLichSu === v.id ? "rotate-180" : ""}`} />
+                      <ChevronDown
+                        className={`ml-1 h-3.5 w-3.5 transition-transform ${openLichSu === v.id ? "rotate-180" : ""}`}
+                      />
                     </Button>
                     {openLichSu === v.id && <ViTriLichSu thanhPhanId={v.id} />}
                   </div>
@@ -382,7 +547,6 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
           })}
         </div>
       )}
-
 
       {formOpen && (
         <ViTriFormDialog
@@ -394,11 +558,7 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
         />
       )}
       {opMode && opTarget && (
-        <OperationDialog
-          mode={opMode}
-          target={opTarget}
-          onClose={() => setOpMode(null)}
-        />
+        <OperationDialog mode={opMode} target={opTarget} onClose={() => setOpMode(null)} />
       )}
 
       <AlertDialog open={!!xoaTarget} onOpenChange={(o) => !o && setXoaTarget(null)}>
@@ -409,8 +569,8 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
               {xoaTarget ? (
                 <div className="space-y-2 text-sm">
                   <div>
-                    Xoá vĩnh viễn thành phần <b>{xoaTarget.ten}</b>{" "}
-                    (<span className="font-mono">{xoaTarget.ma_thanh_phan}</span>).
+                    Xoá vĩnh viễn thành phần <b>{xoaTarget.ten}</b> (
+                    <span className="font-mono">{xoaTarget.ma_thanh_phan}</span>).
                   </div>
 
                   {/* Cảnh báo nếu tài sản đang được lắp — backend sẽ chặn xoá thường */}
@@ -419,9 +579,10 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                     if (!tbHere) return null;
                     return (
                       <div className="rounded-md border border-amber-400/60 bg-amber-50 p-2 text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
-                        ⚠ Đang có tài sản <span className="font-mono">{tbHere.ma_thiet_bi}</span> lắp tại thành phần này.
-                        {" "}Backend sẽ <b>tự động tháo</b> khi xoá cưỡng bức, nhưng bản ghi lắp/tháo sẽ mất liên kết đến thành phần.
-                        Nên bấm <b>Tháo</b> trước, hoặc dùng <b>Ngừng</b> để giữ nguyên lý lịch.
+                        ⚠ Đang có tài sản <span className="font-mono">{tbHere.ma_thiet_bi}</span>{" "}
+                        lắp tại thành phần này. Backend sẽ <b>tự động tháo</b> khi xoá cưỡng bức,
+                        nhưng bản ghi lắp/tháo sẽ mất liên kết đến thành phần. Nên bấm <b>Tháo</b>{" "}
+                        trước, hoặc dùng <b>Ngừng</b> để giữ nguyên lý lịch.
                       </div>
                     );
                   })()}
@@ -429,34 +590,68 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                   {hasHistory ? (
                     canForceDelete ? (
                       <div className="rounded-md border border-destructive/40 bg-destructive/10 p-2 text-destructive space-y-1">
-                        <div>⚠ Thành phần đã có lịch sử — <b>backend chặn xoá thường</b> vì các bảng nghiệp vụ đang tham chiếu tới nó.</div>
+                        <div>
+                          ⚠ Thành phần đã có lịch sử — <b>backend chặn xoá thường</b> vì các bảng
+                          nghiệp vụ đang tham chiếu tới nó.
+                        </div>
                         <ul className="ml-4 list-disc text-xs">
-                          <li>{histCount?.gan ?? 0} bản ghi lắp/tháo — sẽ được <b>đóng (khoá kết thúc)</b>, không xoá.</li>
-                          <li>{histCount?.suCo ?? 0} sự cố, {histCount?.baoTri ?? 0} bảo dưỡng, {histCount?.hongHoc ?? 0} hỏng hóc — vẫn giữ, nhưng liên kết đến thành phần sẽ chỉ về bản ghi đã xoá (soft-delete).</li>
+                          <li>
+                            {histCount?.gan ?? 0} bản ghi lắp/tháo — sẽ được{" "}
+                            <b>đóng (khoá kết thúc)</b>, không xoá.
+                          </li>
+                          <li>
+                            {histCount?.suCo ?? 0} sự cố, {histCount?.baoTri ?? 0} bảo dưỡng,{" "}
+                            {histCount?.hongHoc ?? 0} hỏng hóc — vẫn giữ, nhưng liên kết đến thành
+                            phần sẽ chỉ về bản ghi đã xoá (soft-delete).
+                          </li>
                         </ul>
                         {(() => {
                           const s: any = xoaPreview?.samples ?? {};
                           const flat = [
-                            ...(s.gan ?? []).map((x: any) => ({ bang: "gan_chuc_nang", ma: x.ma_thiet_bi ?? x.id, mo_ta: x.ly_do })),
-                            ...(s.su_co ?? []).map((x: any) => ({ bang: "su_co", ma: x.ma_su_co ?? x.id, mo_ta: x.tieu_de })),
-                            ...(s.bao_tri ?? []).map((x: any) => ({ bang: "bao_tri", ma: x.ma_bao_tri ?? x.id, mo_ta: x.tieu_de })),
-                            ...(s.hong_hoc ?? []).map((x: any) => ({ bang: "hong_hoc", ma: x.ma_hong_hoc ?? x.id, mo_ta: x.mo_ta })),
+                            ...(s.gan ?? []).map((x: any) => ({
+                              bang: "gan_chuc_nang",
+                              ma: x.ma_thiet_bi ?? x.id,
+                              mo_ta: x.ly_do,
+                            })),
+                            ...(s.su_co ?? []).map((x: any) => ({
+                              bang: "su_co",
+                              ma: x.ma_su_co ?? x.id,
+                              mo_ta: x.tieu_de,
+                            })),
+                            ...(s.bao_tri ?? []).map((x: any) => ({
+                              bang: "bao_tri",
+                              ma: x.ma_bao_tri ?? x.id,
+                              mo_ta: x.tieu_de,
+                            })),
+                            ...(s.hong_hoc ?? []).map((x: any) => ({
+                              bang: "hong_hoc",
+                              ma: x.ma_hong_hoc ?? x.id,
+                              mo_ta: x.mo_ta,
+                            })),
                           ];
                           if (!flat.length) return null;
                           return (
                             <details className="text-xs">
-                              <summary className="cursor-pointer">Xem ví dụ bản ghi liên quan ({flat.length})</summary>
+                              <summary className="cursor-pointer">
+                                Xem ví dụ bản ghi liên quan ({flat.length})
+                              </summary>
                               <ul className="ml-4 mt-1 list-disc space-y-0.5 font-mono">
                                 {flat.slice(0, 8).map((it, i) => (
-                                  <li key={i}>[{it.bang}] {it.ma} {it.mo_ta ? `— ${it.mo_ta}` : ""}</li>
+                                  <li key={i}>
+                                    [{it.bang}] {it.ma} {it.mo_ta ? `— ${it.mo_ta}` : ""}
+                                  </li>
                                 ))}
                               </ul>
                             </details>
                           );
                         })()}
-                        <div className="text-xs">Thao tác là <b>soft-delete</b> — có thể khôi phục trong 30 ngày.</div>
+                        <div className="text-xs">
+                          Thao tác là <b>soft-delete</b> — có thể khôi phục trong 30 ngày.
+                        </div>
                         <div className="pt-1">
-                          <label className="text-xs font-medium">Lý do xoá (ghi vào audit log):</label>
+                          <label className="text-xs font-medium">
+                            Lý do xoá (ghi vào audit log):
+                          </label>
                           <input
                             type="text"
                             value={xoaReason}
@@ -468,22 +663,37 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
                       </div>
                     ) : (
                       <div className="rounded-md border p-2 text-muted-foreground">
-                        Thành phần đã có <b>{(histCount?.gan ?? 0) + (histCount?.suCo ?? 0) + (histCount?.baoTri ?? 0) + (histCount?.hongHoc ?? 0)}</b> bản ghi lịch sử.
-                        Backend chặn xoá — hãy dùng <b>Ngừng</b> hoặc liên hệ người có quyền <span className="font-mono">he_thong.force_delete</span>.
+                        Thành phần đã có{" "}
+                        <b>
+                          {(histCount?.gan ?? 0) +
+                            (histCount?.suCo ?? 0) +
+                            (histCount?.baoTri ?? 0) +
+                            (histCount?.hongHoc ?? 0)}
+                        </b>{" "}
+                        bản ghi lịch sử. Backend chặn xoá — hãy dùng <b>Ngừng</b> hoặc liên hệ người
+                        có quyền <span className="font-mono">he_thong.force_delete</span>.
                       </div>
                     )
                   ) : (
-                    <div className="text-muted-foreground">Chưa có lịch sử — có thể xoá an toàn.</div>
+                    <div className="text-muted-foreground">
+                      Chưa có lịch sử — có thể xoá an toàn.
+                    </div>
                   )}
                 </div>
-              ) : <div />}
+              ) : (
+                <div />
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Huỷ</AlertDialogCancel>
             <AlertDialogAction
               disabled={(hasHistory && !canForceDelete) || busy}
-              className={hasHistory ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : undefined}
+              className={
+                hasHistory
+                  ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  : undefined
+              }
               onClick={() => xoaTarget && onXoa(xoaTarget, hasHistory)}
             >
               {hasHistory ? "Xoá cưỡng bức (soft-delete)" : "Xoá"}
@@ -503,10 +713,13 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
               <li key={d.id} className="flex items-center justify-between gap-2 text-sm">
                 <div className="min-w-0 truncate">
                   <span className="font-mono">{d.ma_thanh_phan}</span> · {d.ten}
-                  {d.deleted_reason && <span className="text-muted-foreground"> — {d.deleted_reason}</span>}
+                  {d.deleted_reason && (
+                    <span className="text-muted-foreground"> — {d.deleted_reason}</span>
+                  )}
                 </div>
                 <Button
-                  size="sm" variant="outline"
+                  size="sm"
+                  variant="outline"
                   disabled={khoiPhucMut.isPending}
                   onClick={() => onKhoiPhuc(d.id, d.ten)}
                 >
@@ -517,15 +730,17 @@ export function ThanhPhanManager({ heThongId, canManage }: { heThongId: string; 
           </ul>
         </div>
       )}
-      
     </div>
   );
 }
 
-
 // ---- NHỊP I: form khai/sửa vị trí (KHÔNG có ô serial) ----------------------
 function ViTriFormDialog({
-  heThongId, target, loaiList, viTriList, onClose,
+  heThongId,
+  target,
+  loaiList,
+  viTriList,
+  onClose,
 }: {
   heThongId: string;
   target: ViTriChucNang | null;
@@ -554,10 +769,16 @@ function ViTriFormDialog({
       : viTriList;
     return list.map((v) => ({ value: v.id, label: `${v.ma_thanh_phan} · ${v.ten}` }));
   }, [viTriList, target]);
-  const loaiOptions = useMemo(() => loaiList.map((l) => ({ value: l.id, label: l.ten })), [loaiList]);
+  const loaiOptions = useMemo(
+    () => loaiList.map((l) => ({ value: l.id, label: l.ten })),
+    [loaiList],
+  );
 
   const submit = async () => {
-    if (!ten.trim()) { toast.error("Nhập tên thành phần"); return; }
+    if (!ten.trim()) {
+      toast.error("Nhập tên thành phần");
+      return;
+    }
     let maFinal = ma.trim();
     try {
       if (!maFinal) maFinal = await sinhMaThanhPhanDuyNhat();
@@ -580,7 +801,10 @@ function ViTriFormDialog({
         hieu_luc_den: hlDen || null,
       },
       {
-        onSuccess: () => { toast.success(target ? "Đã cập nhật thành phần" : "Đã khai thêm thành phần"); onClose(); },
+        onSuccess: () => {
+          toast.success(target ? "Đã cập nhật thành phần" : "Đã khai thêm thành phần");
+          onClose();
+        },
         onError: async (e) => {
           if (await kickNeuHetPhien(e)) return;
           toast.error(thongDiepLoi(e, "Lưu thất bại"));
@@ -594,15 +818,35 @@ function ViTriFormDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>{target ? "Sửa thành phần" : "Khai thêm thành phần"}</DialogTitle>
-          <DialogDescription>Chỉ khai chức năng — không nhập serial. Gán tài sản cụ thể là thao tác riêng.</DialogDescription>
+          <DialogDescription>
+            Chỉ khai chức năng — không nhập serial. Gán tài sản cụ thể là thao tác riêng.
+          </DialogDescription>
         </DialogHeader>
         <div className="grid gap-3">
           <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-3">
             <div className="space-y-1">
               <Label>Mã thành phần</Label>
               <div className="flex items-center gap-1">
-                <Input value={ma} onChange={(e) => setMa(e.target.value)} placeholder="TPHT_XXXXXXXX (bỏ trống → tự sinh)" className="font-mono" />
-                <Button type="button" size="icon" variant="outline" className="shrink-0" title="Sinh mã ngẫu nhiên khác (đảm bảo không trùng)" onClick={async () => { try { setMa(await sinhMaThanhPhanDuyNhat()); } catch (e) { toast.error(e instanceof Error ? e.message : "Không sinh được mã duy nhất"); } }}>
+                <Input
+                  value={ma}
+                  onChange={(e) => setMa(e.target.value)}
+                  placeholder="TPHT_XXXXXXXX (bỏ trống → tự sinh)"
+                  className="font-mono"
+                />
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  className="shrink-0"
+                  title="Sinh mã ngẫu nhiên khác (đảm bảo không trùng)"
+                  onClick={async () => {
+                    try {
+                      setMa(await sinhMaThanhPhanDuyNhat());
+                    } catch (e) {
+                      toast.error(e instanceof Error ? e.message : "Không sinh được mã duy nhất");
+                    }
+                  }}
+                >
                   <RefreshCw className="h-4 w-4" />
                 </Button>
               </div>
@@ -610,21 +854,42 @@ function ViTriFormDialog({
 
             <div className="col-span-2 space-y-1">
               <Label>Thành phần hệ thống</Label>
-              <Input value={ten} onChange={(e) => setTen(e.target.value)} placeholder="Cảm biến đo hướng & tốc độ gió" />
+              <Input
+                value={ten}
+                onChange={(e) => setTen(e.target.value)}
+                placeholder="Cảm biến đo hướng & tốc độ gió"
+              />
             </div>
           </div>
           <div className="space-y-1">
             <Label>Chủng loại yêu cầu (tuỳ chọn)</Label>
-            <Combobox options={loaiOptions} value={loai} onChange={setLoai} placeholder="Không ràng buộc loại" emptyText="Không có loại" />
+            <Combobox
+              options={loaiOptions}
+              value={loai}
+              onChange={setLoai}
+              placeholder="Không ràng buộc loại"
+              emptyText="Không có loại"
+            />
           </div>
           <div className="space-y-1">
             <Label>Thuộc thành phần cha (tuỳ chọn)</Label>
-            <Combobox options={chaOptions} value={cha} onChange={setCha} placeholder="Không có" emptyText="Chưa có thành phần khác" />
+            <Combobox
+              options={chaOptions}
+              value={cha}
+              onChange={setCha}
+              placeholder="Không có"
+              emptyText="Chưa có thành phần khác"
+            />
           </div>
           <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-3">
             <div className="space-y-1">
               <Label>Thứ tự</Label>
-              <Input value={thuTu} onChange={(e) => setThuTu(e.target.value)} inputMode="numeric" placeholder="1" />
+              <Input
+                value={thuTu}
+                onChange={(e) => setThuTu(e.target.value)}
+                inputMode="numeric"
+                placeholder="1"
+              />
             </div>
             <div className="space-y-1">
               <Label>Hiệu lực từ</Label>
@@ -644,29 +909,38 @@ function ViTriFormDialog({
           </label>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Huỷ</Button>
-          <Button onClick={submit} disabled={luuMut.isPending}>{target ? "Lưu" : "Khai thêm"}</Button>
+          <Button variant="outline" onClick={onClose}>
+            Huỷ
+          </Button>
+          <Button onClick={submit} disabled={luuMut.isPending}>
+            {target ? "Lưu" : "Khai thêm"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
 
-
 // ---- BƯỚC 7: lý lịch của một vị trí chức năng (các tài sản đã/đang giữ) ----
 function ViTriLichSu({ thanhPhanId }: { thanhPhanId: string }) {
   const { data = [], isLoading } = useLyLichViTri(thanhPhanId);
   if (isLoading) return <p className="mt-2 text-xs text-muted-foreground">Đang tải lý lịch…</p>;
-  if (data.length === 0) return <p className="mt-2 text-xs text-muted-foreground">Chưa có lịch sử lắp đặt.</p>;
+  if (data.length === 0)
+    return <p className="mt-2 text-xs text-muted-foreground">Chưa có lịch sử lắp đặt.</p>;
   const fmt = (s: string | null) => (s ? new Date(s).toLocaleDateString("vi-VN") : "nay");
   return (
     <ol className="mt-2 space-y-1.5">
       {data.map((r) => (
-        <li key={r.gan_id} className="flex flex-wrap items-center gap-2 rounded-md bg-muted/40 px-2 py-1.5 text-xs">
+        <li
+          key={r.gan_id}
+          className="flex flex-wrap items-center gap-2 rounded-md bg-muted/40 px-2 py-1.5 text-xs"
+        >
           <HardDrive className="h-3 w-3 text-muted-foreground" />
           <span className="font-mono">{r.ma_thiet_bi}</span>
           {r.ma_serial && <span className="text-muted-foreground">SN {r.ma_serial}</span>}
-          <span className="text-muted-foreground">· {fmt(r.tu_ngay)} → {fmt(r.den_ngay)}</span>
+          <span className="text-muted-foreground">
+            · {fmt(r.tu_ngay)} → {fmt(r.den_ngay)}
+          </span>
           <Badge variant={r.den_ngay ? "outline" : "secondary"} className="ml-auto">
             {r.den_ngay ? r.ly_do : "Đang lắp"}
           </Badge>
@@ -675,4 +949,3 @@ function ViTriLichSu({ thanhPhanId }: { thanhPhanId: string }) {
     </ol>
   );
 }
-

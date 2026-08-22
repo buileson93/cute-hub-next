@@ -4,35 +4,39 @@ Kế hoạch này tập trung vào việc chuẩn hóa trải nghiệm người 
 
 ## 1. Bảng Phân tích 4 Hành vi Nghiệp vụ
 
-| Hành vi | Điều kiện tiên quyết | Dữ liệu đầu vào | Hệ quả Sổ lý lịch | Trường hợp bị chặn |
-| :--- | :--- | :--- | :--- | :--- |
-| **LẮP** | Thành phần trống | Tài sản, Ngày lắp, Ghi chú | Tạo dòng mới trong `gan_chuc_nang` | Thành phần đã có tài sản; Tài sản đã thanh lý |
-| **THÁO** | Thành phần có tài sản | Vị trí đích (kho), Lý do, Ghi chú | Đóng dòng `gan_chuc_nang` hiện tại | Thành phần trống; Không chọn vị trí đích |
-| **THAY THẾ** | Thành phần có tài sản | Tài sản mới, Vị trí đích (cũ), Ghi chú | Đóng dòng cũ + Mở dòng mới (nguyên tử) | Thành phần trống; Tài sản mới đang bận (hỏi chuyển) |
-| **ĐIỀU CHUYỂN** | Tài sản đang ở nơi khác | Thành phần đích, Ghi chú | Đóng vị trí cũ + Mở tại vị trí mới | Tài sản đang rảnh (dùng Lắp); Đích đã bận |
+| Hành vi         | Điều kiện tiên quyết    | Dữ liệu đầu vào                        | Hệ quả Sổ lý lịch                      | Trường hợp bị chặn                                  |
+| :-------------- | :---------------------- | :------------------------------------- | :------------------------------------- | :-------------------------------------------------- |
+| **LẮP**         | Thành phần trống        | Tài sản, Ngày lắp, Ghi chú             | Tạo dòng mới trong `gan_chuc_nang`     | Thành phần đã có tài sản; Tài sản đã thanh lý       |
+| **THÁO**        | Thành phần có tài sản   | Vị trí đích (kho), Lý do, Ghi chú      | Đóng dòng `gan_chuc_nang` hiện tại     | Thành phần trống; Không chọn vị trí đích            |
+| **THAY THẾ**    | Thành phần có tài sản   | Tài sản mới, Vị trí đích (cũ), Ghi chú | Đóng dòng cũ + Mở dòng mới (nguyên tử) | Thành phần trống; Tài sản mới đang bận (hỏi chuyển) |
+| **ĐIỀU CHUYỂN** | Tài sản đang ở nơi khác | Thành phần đích, Ghi chú               | Đóng vị trí cũ + Mở tại vị trí mới     | Tài sản đang rảnh (dùng Lắp); Đích đã bận           |
 
 ## 2. Bảng Nhãn Tiếng Việt Thống nhất
 
-| Hành vi | Nhãn nút | Tiêu đề hộp thoại | Câu xác nhận | Thông báo thành công |
-| :--- | :--- | :--- | :--- | :--- |
-| **Lắp** | Lắp tài sản | Lắp tài sản vào thành phần | Xác nhận lắp [TB] vào [TP]? | Đã lắp [TB] vào [TP] |
-| **Tháo** | Tháo tài sản | Tháo tài sản khỏi thành phần | Tháo [TB] về [Vị trí]? | Đã tháo [TB] khỏi [TP] |
-| **Thay thế** | Thay tài sản | Thay thế tài sản | Thay [TB cũ] bằng [TB mới]? | Đã thay thế tài sản tại [TP] |
-| **Điều chuyển** | Chuyển đến đây | Điều chuyển tài sản | Chuyển [TB] từ [A] sang [B]? | Đã điều chuyển [TB] sang [B] |
+| Hành vi         | Nhãn nút       | Tiêu đề hộp thoại            | Câu xác nhận                 | Thông báo thành công         |
+| :-------------- | :------------- | :--------------------------- | :--------------------------- | :--------------------------- |
+| **Lắp**         | Lắp tài sản    | Lắp tài sản vào thành phần   | Xác nhận lắp [TB] vào [TP]?  | Đã lắp [TB] vào [TP]         |
+| **Tháo**        | Tháo tài sản   | Tháo tài sản khỏi thành phần | Tháo [TB] về [Vị trí]?       | Đã tháo [TB] khỏi [TP]       |
+| **Thay thế**    | Thay tài sản   | Thay thế tài sản             | Thay [TB cũ] bằng [TB mới]?  | Đã thay thế tài sản tại [TP] |
+| **Điều chuyển** | Chuyển đến đây | Điều chuyển tài sản          | Chuyển [TB] từ [A] sang [B]? | Đã điều chuyển [TB] sang [B] |
 
 ## 3. Giải pháp Kỹ thuật: "Unified Operation Pipeline"
 
 ### Điểm vào dùng chung: `OperationDialog.tsx`
+
 Tôi đề xuất tạo một component **`src/components/mirats/OperationDialog.tsx`** đóng vai trò là Controller duy nhất.
+
 - Sử dụng `ResponsiveDialog` để hỗ trợ Mobile.
 - Tích hợp `AssetPicker` (cho Lắp/Thay/Chuyển) và `LocationPicker` (cho Tháo).
 - Gọi các hook nghiệp vụ tương ứng từ `lib/mirats/he-thong-thanh-phan.ts`.
 
 ### Xử lý trùng lặp tại `ThanhPhanChiTietDialog.tsx`:
+
 Hàm này gọi `useLapThietBi` hai lần do sự phân tách giữa luồng "Lắp nhanh" (khi vị trí trống) và luồng "Edit mode".
 **Giải pháp:** Gộp tất cả vào một trạng thái `operationMode: 'lap' | 'thao' | 'thay' | 'chuyen' | null` và gọi chung một Modal xử lý.
 
 ### Sơ đồ luồng xử lý (Chữ)
+
 ```text
 [Yêu cầu Hành vi] ──> [Kiểm tra Quyền (canWrite)] ──> [Hiện Dialog Thống nhất]
       │                       │                            │
@@ -62,4 +66,5 @@ Hàm này gọi `useLapThietBi` hai lần do sự phân tách giữa luồng "L�
 5.  **Tình huống Loại**: Lắp tài sản sai chủng loại yêu cầu -> Cảnh báo màu vàng nhưng vẫn cho phép (theo quy tắc nghiệp vụ hiện tại).
 
 ---
-*Cam kết: Giữ nguyên 100% logic tại `lib/mirats/he-thong-thanh-phan.ts` và không thay đổi database schema.*
+
+_Cam kết: Giữ nguyên 100% logic tại `lib/mirats/he-thong-thanh-phan.ts` và không thay đổi database schema._

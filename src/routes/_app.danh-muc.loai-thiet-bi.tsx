@@ -10,7 +10,11 @@ export const Route = createFileRoute("/_app/danh-muc/loai-thiet-bi")({
   head: () => ({
     meta: [
       { title: "Chủng loại — Danh mục MIRATS" },
-      { name: "description", content: "Danh mục chủng loại (categories): phân loại tài sản & model để lọc, thống kê và nhập liệu nhất quán." },
+      {
+        name: "description",
+        content:
+          "Danh mục chủng loại (categories): phân loại tài sản & model để lọc, thống kê và nhập liệu nhất quán.",
+      },
     ],
   }),
   component: () => (
@@ -20,7 +24,6 @@ export const Route = createFileRoute("/_app/danh-muc/loai-thiet-bi")({
       title="Chủng loại"
       singular="Chủng loại"
       description="Phân loại tài sản/model (categories). Dùng để lọc, gom nhóm và thống kê."
-
       icon={Tag}
       namePlaceholder="VD: Máy tính, Switch, Máy phát UHF…"
       hiddenCols={["ma", "active"]}
@@ -35,7 +38,11 @@ export const Route = createFileRoute("/_app/danh-muc/loai-thiet-bi")({
             textCols: [{ key: "mo_ta", header: "Mô tả" }],
             counts: [
               { key: "mau", header: "Mẫu", rels: [{ table: "dm_model", col: "loai_thiet_bi_id" }] },
-              { key: "tb", header: "Tài sản", rels: [{ table: "thiet_bi", col: "loai_thiet_bi_id" }] },
+              {
+                key: "tb",
+                header: "Tài sản",
+                rels: [{ table: "thiet_bi", col: "loai_thiet_bi_id" }],
+              },
             ],
             childExport: {
               label: "Xuất kèm mẫu",
@@ -48,7 +55,12 @@ export const Route = createFileRoute("/_app/danh-muc/loai-thiet-bi")({
                 { key: "mo_ta", header: "Mô tả" },
               ],
               refs: [
-                { col: "nha_san_xuat_id", refTable: "dm_nha_san_xuat", csvKey: "nha_san_xuat", header: "Nhà sản xuất" },
+                {
+                  col: "nha_san_xuat_id",
+                  refTable: "dm_nha_san_xuat",
+                  csvKey: "nha_san_xuat",
+                  header: "Nhà sản xuất",
+                },
               ],
             },
           }}
@@ -57,4 +69,3 @@ export const Route = createFileRoute("/_app/danh-muc/loai-thiet-bi")({
     />
   ),
 });
-

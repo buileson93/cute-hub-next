@@ -11,7 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { useHeThongTruong, useFieldSets, useCayRpc, type FieldKind } from "@/lib/mirats/cay-reorg";
 import { REFERENCE_SOURCES } from "@/lib/mirats/reference-sources";
@@ -44,18 +48,23 @@ const KIEU_LABEL: Record<FieldKind, string> = {
 const NONE = "__none__";
 
 function slugify(s: string): string {
-  return s
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "d").replace(/Đ/g, "D")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "")
-    .slice(0, 50) || "truong";
+  return (
+    s
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "")
+      .slice(0, 50) || "truong"
+  );
 }
 
 export function HeThongTruongEditor({
-  heThongId, canManage, scope = "he_thong",
+  heThongId,
+  canManage,
+  scope = "he_thong",
 }: {
   heThongId: string;
   canManage: boolean;
@@ -101,9 +110,18 @@ export function HeThongTruongEditor({
       ...r,
       {
         key: `new-${Date.now()}-${r.length}`,
-        field_key: "", nhan: "", kieu: "text", tuy_chon: "",
-        help_text: "", bat_buoc: false, rb_regex: "", rb_min: "", rb_max: "",
-        rb_ref: "", mac_dinh: "", nhom_field: "",
+        field_key: "",
+        nhan: "",
+        kieu: "text",
+        tuy_chon: "",
+        help_text: "",
+        bat_buoc: false,
+        rb_regex: "",
+        rb_min: "",
+        rb_max: "",
+        rb_ref: "",
+        mac_dinh: "",
+        nhom_field: "",
       },
     ]);
   const removeRow = (key: string) => setRows((r) => r.filter((x) => x.key !== key));
@@ -123,8 +141,10 @@ export function HeThongTruongEditor({
         // rang_buoc: chỉ ghi khoá có giá trị hợp lệ.
         const rang_buoc: Record<string, unknown> = {};
         if (r.kieu === "number") {
-          if (r.rb_min.trim() !== "" && Number.isFinite(Number(r.rb_min))) rang_buoc.min = Number(r.rb_min);
-          if (r.rb_max.trim() !== "" && Number.isFinite(Number(r.rb_max))) rang_buoc.max = Number(r.rb_max);
+          if (r.rb_min.trim() !== "" && Number.isFinite(Number(r.rb_min)))
+            rang_buoc.min = Number(r.rb_min);
+          if (r.rb_max.trim() !== "" && Number.isFinite(Number(r.rb_max)))
+            rang_buoc.max = Number(r.rb_max);
         } else if (r.kieu === "reference") {
           if (r.rb_ref.trim()) rang_buoc.ref = r.rb_ref.trim();
         } else if (r.kieu !== "select" && r.rb_regex.trim()) {
@@ -144,7 +164,10 @@ export function HeThongTruongEditor({
           thu_tu: i,
           tuy_chon:
             r.kieu === "select"
-              ? r.tuy_chon.split(",").map((s) => s.trim()).filter(Boolean)
+              ? r.tuy_chon
+                  .split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean)
               : [],
           help_text: r.help_text.trim() || null,
           bat_buoc: r.bat_buoc,
@@ -153,7 +176,11 @@ export function HeThongTruongEditor({
           nhom_field: r.nhom_field.trim() || null,
         };
       });
-    submit.mutate({ loai: "custom_fields", he_thong_id: heThongId, payload: { fields: payloadFields, scope } });
+    submit.mutate({
+      loai: "custom_fields",
+      he_thong_id: heThongId,
+      payload: { fields: payloadFields, scope },
+    });
   };
 
   const changed = useMemo(() => {
@@ -170,10 +197,6 @@ export function HeThongTruongEditor({
           ? "Trường dữ liệu riêng (tài sản / thành phần này)"
           : "Trường dữ liệu Tài sản (riêng hệ thống này)"}
       </div>
-
-
-
-
 
       {isLoading ? (
         <div className="flex items-center gap-2 py-4 text-xs text-muted-foreground">
@@ -212,11 +235,19 @@ export function HeThongTruongEditor({
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[11px]">Kiểu dữ liệu</Label>
-                  <Select value={r.kieu} disabled={!canManage} onValueChange={(v) => patch(r.key, { kieu: v as FieldKind })}>
-                    <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <Select
+                    value={r.kieu}
+                    disabled={!canManage}
+                    onValueChange={(v) => patch(r.key, { kieu: v as FieldKind })}
+                  >
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                       {(Object.keys(KIEU_LABEL) as FieldKind[]).map((k) => (
-                        <SelectItem key={k} value={k} className="text-xs">{KIEU_LABEL[k]}</SelectItem>
+                        <SelectItem key={k} value={k} className="text-xs">
+                          {KIEU_LABEL[k]}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -241,10 +272,14 @@ export function HeThongTruongEditor({
                       disabled={!canManage}
                       onValueChange={(v) => patch(r.key, { rb_ref: v })}
                     >
-                      <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="— Chọn bảng —" /></SelectTrigger>
+                      <SelectTrigger className="h-8 text-xs">
+                        <SelectValue placeholder="— Chọn bảng —" />
+                      </SelectTrigger>
                       <SelectContent>
                         {REFERENCE_SOURCES.map((s) => (
-                          <SelectItem key={s.key} value={s.key} className="text-xs">{s.nhan}</SelectItem>
+                          <SelectItem key={s.key} value={s.key} className="text-xs">
+                            {s.nhan}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -253,7 +288,8 @@ export function HeThongTruongEditor({
               </div>
               {r.kieu === "reference" && (
                 <p className="text-[10px] text-muted-foreground">
-                  Người nhập sẽ chọn giá trị từ danh mục này bằng ô tìm kiếm; giá trị lưu là tên mục đã chọn.
+                  Người nhập sẽ chọn giá trị từ danh mục này bằng ô tìm kiếm; giá trị lưu là tên mục
+                  đã chọn.
                 </p>
               )}
 
@@ -290,11 +326,17 @@ export function HeThongTruongEditor({
                     disabled={!canManage}
                     onValueChange={(v) => patch(r.key, { nhom_field: v === NONE ? "" : v })}
                   >
-                    <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="— Không —" /></SelectTrigger>
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue placeholder="— Không —" />
+                    </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={NONE} className="text-xs">— Không —</SelectItem>
+                      <SelectItem value={NONE} className="text-xs">
+                        — Không —
+                      </SelectItem>
                       {(fieldSets ?? []).map((fs) => (
-                        <SelectItem key={fs.id} value={fs.ten} className="text-xs">{fs.ten}</SelectItem>
+                        <SelectItem key={fs.id} value={fs.ten} className="text-xs">
+                          {fs.ten}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -355,8 +397,17 @@ export function HeThongTruongEditor({
               <Button variant="outline" size="sm" className="flex-1" onClick={addRow}>
                 <Plus className="mr-1.5 h-3.5 w-3.5" /> Thêm trường
               </Button>
-              <Button size="sm" className="flex-1" onClick={save} disabled={submit.isPending || !changed}>
-                {submit.isPending ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Save className="mr-1.5 h-3.5 w-3.5" />}
+              <Button
+                size="sm"
+                className="flex-1"
+                onClick={save}
+                disabled={submit.isPending || !changed}
+              >
+                {submit.isPending ? (
+                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Save className="mr-1.5 h-3.5 w-3.5" />
+                )}
                 Lưu trường
               </Button>
             </div>

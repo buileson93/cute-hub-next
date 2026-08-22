@@ -9,14 +9,10 @@
 // (Task 13) khi render.
 // ============================================================================
 
-import {
-  fmtVND, fmtSo, fmtNgay, fmtNgayGio, KHONG_CO,
-} from "@/lib/mirats/format";
+import { fmtVND, fmtSo, fmtNgay, fmtNgayGio, KHONG_CO } from "@/lib/mirats/format";
 import { labelOf, normalizeLegacy } from "@/lib/mirats/trang-thai";
 import { DEFAULT_NGAY_SAP_HET_HAN, nguongCho } from "@/lib/mirats/han-canh-bao";
-import type {
-  EntityLoai, EntityView, FieldView, RenderedField,
-} from "@/lib/mirats/display/types";
+import type { EntityLoai, EntityView, FieldView, RenderedField } from "@/lib/mirats/display/types";
 
 // ---------- Helpers ---------------------------------------------------------
 
@@ -131,7 +127,13 @@ const R: Record<EntityLoai, EntityView> = {
     badgeTrangThai: { domain: "cong_viec", key: "trang_thai" },
     highlight: [
       { key: "ma_cong_viec", nhan: "Mã công việc", loai: "text", highlight: true },
-      { key: "trang_thai", nhan: "Trạng thái", loai: "status", domain: "cong_viec", highlight: true },
+      {
+        key: "trang_thai",
+        nhan: "Trạng thái",
+        loai: "status",
+        domain: "cong_viec",
+        highlight: true,
+      },
       { key: "uu_tien", nhan: "Ưu tiên", loai: "text" },
       { key: "ngay_den_han", nhan: "Đến hạn", loai: "expiring" },
     ],
@@ -155,7 +157,13 @@ const R: Record<EntityLoai, EntityView> = {
     badgeTrangThai: { domain: "hong_hoc", key: "trang_thai" },
     highlight: [
       { key: "ma_hong_hoc", nhan: "Mã phiếu", loai: "text", highlight: true },
-      { key: "trang_thai", nhan: "Trạng thái", loai: "status", domain: "hong_hoc", highlight: true },
+      {
+        key: "trang_thai",
+        nhan: "Trạng thái",
+        loai: "status",
+        domain: "hong_hoc",
+        highlight: true,
+      },
       { key: "phuong_an", nhan: "Phương án", loai: "text" },
       { key: "ngay_hong", nhan: "Ngày hỏng", loai: "date" },
     ],
@@ -179,7 +187,13 @@ const R: Record<EntityLoai, EntityView> = {
     badgeTrangThai: { domain: "ban_giao", key: "trang_thai" },
     highlight: [
       { key: "ma_ban_giao", nhan: "Mã bàn giao", loai: "text", highlight: true },
-      { key: "trang_thai", nhan: "Trạng thái", loai: "status", domain: "ban_giao", highlight: true },
+      {
+        key: "trang_thai",
+        nhan: "Trạng thái",
+        loai: "status",
+        domain: "ban_giao",
+        highlight: true,
+      },
       { key: "loai_ban_giao", nhan: "Loại", loai: "text" },
       { key: "ngay_nhan", nhan: "Ngày nhận", loai: "date" },
     ],
@@ -281,13 +295,29 @@ export function renderField(f: FieldView, row: Record<string, unknown>): Rendere
 
   switch (f.loai) {
     case "date":
-      return { nhan: f.nhan, giaTri: fmtNgay(raw as string | Date | null | undefined), highlight: baseHighlight };
+      return {
+        nhan: f.nhan,
+        giaTri: fmtNgay(raw as string | Date | null | undefined),
+        highlight: baseHighlight,
+      };
     case "datetime":
-      return { nhan: f.nhan, giaTri: fmtNgayGio(raw as string | Date | null | undefined), highlight: baseHighlight };
+      return {
+        nhan: f.nhan,
+        giaTri: fmtNgayGio(raw as string | Date | null | undefined),
+        highlight: baseHighlight,
+      };
     case "vnd":
-      return { nhan: f.nhan, giaTri: fmtVND(raw as number | null | undefined), highlight: baseHighlight };
+      return {
+        nhan: f.nhan,
+        giaTri: fmtVND(raw as number | null | undefined),
+        highlight: baseHighlight,
+      };
     case "so":
-      return { nhan: f.nhan, giaTri: fmtSo(raw as number | null | undefined), highlight: baseHighlight };
+      return {
+        nhan: f.nhan,
+        giaTri: fmtSo(raw as number | null | undefined),
+        highlight: baseHighlight,
+      };
     case "status": {
       const s = str(raw).trim();
       if (!s) return { nhan: f.nhan, giaTri: KHONG_CO, highlight: baseHighlight };
@@ -300,12 +330,14 @@ export function renderField(f: FieldView, row: Record<string, unknown>): Rendere
       if (soNgay == null) {
         return { nhan: f.nhan, giaTri: KHONG_CO, highlight: baseHighlight, soNgay: null };
       }
-      const gia = soNgay < 0
-        ? `Quá hạn ${Math.abs(soNgay)} ngày`
-        : soNgay === 0
-          ? "Hết hạn hôm nay"
-          : `Còn ${soNgay} ngày`;
-      const soatCanhBao = soNgay < 0 || nguongCho(soNgay) != null || soNgay <= DEFAULT_NGAY_SAP_HET_HAN;
+      const gia =
+        soNgay < 0
+          ? `Quá hạn ${Math.abs(soNgay)} ngày`
+          : soNgay === 0
+            ? "Hết hạn hôm nay"
+            : `Còn ${soNgay} ngày`;
+      const soatCanhBao =
+        soNgay < 0 || nguongCho(soNgay) != null || soNgay <= DEFAULT_NGAY_SAP_HET_HAN;
       return {
         nhan: f.nhan,
         giaTri: `${gia} (${fmtNgay(raw as string)})`,

@@ -4,8 +4,17 @@ import { useOperationsData } from "@/lib/mirats/db-operations";
 import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
 import { useLicensesData, type LicenseRow } from "@/lib/mirats/db-licenses";
 import type {
-  ThietBi, GiayPhep, SuCo, BaoTri, HongHocThayThe, BanGiao,
-  SuKienThietBi, HeThong, ViTri, DonVi, NhomHeThong,
+  ThietBi,
+  GiayPhep,
+  SuCo,
+  BaoTri,
+  HongHocThayThe,
+  BanGiao,
+  SuKienThietBi,
+  HeThong,
+  ViTri,
+  DonVi,
+  NhomHeThong,
 } from "@/lib/mirats/types";
 
 /**
@@ -65,17 +74,30 @@ export function ScopeProvider({
 
     const allThietBi = (tax?.devices ?? []) as ThietBi[];
     const allDonVi: DonVi[] = (tax?.donViList ?? []).map((d) => ({
-      ma: d.ma, ten: d.ten, loai: "", don_vi_cha: null, ma_icao: null,
+      ma: d.ma,
+      ten: d.ten,
+      loai: "",
+      don_vi_cha: null,
+      ma_icao: null,
     }));
     const allHeThong: HeThong[] = (tax?.htList ?? []).map((h) => ({
-      ma: h.ma, ten: h.ten, nhom: "",
-      don_vi: dvMaById.get(h.donViId) ?? "", trang_thai: "", nam_dua_vao: 0,
+      ma: h.ma,
+      ten: h.ten,
+      nhom: "",
+      don_vi: dvMaById.get(h.donViId) ?? "",
+      trang_thai: "",
+      nam_dua_vao: 0,
     }));
     const allNhomHeThong: NhomHeThong[] = (tax?.nhomList ?? []).map((n) => ({
-      ma: n.ma, ten: n.ten, linh_vuc: "",
+      ma: n.ma,
+      ten: n.ten,
+      linh_vuc: "",
     }));
     const allViTri: ViTri[] = (tax?.viTriList ?? []).map((v) => ({
-      ma: v.ma, ten: v.ten, don_vi: "", loai_vi_tri: "",
+      ma: v.ma,
+      ten: v.ten,
+      don_vi: "",
+      loai_vi_tri: "",
     }));
     const allGiayPhep = licenses as GiayPhep[];
 
@@ -120,7 +142,9 @@ export function ScopeProvider({
       giayPhep: allGiayPhep.filter((g) => matchUnitLicense(g as LicenseRow)),
       suCo: ops.suCo.filter((s) => !!u && s.don_vi === u),
       baoTri: ops.baoTri.filter((b) => !!u && b.don_vi === u),
-      hongHoc: ops.hongHoc.filter((h) => deviceSet.has(h.thiet_bi_hong) || (!!u && h.don_vi_thuc_hien === u)),
+      hongHoc: ops.hongHoc.filter(
+        (h) => deviceSet.has(h.thiet_bi_hong) || (!!u && h.don_vi_thuc_hien === u),
+      ),
       banGiao: ops.banGiao.filter((b) => deviceSet.has(b.thiet_bi) || (!!u && b.don_vi_nhan === u)),
       suKien: [],
       heThong: allHeThong.filter((h) => !!u && h.don_vi === u),

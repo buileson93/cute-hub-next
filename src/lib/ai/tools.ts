@@ -19,7 +19,11 @@ import { describeDynamicFields } from "@/lib/mirats/registry";
 const filterSchema = z.object({
   column: z.string().describe("Tên cột"),
   op: z.enum(["eq", "neq", "gt", "gte", "lt", "lte", "like", "is_null", "not_null"]),
-  value: z.string().nullable().optional().describe("Giá trị so sánh (bỏ trống cho is_null/not_null)"),
+  value: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("Giá trị so sánh (bỏ trống cho is_null/not_null)"),
 });
 
 const tableEnum = z.enum(KNOWN_TABLES);
@@ -68,7 +72,10 @@ export function buildAiTools(ctx: Ctx) {
             { count: "exact" },
           )
           .limit(limit);
-        if (keyword) q = q.or(`ten_thiet_bi.ilike.%${keyword}%,ma_thiet_bi.ilike.%${keyword}%,ma_serial.ilike.%${keyword}%`);
+        if (keyword)
+          q = q.or(
+            `ten_thiet_bi.ilike.%${keyword}%,ma_thiet_bi.ilike.%${keyword}%,ma_serial.ilike.%${keyword}%`,
+          );
         if (trang_thai_id) q = q.eq("trang_thai_id", trang_thai_id);
         if (don_vi_quan_ly_id) q = q.eq("don_vi_quan_ly_id", don_vi_quan_ly_id);
         if (he_thong_id) q = q.eq("he_thong_id", he_thong_id);
@@ -108,7 +115,9 @@ export function buildAiTools(ctx: Ctx) {
         const until = new Date(Date.now() + so_ngay * 86400_000).toISOString().slice(0, 10);
         const { data, error } = await supabase
           .from("thiet_bi")
-          .select("id, ma_thiet_bi, ten_thiet_bi, model, han_bao_hanh, trang_thai_id, don_vi_quan_ly_id")
+          .select(
+            "id, ma_thiet_bi, ten_thiet_bi, model, han_bao_hanh, trang_thai_id, don_vi_quan_ly_id",
+          )
           .gte("han_bao_hanh", today)
           .lte("han_bao_hanh", until)
           .order("han_bao_hanh", { ascending: true })
@@ -143,8 +152,18 @@ export function buildAiTools(ctx: Ctx) {
       description:
         "Danh sách hợp nhất các mục SẮP HẾT HẠN từ view v_sap_het_han: bảo hành tài sản (loai='bao_hanh', từ thiet_bi.han_bao_hanh) VÀ giấy phép (loai='giay_phep', từ giay_phep.ngay_het_han), lọc theo số ngày còn lại. Khớp câu hỏi 'tài sản nào sắp hết bảo hành/giấy phép?'. Kết quả sắp xếp gần hết hạn trước; tôn trọng RLS.",
       inputSchema: z.object({
-        so_ngay: z.number().int().min(0).max(365).default(60).describe("Ngưỡng số ngày còn lại (vd 30/60/90)"),
-        loai: z.enum(["bao_hanh", "giay_phep"]).nullable().optional().describe("Lọc theo loại (bỏ trống = cả hai)"),
+        so_ngay: z
+          .number()
+          .int()
+          .min(0)
+          .max(365)
+          .default(60)
+          .describe("Ngưỡng số ngày còn lại (vd 30/60/90)"),
+        loai: z
+          .enum(["bao_hanh", "giay_phep"])
+          .nullable()
+          .optional()
+          .describe("Lọc theo loại (bỏ trống = cả hai)"),
         limit: z.number().int().min(1).max(200).default(100),
       }),
       execute: async ({ so_ngay, loai, limit }) => {
@@ -166,7 +185,10 @@ export function buildAiTools(ctx: Ctx) {
       description:
         "Danh sách biên bản/biểu mẫu đã nộp, lọc theo trạng thái (draft/submitted/reviewed/signed) hoặc tài sản.",
       inputSchema: z.object({
-        status: z.enum(["draft", "submitted", "reviewed", "signed", "rejected"]).nullable().optional(),
+        status: z
+          .enum(["draft", "submitted", "reviewed", "signed", "rejected"])
+          .nullable()
+          .optional(),
         thiet_bi_id: z.string().uuid().nullable().optional(),
         template_code: z.string().nullable().optional(),
         limit: z.number().int().min(1).max(50).default(20),
@@ -174,7 +196,9 @@ export function buildAiTools(ctx: Ctx) {
       execute: async ({ status, thiet_bi_id, template_code, limit }) => {
         let q = supabase
           .from("form_submission")
-          .select("id, tieu_de, template_code, status, ky_bao_cao, submitted_at, reviewed_at, thiet_bi_id")
+          .select(
+            "id, tieu_de, template_code, status, ky_bao_cao, submitted_at, reviewed_at, thiet_bi_id",
+          )
           .order("created_at", { ascending: false })
           .limit(limit);
         if (status) q = q.eq("status", status);
@@ -182,7 +206,9 @@ export function buildAiTools(ctx: Ctx) {
         if (template_code) q = q.eq("template_code", template_code);
         const { data, error } = await q;
         if (error) return { error: error.message };
-        return { items: (data ?? []).map((r) => ({ ...r, tieu_de: r.tieu_de ? trim(r.tieu_de) : null })) };
+        return {
+          items: (data ?? []).map((r) => ({ ...r, tieu_de: r.tieu_de ? trim(r.tieu_de) : null })),
+        };
       },
     }),
 
@@ -192,7 +218,10 @@ export function buildAiTools(ctx: Ctx) {
       execute: async () => {
         const { data, error } = await supabase.rpc("rpc_count_thiet_bi_by_trang_thai");
         if (error) return { error: error.message };
-        const payload = (data ?? { total: 0, by_trang_thai: {} }) as { total: number; by_trang_thai: Record<string, number> };
+        const payload = (data ?? { total: 0, by_trang_thai: {} }) as {
+          total: number;
+          by_trang_thai: Record<string, number>;
+        };
         return { total: payload.total, by_trang_thai: payload.by_trang_thai };
       },
     }),
@@ -213,7 +242,9 @@ export function buildAiTools(ctx: Ctx) {
         // Trường động (he_thong_truong) — nhãn VN, kieu, bat_buoc + cách truy vấn JSONB.
         let dynQ = supabase
           .from("he_thong_truong")
-          .select("field_key, nhan, kieu, bat_buoc, thu_tu, help_text, nhom_field, he_thong_id, pham_vi")
+          .select(
+            "field_key, nhan, kieu, bat_buoc, thu_tu, help_text, nhom_field, he_thong_id, pham_vi",
+          )
           .eq("hoat_dong", true)
           .eq("ap_dung_lop", "thiet_bi")
           .order("thu_tu", { ascending: true });
@@ -223,13 +254,10 @@ export function buildAiTools(ctx: Ctx) {
         return {
           dictionary: BUSINESS_TABLES,
           live: error ? { error: error.message } : live,
-          truong_dong: dynErr
-            ? { error: dynErr.message }
-            : describeDynamicFields(dynRows),
+          truong_dong: dynErr ? { error: dynErr.message } : describeDynamicFields(dynRows),
         };
       },
     }),
-
 
     run_select_query: tool({
       description:
@@ -239,7 +267,10 @@ export function buildAiTools(ctx: Ctx) {
         max_rows: z.number().int().min(1).max(500).default(100),
       }),
       execute: async ({ sql, max_rows }) => {
-        const { data, error } = await supabase.rpc("ai_run_select", { _sql: sql, _max_rows: max_rows });
+        const { data, error } = await supabase.rpc("ai_run_select", {
+          _sql: sql,
+          _max_rows: max_rows,
+        });
         if (error) return { error: error.message };
         return data;
       },
@@ -250,7 +281,11 @@ export function buildAiTools(ctx: Ctx) {
         "Liệt kê bản ghi từ BẤT KỲ bảng nghiệp vụ nào (thiet_bi, giay_phep, tickets, du_an, so_do_he_thong, form_submission, notifications, dm_*...). Hỗ trợ lọc/sắp xếp. RLS áp dụng theo quyền user. Dùng describe_schema để biết tên cột.",
       inputSchema: z.object({
         table: tableEnum.describe("Tên bảng cần đọc"),
-        columns: z.array(z.string()).nullable().optional().describe("Cột muốn lấy, bỏ trống = tất cả"),
+        columns: z
+          .array(z.string())
+          .nullable()
+          .optional()
+          .describe("Cột muốn lấy, bỏ trống = tất cả"),
         filters: z.array(filterSchema).nullable().optional(),
         order_by: z.string().nullable().optional(),
         ascending: z.boolean().nullable().optional(),
@@ -259,9 +294,16 @@ export function buildAiTools(ctx: Ctx) {
       execute: async ({ table, columns, filters, order_by, ascending, limit }) => {
         try {
           const sql = buildListSql(table, {
-            columns, filters: filters as Filter[] | null, order_by, ascending, limit,
+            columns,
+            filters: filters as Filter[] | null,
+            order_by,
+            ascending,
+            limit,
           });
-          const { data, error } = await supabase.rpc("ai_run_select", { _sql: sql, _max_rows: limit });
+          const { data, error } = await supabase.rpc("ai_run_select", {
+            _sql: sql,
+            _max_rows: limit,
+          });
           if (error) return { error: error.message };
           return data;
         } catch (e) {
@@ -300,7 +342,10 @@ export function buildAiTools(ctx: Ctx) {
       execute: async ({ table, group_by, filters }) => {
         try {
           const sql = buildCountSql(table, group_by, filters as Filter[] | null);
-          const { data, error } = await supabase.rpc("ai_run_select", { _sql: sql, _max_rows: 200 });
+          const { data, error } = await supabase.rpc("ai_run_select", {
+            _sql: sql,
+            _max_rows: 200,
+          });
           if (error) return { error: error.message };
           return data;
         } catch (e) {
@@ -310,10 +355,14 @@ export function buildAiTools(ctx: Ctx) {
     }),
 
     dashboard_stats: tool({
-      description: "Số liệu tổng quan toàn hệ thống: tổng tài sản, giấy phép (và sắp hết hạn), biểu mẫu, tickets, dự án, sơ đồ.",
+      description:
+        "Số liệu tổng quan toàn hệ thống: tổng tài sản, giấy phép (và sắp hết hạn), biểu mẫu, tickets, dự án, sơ đồ.",
       inputSchema: z.object({}),
       execute: async () => {
-        const { data, error } = await supabase.rpc("ai_run_select", { _sql: buildDashboardSql(), _max_rows: 1 });
+        const { data, error } = await supabase.rpc("ai_run_select", {
+          _sql: buildDashboardSql(),
+          _max_rows: 1,
+        });
         if (error) return { error: error.message };
         return data;
       },
@@ -338,7 +387,9 @@ export function buildAiTools(ctx: Ctx) {
         if (loai) q = q.eq("loai", loai);
         const { data, error } = await q;
         if (error) return { error: error.message };
-        return { items: (data ?? []).map((r) => ({ ...r, tieu_de: r.tieu_de ? trim(r.tieu_de) : null })) };
+        return {
+          items: (data ?? []).map((r) => ({ ...r, tieu_de: r.tieu_de ? trim(r.tieu_de) : null })),
+        };
       },
     }),
 
@@ -351,7 +402,9 @@ export function buildAiTools(ctx: Ctx) {
       execute: async ({ trang_thai, limit }) => {
         let q = supabase
           .from("du_an")
-          .select("id, ma, ten, trang_thai, tien_do, ngay_bat_dau, ngay_ket_thuc_du_kien, don_vi_id")
+          .select(
+            "id, ma, ten, trang_thai, tien_do, ngay_bat_dau, ngay_ket_thuc_du_kien, don_vi_id",
+          )
           .order("created_at", { ascending: false })
           .limit(limit);
         if (trang_thai) q = q.eq("trang_thai", trang_thai);
@@ -431,7 +484,11 @@ export function buildAiTools(ctx: Ctx) {
         hien_tuong: z.string().describe("Mô tả hiện tượng sự cố (bắt buộc)"),
         thiet_bi: z.string().nullable().optional().describe("Tài sản liên quan"),
         don_vi: z.string().nullable().optional(),
-        muc_do: z.string().nullable().optional().describe("Mức độ, vd: Nhẹ/Trung bình/Nghiêm trọng"),
+        muc_do: z
+          .string()
+          .nullable()
+          .optional()
+          .describe("Mức độ, vd: Nhẹ/Trung bình/Nghiêm trọng"),
         ngay_phat_hien: z.string().nullable().optional().describe("Ngày phát hiện dạng YYYY-MM-DD"),
         nguoi_bao_cao: z.string().nullable().optional(),
         nguyen_nhan: z.string().nullable().optional(),

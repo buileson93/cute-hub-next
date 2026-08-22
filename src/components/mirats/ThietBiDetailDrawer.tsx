@@ -6,15 +6,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import {
-  HardDrive, Package, PackagePlus, PackageMinus, PackageOpen,
-  ExternalLink, History, Pencil, ShieldCheck,
+  HardDrive,
+  Package,
+  PackagePlus,
+  PackageMinus,
+  PackageOpen,
+  ExternalLink,
+  History,
+  Pencil,
+  ShieldCheck,
 } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 
-import {
-  Sheet, SheetContent, SheetHeader, SheetTitle,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { CodeBadge } from "@/components/mirats/CodeBadge";
 import { Button } from "@/components/ui/button";
@@ -64,7 +69,11 @@ function DacTinhRow({ deviceId }: { deviceId: string }) {
   });
   const tags = sortDacTinh(data ?? []);
   if (!tags.length) {
-    return <SummaryRow label="Nhãn tài sản"><span className="text-muted-foreground">—</span></SummaryRow>;
+    return (
+      <SummaryRow label="Nhãn tài sản">
+        <span className="text-muted-foreground">—</span>
+      </SummaryRow>
+    );
   }
   return (
     <SummaryRow label="Nhãn tài sản">
@@ -85,14 +94,16 @@ function LoaiChip({ loaiId, ten }: { loaiId: string | null | undefined; ten: str
     staleTime: 60_000,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("dm_loai_thiet_bi").select("mau").eq("id", loaiId!).maybeSingle();
+        .from("dm_loai_thiet_bi")
+        .select("mau")
+        .eq("id", loaiId!)
+        .maybeSingle();
       if (error) throw error;
       return (data?.mau ?? null) as string | null;
     },
   });
   return <MauChip ten={ten} mau={data ?? null} />;
 }
-
 
 function TuongThichSection({ deviceId }: { deviceId: string }) {
   const { data } = useQuery({
@@ -102,11 +113,13 @@ function TuongThichSection({ deviceId }: { deviceId: string }) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("thiet_bi_he_thong_tuong_thich")
-        .select(`
+        .select(
+          `
           phan_loai,
           danh_gia,
           he_thong:he_thong_id (ten, ma)
-        `)
+        `,
+        )
         .eq("thiet_bi_id", deviceId);
       if (error) throw error;
       return data;
@@ -122,7 +135,10 @@ function TuongThichSection({ deviceId }: { deviceId: string }) {
       </div>
       <div className="space-y-1.5 rounded-lg border border-emerald-500/10 bg-emerald-500/5 p-2.5">
         {data.map((item: any, idx: number) => (
-          <div key={idx} className="flex flex-col gap-0.5 border-b border-emerald-500/10 pb-1.5 last:border-0 last:pb-0">
+          <div
+            key={idx}
+            className="flex flex-col gap-0.5 border-b border-emerald-500/10 pb-1.5 last:border-0 last:pb-0"
+          >
             <div className="flex items-center justify-between gap-2">
               <span className="text-sm font-medium text-foreground">
                 {(item.he_thong as any)?.ten || "Hệ thống"}
@@ -160,14 +176,20 @@ function ThanhPhanSection({ device }: { device: DbDevice }) {
         <p className="text-sm text-muted-foreground">Đang tải…</p>
       ) : (
         <div className="space-y-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2.5">
-          <SummaryRow label={multi ? `Đang đảm nhận (${vaiTroList.length} vai trò)` : "Đang đảm nhận"}>
-            {vaiTroList.length === 0 ? "—" : (
+          <SummaryRow
+            label={multi ? `Đang đảm nhận (${vaiTroList.length} vai trò)` : "Đang đảm nhận"}
+          >
+            {vaiTroList.length === 0 ? (
+              "—"
+            ) : (
               <div className="flex flex-col gap-1">
                 {vaiTroList.map((r) => (
                   <div key={r.gan_id} className="flex flex-wrap items-baseline gap-1.5">
                     <span className="font-medium">{r.ten_thanh_phan}</span>
                     {r.ma_thanh_phan && (
-                      <span className="font-mono text-[11px] font-normal text-muted-foreground">{r.ma_thanh_phan}</span>
+                      <span className="font-mono text-[11px] font-normal text-muted-foreground">
+                        {r.ma_thanh_phan}
+                      </span>
                     )}
                     {r.ten_he_thong && (
                       <span className="text-[11px] text-muted-foreground">· {r.ten_he_thong}</span>
@@ -176,7 +198,8 @@ function ThanhPhanSection({ device }: { device: DbDevice }) {
                 ))}
                 {multi && (
                   <div className="mt-1 rounded border border-amber-400/50 bg-amber-50 px-2 py-1 text-[11px] text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
-                    Tài sản đang đảm nhận đồng thời {vaiTroList.length} vai trò trong các hệ thống khác nhau.
+                    Tài sản đang đảm nhận đồng thời {vaiTroList.length} vai trò trong các hệ thống
+                    khác nhau.
                   </div>
                 )}
               </div>
@@ -222,17 +245,16 @@ export function ThietBiDetailDrawer({
     enabled: open && !!device?._modelAnh,
     staleTime: 5 * 60_000,
     queryFn: async () => {
-      const { data } = await storage.from("model-anh").createSignedUrl(device!._modelAnh, 315360000);
+      const { data } = await storage
+        .from("model-anh")
+        .createSignedUrl(device!._modelAnh, 315360000);
       return data?.signedUrl ?? null;
     },
   });
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent
-        side="right"
-        className="flex w-full flex-col gap-0 p-0 sm:max-w-xl"
-      >
+      <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-xl">
         {device && (
           <>
             <SheetHeader className="space-y-0 border-b px-5 py-4 text-left">
@@ -241,10 +263,19 @@ export function ThietBiDetailDrawer({
                   <HardDrive className="h-5 w-5" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <SheetTitle className="truncate text-base leading-tight">{deviceName(device)}</SheetTitle>
+                  <SheetTitle className="truncate text-base leading-tight">
+                    {deviceName(device)}
+                  </SheetTitle>
                   <div className="mt-0.5 flex flex-wrap items-center gap-2">
-                    <CodeBadge code={device.ma_thiet_bi} title={`Mã tài sản: ${device.ma_thiet_bi}`} />
-                    {device.serial && <span className="font-mono text-[11px] text-muted-foreground">S/N: {device.serial}</span>}
+                    <CodeBadge
+                      code={device.ma_thiet_bi}
+                      title={`Mã tài sản: ${device.ma_thiet_bi}`}
+                    />
+                    {device.serial && (
+                      <span className="font-mono text-[11px] text-muted-foreground">
+                        S/N: {device.serial}
+                      </span>
+                    )}
                     <StatusBadge domain="thiet_bi" code={device.trang_thai} />
                   </div>
                 </div>
@@ -259,7 +290,11 @@ export function ThietBiDetailDrawer({
                   <div className="rounded-lg border bg-muted/20 p-2 overflow-hidden">
                     <AspectRatio ratio={4 / 3}>
                       {imgUrl ? (
-                        <img src={imgUrl} alt={device._modelTen} className="h-full w-full rounded object-contain" />
+                        <img
+                          src={imgUrl}
+                          alt={device._modelTen}
+                          className="h-full w-full rounded object-contain"
+                        />
                       ) : (
                         <div className="flex h-full w-full flex-col items-center justify-center gap-1 text-[11px] text-muted-foreground">
                           <Package className="h-6 w-6 opacity-40" />
@@ -271,9 +306,11 @@ export function ThietBiDetailDrawer({
                   <div className="space-y-1.5">
                     <SummaryRow label="Model">{device._modelTen || "—"}</SummaryRow>
                     <SummaryRow label="Chủng loại">
-                      {device._loaiTbTen
-                        ? <LoaiChip loaiId={device._loaiTbId} ten={device._loaiTbTen} />
-                        : "—"}
+                      {device._loaiTbTen ? (
+                        <LoaiChip loaiId={device._loaiTbId} ten={device._loaiTbTen} />
+                      ) : (
+                        "—"
+                      )}
                     </SummaryRow>
                     <DacTinhRow deviceId={device.id} />
                     <SummaryRow label="Số serial">{device.serial || "—"}</SummaryRow>
@@ -309,7 +346,10 @@ export function ThietBiDetailDrawer({
                 <h4 className="flex items-center gap-1.5 text-sm font-semibold">
                   <History className="h-4 w-4 text-primary" /> Lịch sử gán / chuyển / gỡ hệ thống
                 </h4>
-                <DeviceMovementHistoryList deviceMa={device.ma_thiet_bi} systemName={systemNameById} />
+                <DeviceMovementHistoryList
+                  deviceMa={device.ma_thiet_bi}
+                  systemName={systemNameById}
+                />
               </div>
             </div>
 
@@ -319,7 +359,12 @@ export function ThietBiDetailDrawer({
                 <>
                   {onEdit ? (
                     <AppTooltip noiDung="Sửa nhanh thông tin tài sản">
-                      <Button size="sm" variant="default" className="h-8 w-8 p-0" onClick={() => onEdit(device)}>
+                      <Button
+                        size="sm"
+                        variant="default"
+                        className="h-8 w-8 p-0"
+                        onClick={() => onEdit(device)}
+                      >
                         <Pencil className="h-4 w-4" />
                         <span className="sr-only">Sửa nhanh</span>
                       </Button>
@@ -334,16 +379,31 @@ export function ThietBiDetailDrawer({
                       </Button>
                     </AppTooltip>
                   )}
-                  <AppTooltip noiDung={device._htId ? "Chuyển tài sản sang hệ thống khác" : "Gán tài sản vào hệ thống"}>
-                    <Button size="sm" variant="outline" className="h-8 w-8 p-0" onClick={() => onAssign(device)}>
+                  <AppTooltip
+                    noiDung={
+                      device._htId
+                        ? "Chuyển tài sản sang hệ thống khác"
+                        : "Gán tài sản vào hệ thống"
+                    }
+                  >
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 w-8 p-0"
+                      onClick={() => onAssign(device)}
+                    >
                       <PackagePlus className="h-4 w-4" />
-                      <span className="sr-only">{device._htId ? "Chuyển hệ thống" : "Gán vào hệ thống"}</span>
+                      <span className="sr-only">
+                        {device._htId ? "Chuyển hệ thống" : "Gán vào hệ thống"}
+                      </span>
                     </Button>
                   </AppTooltip>
                   {device._htId && (
                     <AppTooltip noiDung="Gỡ tài sản khỏi hệ thống hiện tại">
                       <Button
-                        size="sm" variant="outline" className="h-8 w-8 p-0 text-amber-600"
+                        size="sm"
+                        variant="outline"
+                        className="h-8 w-8 p-0 text-amber-600"
                         onClick={() => onRemove(device)}
                       >
                         <PackageMinus className="h-4 w-4" />
@@ -355,7 +415,11 @@ export function ThietBiDetailDrawer({
               )}
               <AppTooltip noiDung="Mở trang hồ sơ chi tiết đầy đủ của tài sản">
                 <Button asChild size="sm" variant="ghost" className="ml-auto h-8 w-8 p-0">
-                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: device.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}>
+                  <Link
+                    to="/thiet-bi/$maThietBi"
+                    params={{ maThietBi: device.ma_thiet_bi }}
+                    search={{ tab: "tong-quan", doc: undefined, q: undefined }}
+                  >
                     <ExternalLink className="h-4 w-4" />
                     <span className="sr-only">Mở trang chi tiết</span>
                   </Link>

@@ -55,10 +55,25 @@ function fmt(mode: TzMode, kind: Kind): Intl.DateTimeFormat {
     kind === "date"
       ? { ...base, year: "numeric", month: "2-digit", day: "2-digit" }
       : kind === "time"
-      ? { ...base, hour: "2-digit", minute: "2-digit" }
-      : kind === "datetime-sec"
-      ? { ...base, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" }
-      : { ...base, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" };
+        ? { ...base, hour: "2-digit", minute: "2-digit" }
+        : kind === "datetime-sec"
+          ? {
+              ...base,
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+            }
+          : {
+              ...base,
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+            };
   return new Intl.DateTimeFormat("vi-VN", opts);
 }
 
@@ -84,7 +99,10 @@ export function formatDT(
 }
 
 /** Khoảng cách so với hiện tại theo tiếng Việt (không phụ thuộc TZ). */
-export function timeAgo(input: string | number | Date | null | undefined, now = Date.now()): string {
+export function timeAgo(
+  input: string | number | Date | null | undefined,
+  now = Date.now(),
+): string {
   const d = toDate(input);
   if (!d) return "—";
   const diff = Math.round((d.getTime() - now) / 1000);

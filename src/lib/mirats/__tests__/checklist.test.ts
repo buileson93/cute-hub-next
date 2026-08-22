@@ -73,9 +73,12 @@ const SECTIONS = [CAM_BIEN, TU_PHU_TRO];
 
 describe("checklist — validate", () => {
   it("Không đạt BẮT BUỘC phải có hành động", () => {
-    const err = validateItemInput(item({ item_code: "x", ten: "X", result_kind: "dat_khong_dat" }), {
-      ket_qua: "khong_dat",
-    });
+    const err = validateItemInput(
+      item({ item_code: "x", ten: "X", result_kind: "dat_khong_dat" }),
+      {
+        ket_qua: "khong_dat",
+      },
+    );
     expect(err).toContain("hành động");
   });
 
@@ -166,7 +169,14 @@ describe("checklist-repo — mapper thuần", () => {
         { id: "s1", ma_section: "CB", ten: "Cảm biến", position: 0 },
       ],
       [
-        { id: "i2", section_id: "s1", item_code: "CB-2", ten: "B", result_kind: "text", position: 1 },
+        {
+          id: "i2",
+          section_id: "s1",
+          item_code: "CB-2",
+          ten: "B",
+          result_kind: "text",
+          position: 1,
+        },
         { id: "i1", section_id: "s1", item_code: "CB-1", ten: "A", result_kind: "so", position: 0 },
         { id: "i3", section_id: "s2", item_code: "TPT-1", ten: "Quạt", result_kind: "chon" },
       ],
@@ -179,12 +189,26 @@ describe("checklist-repo — mapper thuần", () => {
   it("round-trip: kết quả đã lưu dựng lại section + input để xem chi tiết", () => {
     const results = [
       {
-        section_code: "CB", section_ten: "Cảm biến", item_code: "CB-DIEN-AP", ten: "Điện áp",
-        result_kind: "so", gia_tri_so: 5.1, don_vi: "V", tieu_chuan: "4.5–5.5", ket_qua: "dat", position: 0,
+        section_code: "CB",
+        section_ten: "Cảm biến",
+        item_code: "CB-DIEN-AP",
+        ten: "Điện áp",
+        result_kind: "so",
+        gia_tri_so: 5.1,
+        don_vi: "V",
+        tieu_chuan: "4.5–5.5",
+        ket_qua: "dat",
+        position: 0,
       },
       {
-        section_code: "CB", section_ten: "Cảm biến", item_code: "CB-TT", ten: "Tình trạng",
-        result_kind: "dat_khong_dat", ket_qua: "khong_dat", hanh_dong: "Thay", position: 1,
+        section_code: "CB",
+        section_ten: "Cảm biến",
+        item_code: "CB-TT",
+        ten: "Tình trạng",
+        result_kind: "dat_khong_dat",
+        ket_qua: "khong_dat",
+        hanh_dong: "Thay",
+        position: 1,
       },
     ];
     const secs = sectionsFromResults(results);

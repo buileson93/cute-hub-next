@@ -333,16 +333,19 @@ function KhaiThemThanhPhanDialog({ onClose }: { onClose: () => void }) {
     mutationFn: async (v: ThanhPhanValues) => {
       let maFinal = (v.ma ?? "").trim();
       if (!maFinal) maFinal = await sinhMaThanhPhanDuyNhat();
-      const { data, error } = await supabase.rpc("khai_them_thanh_phan_he_thong" as never, {
-        p_he_thong_id: v.he_thong_id,
-        p_ma_thanh_phan: maFinal,
-        p_ten: v.ten,
-        p_loai_thiet_bi_yeu_cau: v.loai_thiet_bi_yeu_cau || null,
-        p_thanh_phan_cha: v.thanh_phan_cha || null,
-        p_bat_buoc: v.bat_buoc,
-        p_thu_tu: typeof v.thu_tu === "number" ? v.thu_tu : null,
-        p_mo_ta: v.mo_ta || null,
-      } as never);
+      const { data, error } = await supabase.rpc(
+        "khai_them_thanh_phan_he_thong" as never,
+        {
+          p_he_thong_id: v.he_thong_id,
+          p_ma_thanh_phan: maFinal,
+          p_ten: v.ten,
+          p_loai_thiet_bi_yeu_cau: v.loai_thiet_bi_yeu_cau || null,
+          p_thanh_phan_cha: v.thanh_phan_cha || null,
+          p_bat_buoc: v.bat_buoc,
+          p_thu_tu: typeof v.thu_tu === "number" ? v.thu_tu : null,
+          p_mo_ta: v.mo_ta || null,
+        } as never,
+      );
       if (error) throw error;
       return data;
     },

@@ -7,9 +7,7 @@ describe("motion tokens", () => {
     // JSDOM does not parse @import CSS, so we inject the token to prove the
     // helper reads from computed style rather than the fallback.
     document.documentElement.style.setProperty("--duration-base", "240ms");
-    const v = getComputedStyle(document.documentElement).getPropertyValue(
-      "--duration-base",
-    );
+    const v = getComputedStyle(document.documentElement).getPropertyValue("--duration-base");
     expect(v.trim()).not.toBe("");
     expect(getMotionDurationSeconds("base")).toBeCloseTo(0.24, 3);
   });

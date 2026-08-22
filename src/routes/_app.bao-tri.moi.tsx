@@ -5,10 +5,16 @@ export const Route = createFileRoute("/_app/bao-tri/moi")({
   head: () => ({
     meta: [
       { title: "Tạo phiếu bảo dưỡng — MIRATS" },
-      { name: "description", content: "Lập phiếu bảo dưỡng theo mẫu của từng hệ thống, ghi vào sổ lý lịch tài sản và hệ thống." },
+      {
+        name: "description",
+        content:
+          "Lập phiếu bảo dưỡng theo mẫu của từng hệ thống, ghi vào sổ lý lịch tài sản và hệ thống.",
+      },
     ],
   }),
-  validateSearch: (s: Record<string, unknown>): { heThong?: string; version?: string; congViec?: string } => ({
+  validateSearch: (
+    s: Record<string, unknown>,
+  ): { heThong?: string; version?: string; congViec?: string } => ({
     heThong: typeof s.heThong === "string" ? s.heThong : undefined,
     version: typeof s.version === "string" ? s.version : undefined,
     congViec: typeof s.congViec === "string" ? s.congViec : undefined,

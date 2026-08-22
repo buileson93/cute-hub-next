@@ -194,7 +194,13 @@ export function useUpdateLienKet() {
       successMessage: "Đã cập nhật liên kết",
       errorMessage: "Không cập nhật được liên kết",
     },
-    mutationFn: async ({ id, patch }: { id: string; patch: Partial<AddLienKetInput & { trang_thai: TrangThaiLienKet }> }) => {
+    mutationFn: async ({
+      id,
+      patch,
+    }: {
+      id: string;
+      patch: Partial<AddLienKetInput & { trang_thai: TrangThaiLienKet }>;
+    }) => {
       const { error } = await supabase.from("lien_ket_he_thong").update(patch).eq("id", id);
       if (error) throw error;
     },
@@ -216,7 +222,9 @@ export function useDeleteLienKet() {
     onMutate: async (id) => {
       await qc.cancelQueries({ queryKey: ["v_do_thi_he_thong"] });
       const prev = qc.getQueryData<DoThiRow[]>(["v_do_thi_he_thong"]);
-      qc.setQueryData<DoThiRow[]>(["v_do_thi_he_thong"], (old) => (old ?? []).filter((r) => r.id !== id));
+      qc.setQueryData<DoThiRow[]>(["v_do_thi_he_thong"], (old) =>
+        (old ?? []).filter((r) => r.id !== id),
+      );
       return { prev };
     },
     onError: (_e, _v, ctx) => {
@@ -348,12 +356,15 @@ export function useHeThongChiTiet(heThongId: string | undefined) {
       if (tpIds.length) {
         const { data: g, error: e3 } = await supabase
           .from("gan_chuc_nang")
-          .select("thanh_phan_id, thiet_bi_id, den_ngay, thiet_bi:thiet_bi_id(ten_thiet_bi, ma_thiet_bi)")
+          .select(
+            "thanh_phan_id, thiet_bi_id, den_ngay, thiet_bi:thiet_bi_id(ten_thiet_bi, ma_thiet_bi)",
+          )
           .in("thanh_phan_id", tpIds)
           .is("den_ngay", null);
         if (e3) throw e3;
         for (const row of (g ?? []) as unknown as Array<{
-          thanh_phan_id: string; thiet_bi_id: string;
+          thanh_phan_id: string;
+          thiet_bi_id: string;
           thiet_bi: { ten_thiet_bi: string | null; ma_thiet_bi: string | null } | null;
         }>) {
           gan.set(row.thanh_phan_id, {
@@ -390,7 +401,6 @@ export function useHeThongChiTiet(heThongId: string | undefined) {
   });
   return { ...q, chiTiet: q.data ?? null };
 }
-
 
 // ============================================================================
 // DRILL TẦNG 3 — Liên kết THÀNH PHẦN/KHE bên trong MỘT hệ thống.
@@ -435,7 +445,10 @@ export function useKheDoThi(heThongId: string | undefined) {
     queryFn: async (): Promise<KheDoThi> => {
       // Đơn vị của hệ thống — để gán snapshot khi tạo liên kết (cho người xem cùng đơn vị).
       const { data: ht, error: eHt } = await supabase
-        .from("dm_he_thong").select("don_vi_id").eq("id", heThongId!).maybeSingle();
+        .from("dm_he_thong")
+        .select("don_vi_id")
+        .eq("id", heThongId!)
+        .maybeSingle();
       if (eHt) throw eHt;
 
       // Thành phần đang hiệu lực của hệ thống.
@@ -486,15 +499,24 @@ export function useKheDoThi(heThongId: string | undefined) {
       if (tpIds.length) {
         const { data: lk, error: e4 } = await supabase
           .from("lien_ket_khe")
-          .select("id, khe_nguon_id, khe_dich_id, loai_lien_ket_id, giao_dien_nguon, giao_dien_dich, ghi_chu, loai:loai_lien_ket_id(ten, mau_sac)")
+          .select(
+            "id, khe_nguon_id, khe_dich_id, loai_lien_ket_id, giao_dien_nguon, giao_dien_dich, ghi_chu, loai:loai_lien_ket_id(ten, mau_sac)",
+          )
           .in("khe_nguon_id", tpIds)
           .is("hieu_luc_den", null);
         if (e4) throw e4;
-        links = ((lk ?? []) as unknown as Array<{
-          id: string; khe_nguon_id: string; khe_dich_id: string; loai_lien_ket_id: string;
-          giao_dien_nguon: string | null; giao_dien_dich: string | null; ghi_chu: string | null;
-          loai: { ten: string | null; mau_sac: string | null } | null;
-        }>)
+        links = (
+          (lk ?? []) as unknown as Array<{
+            id: string;
+            khe_nguon_id: string;
+            khe_dich_id: string;
+            loai_lien_ket_id: string;
+            giao_dien_nguon: string | null;
+            giao_dien_dich: string | null;
+            ghi_chu: string | null;
+            loai: { ten: string | null; mau_sac: string | null } | null;
+          }>
+        )
           .filter((r) => idSet.has(r.khe_dich_id))
           .map((r) => ({
             id: r.id,
@@ -557,9 +579,9 @@ export function useThemKheLienKet() {
       const key = ["khe_do_thi", input.he_thong_id] as const;
       await qc.cancelQueries({ queryKey: key });
       const prev = qc.getQueryData<KheDoThi>(key);
-      const loai = qc.getQueryData<LoaiLienKet[]>(["dm_loai_lien_ket"])?.find(
-        (l) => l.id === input.loai_lien_ket_id,
-      );
+      const loai = qc
+        .getQueryData<LoaiLienKet[]>(["dm_loai_lien_ket"])
+        ?.find((l) => l.id === input.loai_lien_ket_id);
       const optimistic: KheLink = {
         id: `optimistic-${Date.now()}`,
         khe_nguon_id: input.khe_nguon_id,

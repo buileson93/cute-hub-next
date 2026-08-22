@@ -48,9 +48,7 @@ export type AssignRoleInput = {
   allUsers: UserRoleSnapshot[];
 };
 
-export type RoleActionResult =
-  | { ok: true }
-  | { ok: false; code: string; message: string };
+export type RoleActionResult = { ok: true } | { ok: false; code: string; message: string };
 
 const ERR = (code: string, message: string): RoleActionResult => ({
   ok: false,
@@ -63,20 +61,14 @@ function countActiveAdmins(users: UserRoleSnapshot[]): number {
 }
 
 /** Đếm admin còn lại NẾU áp dụng thay đổi mới với `target`. */
-function countActiveAdminsAfter(
-  users: UserRoleSnapshot[],
-  targetAfter: UserRoleSnapshot
-): number {
+function countActiveAdminsAfter(users: UserRoleSnapshot[], targetAfter: UserRoleSnapshot): number {
   const merged = users.map((u) => (u.userId === targetAfter.userId ? targetAfter : u));
   // Nếu target chưa nằm trong list (user mới) thì thêm vào
   if (!merged.some((u) => u.userId === targetAfter.userId)) merged.push(targetAfter);
   return countActiveAdmins(merged);
 }
 
-export function isLastActiveAdmin(
-  userId: string,
-  users: UserRoleSnapshot[]
-): boolean {
+export function isLastActiveAdmin(userId: string, users: UserRoleSnapshot[]): boolean {
   const admins = users.filter((u) => u.active && u.roles.includes("admin"));
   return admins.length === 1 && admins[0]?.userId === userId;
 }
@@ -105,10 +97,7 @@ export function canRevokeRole(input: AssignRoleInput): RoleActionResult {
       roles: nextRoles,
     });
     if (remaining < 1) {
-      return ERR(
-        "LAST_ADMIN",
-        "Không thể tháo vai trò admin cuối cùng của hệ thống"
-      );
+      return ERR("LAST_ADMIN", "Không thể tháo vai trò admin cuối cùng của hệ thống");
     }
     if (
       input.actor.actorId === input.target.userId &&
@@ -125,7 +114,7 @@ export function canSetActive(
   actor: ActorContext,
   target: UserRoleSnapshot,
   nextActive: boolean,
-  allUsers: UserRoleSnapshot[]
+  allUsers: UserRoleSnapshot[],
 ): RoleActionResult {
   if (!actor.actorIsAdmin) {
     return ERR("FORBIDDEN", "Chỉ admin được đổi trạng thái tài khoản");
@@ -142,10 +131,7 @@ export function canSetActive(
     if (target.roles.includes("admin") && remaining < 1) {
       return ERR("LAST_ADMIN", "Không thể khoá admin cuối cùng của hệ thống");
     }
-    if (
-      actor.actorId === target.userId &&
-      isLastActiveAdmin(target.userId, allUsers)
-    ) {
+    if (actor.actorId === target.userId && isLastActiveAdmin(target.userId, allUsers)) {
       return ERR("SELF_LOCK_LAST_ADMIN", "Bạn không thể tự khoá admin cuối cùng");
     }
   }
@@ -153,18 +139,12 @@ export function canSetActive(
 }
 
 /** Áp dụng gán vai trò (thuần) — trả về snapshot mới. */
-export function applyAssignRole(
-  target: UserRoleSnapshot,
-  role: AppRole
-): UserRoleSnapshot {
+export function applyAssignRole(target: UserRoleSnapshot, role: AppRole): UserRoleSnapshot {
   if (target.roles.includes(role)) return target;
   return { ...target, roles: [...target.roles, role] };
 }
 
 /** Áp dụng tháo vai trò (thuần) — trả về snapshot mới. */
-export function applyRevokeRole(
-  target: UserRoleSnapshot,
-  role: AppRole
-): UserRoleSnapshot {
+export function applyRevokeRole(target: UserRoleSnapshot, role: AppRole): UserRoleSnapshot {
   return { ...target, roles: target.roles.filter((r) => r !== role) };
 }

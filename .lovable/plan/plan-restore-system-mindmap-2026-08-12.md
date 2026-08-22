@@ -19,26 +19,33 @@ The user is reporting that the MindMap is still not showing or nodes are not exp
 ## Proposed Changes
 
 ### Logic & State
+
 #### [CayContext.tsx]
+
 - Add `initialRender` ref to ensure `expandedNodes` is seeded only once when data first arrives, preventing resets during minor updates.
 
 #### [CayMindMap.tsx]
+
 - **Fix NaN transformation**: Filter out nodes that might have invalid coordinates before rendering.
 - **Layout initialization**: Ensure `fitView` is called correctly after nodes are positioned.
 - **Node Expansion**: Improve the `toggle` logic to persist user choices while respecting the search/focus automatic expansion.
 - **Resize Handling**: Ensure the container responds to window resizing to prevent the 0px height bug.
 
 ### UI & Layout
+
 #### [_app.he-thong.cay.tsx]
+
 - Standardize the `PageBody` and `DataState` height to `h-full flex-1`.
 - Ensure the `mindmap` tab container has `min-h-[600px]` to force a minimum visible area if parent flex fails.
 
 ## Verification Plan
 
 ### Automated Tests
+
 - Run `npx tsc --noEmit` to verify type safety.
 
 ### Manual Verification
+
 - Open `/he-thong/cay?view=mindmap`.
 - Verify the canvas is not blank.
 - Click `+` / `-` on nodes to expand/collapse.

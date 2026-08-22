@@ -32,11 +32,7 @@ export function sortDacTinh(ds: DacTinh[]): DacTinh[] {
  * - `none` : tài sản KHÔNG có bất kỳ tag nào trong `daChon`.
  * Quy ước: `daChon` rỗng → true (không lọc).
  */
-export function matchFilter(
-  cuaThietBi: string[],
-  daChon: string[],
-  che_do: CheDoLoc,
-): boolean {
+export function matchFilter(cuaThietBi: string[], daChon: string[], che_do: CheDoLoc): boolean {
   if (!daChon || daChon.length === 0) return true;
   const set = new Set(cuaThietBi);
   switch (che_do) {

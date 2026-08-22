@@ -1,5 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getRequestHeader, getRequestHost, setCookie, getCookie } from "@tanstack/react-start/server";
+import {
+  getRequestHeader,
+  getRequestHost,
+  setCookie,
+  getCookie,
+} from "@tanstack/react-start/server";
 import { z } from "zod";
 import {
   generateRegistrationOptions,
@@ -8,10 +13,7 @@ import {
   verifyAuthenticationResponse,
 } from "@simplewebauthn/server";
 import { isoBase64URL, isoUint8Array } from "@simplewebauthn/server/helpers";
-import type {
-  RegistrationResponseJSON,
-  AuthenticationResponseJSON,
-} from "@simplewebauthn/server";
+import type { RegistrationResponseJSON, AuthenticationResponseJSON } from "@simplewebauthn/server";
 import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 
 const RP_NAME = "MIRATS";
@@ -62,8 +64,7 @@ export const getRegistrationOptions = createServerFn({ method: "POST" })
     const { rpID, secure } = getRp();
     const userId = context.userId as string;
     const email =
-      ((context.claims as Record<string, unknown> | undefined)?.email as string) ||
-      "user";
+      ((context.claims as Record<string, unknown> | undefined)?.email as string) || "user";
 
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     const { data: existing } = await supabaseAdmin
@@ -80,9 +81,7 @@ export const getRegistrationOptions = createServerFn({ method: "POST" })
       attestationType: "none",
       excludeCredentials: (existing ?? []).map((c) => ({
         id: c.credential_id,
-        transports: (c.transports ?? undefined) as
-          | AuthenticatorTransportFuture[]
-          | undefined,
+        transports: (c.transports ?? undefined) as AuthenticatorTransportFuture[] | undefined,
       })),
       authenticatorSelection: {
         residentKey: "required",
@@ -96,9 +95,7 @@ export const getRegistrationOptions = createServerFn({ method: "POST" })
 
 export const verifyRegistration = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
-    (d: { response: RegistrationResponseJSON; deviceName?: string }) => d,
-  )
+  .inputValidator((d: { response: RegistrationResponseJSON; deviceName?: string }) => d)
   .handler(async ({ data, context }) => {
     const { rpID, origin } = getRp();
     const expectedChallenge = getCookie(REG_COOKIE);
@@ -123,8 +120,7 @@ export const verifyRegistration = createServerFn({ method: "POST" })
       return { success: false, error: "Không xác minh được tài sản." };
     }
 
-    const { credential, credentialDeviceType, credentialBackedUp } =
-      verification.registrationInfo;
+    const { credential, credentialDeviceType, credentialBackedUp } = verification.registrationInfo;
     const userId = context.userId as string;
 
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
@@ -141,8 +137,7 @@ export const verifyRegistration = createServerFn({ method: "POST" })
     });
 
     if (error) {
-      if (error.code === "23505")
-        return { success: false, error: "Tài sản này đã được đăng ký." };
+      if (error.code === "23505") return { success: false, error: "Tài sản này đã được đăng ký." };
       return { success: false, error: error.message };
     }
 
@@ -152,18 +147,16 @@ export const verifyRegistration = createServerFn({ method: "POST" })
 // ─────────────────────────────────────────────────────────────
 // 2. AUTHENTICATION — passwordless login with biometric passkey
 // ─────────────────────────────────────────────────────────────
-export const getAuthenticationOptions = createServerFn({ method: "POST" }).handler(
-  async () => {
-    const { rpID, secure } = getRp();
-    const options = await generateAuthenticationOptions({
-      rpID,
-      userVerification: "preferred",
-      // empty allowCredentials → discoverable (resident) keys, usernameless
-    });
-    setChallengeCookie(AUTH_COOKIE, options.challenge, secure);
-    return options;
-  },
-);
+export const getAuthenticationOptions = createServerFn({ method: "POST" }).handler(async () => {
+  const { rpID, secure } = getRp();
+  const options = await generateAuthenticationOptions({
+    rpID,
+    userVerification: "preferred",
+    // empty allowCredentials → discoverable (resident) keys, usernameless
+  });
+  setChallengeCookie(AUTH_COOKIE, options.challenge, secure);
+  return options;
+});
 
 export const verifyAuthentication = createServerFn({ method: "POST" })
   .inputValidator((d: { response: AuthenticationResponseJSON }) => d)
@@ -197,9 +190,7 @@ export const verifyAuthentication = createServerFn({ method: "POST" })
           id: cred.credential_id,
           publicKey: isoBase64URL.toBuffer(cred.public_key),
           counter: Number(cred.counter),
-          transports: (cred.transports ?? undefined) as
-            | AuthenticatorTransportFuture[]
-            | undefined,
+          transports: (cred.transports ?? undefined) as AuthenticatorTransportFuture[] | undefined,
         },
       });
     } catch (e) {
@@ -220,18 +211,18 @@ export const verifyAuthentication = createServerFn({ method: "POST" })
       .eq("id", cred.id);
 
     // Mint a Supabase session for this user via a one-time magic-link token.
-    const { data: userRes, error: userErr } =
-      await supabaseAdmin.auth.admin.getUserById(cred.user_id);
+    const { data: userRes, error: userErr } = await supabaseAdmin.auth.admin.getUserById(
+      cred.user_id,
+    );
     const email = userRes?.user?.email;
     if (userErr || !email) {
       return { success: false as const, error: "Không tìm thấy tài khoản." };
     }
 
-    const { data: linkData, error: linkErr } =
-      await supabaseAdmin.auth.admin.generateLink({
-        type: "magiclink",
-        email,
-      });
+    const { data: linkData, error: linkErr } = await supabaseAdmin.auth.admin.generateLink({
+      type: "magiclink",
+      email,
+    });
     if (linkErr || !linkData?.properties?.hashed_token) {
       return { success: false as const, error: "Không tạo được phiên đăng nhập." };
     }
@@ -262,10 +253,7 @@ export const deletePasskey = createServerFn({ method: "POST" })
   .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
-    const { error } = await supabase
-      .from("webauthn_credentials")
-      .delete()
-      .eq("id", data.id);
+    const { error } = await supabase.from("webauthn_credentials").delete().eq("id", data.id);
     return { success: !error, error: error?.message };
   });
 

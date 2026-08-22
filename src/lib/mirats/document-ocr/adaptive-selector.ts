@@ -7,7 +7,7 @@ import { ocrConfig } from "./config";
 export class AdaptiveOcrSelector {
   async getRecommendedQuality(): Promise<QualityProfile> {
     const profile = await deviceProfiler.getProfile();
-    
+
     if (profile.tier === "high") return "quality";
     if (profile.tier === "medium") return "balanced";
     return "eco";
@@ -16,9 +16,9 @@ export class AdaptiveOcrSelector {
   async selectBestProvider(inputContext: { isPdf: boolean }): Promise<OcrProvider> {
     const profile = await deviceProfiler.getProfile();
     const providers = await ocrProviderRegistry.getSupportedProviders(profile.capabilities);
-    
-    const textLayerProvider = providers.find(p => p.id === "pdf-text-layer");
-    const tesseractProvider = providers.find(p => p.id === "tesseract-wasm");
+
+    const textLayerProvider = providers.find((p) => p.id === "pdf-text-layer");
+    const tesseractProvider = providers.find((p) => p.id === "tesseract-wasm");
 
     // Stage 1: Text-layer extraction only
     if (ocrConfig.rolloutStage <= 1) {

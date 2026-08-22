@@ -30,10 +30,7 @@ export function parseDetail(raw: string | null | undefined): DetailPanelState {
 }
 
 /** Serialize state → chuỗi cho URL. `null` nếu chưa mở. */
-export function serializeDetail(
-  loai: EntityLoai | null,
-  id: string | null,
-): string | null {
+export function serializeDetail(loai: EntityLoai | null, id: string | null): string | null {
   if (!loai || !id) return null;
   return `${loai}:${id}`;
 }

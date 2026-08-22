@@ -1,1 +1,14 @@
-[{"ma_nhan_vien": "NV001", "ho_ten": "Nguyễn Văn An", "don_vi": "CRA", "chuc_vu": "KTV"}, {"ma_nhan_vien": "NV002", "ho_ten": "Trần Thị Bình", "don_vi": "CLA", "chuc_vu": "KTV"}, {"ma_nhan_vien": "NV003", "ho_ten": "Lê Minh Cường", "don_vi": "THO", "chuc_vu": "KTV"}, {"ma_nhan_vien": "NV004", "ho_ten": "Phạm Thu Hà", "don_vi": "PCA", "chuc_vu": "KTV"}, {"ma_nhan_vien": "NV005", "ho_ten": "Hoàng Đức Duy", "don_vi": "PBA", "chuc_vu": "KTV"}, {"ma_nhan_vien": "NV006", "ho_ten": "Vũ Thị Em", "don_vi": "PLK", "chuc_vu": "KTV"}, {"ma_nhan_vien": "NV007", "ho_ten": "Đặng Văn Phúc", "don_vi": "CRA", "chuc_vu": "KTV"}, {"ma_nhan_vien": "NV008", "ho_ten": "Bùi Thị Giang", "don_vi": "CLA", "chuc_vu": "KTV"}, {"ma_nhan_vien": "NV009", "ho_ten": "Ngô Minh Hải", "don_vi": "THO", "chuc_vu": "KTV"}, {"ma_nhan_vien": "NV010", "ho_ten": "Đỗ Thu Hương", "don_vi": "PCA", "chuc_vu": "KTV"}, {"ma_nhan_vien": "NV011", "ho_ten": "Lý Văn Khoa", "don_vi": "PBA", "chuc_vu": "KTV"}, {"ma_nhan_vien": "NV012", "ho_ten": "Trịnh Thị Lan", "don_vi": "PLK", "chuc_vu": "KTV"}]
+[
+  { "ma_nhan_vien": "NV001", "ho_ten": "Nguyễn Văn An", "don_vi": "CRA", "chuc_vu": "KTV" },
+  { "ma_nhan_vien": "NV002", "ho_ten": "Trần Thị Bình", "don_vi": "CLA", "chuc_vu": "KTV" },
+  { "ma_nhan_vien": "NV003", "ho_ten": "Lê Minh Cường", "don_vi": "THO", "chuc_vu": "KTV" },
+  { "ma_nhan_vien": "NV004", "ho_ten": "Phạm Thu Hà", "don_vi": "PCA", "chuc_vu": "KTV" },
+  { "ma_nhan_vien": "NV005", "ho_ten": "Hoàng Đức Duy", "don_vi": "PBA", "chuc_vu": "KTV" },
+  { "ma_nhan_vien": "NV006", "ho_ten": "Vũ Thị Em", "don_vi": "PLK", "chuc_vu": "KTV" },
+  { "ma_nhan_vien": "NV007", "ho_ten": "Đặng Văn Phúc", "don_vi": "CRA", "chuc_vu": "KTV" },
+  { "ma_nhan_vien": "NV008", "ho_ten": "Bùi Thị Giang", "don_vi": "CLA", "chuc_vu": "KTV" },
+  { "ma_nhan_vien": "NV009", "ho_ten": "Ngô Minh Hải", "don_vi": "THO", "chuc_vu": "KTV" },
+  { "ma_nhan_vien": "NV010", "ho_ten": "Đỗ Thu Hương", "don_vi": "PCA", "chuc_vu": "KTV" },
+  { "ma_nhan_vien": "NV011", "ho_ten": "Lý Văn Khoa", "don_vi": "PBA", "chuc_vu": "KTV" },
+  { "ma_nhan_vien": "NV012", "ho_ten": "Trịnh Thị Lan", "don_vi": "PLK", "chuc_vu": "KTV" }
+]

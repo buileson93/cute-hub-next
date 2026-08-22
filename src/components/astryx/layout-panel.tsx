@@ -44,7 +44,7 @@ export function LayoutPanel({
       <div
         className={cn(
           "flex items-center justify-between border-b px-4 py-3 shrink-0",
-          variant === "ghost" && "px-0 border-none"
+          variant === "ghost" && "px-0 border-none",
         )}
       >
         <div className="flex items-center gap-2.5 min-w-0">
@@ -71,7 +71,7 @@ export function LayoutPanel({
         <div
           className={cn(
             "border-t px-4 py-2 bg-muted/30 shrink-0",
-            variant === "ghost" && "px-0 border-none bg-transparent"
+            variant === "ghost" && "px-0 border-none bg-transparent",
           )}
         >
           {footer}

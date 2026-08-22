@@ -36,7 +36,10 @@ function check(file) {
     const inner = m[2];
     if (!/size="icon"/.test(attrs)) continue;
     if (/aria-label/.test(attrs)) continue;
-    const stripped = inner.replace(/<[^>]+\/?>/g, "").replace(/\{[^}]*\}/g, "").trim();
+    const stripped = inner
+      .replace(/<[^>]+\/?>/g, "")
+      .replace(/\{[^}]*\}/g, "")
+      .trim();
     if (!stripped) {
       const line = txt.slice(0, m.index).split("\n").length;
       violations.push(`${file}:${line}: icon-only <Button> missing aria-label`);

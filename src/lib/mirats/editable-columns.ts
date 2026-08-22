@@ -60,7 +60,13 @@ export const THIET_BI_PHYS_GROUPS: PhysGroup[] = [
   {
     title: "Model (nguồn thông tin dùng chung)",
     cols: [
-      { key: "model_id", label: "Model (Model)", type: "reference", refTable: "dm_model", modelPicker: true },
+      {
+        key: "model_id",
+        label: "Model (Model)",
+        type: "reference",
+        refTable: "dm_model",
+        modelPicker: true,
+      },
     ],
   },
   {
@@ -74,8 +80,20 @@ export const THIET_BI_PHYS_GROUPS: PhysGroup[] = [
   {
     title: "Kế thừa từ model",
     cols: [
-      { key: "loai_thiet_bi_id", label: "Chủng loại", type: "reference", refTable: "dm_loai_thiet_bi", inheritedFromModel: true },
-      { key: "nha_san_xuat_id", label: "Nhà sản xuất", type: "reference", refTable: "dm_nha_san_xuat", inheritedFromModel: true },
+      {
+        key: "loai_thiet_bi_id",
+        label: "Chủng loại",
+        type: "reference",
+        refTable: "dm_loai_thiet_bi",
+        inheritedFromModel: true,
+      },
+      {
+        key: "nha_san_xuat_id",
+        label: "Nhà sản xuất",
+        type: "reference",
+        refTable: "dm_nha_san_xuat",
+        inheritedFromModel: true,
+      },
       { key: "p_n", label: "P/N (Part number)", type: "text", inheritedFromModel: true },
     ],
   },
@@ -84,10 +102,20 @@ export const THIET_BI_PHYS_GROUPS: PhysGroup[] = [
     // không gõ tự do — đảm bảo tính chặt chẽ & đồng bộ dữ liệu.
     title: "Vị trí · Trạng thái · Đơn vị (chọn từ danh mục)",
     cols: [
-      { key: "trang_thai_id", label: "Trạng thái tài sản", type: "reference", refTable: "dm_trang_thai_thiet_bi" },
+      {
+        key: "trang_thai_id",
+        label: "Trạng thái tài sản",
+        type: "reference",
+        refTable: "dm_trang_thai_thiet_bi",
+      },
       { key: "vi_tri_id", label: "Vị trí lắp đặt", type: "reference", refTable: "dm_vi_tri" },
       { key: "don_vi_id", label: "Đơn vị quản lý", type: "reference", refTable: "dm_don_vi" },
-      { key: "nha_cung_cap_id", label: "Nhà cung cấp", type: "reference", refTable: "dm_nha_cung_cap" },
+      {
+        key: "nha_cung_cap_id",
+        label: "Nhà cung cấp",
+        type: "reference",
+        refTable: "dm_nha_cung_cap",
+      },
     ],
   },
   {
@@ -114,9 +142,7 @@ export const THIET_BI_PHYS_GROUPS: PhysGroup[] = [
 export const HE_THONG_PHYS_GROUPS: PhysGroup[] = [
   {
     title: "Quản lý (chọn từ danh mục)",
-    cols: [
-      { key: "don_vi_id", label: "Đơn vị quản lý", type: "reference", refTable: "dm_don_vi" },
-    ],
+    cols: [{ key: "don_vi_id", label: "Đơn vị quản lý", type: "reference", refTable: "dm_don_vi" }],
   },
   {
     title: "Thông tin hệ thống",
@@ -155,7 +181,10 @@ export const HE_THONG_PHYS_GROUPS: PhysGroup[] = [
 ];
 
 // Bảng đích + khoá đối chiếu cho từng layer
-export const PHYS_TABLE_BY_LAYER: Record<string, { table: string; keyCol: string; groups: PhysGroup[] } | undefined> = {
+export const PHYS_TABLE_BY_LAYER: Record<
+  string,
+  { table: string; keyCol: string; groups: PhysGroup[] } | undefined
+> = {
   tb: { table: "thiet_bi", keyCol: "ma_thiet_bi", groups: THIET_BI_PHYS_GROUPS },
   ht: { table: "dm_he_thong", keyCol: "id", groups: HE_THONG_PHYS_GROUPS },
 };
@@ -217,4 +246,3 @@ export function filterPhysPayload(
   }
   return out;
 }
-

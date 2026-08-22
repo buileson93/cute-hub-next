@@ -11,21 +11,21 @@ describe("Button Component Contract", () => {
 
   it("should show loader and be disabled when loading", () => {
     const { container } = render(<Button loading>Submit</Button>);
-    const button = container.querySelector('button');
-    expect(button?.hasAttribute('disabled')).toBe(true);
-    expect(container.querySelector('.animate-spin')).toBeDefined();
+    const button = container.querySelector("button");
+    expect(button?.hasAttribute("disabled")).toBe(true);
+    expect(container.querySelector(".animate-spin")).toBeDefined();
   });
 
   it("should apply variant classes correctly", () => {
     const { container } = render(<Button variant="destructive">Delete</Button>);
-    const button = container.querySelector('button');
-    expect(button?.className).toContain('bg-destructive');
+    const button = container.querySelector("button");
+    expect(button?.className).toContain("bg-destructive");
   });
 
   it("should have aria-label when size is icon", () => {
     // Note: We use the audit script to enforce this, but let's test the component behavior
     render(<Button size="icon" aria-label="Search" title="Search Icon" />);
-    const button = screen.getByRole('button');
-    expect(button.getAttribute('aria-label')).toBe('Search');
+    const button = screen.getByRole("button");
+    expect(button.getAttribute("aria-label")).toBe("Search");
   });
 });

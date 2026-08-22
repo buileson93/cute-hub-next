@@ -5,19 +5,54 @@
 
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { History, Loader2, Trash2, Eye, RefreshCw, PlayCircle, Undo2, AlertTriangle } from "lucide-react";
+import {
+  History,
+  Loader2,
+  Trash2,
+  Eye,
+  RefreshCw,
+  PlayCircle,
+  Undo2,
+  AlertTriangle,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
-  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { listImportBatches, getImportBatch, deleteImportBatch } from "@/lib/mirats/import-staging.functions";
-import { applyImportBatch, previewRollbackImportBatch, rollbackImportBatch } from "@/lib/mirats/import-apply.functions";
-import { summarizeRollbackPreview, actionLabel, type RollbackPreview, type RollbackSummary } from "@/lib/mirats/rollback-preview";
+import {
+  listImportBatches,
+  getImportBatch,
+  deleteImportBatch,
+} from "@/lib/mirats/import-staging.functions";
+import {
+  applyImportBatch,
+  previewRollbackImportBatch,
+  rollbackImportBatch,
+} from "@/lib/mirats/import-apply.functions";
+import {
+  summarizeRollbackPreview,
+  actionLabel,
+  type RollbackPreview,
+  type RollbackSummary,
+} from "@/lib/mirats/rollback-preview";
 import { ImportBatchDetail } from "@/components/mirats/ImportBatchDetail";
 
 type Batch = {
@@ -66,8 +101,10 @@ export function ImportBatchHistory() {
   }
 
   // Nạp lịch sử một lần khi mở dialog; refresh ổn định, không cần trong deps.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { void refresh(); }, []);
+
+  useEffect(() => {
+    void refresh();
+  }, []);
 
   async function open(id: string) {
     setOpenId(id);
@@ -85,7 +122,10 @@ export function ImportBatchHistory() {
     try {
       await remove({ data: { id } });
       toast.success("Đã xóa lô staging");
-      if (openId === id) { setOpenId(null); setItems([]); }
+      if (openId === id) {
+        setOpenId(null);
+        setItems([]);
+      }
       void refresh();
     } catch (e) {
       toast.error("Không xóa được: " + (e as Error).message);
@@ -93,12 +133,19 @@ export function ImportBatchHistory() {
   }
 
   async function applyBatch(id: string) {
-    if (!window.confirm("Áp dụng lô này vào dữ liệu nghiệp vụ? Thao tác chạy trong một giao dịch (lỗi sẽ hoàn tác toàn bộ).")) return;
+    if (
+      !window.confirm(
+        "Áp dụng lô này vào dữ liệu nghiệp vụ? Thao tác chạy trong một giao dịch (lỗi sẽ hoàn tác toàn bộ).",
+      )
+    )
+      return;
     setActingId(id);
     try {
       const res = await apply({ data: { id } });
       const r = (res.result ?? {}) as Record<string, number>;
-      toast.success(`Đã áp dụng: tạo ${r.created ?? 0}, cập nhật ${r.updated ?? 0}, ngừng dùng ${r.retired ?? 0}, giữ ${r.kept ?? 0}`);
+      toast.success(
+        `Đã áp dụng: tạo ${r.created ?? 0}, cập nhật ${r.updated ?? 0}, ngừng dùng ${r.retired ?? 0}, giữ ${r.kept ?? 0}`,
+      );
       void refresh();
     } catch (e) {
       toast.error("Áp dụng thất bại: " + (e as Error).message);
@@ -127,8 +174,11 @@ export function ImportBatchHistory() {
     try {
       const res = await doRollback({ data: { id } });
       const r = (res.result ?? {}) as Record<string, number>;
-      toast.success(`Đã hoàn tác ${r.rolled ?? 0} dòng${r.blocked ? `, ${r.blocked} dòng bị chặn (có lịch sử)` : ""}`);
-      setRbId(null); setRbSummary(null);
+      toast.success(
+        `Đã hoàn tác ${r.rolled ?? 0} dòng${r.blocked ? `, ${r.blocked} dòng bị chặn (có lịch sử)` : ""}`,
+      );
+      setRbId(null);
+      setRbSummary(null);
       void refresh();
     } catch (e) {
       toast.error("Hoàn tác thất bại: " + (e as Error).message);
@@ -145,10 +195,16 @@ export function ImportBatchHistory() {
             <CardTitle className="flex items-center gap-2 text-base">
               <History className="h-4 w-4 text-primary" /> Lịch sử lô nhập (staging)
             </CardTitle>
-            <CardDescription>Mỗi lần tải file tạo một lô tạm. Mở lại để xem chi tiết dòng hoặc xóa.</CardDescription>
+            <CardDescription>
+              Mỗi lần tải file tạo một lô tạm. Mở lại để xem chi tiết dòng hoặc xóa.
+            </CardDescription>
           </div>
           <Button size="sm" variant="outline" onClick={() => void refresh()} disabled={busy}>
-            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+            {busy ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </CardHeader>
@@ -172,27 +228,57 @@ export function ImportBatchHistory() {
                   <TableRow key={b.id}>
                     <TableCell className="text-xs font-medium">{b.file_name}</TableCell>
                     <TableCell className="text-xs uppercase">{b.source}</TableCell>
-                    <TableCell><Badge variant="outline">{STATUS_LABEL[b.status] ?? b.status}</Badge></TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{STATUS_LABEL[b.status] ?? b.status}</Badge>
+                    </TableCell>
                     <TableCell className="text-xs tabular-nums text-muted-foreground">
                       {new Date(b.created_at).toLocaleString("vi-VN")}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => void open(b.id)} title="Mở lại">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7"
+                        onClick={() => void open(b.id)}
+                        title="Mở lại"
+                      >
                         <Eye className="h-3.5 w-3.5" />
                       </Button>
                       {b.status !== "committed" && b.status !== "rolled_back" && (
-                        <Button size="icon" variant="ghost" className="h-7 w-7 text-primary" disabled={actingId === b.id}
-                          onClick={() => void applyBatch(b.id)} title="Áp dụng vào dữ liệu">
-                          {actingId === b.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <PlayCircle className="h-3.5 w-3.5" />}
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7 text-primary"
+                          disabled={actingId === b.id}
+                          onClick={() => void applyBatch(b.id)}
+                          title="Áp dụng vào dữ liệu"
+                        >
+                          {actingId === b.id ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <PlayCircle className="h-3.5 w-3.5" />
+                          )}
                         </Button>
                       )}
                       {(b.status === "committed" || b.status === "partially_rolled_back") && (
-                        <Button size="icon" variant="ghost" className="h-7 w-7 text-amber-600" disabled={actingId === b.id}
-                          onClick={() => void openRollback(b.id)} title="Hoàn tác">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7 text-amber-600"
+                          disabled={actingId === b.id}
+                          onClick={() => void openRollback(b.id)}
+                          title="Hoàn tác"
+                        >
                           <Undo2 className="h-3.5 w-3.5" />
                         </Button>
                       )}
-                      <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => void del(b.id)} title="Xóa">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-7 w-7 text-destructive"
+                        onClick={() => void del(b.id)}
+                        title="Xóa"
+                      >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </TableCell>
@@ -214,7 +300,15 @@ export function ImportBatchHistory() {
         )}
       </CardContent>
 
-      <AlertDialog open={!!rbId} onOpenChange={(o) => { if (!o) { setRbId(null); setRbSummary(null); } }}>
+      <AlertDialog
+        open={!!rbId}
+        onOpenChange={(o) => {
+          if (!o) {
+            setRbId(null);
+            setRbSummary(null);
+          }
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
@@ -229,7 +323,8 @@ export function ImportBatchHistory() {
           {rbSummary?.hasBlocked && (
             <div className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-xs">
               <p className="mb-2 flex items-center gap-1.5 font-medium text-amber-700">
-                <AlertTriangle className="h-3.5 w-3.5" /> {rbSummary.cannotCount} dòng KHÔNG thể hoàn tác (đã có lịch sử/phụ thuộc):
+                <AlertTriangle className="h-3.5 w-3.5" /> {rbSummary.cannotCount} dòng KHÔNG thể
+                hoàn tác (đã có lịch sử/phụ thuộc):
               </p>
               <ul className="max-h-40 space-y-1 overflow-auto">
                 {rbSummary.blocked.map((b) => (
@@ -244,7 +339,10 @@ export function ImportBatchHistory() {
             <AlertDialogCancel>Đóng</AlertDialogCancel>
             <AlertDialogAction
               disabled={!rbSummary?.canProceed || !!actingId}
-              onClick={(e) => { e.preventDefault(); void confirmRollback(); }}
+              onClick={(e) => {
+                e.preventDefault();
+                void confirmRollback();
+              }}
             >
               {actingId ? "Đang hoàn tác..." : "Hoàn tác các dòng an toàn"}
             </AlertDialogAction>

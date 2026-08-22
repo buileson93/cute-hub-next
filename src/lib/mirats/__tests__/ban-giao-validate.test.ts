@@ -9,18 +9,12 @@ describe("detectHoldingConflict", () => {
 
   it("trả null khi tài sản không đang lắp", () => {
     expect(
-      detectHoldingConflict(
-        { thiet_bi_id: "TB_NEW", ngay_nhan: "2026-07-14" },
-        dangLap,
-      ),
+      detectHoldingConflict({ thiet_bi_id: "TB_NEW", ngay_nhan: "2026-07-14" }, dangLap),
     ).toBeNull();
   });
 
   it("phát hiện xung đột khi tài sản đang lắp tại vị trí chức năng", () => {
-    const c = detectHoldingConflict(
-      { thiet_bi_id: "TB_ABC", ngay_nhan: "2026-07-14" },
-      dangLap,
-    );
+    const c = detectHoldingConflict({ thiet_bi_id: "TB_ABC", ngay_nhan: "2026-07-14" }, dangLap);
     expect(c).not.toBeNull();
     expect(c!.viTri).toBe("TPHT_VOR/DVOR-01");
     expect(c!.nguoiGiu).toBe("Nguyen A");
@@ -36,17 +30,12 @@ describe("detectHoldingConflict", () => {
   });
 
   it("chuẩn hoá nguoiGiu = '' khi không có dữ liệu người giữ", () => {
-    const c = detectHoldingConflict(
-      { thiet_bi_id: "TB_XYZ", ngay_nhan: "2026-07-14" },
-      dangLap,
-    );
+    const c = detectHoldingConflict({ thiet_bi_id: "TB_XYZ", ngay_nhan: "2026-07-14" }, dangLap);
     expect(c).not.toBeNull();
     expect(c!.nguoiGiu).toBe("");
   });
 
   it("trả null với thiet_bi_id rỗng", () => {
-    expect(
-      detectHoldingConflict({ thiet_bi_id: "", ngay_nhan: "2026-07-14" }, dangLap),
-    ).toBeNull();
+    expect(detectHoldingConflict({ thiet_bi_id: "", ngay_nhan: "2026-07-14" }, dangLap)).toBeNull();
   });
 });

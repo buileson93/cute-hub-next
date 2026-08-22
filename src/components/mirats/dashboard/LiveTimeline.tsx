@@ -55,22 +55,28 @@ export function LiveTimeline() {
 
 function TimelineItem({ item, isFirst }: { item: AuditTimelineItem; isFirst: boolean }) {
   const timeStr = formatDistanceToNow(new Date(item.created_at), { addSuffix: true, locale: vi });
-  
+
   // Choose icon based on action
   const getIcon = () => {
     switch (item.action) {
-      case 'INSERT': return <div className="w-2 h-2 rounded-full bg-emerald-500" />;
-      case 'UPDATE': return <div className="w-2 h-2 rounded-full bg-blue-500" />;
-      case 'DELETE': return <div className="w-2 h-2 rounded-full bg-red-500" />;
-      default: return <div className="w-2 h-2 rounded-full bg-slate-400" />;
+      case "INSERT":
+        return <div className="w-2 h-2 rounded-full bg-emerald-500" />;
+      case "UPDATE":
+        return <div className="w-2 h-2 rounded-full bg-blue-500" />;
+      case "DELETE":
+        return <div className="w-2 h-2 rounded-full bg-red-500" />;
+      default:
+        return <div className="w-2 h-2 rounded-full bg-slate-400" />;
     }
   };
 
   return (
-    <div className={cn(
-      "relative pl-8 group transition-all duration-300",
-      isFirst && "animate-in slide-in-from-top-4 fade-in duration-500"
-    )}>
+    <div
+      className={cn(
+        "relative pl-8 group transition-all duration-300",
+        isFirst && "animate-in slide-in-from-top-4 fade-in duration-500",
+      )}
+    >
       {/* Connector line dot */}
       <div className="absolute left-[11px] top-1.5 w-2 h-2 flex items-center justify-center bg-background ring-4 ring-background z-10">
         {getIcon()}

@@ -75,11 +75,11 @@ export function ThietBiDetail({
             icon="entity.system"
             metadata={
               <div className="flex items-center gap-2 mt-1">
-                <CompletenessRing 
-                  value={(asset as any).completeness_pct || 0} 
-                  size={24} 
-                  strokeWidth={3} 
-                  showText 
+                <CompletenessRing
+                  value={(asset as any).completeness_pct || 0}
+                  size={24}
+                  strokeWidth={3}
+                  showText
                 />
                 <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
                   Độ hoàn thiện dữ liệu
@@ -94,12 +94,13 @@ export function ThietBiDetail({
                 <Share2 className="h-4 w-4" />
               </Button>
             </AppTooltip>
-            <Badge variant="outline" className="font-mono text-[10px] tracking-tight py-0 px-2 rounded-lg bg-muted/30">
+            <Badge
+              variant="outline"
+              className="font-mono text-[10px] tracking-tight py-0 px-2 rounded-lg bg-muted/30"
+            >
               {asset.ma_thiet_bi}
             </Badge>
-            {asset.trang_thai && (
-              <Badge>{asset.trang_thai}</Badge>
-            )}
+            {asset.trang_thai && <Badge>{asset.trang_thai}</Badge>}
           </div>
         </div>
 

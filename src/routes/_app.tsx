@@ -1,4 +1,10 @@
-import { Outlet, createFileRoute, useNavigate, useLocation, useSearch } from "@tanstack/react-router";
+import {
+  Outlet,
+  createFileRoute,
+  useNavigate,
+  useLocation,
+  useSearch,
+} from "@tanstack/react-router";
 import { useEffect } from "react";
 import { AppShell } from "@/components/mirats/app-shell/AppShell";
 import { PageTransition } from "@/components/mirats/PageTransition";
@@ -70,7 +76,6 @@ function AppLayout() {
       </div>
     );
   }
-
 
   return (
     <ScopeProvider roles={roles} donViCode={profile?.don_vi ?? null}>

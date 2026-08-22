@@ -34,7 +34,7 @@ export function describeRpcError(fn: string, payload: unknown, error: unknown): 
     code === "PGRST202" ||
     code === "42883" ||
     /could not find the function/i.test(message) ||
-    /does not exist/i.test(message) && /function/i.test(message);
+    (/does not exist/i.test(message) && /function/i.test(message));
 
   const argNames =
     payload && typeof payload === "object" && !Array.isArray(payload)
@@ -54,7 +54,17 @@ export function describeRpcError(fn: string, payload: unknown, error: unknown): 
   if (argNames.length) lines.push(`Tham số đã gửi: ${argNames.join(", ")}`);
   lines.push(`Payload: ${safeJson(payload)}`);
 
-  return { code: code || "", fn, message, details, hint, missingFunction, argNames, payload, text: lines.join("\n") };
+  return {
+    code: code || "",
+    fn,
+    message,
+    details,
+    hint,
+    missingFunction,
+    argNames,
+    payload,
+    text: lines.join("\n"),
+  };
 }
 
 export class RpcCallError extends Error {

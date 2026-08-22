@@ -3,6 +3,7 @@
 Đường dẫn: `/su-co` (danh sách), `/su-co/moi` (tạo).
 
 ## Tạo sự cố
+
 1. Từ Sidebar → **Sự cố** → **+ Báo sự cố**.
 2. Điền form:
    - **Hệ thống / Thiết bị bị ảnh hưởng** (chọn từ dropdown, gõ mã `TB_` để tìm).
@@ -17,17 +18,21 @@
 4. Bấm **Lưu & tạo Biên bản ban đầu**.
 
 ## Xuất biên bản
+
 - Form biên bản ban đầu (BÁO CÁO BAN ĐẦU) tự sinh.
 - Bấm **Xuất Word** — file .docx theo template.
 
 ## Vòng đời sự cố
+
 `Mới` → `Đang xử lý` → `Đã khắc phục` → `Đóng`.
 
 Chuyển trạng thái ở drawer chi tiết. Mỗi lần đổi trạng thái, `StatusBadge` cập nhật realtime toàn app.
 
 ## Đồng bộ lý lịch
+
 - Sự cố tự động ghi vào Sổ lý lịch thiết bị + Sổ lý lịch hệ thống chứa thiết bị.
 - Xóa sự cố → chỉ soft-delete (RPC), giữ lịch sử.
 
 ## Metrics
+
 - MTTR / MTBF tính từ dữ liệu sự cố + bảo dưỡng, xem KPI Overview.

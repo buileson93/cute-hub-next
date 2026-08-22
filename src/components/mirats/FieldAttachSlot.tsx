@@ -9,7 +9,12 @@ import { PhotoUpload } from "./PhotoUpload";
 import type { FormAttachment } from "@/lib/mirats/form-attachments";
 
 export function FieldAttachSlot({
-  attachments, onChange, templateCode, draftId, fieldKey, disabled,
+  attachments,
+  onChange,
+  templateCode,
+  draftId,
+  fieldKey,
+  disabled,
 }: {
   attachments: FormAttachment[];
   onChange: (a: FormAttachment[]) => void;

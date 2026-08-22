@@ -7,15 +7,30 @@ import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
-  ArrowLeft, ArrowRight, ArrowRightLeft, ExternalLink, HardDrive, History,
-  Loader2, Plug, RefreshCw, Search, ShieldAlert,
+  ArrowLeft,
+  ArrowRight,
+  ArrowRightLeft,
+  ExternalLink,
+  HardDrive,
+  History,
+  Loader2,
+  Plug,
+  RefreshCw,
+  Search,
+  ShieldAlert,
 } from "lucide-react";
 import { AppShell } from "@/components/mirats/app-shell/AppShell";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useSession } from "@/hooks/use-session";
 import { supabase } from "@/integrations/backend/client";
 
@@ -23,7 +38,10 @@ export const Route = createFileRoute("/admin/audit/lap-thao")({
   head: () => ({
     meta: [
       { title: "Nhật ký lắp / tháo tài sản — MIRATS" },
-      { name: "description", content: "Nhật ký thao tác lắp / tháo / thay thế tài sản vào vị trí chức năng." },
+      {
+        name: "description",
+        content: "Nhật ký thao tác lắp / tháo / thay thế tài sản vào vị trí chức năng.",
+      },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
@@ -66,13 +84,21 @@ type Event = {
 
 function fmtTime(iso: string): string {
   return new Date(iso).toLocaleString("vi-VN", {
-    hour: "2-digit", minute: "2-digit",
-    day: "2-digit", month: "2-digit", year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
   });
 }
 function dayKey(iso: string): string {
   const d = new Date(iso);
-  return d.toLocaleDateString("vi-VN", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" });
+  return d.toLocaleDateString("vi-VN", {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 }
 
 function LapThaoAuditPage() {
@@ -99,8 +125,8 @@ function LapThaoAuditPage() {
         .from("gan_chuc_nang")
         .select(
           "id, thanh_phan_id, thiet_bi_id, tu_ngay, den_ngay, ly_do, ghi_chu, nguoi_thuc_hien," +
-          " thiet_bi:thiet_bi_id(ma_thiet_bi, ten_thiet_bi, ma_serial)," +
-          " he_thong_thanh_phan:thanh_phan_id(id, ma_thanh_phan, ten, he_thong_id, dm_he_thong:he_thong_id(id, ten, ma_he_thong))"
+            " thiet_bi:thiet_bi_id(ma_thiet_bi, ten_thiet_bi, ma_serial)," +
+            " he_thong_thanh_phan:thanh_phan_id(id, ma_thanh_phan, ten, he_thong_id, dm_he_thong:he_thong_id(id, ten, ma_he_thong))",
         )
         .order("tu_ngay", { ascending: false })
         .limit(limit);
@@ -113,9 +139,7 @@ function LapThaoAuditPage() {
   // Tra cứu nhanh: dòng liền kề trước dòng hiện tại tại cùng thanh_phan_id →
   // dùng để hiển thị "tài sản TRƯỚC" khi có sự kiện lắp mới.
   const prevAtPos = useMemo(() => {
-    const rows = [...(dataQ.data ?? [])].sort(
-      (a, b) => a.tu_ngay.localeCompare(b.tu_ngay),
-    );
+    const rows = [...(dataQ.data ?? [])].sort((a, b) => a.tu_ngay.localeCompare(b.tu_ngay));
     const byPos = new Map<string, GanRow[]>();
     for (const r of rows) {
       const arr = byPos.get(r.thanh_phan_id) ?? [];
@@ -140,7 +164,9 @@ function LapThaoAuditPage() {
     queryKey: ["audit_lap_thao_actors", actorIds.sort().join(",")],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("profiles").select("id,email,ho_ten").in("id", actorIds);
+        .from("profiles")
+        .select("id,email,ho_ten")
+        .in("id", actorIds);
       if (error) throw error;
       return (data ?? []) as ProfileLite[];
     },
@@ -177,15 +203,28 @@ function LapThaoAuditPage() {
     const kw = q.trim().toLowerCase();
     return events.filter((e) => {
       if (kindFilter !== "__all__" && e.kind !== kindFilter) return false;
-      if (heThongFilter !== "__all__" && e.ganRow.he_thong_thanh_phan?.he_thong_id !== heThongFilter) return false;
+      if (
+        heThongFilter !== "__all__" &&
+        e.ganRow.he_thong_thanh_phan?.he_thong_id !== heThongFilter
+      )
+        return false;
       if (!kw) return true;
       const p = e.actor ? actorMap.get(e.actor) : null;
       const hay = [
-        e.ganRow.thiet_bi?.ma_thiet_bi, e.ganRow.thiet_bi?.ten_thiet_bi, e.ganRow.thiet_bi?.ma_serial,
-        e.ganRow.he_thong_thanh_phan?.ten, e.ganRow.he_thong_thanh_phan?.ma_thanh_phan,
+        e.ganRow.thiet_bi?.ma_thiet_bi,
+        e.ganRow.thiet_bi?.ten_thiet_bi,
+        e.ganRow.thiet_bi?.ma_serial,
+        e.ganRow.he_thong_thanh_phan?.ten,
+        e.ganRow.he_thong_thanh_phan?.ma_thanh_phan,
         e.ganRow.he_thong_thanh_phan?.dm_he_thong?.ten,
-        e.ganRow.ly_do, e.ganRow.ghi_chu, p?.email, p?.ho_ten,
-      ].filter(Boolean).join(" ").toLowerCase();
+        e.ganRow.ly_do,
+        e.ganRow.ghi_chu,
+        p?.email,
+        p?.ho_ten,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
       return hay.includes(kw);
     });
   }, [events, q, kindFilter, heThongFilter, actorMap]);
@@ -216,10 +255,16 @@ function LapThaoAuditPage() {
             <CardTitle className="flex items-center gap-2 text-base">
               <ShieldAlert className="h-4 w-4 text-destructive" /> Không có quyền
             </CardTitle>
-            <CardDescription>Chỉ vai trò <b>admin</b> hoặc <b>phong_kt</b> mới xem được nhật ký này.</CardDescription>
+            <CardDescription>
+              Chỉ vai trò <b>admin</b> hoặc <b>phong_kt</b> mới xem được nhật ký này.
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild variant="outline"><Link to="/"><ArrowLeft className="mr-2 h-4 w-4" /> Về trang chủ</Link></Button>
+            <Button asChild variant="outline">
+              <Link to="/">
+                <ArrowLeft className="mr-2 h-4 w-4" /> Về trang chủ
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       </AppShell>
@@ -235,7 +280,10 @@ function LapThaoAuditPage() {
         <div className="grid grid-cols-1 gap-3 sm:flex sm:flex-wrap sm:items-end sm:justify-between">
           <div className="min-w-0">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Link to="/admin/audit" className="inline-flex items-center gap-1 hover:text-foreground">
+              <Link
+                to="/admin/audit"
+                className="inline-flex items-center gap-1 hover:text-foreground"
+              >
                 <ArrowLeft className="h-3 w-3" /> Nhật ký hệ thống
               </Link>
               <span>›</span>
@@ -243,11 +291,18 @@ function LapThaoAuditPage() {
             </div>
             <h1 className="text-xl font-semibold sm:text-2xl">Nhật ký lắp / tháo tài sản</h1>
             <p className="text-sm text-muted-foreground">
-              Ai lắp/tháo tài sản nào, vào vị trí nào, khi nào — kèm thông tin trước–sau và liên kết mở nhanh.
+              Ai lắp/tháo tài sản nào, vào vị trí nào, khi nào — kèm thông tin trước–sau và liên kết
+              mở nhanh.
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => dataQ.refetch()} disabled={dataQ.isFetching}>
-            <RefreshCw className={`mr-1.5 h-3.5 w-3.5 ${dataQ.isFetching ? "animate-spin" : ""}`} /> Làm mới
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => dataQ.refetch()}
+            disabled={dataQ.isFetching}
+          >
+            <RefreshCw className={`mr-1.5 h-3.5 w-3.5 ${dataQ.isFetching ? "animate-spin" : ""}`} />{" "}
+            Làm mới
           </Button>
         </div>
 
@@ -262,7 +317,9 @@ function LapThaoAuditPage() {
               <Plug className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <div className="truncate text-[11px] uppercase tracking-wide text-muted-foreground">Sự kiện lắp</div>
+              <div className="truncate text-[11px] uppercase tracking-wide text-muted-foreground">
+                Sự kiện lắp
+              </div>
               <div className="font-mono text-base font-semibold tabular-nums">{totalLap}</div>
             </div>
           </button>
@@ -275,7 +332,9 @@ function LapThaoAuditPage() {
               <ArrowRightLeft className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <div className="truncate text-[11px] uppercase tracking-wide text-muted-foreground">Sự kiện tháo</div>
+              <div className="truncate text-[11px] uppercase tracking-wide text-muted-foreground">
+                Sự kiện tháo
+              </div>
               <div className="font-mono text-base font-semibold tabular-nums">{totalThao}</div>
             </div>
           </button>
@@ -293,19 +352,27 @@ function LapThaoAuditPage() {
             />
           </div>
           <Select value={heThongFilter} onValueChange={setHeThongFilter}>
-            <SelectTrigger className="w-56"><SelectValue placeholder="Hệ thống" /></SelectTrigger>
+            <SelectTrigger className="w-56">
+              <SelectValue placeholder="Hệ thống" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="__all__">Tất cả hệ thống</SelectItem>
               {heThongOptions.map((o) => (
-                <SelectItem key={o.id} value={o.id}>{o.ten}</SelectItem>
+                <SelectItem key={o.id} value={o.id}>
+                  {o.ten}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Select value={String(limit)} onValueChange={(v) => setLimit(Number(v))}>
-            <SelectTrigger className="w-28"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-28">
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               {[100, 200, 500, 1000].map((n) => (
-                <SelectItem key={n} value={String(n)}>{n} dòng</SelectItem>
+                <SelectItem key={n} value={String(n)}>
+                  {n} dòng
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -313,21 +380,29 @@ function LapThaoAuditPage() {
 
         {/* Timeline */}
         {dataQ.isLoading ? (
-          <Card><CardContent className="py-10 text-center text-sm text-muted-foreground">
-            <Loader2 className="mr-2 inline h-4 w-4 animate-spin" /> Đang tải…
-          </CardContent></Card>
+          <Card>
+            <CardContent className="py-10 text-center text-sm text-muted-foreground">
+              <Loader2 className="mr-2 inline h-4 w-4 animate-spin" /> Đang tải…
+            </CardContent>
+          </Card>
         ) : filtered.length === 0 ? (
-          <Card><CardContent className="py-10 text-center text-sm text-muted-foreground">
-            Không có thao tác lắp / tháo nào phù hợp.
-          </CardContent></Card>
+          <Card>
+            <CardContent className="py-10 text-center text-sm text-muted-foreground">
+              Không có thao tác lắp / tháo nào phù hợp.
+            </CardContent>
+          </Card>
         ) : (
           <div className="space-y-5">
             {groups.map(([day, items]) => (
               <section key={day} className="space-y-2">
                 <div className="sticky top-0 z-10 -mx-1 flex items-center gap-2 bg-background/80 px-1 py-1 backdrop-blur">
                   <div className="h-px flex-1 bg-border" />
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{day}</span>
-                  <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">{items.length}</span>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    {day}
+                  </span>
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
+                    {items.length}
+                  </span>
                   <div className="h-px flex-1 bg-border" />
                 </div>
                 <div className="space-y-2">
@@ -335,8 +410,8 @@ function LapThaoAuditPage() {
                     <EventRow
                       key={`${e.kind}-${e.ganRow.id}-${idx}`}
                       event={e}
-                      actor={e.actor ? actorMap.get(e.actor) ?? null : null}
-                      prev={e.kind === "lap" ? prevAtPos.get(e.ganRow.id) ?? null : null}
+                      actor={e.actor ? (actorMap.get(e.actor) ?? null) : null}
+                      prev={e.kind === "lap" ? (prevAtPos.get(e.ganRow.id) ?? null) : null}
                     />
                   ))}
                 </div>
@@ -350,7 +425,9 @@ function LapThaoAuditPage() {
 }
 
 function EventRow({
-  event, actor, prev,
+  event,
+  actor,
+  prev,
 }: {
   event: Event;
   actor: ProfileLite | null;
@@ -365,16 +442,24 @@ function EventRow({
   return (
     <div className="rounded-lg border bg-card p-3 sm:p-4">
       <div className="flex items-start gap-3">
-        <div className={`mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full border ${isLap
-          ? "border-emerald-300 bg-emerald-100 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300"
-          : "border-amber-300 bg-amber-100 text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/15 dark:text-amber-300"}`}>
+        <div
+          className={`mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full border ${
+            isLap
+              ? "border-emerald-300 bg-emerald-100 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300"
+              : "border-amber-300 bg-amber-100 text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/15 dark:text-amber-300"
+          }`}
+        >
           {isLap ? <Plug className="h-4 w-4" /> : <ArrowRightLeft className="h-4 w-4" />}
         </div>
         <div className="min-w-0 flex-1 space-y-1.5">
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
             <span className="text-sm font-semibold">{who}</span>
-            <span className="text-sm text-muted-foreground">{isLap ? "lắp tài sản" : "tháo tài sản"}</span>
-            <Badge variant="outline" className="text-[10px] uppercase">{r.ly_do}</Badge>
+            <span className="text-sm text-muted-foreground">
+              {isLap ? "lắp tài sản" : "tháo tài sản"}
+            </span>
+            <Badge variant="outline" className="text-[10px] uppercase">
+              {r.ly_do}
+            </Badge>
           </div>
 
           {/* Trước → Sau (chỉ cho sự kiện LẮP; nếu có tài sản đã tồn tại tại vị trí trước đó) */}
@@ -384,7 +469,8 @@ function EventRow({
               <HardDrive className="h-3.5 w-3.5 text-muted-foreground" />
               <Link
                 to="/thiet-bi/$maThietBi"
-                params={{ maThietBi: prev.thiet_bi?.ma_thiet_bi ?? "" }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
+                params={{ maThietBi: prev.thiet_bi?.ma_thiet_bi ?? "" }}
+                search={{ tab: "tong-quan", doc: undefined, q: undefined }}
                 className="font-mono hover:underline"
               >
                 {prev.thiet_bi?.ma_thiet_bi}
@@ -397,7 +483,8 @@ function EventRow({
                 <>
                   <Link
                     to="/thiet-bi/$maThietBi"
-                    params={{ maThietBi: dev.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
+                    params={{ maThietBi: dev.ma_thiet_bi }}
+                    search={{ tab: "tong-quan", doc: undefined, q: undefined }}
                     className="font-mono hover:underline"
                   >
                     {dev.ma_thiet_bi}
@@ -418,22 +505,30 @@ function EventRow({
                 <div className="flex flex-wrap items-center gap-1.5">
                   <Link
                     to="/thiet-bi/$maThietBi"
-                    params={{ maThietBi: dev.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
+                    params={{ maThietBi: dev.ma_thiet_bi }}
+                    search={{ tab: "tong-quan", doc: undefined, q: undefined }}
                     className="font-mono font-medium hover:underline"
                   >
                     {dev.ma_thiet_bi}
                   </Link>
                   <span className="truncate">{dev.ten_thiet_bi}</span>
-                  {dev.ma_serial && <Badge variant="outline" className="text-[10px]">SN {dev.ma_serial}</Badge>}
+                  {dev.ma_serial && (
+                    <Badge variant="outline" className="text-[10px]">
+                      SN {dev.ma_serial}
+                    </Badge>
+                  )}
                   <Link
                     to="/thiet-bi/$maThietBi"
-                    params={{ maThietBi: dev.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
+                    params={{ maThietBi: dev.ma_thiet_bi }}
+                    search={{ tab: "tong-quan", doc: undefined, q: undefined }}
                     className="ml-auto text-muted-foreground hover:text-foreground"
                   >
                     <ExternalLink className="h-3.5 w-3.5" />
                   </Link>
                 </div>
-              ) : <span className="text-muted-foreground">—</span>}
+              ) : (
+                <span className="text-muted-foreground">—</span>
+              )}
             </div>
             <div className="min-w-0 rounded-md border bg-muted/30 p-2 text-xs">
               <div className="mb-1 flex items-center gap-1 text-[10px] uppercase tracking-wide text-muted-foreground">
@@ -442,7 +537,9 @@ function EventRow({
               {tp ? (
                 <div className="flex flex-wrap items-center gap-1.5">
                   <span className="font-medium truncate">{tp.ten}</span>
-                  {tp.ma_thanh_phan && <span className="font-mono text-muted-foreground">{tp.ma_thanh_phan}</span>}
+                  {tp.ma_thanh_phan && (
+                    <span className="font-mono text-muted-foreground">{tp.ma_thanh_phan}</span>
+                  )}
                   <span className="text-muted-foreground">·</span>
                   {tp.dm_he_thong ? (
                     <Link
@@ -452,9 +549,13 @@ function EventRow({
                     >
                       {tp.dm_he_thong.ten}
                     </Link>
-                  ) : "—"}
+                  ) : (
+                    "—"
+                  )}
                 </div>
-              ) : <span className="text-muted-foreground">—</span>}
+              ) : (
+                <span className="text-muted-foreground">—</span>
+              )}
             </div>
           </div>
 

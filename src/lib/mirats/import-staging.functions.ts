@@ -93,7 +93,9 @@ export const createImportBatch = createServerFn({ method: "POST" })
 
     return {
       batchId: batch.id as string,
-      duplicate: dup ? { id: dup.id, fileName: dup.file_name, status: dup.status, createdAt: dup.created_at } : null,
+      duplicate: dup
+        ? { id: dup.id, fileName: dup.file_name, status: dup.status, createdAt: dup.created_at }
+        : null,
     };
   });
 
@@ -169,7 +171,10 @@ export const updateImportBatchStatus = createServerFn({ method: "POST" })
     const { supabase } = context;
     const patch: Record<string, unknown> = { status: data.status };
     if (data.summary) patch.summary = data.summary;
-    const { error } = await supabase.from("import_batch").update(patch as never).eq("id", data.id);
+    const { error } = await supabase
+      .from("import_batch")
+      .update(patch as never)
+      .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

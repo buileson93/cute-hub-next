@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
-
 export const Route = createFileRoute("/_app/admin/kiem-tra-layout")({
   head: () => ({ meta: [{ title: "Kiểm tra layout — MIRATS" }] }),
   component: KiemTraLayoutPage,
@@ -45,7 +44,6 @@ function KiemTraLayoutPage() {
   const [path, setPath] = useState("/he-thong/cay?view=table");
   const [results, setResults] = useState<Record<string, CheckResult | null>>({});
   const [reloadTick, setReloadTick] = useState(0);
-  
 
   const check = (iframe: HTMLIFrameElement | null, key: string) => {
     if (!iframe) return;
@@ -74,10 +72,19 @@ function KiemTraLayoutPage() {
           <div>
             <CardTitle>Kiểm tra layout theo viewport</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Tự động render trang trong các iframe kích thước phổ biến. Trang nào có nội dung vượt chiều cao viewport sẽ được đánh dấu <b>tràn dọc</b>. Vượt chiều rộng đánh dấu <b>tràn ngang</b>.
+              Tự động render trang trong các iframe kích thước phổ biến. Trang nào có nội dung vượt
+              chiều cao viewport sẽ được đánh dấu <b>tràn dọc</b>. Vượt chiều rộng đánh dấu{" "}
+              <b>tràn ngang</b>.
             </p>
           </div>
-          <Button size="sm" variant="outline" onClick={() => { setResults({}); setReloadTick((t) => t + 1); }}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              setResults({});
+              setReloadTick((t) => t + 1);
+            }}
+          >
             <RefreshCw className="mr-2 h-4 w-4" /> Chạy lại
           </Button>
         </CardHeader>
@@ -92,7 +99,12 @@ function KiemTraLayoutPage() {
             />
             <span className="text-sm text-muted-foreground">Hoặc chọn nhanh:</span>
             {ROUTES_TO_CHECK.map((r) => (
-              <Button key={r} size="sm" variant={path === r ? "default" : "outline"} onClick={() => setPath(r)}>
+              <Button
+                key={r}
+                size="sm"
+                variant={path === r ? "default" : "outline"}
+                onClick={() => setPath(r)}
+              >
                 {r}
               </Button>
             ))}
@@ -116,13 +128,23 @@ function KiemTraLayoutPage() {
                         <CheckCircle2 className="h-3 w-3" /> OK
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="gap-1 border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20">
+                      <Badge
+                        variant="outline"
+                        className="gap-1 border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20"
+                      >
                         <AlertTriangle className="h-3 w-3" />
-                        {res.overflowY && res.overflowX ? "Tràn 2 chiều" : res.overflowY ? "Tràn dọc" : "Tràn ngang"}
+                        {res.overflowY && res.overflowX
+                          ? "Tràn 2 chiều"
+                          : res.overflowY
+                            ? "Tràn dọc"
+                            : "Tràn ngang"}
                       </Badge>
                     )}
                   </div>
-                  <div className="relative overflow-hidden rounded border bg-muted/30" style={{ height: 260 }}>
+                  <div
+                    className="relative overflow-hidden rounded border bg-muted/30"
+                    style={{ height: 260 }}
+                  >
                     <iframe
                       key={key}
                       src={path}
@@ -142,7 +164,8 @@ function KiemTraLayoutPage() {
                   </div>
                   {res && (
                     <div className="mt-2 text-xs text-muted-foreground">
-                      Nội dung: {res.scrollW}×{res.scrollH}px · Viewport: {res.innerW}×{res.innerH}px
+                      Nội dung: {res.scrollW}×{res.scrollH}px · Viewport: {res.innerW}×{res.innerH}
+                      px
                     </div>
                   )}
                 </div>

@@ -22,7 +22,9 @@ describe("chuanHoaTruyVan (Task 46)", () => {
   it("bỏ ký tự nguy hiểm (SQL/tsquery injection)", () => {
     expect(chuanHoaTruyVan("'; DROP TABLE users --")).toBe("drop:* & table:* & users:*");
     expect(chuanHoaTruyVan("a & b | c ! d")).toBe("a:* & b:* & c:* & d:*");
-    expect(chuanHoaTruyVan("<script>alert(1)</script>")).toBe("script:* & alert:* & 1:* & script:*");
+    expect(chuanHoaTruyVan("<script>alert(1)</script>")).toBe(
+      "script:* & alert:* & 1:* & script:*",
+    );
   });
 
   it("truy vấn rỗng hoặc chỉ ký tự lạ → chuỗi rỗng", () => {

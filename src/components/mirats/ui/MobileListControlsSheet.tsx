@@ -67,8 +67,7 @@ export function MobileListControlsSheet({
   visibleColumns,
   onVisibleColumnsChange,
 }: MobileListControlsSheetProps) {
-  const activeFilterCount =
-    Object.keys(state.filters).length + (state.q.trim() ? 1 : 0);
+  const activeFilterCount = Object.keys(state.filters).length + (state.q.trim() ? 1 : 0);
 
   const handleToggleColumn = (key: string) => {
     if (!onVisibleColumnsChange || !visibleColumns) return;
@@ -150,10 +149,7 @@ export function MobileListControlsSheet({
                       const current = (state.filters[f.key] as string[]) || [];
                       const checked = current.includes(opt.value);
                       return (
-                        <div
-                          key={opt.value}
-                          className="flex items-center space-x-2"
-                        >
+                        <div key={opt.value} className="flex items-center space-x-2">
                           <Checkbox
                             id={`${f.key}-${opt.value}`}
                             checked={checked}

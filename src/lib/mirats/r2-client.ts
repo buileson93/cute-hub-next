@@ -1,7 +1,14 @@
 import { useServerFn } from "@tanstack/react-start";
 import {
-  r2GetUploadUrl, r2GetDownloadUrl, r2DeleteObject, r2MarkReady,
-  r2MultipartInit, r2MultipartSign, r2MultipartFinish, r2MultipartCancel, r2MultipartListParts,
+  r2GetUploadUrl,
+  r2GetDownloadUrl,
+  r2DeleteObject,
+  r2MarkReady,
+  r2MultipartInit,
+  r2MultipartSign,
+  r2MultipartFinish,
+  r2MultipartCancel,
+  r2MultipartListParts,
   r2ListMyFiles,
 } from "./r2.functions";
 
@@ -12,7 +19,11 @@ const SESSION_STORE_KEY = "r2:resumable-sessions:v1";
 const SESSION_TTL_MS = 24 * 3600 * 1000;
 
 export type UploadProgress = { loaded: number; total: number; percent: number };
-export type UploadOptions = { keyHint?: string; onProgress?: (p: UploadProgress) => void; signal?: AbortSignal };
+export type UploadOptions = {
+  keyHint?: string;
+  onProgress?: (p: UploadProgress) => void;
+  signal?: AbortSignal;
+};
 export type UploadResult = { key: string; size: number; category: string };
 
 export type ResumableSession = {
@@ -36,11 +47,17 @@ export function fileFingerprint(file: File): string {
 
 function loadSessions(): ResumableSession[] {
   if (typeof window === "undefined") return [];
-  try { return JSON.parse(localStorage.getItem(SESSION_STORE_KEY) || "[]"); } catch { return []; }
+  try {
+    return JSON.parse(localStorage.getItem(SESSION_STORE_KEY) || "[]");
+  } catch {
+    return [];
+  }
 }
 function saveSessions(list: ResumableSession[]) {
   if (typeof window === "undefined") return;
-  try { localStorage.setItem(SESSION_STORE_KEY, JSON.stringify(list)); } catch {}
+  try {
+    localStorage.setItem(SESSION_STORE_KEY, JSON.stringify(list));
+  } catch {}
 }
 export function listResumableSessions(): ResumableSession[] {
   cleanupExpiredSessions();
@@ -48,7 +65,11 @@ export function listResumableSessions(): ResumableSession[] {
 }
 
 /** Dọn session localStorage quá TTL. Trả về số lượng đã dọn & còn lại. */
-export function cleanupExpiredSessions(): { removed: number; kept: number; oldestAgeMs: number | null } {
+export function cleanupExpiredSessions(): {
+  removed: number;
+  kept: number;
+  oldestAgeMs: number | null;
+} {
   const now = Date.now();
   const all = loadSessions();
   const kept = all.filter((s) => now - s.createdAt < SESSION_TTL_MS);
@@ -85,17 +106,26 @@ function patchSession(fingerprint: string, patch: Partial<ResumableSession>) {
   saveSessions(list);
 }
 
-function putWithProgress(url: string, body: Blob, contentType: string | undefined, onProgress: (loaded: number) => void, signal?: AbortSignal): Promise<{ etag: string | null }> {
+function putWithProgress(
+  url: string,
+  body: Blob,
+  contentType: string | undefined,
+  onProgress: (loaded: number) => void,
+  signal?: AbortSignal,
+): Promise<{ etag: string | null }> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("PUT", url);
     if (contentType) xhr.setRequestHeader("Content-Type", contentType);
-    xhr.upload.onprogress = (e) => { if (e.lengthComputable) onProgress(e.loaded); };
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) onProgress(e.loaded);
+    };
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) {
         const etag = xhr.getResponseHeader("ETag");
         resolve({ etag: etag ? etag.replace(/"/g, "") : null });
-      } else reject(new Error(`Upload R2 lỗi ${xhr.status}: ${xhr.responseText || xhr.statusText}`));
+      } else
+        reject(new Error(`Upload R2 lỗi ${xhr.status}: ${xhr.responseText || xhr.statusText}`));
     };
     xhr.onerror = () => reject(new Error("Lỗi mạng khi upload"));
     xhr.onabort = () => reject(new Error("Upload bị hủy"));
@@ -123,9 +153,19 @@ export function useR2Upload() {
       const { key, url, category } = await getUploadUrl({
         data: { key: keyHint, contentType: ct, size: file.size, originalName: file.name },
       });
-      await putWithProgress(url, file, ct, (loaded) => {
-        opts.onProgress?.({ loaded, total: file.size, percent: Math.min(100, Math.round((loaded / file.size) * 100)) });
-      }, opts.signal);
+      await putWithProgress(
+        url,
+        file,
+        ct,
+        (loaded) => {
+          opts.onProgress?.({
+            loaded,
+            total: file.size,
+            percent: Math.min(100, Math.round((loaded / file.size) * 100)),
+          });
+        },
+        opts.signal,
+      );
       await markReady({ data: { key, size: file.size } });
       opts.onProgress?.({ loaded: file.size, total: file.size, percent: 100 });
       return { key, size: file.size, category };
@@ -134,35 +174,57 @@ export function useR2Upload() {
     // ---- Multipart (resumable) ----
     const fp = fileFingerprint(file);
     const existing = loadSessions().find((s) => s.fingerprint === fp);
-    let key: string; let uploadId: string; let category: string;
+    let key: string;
+    let uploadId: string;
+    let category: string;
     const alreadyDone = new Map<number, { ETag: string; Size: number }>();
 
     if (existing) {
       const listed = await mpList({ data: { key: existing.key, uploadId: existing.uploadId } });
       if (listed.valid) {
-        key = existing.key; uploadId = existing.uploadId; category = "other";
+        key = existing.key;
+        uploadId = existing.uploadId;
+        category = "other";
         for (const p of listed.parts) alreadyDone.set(p.PartNumber, { ETag: p.ETag, Size: p.Size });
       } else {
         removeResumableSession(fp);
-        const init = await mpInit({ data: { key: keyHint, contentType: ct, size: file.size, originalName: file.name } });
-        key = init.key; uploadId = init.uploadId; category = init.category;
+        const init = await mpInit({
+          data: { key: keyHint, contentType: ct, size: file.size, originalName: file.name },
+        });
+        key = init.key;
+        uploadId = init.uploadId;
+        category = init.category;
       }
     } else {
-      const init = await mpInit({ data: { key: keyHint, contentType: ct, size: file.size, originalName: file.name } });
-      key = init.key; uploadId = init.uploadId; category = init.category;
+      const init = await mpInit({
+        data: { key: keyHint, contentType: ct, size: file.size, originalName: file.name },
+      });
+      key = init.key;
+      uploadId = init.uploadId;
+      category = init.category;
     }
 
     upsertSession({
-      fingerprint: fp, fileName: file.name, fileSize: file.size, fileLastModified: file.lastModified,
-      contentType: ct, key, uploadId, partSize: PART_SIZE, createdAt: Date.now(),
-      uploadedBytes: 0, percent: 0, updatedAt: Date.now(),
+      fingerprint: fp,
+      fileName: file.name,
+      fileSize: file.size,
+      fileLastModified: file.lastModified,
+      contentType: ct,
+      key,
+      uploadId,
+      partSize: PART_SIZE,
+      createdAt: Date.now(),
+      uploadedBytes: 0,
+      percent: 0,
+      updatedAt: Date.now(),
     });
 
     try {
       const partCount = Math.ceil(file.size / PART_SIZE);
       const uploadedByPart = new Map<number, number>();
       // seed progress từ các part đã có sẵn trên R2
-      for (const [n, meta] of alreadyDone) uploadedByPart.set(n, meta.Size || Math.min(PART_SIZE, file.size - (n - 1) * PART_SIZE));
+      for (const [n, meta] of alreadyDone)
+        uploadedByPart.set(n, meta.Size || Math.min(PART_SIZE, file.size - (n - 1) * PART_SIZE));
       const totalLoaded = () => Array.from(uploadedByPart.values()).reduce((a, b) => a + b, 0);
       const parts: { PartNumber: number; ETag: string }[] = [];
       for (const [n, meta] of alreadyDone) parts.push({ PartNumber: n, ETag: meta.ETag });
@@ -184,16 +246,25 @@ export function useR2Upload() {
           const start = (partNumber - 1) * PART_SIZE;
           const end = Math.min(start + PART_SIZE, file.size);
           const chunk = file.slice(start, end);
-          const { etag } = await putWithProgress(url, chunk, undefined, (loaded) => {
-            uploadedByPart.set(partNumber, loaded);
-            const tl = totalLoaded();
-            const pct = Math.min(99, Math.round((tl / file.size) * 100));
-            opts.onProgress?.({ loaded: tl, total: file.size, percent: pct });
-            patchSession(fp, { uploadedBytes: tl, percent: pct });
-          }, opts.signal);
+          const { etag } = await putWithProgress(
+            url,
+            chunk,
+            undefined,
+            (loaded) => {
+              uploadedByPart.set(partNumber, loaded);
+              const tl = totalLoaded();
+              const pct = Math.min(99, Math.round((tl / file.size) * 100));
+              opts.onProgress?.({ loaded: tl, total: file.size, percent: pct });
+              patchSession(fp, { uploadedBytes: tl, percent: pct });
+            },
+            opts.signal,
+          );
           if (!etag) throw new Error(`Part ${partNumber} không nhận được ETag`);
           parts.push({ PartNumber: partNumber, ETag: etag });
-          patchSession(fp, { uploadedBytes: totalLoaded(), percent: Math.min(99, Math.round((totalLoaded() / file.size) * 100)) });
+          patchSession(fp, {
+            uploadedBytes: totalLoaded(),
+            percent: Math.min(99, Math.round((totalLoaded() / file.size) * 100)),
+          });
         }
       }
       await mpFinish({ data: { key, uploadId, parts, size: file.size } });
@@ -211,7 +282,9 @@ export function useR2Upload() {
 export function useR2AbortResumable() {
   const mpCancel = useServerFn(r2MultipartCancel);
   return async (s: ResumableSession) => {
-    try { await mpCancel({ data: { key: s.key, uploadId: s.uploadId } }); } catch {}
+    try {
+      await mpCancel({ data: { key: s.key, uploadId: s.uploadId } });
+    } catch {}
     removeResumableSession(s.fingerprint);
   };
 }
@@ -226,7 +299,9 @@ export function useR2Download() {
 
 export function useR2Delete() {
   const del = useServerFn(r2DeleteObject);
-  return async (key: string) => { await del({ data: { key } }); };
+  return async (key: string) => {
+    await del({ data: { key } });
+  };
 }
 
 export function useR2ListMyFiles() {

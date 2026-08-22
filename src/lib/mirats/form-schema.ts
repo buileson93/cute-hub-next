@@ -21,7 +21,6 @@ export type VisibleIfRule = {
 
 const VISIBLE_OPS: readonly VisibleIfOp[] = ["eq", "neq", "gt", "lt", "gte", "lte", "in", "not_in"];
 
-
 export type TableColumnDef = {
   key: string;
   label: string;
@@ -58,7 +57,6 @@ export type CompiledField = {
   constraint_formula: string | null;
   constraint_message: string | null;
 };
-
 
 export type CompiledTemplateMeta = {
   id: string;
@@ -99,7 +97,6 @@ export type RawFieldRow = {
   constraint_message?: string | null;
 };
 
-
 function toStringArray(v: unknown): string[] | null {
   if (v == null) return null;
   if (Array.isArray(v)) return v.map((x) => String(x));
@@ -120,12 +117,12 @@ function toVisibleIf(v: unknown): VisibleIfRule {
   const raw = o.value;
   let val: VisibleIfValue;
   if (raw == null) val = null;
-  else if (typeof raw === "string" || typeof raw === "number" || typeof raw === "boolean") val = raw;
+  else if (typeof raw === "string" || typeof raw === "number" || typeof raw === "boolean")
+    val = raw;
   else if (Array.isArray(raw)) val = raw.map((x) => String(x));
   else return null;
   return { field_key: o.field_key, op: o.op as VisibleIfOp, value: val };
 }
-
 
 function toColumns(v: unknown): TableColumnDef[] | null {
   if (!Array.isArray(v)) return null;
@@ -152,14 +149,19 @@ function toRatings(v: unknown): RatingLevel[] | null {
     if (!r || typeof r !== "object") continue;
     const o = r as Record<string, unknown>;
     if (typeof o.value !== "string" || typeof o.label !== "string") continue;
-    out.push({ value: o.value, label: o.label, color: typeof o.color === "string" ? o.color : null });
+    out.push({
+      value: o.value,
+      label: o.label,
+      color: typeof o.color === "string" ? o.color : null,
+    });
   }
   return out.length ? out : null;
 }
 
 /** Chuẩn hoá 1 dòng form_field DB -> CompiledField ổn định. */
 export function compileField(row: RawFieldRow, index = 0): CompiledField {
-  const col = typeof row.col_span === "number" && row.col_span >= 1 && row.col_span <= 3 ? row.col_span : 3;
+  const col =
+    typeof row.col_span === "number" && row.col_span >= 1 && row.col_span <= 3 ? row.col_span : 3;
   return {
     key: row.key,
     label: row.label,
@@ -184,8 +186,6 @@ export function compileField(row: RawFieldRow, index = 0): CompiledField {
     constraint_message: row.constraint_message ?? null,
   };
 }
-
-
 
 export type RawTemplateRow = {
   id: string;

@@ -8,8 +8,21 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { CalendarClock, Plus, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useSession } from "@/hooks/use-session";
@@ -21,7 +34,10 @@ export const Route = createFileRoute("/_app/bao-tri/dot/")({
       { title: "Đợt bảo dưỡng lớn — MIRATS" },
       { name: "description", content: "Quản lý các đợt bảo dưỡng lớn định kỳ trong năm." },
       { property: "og:title", content: "Đợt bảo dưỡng lớn — MIRATS" },
-      { property: "og:description", content: "Lập danh mục hệ thống, thu thập kết quả và tổng hợp báo cáo bảo dưỡng theo đợt." },
+      {
+        property: "og:description",
+        content: "Lập danh mục hệ thống, thu thập kết quả và tổng hợp báo cáo bảo dưỡng theo đợt.",
+      },
     ],
   }),
   component: DotListPage,
@@ -62,7 +78,10 @@ function DotListPage() {
       const { data, error } = await supabase
         .from("dot_bao_duong_hang_muc")
         .select("dot_id, trang_thai")
-        .in("dot_id", dots.map((d) => d.id));
+        .in(
+          "dot_id",
+          dots.map((d) => d.id),
+        );
       if (error) throw error;
       const m: Record<string, { tong: number; done: number }> = {};
       for (const r of data ?? []) {
@@ -76,8 +95,19 @@ function DotListPage() {
   });
 
   const createMut = useMutation({
-    mutationFn: async (payload: { ten: string; nam: number; ky: number; tu_ngay?: string; den_ngay?: string; mo_ta?: string }) => {
-      const { data, error } = await supabase.from("dot_bao_duong").insert(payload).select().single();
+    mutationFn: async (payload: {
+      ten: string;
+      nam: number;
+      ky: number;
+      tu_ngay?: string;
+      den_ngay?: string;
+      mo_ta?: string;
+    }) => {
+      const { data, error } = await supabase
+        .from("dot_bao_duong")
+        .insert(payload)
+        .select()
+        .single();
       if (error) throw error;
       return data;
     },
@@ -100,7 +130,10 @@ function DotListPage() {
           isKt && (
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
-                <Button><Plus className="mr-1 h-4 w-4" />Tạo đợt mới</Button>
+                <Button>
+                  <Plus className="mr-1 h-4 w-4" />
+                  Tạo đợt mới
+                </Button>
               </DialogTrigger>
               <NewDotDialog onSubmit={(p) => createMut.mutate(p)} loading={createMut.isPending} />
             </Dialog>
@@ -113,7 +146,7 @@ function DotListPage() {
       ) : !dots || dots.length === 0 ? (
         <Card>
           <CardContent className="py-10 text-center text-sm text-muted-foreground">
-            Chưa có đợt bảo dưỡng nào. {isKt && "Bấm \"Tạo đợt mới\" để bắt đầu."}
+            Chưa có đợt bảo dưỡng nào. {isKt && 'Bấm "Tạo đợt mới" để bắt đầu.'}
           </CardContent>
         </Card>
       ) : (
@@ -128,7 +161,9 @@ function DotListPage() {
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between gap-2">
                       <CardTitle className="text-base leading-snug">{d.ten}</CardTitle>
-                      <Badge className={tt.color} variant="secondary">{tt.label}</Badge>
+                      <Badge className={tt.color} variant="secondary">
+                        {tt.label}
+                      </Badge>
                     </div>
                     <div className="text-xs text-muted-foreground">
                       Kỳ {d.ky}/{d.nam}
@@ -138,10 +173,15 @@ function DotListPage() {
                   <CardContent className="space-y-2 pb-4">
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-muted-foreground">Tiến độ hoàn thành</span>
-                      <span className="font-medium">{p?.done ?? 0}/{p?.tong ?? 0} · {pct}%</span>
+                      <span className="font-medium">
+                        {p?.done ?? 0}/{p?.tong ?? 0} · {pct}%
+                      </span>
                     </div>
                     <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-                      <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />
+                      <div
+                        className="h-full bg-primary transition-all"
+                        style={{ width: `${pct}%` }}
+                      />
                     </div>
                     <div className="flex items-center justify-end pt-1 text-xs text-primary">
                       Chi tiết <ArrowRight className="ml-1 h-3 w-3" />
@@ -157,7 +197,20 @@ function DotListPage() {
   );
 }
 
-function NewDotDialog({ onSubmit, loading }: { onSubmit: (p: { ten: string; nam: number; ky: number; tu_ngay?: string; den_ngay?: string; mo_ta?: string }) => void; loading: boolean }) {
+function NewDotDialog({
+  onSubmit,
+  loading,
+}: {
+  onSubmit: (p: {
+    ten: string;
+    nam: number;
+    ky: number;
+    tu_ngay?: string;
+    den_ngay?: string;
+    mo_ta?: string;
+  }) => void;
+  loading: boolean;
+}) {
   const y = new Date().getFullYear();
   const [ten, setTen] = useState(`Đợt bảo dưỡng lớn kỳ 1/${y}`);
   const [nam, setNam] = useState(y);
@@ -167,7 +220,9 @@ function NewDotDialog({ onSubmit, loading }: { onSubmit: (p: { ten: string; nam:
   const [moTa, setMoTa] = useState("");
   return (
     <DialogContent>
-      <DialogHeader><DialogTitle>Tạo đợt bảo dưỡng lớn</DialogTitle></DialogHeader>
+      <DialogHeader>
+        <DialogTitle>Tạo đợt bảo dưỡng lớn</DialogTitle>
+      </DialogHeader>
       <div className="grid gap-3">
         <div>
           <Label>Tên đợt</Label>
@@ -180,8 +235,16 @@ function NewDotDialog({ onSubmit, loading }: { onSubmit: (p: { ten: string; nam:
           </div>
           <div>
             <Label>Kỳ</Label>
-            <Select value={String(ky)} onValueChange={(v) => { setKy(Number(v)); setTen(`Đợt bảo dưỡng lớn kỳ ${v}/${nam}`); }}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={String(ky)}
+              onValueChange={(v) => {
+                setKy(Number(v));
+                setTen(`Đợt bảo dưỡng lớn kỳ ${v}/${nam}`);
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="1">Kỳ 1</SelectItem>
                 <SelectItem value="2">Kỳ 2</SelectItem>
@@ -190,8 +253,14 @@ function NewDotDialog({ onSubmit, loading }: { onSubmit: (p: { ten: string; nam:
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <div><Label>Từ ngày</Label><Input type="date" value={tu} onChange={(e) => setTu(e.target.value)} /></div>
-          <div><Label>Đến ngày</Label><Input type="date" value={den} onChange={(e) => setDen(e.target.value)} /></div>
+          <div>
+            <Label>Từ ngày</Label>
+            <Input type="date" value={tu} onChange={(e) => setTu(e.target.value)} />
+          </div>
+          <div>
+            <Label>Đến ngày</Label>
+            <Input type="date" value={den} onChange={(e) => setDen(e.target.value)} />
+          </div>
         </div>
         <div>
           <Label>Mô tả</Label>
@@ -201,7 +270,16 @@ function NewDotDialog({ onSubmit, loading }: { onSubmit: (p: { ten: string; nam:
       <DialogFooter>
         <Button
           disabled={loading || !ten.trim()}
-          onClick={() => onSubmit({ ten: ten.trim(), nam, ky, tu_ngay: tu || undefined, den_ngay: den || undefined, mo_ta: moTa || undefined })}
+          onClick={() =>
+            onSubmit({
+              ten: ten.trim(),
+              nam,
+              ky,
+              tu_ngay: tu || undefined,
+              den_ngay: den || undefined,
+              mo_ta: moTa || undefined,
+            })
+          }
         >
           {loading ? "Đang tạo…" : "Tạo đợt"}
         </Button>

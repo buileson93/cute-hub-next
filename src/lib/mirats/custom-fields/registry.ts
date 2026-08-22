@@ -12,14 +12,14 @@
 export type LoaiTruong = "text" | "so" | "ngay" | "chon" | "checkbox";
 
 export interface DinhNghiaTruong {
-  key: string;              // slug định danh — /^[a-z][a-z0-9_]*$/
-  nhan: string;             // label hiển thị
+  key: string; // slug định danh — /^[a-z][a-z0-9_]*$/
+  nhan: string; // label hiển thị
   loai: LoaiTruong;
   batBuoc?: boolean;
-  luaChon?: string[];       // dùng khi loai = "chon"
-  apDungCho: string;        // entity: "thiet_bi" | "he_thong" | ...
+  luaChon?: string[]; // dùng khi loai = "chon"
+  apDungCho: string; // entity: "thiet_bi" | "he_thong" | ...
   moTa?: string;
-  min?: number;             // cho loai = "so"
+  min?: number; // cho loai = "so"
   max?: number;
 }
 
@@ -44,7 +44,7 @@ function isMissing(v: unknown): boolean {
  */
 export function validateAttrs(
   defs: DinhNghiaTruong[],
-  attrs: Record<string, unknown>
+  attrs: Record<string, unknown>,
 ): ValidateResult {
   const loi: string[] = [];
   const byKey = new Map(defs.map((d) => [d.key, d]));
@@ -99,7 +99,7 @@ export function validateAttrs(
 /** Chuẩn hoá giá trị hiển thị (dùng cho DetailDrawer / bảng). */
 export function renderAttrs(
   defs: DinhNghiaTruong[],
-  attrs: Record<string, unknown>
+  attrs: Record<string, unknown>,
 ): { key: string; nhan: string; giaTri: string }[] {
   return defs.map((d) => {
     const v = attrs[d.key];
@@ -112,9 +112,6 @@ export function renderAttrs(
 }
 
 /** Lọc định nghĩa theo entity. */
-export function locTheoEntity(
-  defs: DinhNghiaTruong[],
-  entity: string
-): DinhNghiaTruong[] {
+export function locTheoEntity(defs: DinhNghiaTruong[], entity: string): DinhNghiaTruong[] {
   return defs.filter((d) => d.apDungCho === entity);
 }

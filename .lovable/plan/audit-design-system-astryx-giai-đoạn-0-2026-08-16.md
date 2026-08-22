@@ -2,39 +2,39 @@
 
 ## 1. Bảng số liệu kỹ thuật
 
-| Chỉ số | Kết quả | Ghi chú |
-| :--- | :--- | :--- |
-| **Typography `text-[...px]`** | 860+ lần | Chủ yếu là 10px (350) và 11px (358). Cần chuẩn hoá về 6 bậc Astryx. |
-| **Mã Hex trong .tsx** | 97 | Rải rác trong các icon, chart và inline style. |
-| **Class màu Palette (sky/amber/...)** | 575 | Vi phạm hợp đồng "chỉ dùng semantic token". |
-| **Inline `style={{ }}`** | 99 | Chủ yếu ở các component biểu đồ và sơ đồ. |
-| **Overlays (Dialog/Sheet/Drawer/Resp)** | 164 | Cần hợp nhất về 1 cơ chế Overlay duy nhất theo Astryx. |
-| **Tables (Standard/Catalog/ThanhPhan)** | 54 | 42 file dùng StandardTable - là đối tượng refactor chính. |
+| Chỉ số                                  | Kết quả  | Ghi chú                                                             |
+| :-------------------------------------- | :------- | :------------------------------------------------------------------ |
+| **Typography `text-[...px]`**           | 860+ lần | Chủ yếu là 10px (350) và 11px (358). Cần chuẩn hoá về 6 bậc Astryx. |
+| **Mã Hex trong .tsx**                   | 97       | Rải rác trong các icon, chart và inline style.                      |
+| **Class màu Palette (sky/amber/...)**   | 575      | Vi phạm hợp đồng "chỉ dùng semantic token".                         |
+| **Inline `style={{ }}`**                | 99       | Chủ yếu ở các component biểu đồ và sơ đồ.                           |
+| **Overlays (Dialog/Sheet/Drawer/Resp)** | 164      | Cần hợp nhất về 1 cơ chế Overlay duy nhất theo Astryx.              |
+| **Tables (Standard/Catalog/ThanhPhan)** | 54       | 42 file dùng StandardTable - là đối tượng refactor chính.           |
 
 ## 2. Top 10 File UI "Nợ kỹ thuật" cao nhất
 
-| File | Lý do |
-| :--- | :--- |
-| `StandardTable.tsx` | 1653 dòng. Logic xử lý bảng quá cồng kềnh, trộn lẫn UI và nghiệp vụ. |
-| `NetworkOverview.tsx` | 2339 dòng. Cấu trúc phức tạp, nhiều biểu đồ và trạng thái lồng nhau. |
-| `_app.he-thong.$id.tsx` | 1871 dòng. Quá nhiều tab và logic hiển thị chi tiết tài sản. |
-| `_app.so-do.$id.tsx` | 1661 dòng. Tương tác React Flow phức tạp, nhiều inline style. |
-| `CatalogTable.tsx` | 1406 dòng. Nhân bản logic từ StandardTable nhưng có biến thể. |
-| `CommandPalette.tsx` | 1071 dòng. Logic tìm kiếm và phím tắt phức tạp. |
-| `ThanhPhanChiTietDialog.tsx` | 864 dòng. Dialog chi tiết quá lớn, vi phạm nguyên tắc "tinh gọn". |
-| `sidebar.tsx` (UI) | 744 dòng. Component gốc từ shadcn đã bị tùy biến quá nhiều. |
-| `GraphCanvas.tsx` | 749 dòng. Logic render canvas thủ công, khó bảo trì. |
-| `PageBody.tsx` | Layout gốc có nhiều class Tailwind thô và logic tính toán chiều cao. |
+| File                         | Lý do                                                                |
+| :--------------------------- | :------------------------------------------------------------------- |
+| `StandardTable.tsx`          | 1653 dòng. Logic xử lý bảng quá cồng kềnh, trộn lẫn UI và nghiệp vụ. |
+| `NetworkOverview.tsx`        | 2339 dòng. Cấu trúc phức tạp, nhiều biểu đồ và trạng thái lồng nhau. |
+| `_app.he-thong.$id.tsx`      | 1871 dòng. Quá nhiều tab và logic hiển thị chi tiết tài sản.         |
+| `_app.so-do.$id.tsx`         | 1661 dòng. Tương tác React Flow phức tạp, nhiều inline style.        |
+| `CatalogTable.tsx`           | 1406 dòng. Nhân bản logic từ StandardTable nhưng có biến thể.        |
+| `CommandPalette.tsx`         | 1071 dòng. Logic tìm kiếm và phím tắt phức tạp.                      |
+| `ThanhPhanChiTietDialog.tsx` | 864 dòng. Dialog chi tiết quá lớn, vi phạm nguyên tắc "tinh gọn".    |
+| `sidebar.tsx` (UI)           | 744 dòng. Component gốc từ shadcn đã bị tùy biến quá nhiều.          |
+| `GraphCanvas.tsx`            | 749 dòng. Logic render canvas thủ công, khó bảo trì.                 |
+| `PageBody.tsx`               | Layout gốc có nhiều class Tailwind thô và logic tính toán chiều cao. |
 
 ## 3. Hợp nhất Component (src/components/mirats)
 
-| Loại | Component đề xuất giữ lại | Các component sẽ bị thay thế/hợp nhất |
-| :--- | :--- | :--- |
-| **Badge** | `StatusBadge` | `Anomaly-`, `AutoFilled-`, `Code-`, `Expiring-`, `MultiRole-`, `Offline-`, `ReadOnly-` |
-| **Toolbar** | `ListToolbar` | `ContextualToolbar` |
-| **State** | `EmptyState` | `LoadingState`, `ErrorState` (dùng Astryx Skeleton/Error) |
-| **Dialog** | `ResponsiveDialog` | `FormDialog`, `ConfirmDialog`, `TableExportDialog` và các Dialog nghiệp vụ nhỏ |
-| **Table** | `StandardTable` | `CatalogTable`, `ThanhPhanTable`, `SparePartsTable` |
+| Loại        | Component đề xuất giữ lại | Các component sẽ bị thay thế/hợp nhất                                                  |
+| :---------- | :------------------------ | :------------------------------------------------------------------------------------- |
+| **Badge**   | `StatusBadge`             | `Anomaly-`, `AutoFilled-`, `Code-`, `Expiring-`, `MultiRole-`, `Offline-`, `ReadOnly-` |
+| **Toolbar** | `ListToolbar`             | `ContextualToolbar`                                                                    |
+| **State**   | `EmptyState`              | `LoadingState`, `ErrorState` (dùng Astryx Skeleton/Error)                              |
+| **Dialog**  | `ResponsiveDialog`        | `FormDialog`, `ConfirmDialog`, `TableExportDialog` và các Dialog nghiệp vụ nhỏ         |
+| **Table**   | `StandardTable`           | `CatalogTable`, `ThanhPhanTable`, `SparePartsTable`                                    |
 
 ## 4. Xác nhận Route Pilot
 
@@ -52,4 +52,5 @@
 - **Test Snapshots**: Thay đổi toàn bộ cấu trúc DOM từ shadcn sang Astryx sẽ làm hỏng mọi snapshot test hiện có.
 
 ## 6. Bảng Parity Gốc
+
 Đã tạo tại `docs/ui-parity-baseline.md`.

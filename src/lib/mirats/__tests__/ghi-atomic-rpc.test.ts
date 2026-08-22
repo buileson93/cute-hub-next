@@ -10,11 +10,20 @@ import path from "node:path";
 
 const REQUIRED = [
   { name: "ghi_su_co_atomic", args: "p_payload jsonb" },
-  { name: "ghi_su_co_atomic", args: "p_thiet_bi_id uuid, p_hien_tuong text, p_ngay_phat_hien timestamp with time zone, p_vat_tu jsonb" },
+  {
+    name: "ghi_su_co_atomic",
+    args: "p_thiet_bi_id uuid, p_hien_tuong text, p_ngay_phat_hien timestamp with time zone, p_vat_tu jsonb",
+  },
   { name: "ghi_bao_duong_atomic", args: "p_payload jsonb" },
-  { name: "ghi_bao_duong_atomic", args: "p_thiet_bi_id uuid, p_mo_ta text, p_ngay_bat_dau timestamp with time zone, p_vat_tu jsonb" },
+  {
+    name: "ghi_bao_duong_atomic",
+    args: "p_thiet_bi_id uuid, p_mo_ta text, p_ngay_bat_dau timestamp with time zone, p_vat_tu jsonb",
+  },
   { name: "ghi_hong_hoc_atomic", args: "p_payload jsonb" },
-  { name: "ghi_hong_hoc_atomic", args: "p_thiet_bi_id uuid, p_mo_ta_hong_hoc text, p_ngay_hong timestamp with time zone, p_vat_tu jsonb" },
+  {
+    name: "ghi_hong_hoc_atomic",
+    args: "p_thiet_bi_id uuid, p_mo_ta_hong_hoc text, p_ngay_hong timestamp with time zone, p_vat_tu jsonb",
+  },
 ];
 
 function allMigrationSql(): string {

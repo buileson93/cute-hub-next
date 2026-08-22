@@ -9,13 +9,13 @@ Tài liệu **duy nhất** cho lập trình viên bảo trì/mở rộng dự á
 
 ## Đọc theo vai trò
 
-| Vai trò | Bắt đầu ở |
-|---|---|
-| Dev mới (fullstack) | `00-kien-truc-tong-quan.md` → `02-code-map/routes.md` → `03-database/schema.md` |
-| Dev bảo trì DB / migration | `03-database/` → `04-quy-uoc/grant-discipline.md` |
-| Dev thêm tính năng | `01-tinh-nang/README.md` → chọn module tương ứng |
-| Người vận hành | `05-van-hanh/` |
-| Người dùng cuối | `docs/huong-dan/README.md` (tài liệu HDSD riêng) |
+| Vai trò                    | Bắt đầu ở                                                                       |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| Dev mới (fullstack)        | `00-kien-truc-tong-quan.md` → `02-code-map/routes.md` → `03-database/schema.md` |
+| Dev bảo trì DB / migration | `03-database/` → `04-quy-uoc/grant-discipline.md`                               |
+| Dev thêm tính năng         | `01-tinh-nang/README.md` → chọn module tương ứng                                |
+| Người vận hành             | `05-van-hanh/`                                                                  |
+| Người dùng cuối            | `docs/huong-dan/README.md` (tài liệu HDSD riêng)                                |
 
 ## Cấu trúc
 
@@ -40,12 +40,12 @@ docs/handbook/
 
 ## Trạng thái
 
-| Pha | Nội dung | Trạng thái |
-|---|---|---|
-| 1 | Khung + tổng quan | ✅ DONE |
-| 2 | Tính năng N1–N13 + UX2026 | 🚧 |
-| 3 | Code map | 🚧 |
-| 4 | Database (bảng, RPC, RLS) | 🚧 |
-| 5 | Comment inline (JSDoc + COMMENT ON) | ⏳ liên tục |
+| Pha | Nội dung                            | Trạng thái  |
+| --- | ----------------------------------- | ----------- |
+| 1   | Khung + tổng quan                   | ✅ DONE     |
+| 2   | Tính năng N1–N13 + UX2026           | 🚧          |
+| 3   | Code map                            | 🚧          |
+| 4   | Database (bảng, RPC, RLS)           | 🚧          |
+| 5   | Comment inline (JSDoc + COMMENT ON) | ⏳ liên tục |
 
 Xem chi tiết ở `.lovable/plan.md`.

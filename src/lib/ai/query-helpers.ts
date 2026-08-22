@@ -8,7 +8,6 @@
 import { getKnownTableNames } from "./data-dictionary";
 import { DEFAULT_NGAY_SAP_HET_HAN } from "@/lib/mirats/han-canh-bao";
 
-
 /** Tên bảng/cột hợp lệ: bắt đầu bằng chữ thường/_ , chỉ gồm [a-z0-9_]. */
 const IDENT_RE = /^[a-z_][a-z0-9_]*$/;
 
@@ -24,13 +23,18 @@ export function lit(v: string | number | boolean): string {
   return `'${String(v).replace(/'/g, "''")}'`;
 }
 
-export type FilterOp =
-  | "eq" | "neq" | "gt" | "gte" | "lt" | "lte" | "like" | "is_null" | "not_null";
+export type FilterOp = "eq" | "neq" | "gt" | "gte" | "lt" | "lte" | "like" | "is_null" | "not_null";
 
 export type Filter = { column: string; op: FilterOp; value?: string };
 
 const OPS: Record<string, string> = {
-  eq: "=", neq: "<>", gt: ">", gte: ">=", lt: "<", lte: "<=", like: "ILIKE",
+  eq: "=",
+  neq: "<>",
+  gt: ">",
+  gte: ">=",
+  lt: "<",
+  lte: "<=",
+  like: "ILIKE",
 };
 
 function whereClause(filters?: Filter[]): string {
@@ -70,14 +74,23 @@ export function buildGetRowSql(table: string, idColumn: string, idValue: string)
   return `SELECT * FROM public.${ident(table)} WHERE ${ident(idColumn)} = ${lit(idValue)} LIMIT 1`;
 }
 
-export function buildCountSql(table: string, groupBy?: string | null, filters?: Filter[] | null): string {
+export function buildCountSql(
+  table: string,
+  groupBy?: string | null,
+  filters?: Filter[] | null,
+): string {
   if (groupBy) {
     const col = ident(groupBy);
-    return `SELECT ${col} AS nhom, count(*)::int AS so_luong FROM public.${ident(table)}` +
+    return (
+      `SELECT ${col} AS nhom, count(*)::int AS so_luong FROM public.${ident(table)}` +
       whereClause(filters ?? undefined) +
-      ` GROUP BY ${col} ORDER BY so_luong DESC LIMIT 200`;
+      ` GROUP BY ${col} ORDER BY so_luong DESC LIMIT 200`
+    );
   }
-  return `SELECT count(*)::int AS so_luong FROM public.${ident(table)}` + whereClause(filters ?? undefined);
+  return (
+    `SELECT count(*)::int AS so_luong FROM public.${ident(table)}` +
+    whereClause(filters ?? undefined)
+  );
 }
 
 /** Thống kê tổng quan toàn hệ thống (RLS áp dụng theo user). */
@@ -98,7 +111,4 @@ export function buildDashboardSql(): string {
  * Danh sách bảng nghiệp vụ được phép liệt kê/thống kê bằng tool generic.
  * Sinh trực tiếp từ TỪ ĐIỂN DỮ LIỆU (nguồn sự thật duy nhất) để không bao giờ lệch.
  */
-export const KNOWN_TABLES = getKnownTableNames() as unknown as readonly [
-  string,
-  ...string[],
-];
+export const KNOWN_TABLES = getKnownTableNames() as unknown as readonly [string, ...string[]];

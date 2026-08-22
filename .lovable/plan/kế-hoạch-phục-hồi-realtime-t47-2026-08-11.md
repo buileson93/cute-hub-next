@@ -14,24 +14,27 @@ Giao diện hiện tại bị "đứng" do Realtime không hoạt động, kết
 ## Lộ trình thực hiện
 
 ### Nhịp 1: Kích hoạt Realtime phía Cơ sở dữ liệu
+
 - Tạo migration `20260811120000_enable_realtime_publication.sql`:
-    - Đặt `REPLICA IDENTITY FULL` cho các bảng nghiệp vụ còn thiếu.
-    - Tạo publication `supabase_realtime` nếu chưa có và thêm các bảng quan trọng vào đó.
-    - Các bảng đề xuất bật: `su_co`, `bao_tri`, `hong_hoc`, `van_de`, `ban_giao`, `thiet_bi`, `he_thong_thanh_phan`, `gan_chuc_nang`, `access_request`, `user_roles`.
+  - Đặt `REPLICA IDENTITY FULL` cho các bảng nghiệp vụ còn thiếu.
+  - Tạo publication `supabase_realtime` nếu chưa có và thêm các bảng quan trọng vào đó.
+  - Các bảng đề xuất bật: `su_co`, `bao_tri`, `hong_hoc`, `van_de`, `ban_giao`, `thiet_bi`, `he_thong_thanh_phan`, `gan_chuc_nang`, `access_request`, `user_roles`.
 - Tạo migration `20260811121000_dashboard_refresh_cron.sql`:
-    - Tạo hàm `refresh_dashboard_overview()`.
-    - Thiết lập lịch chạy định kỳ (cron) mỗi 5 phút để cập nhật số liệu Dashboard vào materialized view.
+  - Tạo hàm `refresh_dashboard_overview()`.
+  - Thiết lập lịch chạy định kỳ (cron) mỗi 5 phút để cập nhật số liệu Dashboard vào materialized view.
 
 ### Nhịp 2: Cải tiến logic Realtime tại Client
+
 - **src/lib/realtime/useGlobalRealtime.ts**:
-    - Lọc bớt danh sách đăng ký, chỉ giữ lại các bảng cốt lõi đã bật ở Nhịp 1.
-    - Thêm xử lý trạng thái kết nối (tracking `status` từ `.subscribe()`).
+  - Lọc bớt danh sách đăng ký, chỉ giữ lại các bảng cốt lõi đã bật ở Nhịp 1.
+  - Thêm xử lý trạng thái kết nối (tracking `status` từ `.subscribe()`).
 - **src/components/mirats/app-shell/TopBar.tsx**:
-    - Thêm chỉ báo `RealtimeStatus` (chấm xanh/xám nhỏ cạnh đồng hồ hoặc chuông thông báo).
+  - Thêm chỉ báo `RealtimeStatus` (chấm xanh/xám nhỏ cạnh đồng hồ hoặc chuông thông báo).
 - **src/hooks/use-realtime-fallback.ts** (Mới):
-    - Hook tự động kích hoạt `refetchInterval` (60s) cho các query quan trọng khi Realtime bị ngắt kết nối.
+  - Hook tự động kích hoạt `refetchInterval` (60s) cho các query quan trọng khi Realtime bị ngắt kết nối.
 
 ### Nhịp 3: Kiểm tra và Bàn giao
+
 - Chạy `npx tsc --noEmit`.
 - Chạy `npm run test` để đảm bảo không phá vỡ logic cũ.
 - Kiểm tra tính năng "tự cập nhật" bằng cách giả lập thay đổi dữ liệu trong preview.

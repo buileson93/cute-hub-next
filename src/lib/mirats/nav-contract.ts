@@ -12,13 +12,49 @@
 // hàm thuần để test được không cần DOM.
 // ============================================================================
 import {
-  LayoutDashboard, ShieldCheck, Building2, Network, MapPin,
-  Package, HeartPulse, Lock, UserCog,
-  FileText, FilePlus2, Database, Sparkles, Ticket, MessageSquare, FolderKanban,
-  Boxes, Layers, Settings2, Waypoints, Cable,
-  LifeBuoy, BookMarked, AlertTriangle, Wrench, ArrowLeftRight, DatabaseBackup,
-  Upload, CalendarClock, ClipboardCheck, ClipboardList, QrCode, ImageUp,
-  Factory, Truck, Tag, Bug, HardDrive, Component, Link2, KeyRound, Users, Laptop,
+  LayoutDashboard,
+  ShieldCheck,
+  Building2,
+  Network,
+  MapPin,
+  Package,
+  HeartPulse,
+  Lock,
+  UserCog,
+  FileText,
+  FilePlus2,
+  Database,
+  Sparkles,
+  Ticket,
+  MessageSquare,
+  FolderKanban,
+  Boxes,
+  Layers,
+  Settings2,
+  Waypoints,
+  Cable,
+  LifeBuoy,
+  BookMarked,
+  AlertTriangle,
+  Wrench,
+  ArrowLeftRight,
+  DatabaseBackup,
+  Upload,
+  CalendarClock,
+  ClipboardCheck,
+  ClipboardList,
+  QrCode,
+  ImageUp,
+  Factory,
+  Truck,
+  Tag,
+  Bug,
+  HardDrive,
+  Component,
+  Link2,
+  KeyRound,
+  Users,
+  Laptop,
   Cpu,
 } from "lucide-react";
 
@@ -133,8 +169,18 @@ export const workspaces: Workspace[] = [
           { to: "/danh-muc/loai-thiet-bi", label: "Chủng loại", icon: Tag, roles: MANAGER_ROLES },
 
           { to: "/danh-muc/dac-tinh", label: "Nhãn tài sản", icon: Sparkles, roles: MANAGER_ROLES },
-          { to: "/danh-muc/nha-san-xuat", label: "Nhà sản xuất", icon: Factory, roles: MANAGER_ROLES },
-          { to: "/danh-muc/nha-cung-cap", label: "Nhà cung cấp", icon: Truck, roles: MANAGER_ROLES },
+          {
+            to: "/danh-muc/nha-san-xuat",
+            label: "Nhà sản xuất",
+            icon: Factory,
+            roles: MANAGER_ROLES,
+          },
+          {
+            to: "/danh-muc/nha-cung-cap",
+            label: "Nhà cung cấp",
+            icon: Truck,
+            roles: MANAGER_ROLES,
+          },
         ],
       },
     ],
@@ -147,9 +193,7 @@ export const workspaces: Workspace[] = [
     groups: [
       {
         header: "Dự án & Tiến độ",
-        items: [
-          { to: "/du-an", label: "Danh sách dự án", icon: FolderKanban },
-        ],
+        items: [{ to: "/du-an", label: "Danh sách dự án", icon: FolderKanban }],
       },
     ],
   },
@@ -203,30 +247,93 @@ export const workspaces: Workspace[] = [
         header: "Hệ thống",
         items: [
           { to: "/phan-quyen", label: "Phân quyền & Bảo mật", icon: Lock, roles: MANAGER_ROLES },
-          { to: "/cho-duyet", label: "Chờ duyệt (Change Request)", icon: ClipboardCheck, roles: MANAGER_ROLES },
-          { to: "/admin/bao-tri-chinh-sach", label: "Chính sách bảo dưỡng", icon: CalendarClock, roles: MANAGER_ROLES },
-
+          {
+            to: "/cho-duyet",
+            label: "Chờ duyệt (Change Request)",
+            icon: ClipboardCheck,
+            roles: MANAGER_ROLES,
+          },
+          {
+            to: "/admin/bao-tri-chinh-sach",
+            label: "Chính sách bảo dưỡng",
+            icon: CalendarClock,
+            roles: MANAGER_ROLES,
+          },
 
           { to: "/admin/users", label: "Quản lý tài khoản", icon: UserCog, roles: ADMIN_ONLY },
           { to: "/admin/nhan-vien", label: "Quản lý nhân viên", icon: Users, roles: MANAGER_ROLES },
           { to: "/admin/audit", label: "Nhật ký hệ thống", icon: Lock, roles: ADMIN_ONLY },
 
-          { to: "/admin/schema", label: "Sơ đồ CSDL", icon: Database, roles: ADMIN_ONLY, hideOnMobile: true },
-          { to: "/admin/backup", label: "Sao lưu & Khôi phục", icon: DatabaseBackup, roles: ADMIN_ONLY, hideOnMobile: true },
-          { to: "/chat-luong-du-lieu", label: "Chất lượng dữ liệu", icon: Database, roles: MANAGER_ROLES },
-          { to: "/admin/nhap-lieu", label: "Nhập/Xuất hàng loạt", icon: Upload, roles: ADMIN_ONLY, hideOnMobile: true },
-          { to: "/admin/review", label: "Rà soát dữ liệu", icon: ClipboardList, roles: ADMIN_ONLY, hideOnMobile: true },
-          { to: "/admin/kiem-tra-so-lieu", label: "Kiểm tra số liệu", icon: ClipboardList, roles: ADMIN_ONLY, hideOnMobile: true },
-          { to: "/admin/kiem-tra-layout", label: "Kiểm tra layout", icon: ClipboardList, roles: ADMIN_ONLY, hideOnMobile: true },
+          {
+            to: "/admin/schema",
+            label: "Sơ đồ CSDL",
+            icon: Database,
+            roles: ADMIN_ONLY,
+            hideOnMobile: true,
+          },
+          {
+            to: "/admin/backup",
+            label: "Sao lưu & Khôi phục",
+            icon: DatabaseBackup,
+            roles: ADMIN_ONLY,
+            hideOnMobile: true,
+          },
+          {
+            to: "/chat-luong-du-lieu",
+            label: "Chất lượng dữ liệu",
+            icon: Database,
+            roles: MANAGER_ROLES,
+          },
+          {
+            to: "/admin/nhap-lieu",
+            label: "Nhập/Xuất hàng loạt",
+            icon: Upload,
+            roles: ADMIN_ONLY,
+            hideOnMobile: true,
+          },
+          {
+            to: "/admin/review",
+            label: "Rà soát dữ liệu",
+            icon: ClipboardList,
+            roles: ADMIN_ONLY,
+            hideOnMobile: true,
+          },
+          {
+            to: "/admin/kiem-tra-so-lieu",
+            label: "Kiểm tra số liệu",
+            icon: ClipboardList,
+            roles: ADMIN_ONLY,
+            hideOnMobile: true,
+          },
+          {
+            to: "/admin/kiem-tra-layout",
+            label: "Kiểm tra layout",
+            icon: ClipboardList,
+            roles: ADMIN_ONLY,
+            hideOnMobile: true,
+          },
           { to: "/admin/ai", label: "Cấu hình AI", icon: Sparkles, roles: ADMIN_ONLY },
-          { to: "/admin/thuong-hieu", label: "Thương hiệu & Logo", icon: ImageUp, roles: ADMIN_ONLY },
+          {
+            to: "/admin/thuong-hieu",
+            label: "Thương hiệu & Logo",
+            icon: ImageUp,
+            roles: ADMIN_ONLY,
+          },
           { to: "/admin/luu-tru", label: "Lưu trữ tệp", icon: HardDrive, roles: ADMIN_ONLY },
           { to: "/admin/ocr", label: "Quản trị OCR", icon: Cpu, roles: ADMIN_ONLY },
-          { to: "/admin/tich-hop", label: "Browser Extension", icon: KeyRound, roles: MANAGER_ROLES },
-          { to: "/admin/supabase-ngoai", label: "Kết nối Supabase ngoài", icon: Database, roles: ADMIN_ONLY, hideOnMobile: true },
-
-
-
+          {
+            to: "/admin/tich-hop",
+            label: "Browser Extension",
+            icon: KeyRound,
+            roles: MANAGER_ROLES,
+          },
+          {
+            to: "/admin/supabase-ngoai",
+            label: "Kết nối Supabase ngoài",
+            icon: Database,
+            roles: ADMIN_ONLY,
+            hideOnMobile: true,
+          },
         ],
       },
     ],
@@ -256,7 +363,7 @@ export const routeTitles: Record<string, { crumb: string; title: string }> = {
   "/vat-tu": { crumb: "Kho", title: "Vật tư & Kho" },
 
   "/kiem-ke": { crumb: "Tài sản", title: "Kiểm kê tài sản" },
-  
+
   "/kiem-dinh": { crumb: "Vận hành", title: "Kiểm định & Hiệu chuẩn" },
   "/tuoi-tho": { crumb: "Vòng đời", title: "Tuổi thọ & Vòng đời" },
   "/giay-phep": { crumb: "Giấy phép", title: "Giấy phép" },
@@ -273,13 +380,15 @@ export const routeTitles: Record<string, { crumb: string; title: string }> = {
   "/admin/ai": { crumb: "Hệ thống", title: "Cấu hình AI" },
   "/admin/nhap-lieu": { crumb: "Hệ thống", title: "Nhập/Xuất hàng loạt" },
   "/admin/review": { crumb: "Hệ thống", title: "Rà soát dữ liệu" },
-  "/admin/kiem-tra-so-lieu": { crumb: "Hệ thống", title: "Kiểm tra số liệu — Nhóm hệ thống & Vị trí" },
+  "/admin/kiem-tra-so-lieu": {
+    crumb: "Hệ thống",
+    title: "Kiểm tra số liệu — Nhóm hệ thống & Vị trí",
+  },
   "/admin/kiem-tra-layout": { crumb: "Hệ thống", title: "Kiểm tra layout theo viewport" },
   "/admin/bao-tri-chinh-sach": { crumb: "Hệ thống", title: "Chính sách bảo dưỡng" },
   "/admin/thuong-hieu": { crumb: "Hệ thống", title: "Thương hiệu & Logo" },
   "/admin/luu-tru": { crumb: "Hệ thống", title: "Lưu trữ tệp — Cloud & R2" },
   "/admin/supabase-ngoai": { crumb: "Hệ thống", title: "Kết nối Supabase ngoài" },
-
 
   "/cai-dat/tai-khoan": { crumb: "Cá nhân", title: "Tài khoản của tôi" },
   "/danh-muc/don-vi": { crumb: "Danh mục", title: "Đơn vị" },
@@ -366,8 +475,10 @@ export function flattenWorkspaceItems(ws: Workspace, hasRole: (r: AppRole) => bo
 export function resolveRouteMeta(pathname: string): { crumb: string; title: string } {
   return (
     routeTitles[pathname] ??
-    Object.entries(routeTitles).find(([k]) => k !== "/" && pathname.startsWith(k))?.[1] ??
-    { crumb: "MIRATS", title: "" }
+    Object.entries(routeTitles).find(([k]) => k !== "/" && pathname.startsWith(k))?.[1] ?? {
+      crumb: "MIRATS",
+      title: "",
+    }
   );
 }
 
@@ -423,4 +534,3 @@ export function canAccessRoute(pathname: string, roles: readonly AppRole[]): boo
   if (!req) return true;
   return req.some((r) => roles.includes(r));
 }
-

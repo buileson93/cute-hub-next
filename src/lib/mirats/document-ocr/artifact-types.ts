@@ -21,11 +21,11 @@ export const OcrArtifactSchema = z.object({
   average_confidence: z.number().nullable(),
   technical_token_accuracy: z.number().nullable(),
   quality_score: z.number().nullable(),
-  status: z.enum(['completed', 'partial', 'rejected', 'superseded']),
-  verified_level: z.enum(['automatic', 'sampled', 'human_reviewed']),
+  status: z.enum(["completed", "partial", "rejected", "superseded"]),
+  verified_level: z.enum(["automatic", "sampled", "human_reviewed"]),
   created_by: z.string().uuid().nullable(),
   created_at: z.string(),
-  updated_at: z.string()
+  updated_at: z.string(),
 });
 
 export type OcrArtifact = z.infer<typeof OcrArtifactSchema>;

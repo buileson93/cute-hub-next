@@ -54,7 +54,9 @@ function GopGachPage() {
       if (!nhiemVu) throw new Error("Không có nhiệm vụ");
 
       const { error: crError } = await supabase.rpc("create_change_request", {
-        p_loai: (nhiemVu.entity === "thiet_bi" ? "thiet_bi.propose_field" : "he_thong.propose_field") as any,
+        p_loai: (nhiemVu.entity === "thiet_bi"
+          ? "thiet_bi.propose_field"
+          : "he_thong.propose_field") as any,
         p_payload: {
           target_id: nhiemVu.target_id,
           field_key: nhiemVu.field_key,
@@ -102,7 +104,10 @@ function GopGachPage() {
               <Check className="text-emerald-600" />
             </div>
             <p>Hôm nay bạn đã hoàn thành hết nhiệm vụ!</p>
-            <Button variant="outline" onClick={() => qc.invalidateQueries({ queryKey: ["nhiem_vu_nhap_lieu"] })}>
+            <Button
+              variant="outline"
+              onClick={() => qc.invalidateQueries({ queryKey: ["nhiem_vu_nhap_lieu"] })}
+            >
               Kiểm tra lại
             </Button>
           </CardContent>
@@ -120,14 +125,19 @@ function GopGachPage() {
                 <span>Chụp ảnh nhãn thiết bị</span>
               </Button>
             </div>
-            <Input 
-              placeholder="Nhập số serial..." 
-              value={value} 
-              onChange={e => setValue(e.target.value)}
+            <Input
+              placeholder="Nhập số serial..."
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
             />
           </CardContent>
           <CardFooter className="flex gap-2">
-            <Button variant="outline" className="flex-1" onClick={() => submit.mutate()} disabled={!value}>
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => submit.mutate()}
+              disabled={!value}
+            >
               Gửi đề xuất
             </Button>
             <Button variant="ghost" size="icon" aria-label="Bỏ qua đề xuất" title="Bỏ qua">

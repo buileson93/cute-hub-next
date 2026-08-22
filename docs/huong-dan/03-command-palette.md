@@ -1,11 +1,13 @@
 # 03. Command Palette
 
 ## Mở Command Palette
+
 - Bàn phím: `Ctrl+K` / `⌘+K`.
 - Chuột: bấm nút tròn góc phải dưới (`CommandPaletteButton`).
 - Topbar: bấm ô Search.
 
 ## Các nhóm lệnh
+
 1. **Điều hướng** — gõ tên trang ("Sự cố", "Bảo dưỡng"…) → Enter để đi.
 2. **Tạo nhanh** — "Tạo sự cố", "Tạo bảo dưỡng", "Tạo thiết bị".
 3. **Tra cứu** — nhập mã thiết bị `TB_XXXXXXXX`, serial, số giấy phép.
@@ -13,6 +15,7 @@
 5. **Cài đặt nhanh** — đổi Theme, Density, Đăng xuất.
 
 ## Cách dùng cụ thể
+
 1. Bấm `⌘K`.
 2. Gõ từ khóa (không dấu cũng được).
 3. Dùng phím ↑↓ chọn kết quả.
@@ -20,6 +23,7 @@
 5. `Esc` để đóng.
 
 ## Mẹo
+
 - Gõ `>` để lọc chỉ Command.
 - Gõ `#` để tìm hashtag/nhãn.
 - Gõ `@tenhethong` để mở nhanh hệ thống đó (Obsidian-style).

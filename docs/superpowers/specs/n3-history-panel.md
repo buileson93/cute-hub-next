@@ -23,18 +23,19 @@ Mỗi `HistoryEvent`:
 
 ```ts
 type HistoryEvent = {
-  id: string;                        // audit_log.id
-  at: string;                        // ISO datetime
+  id: string; // audit_log.id
+  at: string; // ISO datetime
   actor: { id: string | null; name: string; role?: string };
   action: "insert" | "update" | "delete";
-  changes: FieldChange[];            // đã lọc IGNORE, đã diff qua computeChanges
+  changes: FieldChange[]; // đã lọc IGNORE, đã diff qua computeChanges
   source?: "manual" | "bulk" | "rpc" | "trigger" | "change_request";
   changeRequestId?: string | null;
-  note?: string | null;              // audit_log.metadata.reason nếu có
+  note?: string | null; // audit_log.metadata.reason nếu có
 };
 ```
 
 **UI dòng** (top-down):
+
 - Header: avatar + tên actor, thời điểm relative + tooltip absolute, badge action, badge nguồn (BulkEdit / CR#123 / RPC / Trigger).
 - Nội dung: danh sách trường thay đổi dạng `Tên trường: <cũ> → <mới>` (dùng `formatVal`), tối đa 5 dòng đầu + nút "Xem tất cả n thay đổi".
 - Với `insert`: hiện "Tạo mới" + snapshot rút gọn.
@@ -59,18 +60,23 @@ Filter chạy trên client sau keyset fetch; khi user chọn "Tất cả thời 
 Whitelist theo entity — chỉ scalar an toàn, **loại trừ** khoá quan hệ, trạng thái vòng đời, và cột do trigger tính. Server-side (RPC `restore_audit_field`) kiểm tra lại danh sách này.
 
 ### `thiet_bi`
-`ten_hien_thi`, `ghi_chu`, `mo_ta`, `so_luong_dvt`, `dvt`, `ngay_dua_vao_khai_thac`, `ngay_san_xuat`, `xuat_xu`, `nam_san_xuat`, `p_n` *(chỉ khi model không kế thừa)*, `serial` *(chỉ nếu policy cho phép sửa serial)*, và các trường trong `thuoc_tinh.*` không thuộc `dm_dac_tinh` kế thừa từ model.
+
+`ten_hien_thi`, `ghi_chu`, `mo_ta`, `so_luong_dvt`, `dvt`, `ngay_dua_vao_khai_thac`, `ngay_san_xuat`, `xuat_xu`, `nam_san_xuat`, `p_n` _(chỉ khi model không kế thừa)_, `serial` _(chỉ nếu policy cho phép sửa serial)_, và các trường trong `thuoc_tinh.*` không thuộc `dm_dac_tinh` kế thừa từ model.
 
 ### `dm_he_thong`
+
 `ten`, `ten_viet_tat`, `ghi_chu`, `mo_ta`, `dia_diem_van_hanh`, `tan_so_hoat_dong`, `cong_suat`, `chuc_nang_chinh`.
 
 ### `he_thong_thanh_phan`
+
 `ten`, `ma`, `ghi_chu`, `mo_ta`, `chuc_nang`.
 
 ### `dm_model`, `dm_vi_tri`, `dm_don_vi`, `dm_nha_san_xuat`, `dm_nha_cung_cap`, `dm_loai_thiet_bi`, `dm_nhom_he_thong`
+
 `ten`, `ten_viet_tat`, `mo_ta`, `ghi_chu`. **Không** khôi phục `ma` (khoá nghiệp vụ) và `*_id`.
 
 ### Blacklist tuyệt đối (không bao giờ cho khôi phục qua panel)
+
 - Mọi cột kết thúc `_id` (khoá quan hệ) — dùng change-request N2 nếu cần.
 - `active`, `deleted_at`, `merged_into`, `deactivated_at` — dùng RPC restore/merge riêng.
 - `trang_thai`, `trang_thai_van_hanh` — dùng FSM (N1 roadmap).
@@ -81,6 +87,7 @@ Whitelist theo entity — chỉ scalar an toàn, **loại trừ** khoá quan h�
 ## 6. `restoreField(entity, entityId, field, oldValue, opts)`
 
 Chữ ký thuần TS:
+
 ```ts
 restoreField(args: {
   entity: string;
@@ -93,6 +100,7 @@ restoreField(args: {
 ```
 
 Hành vi:
+
 1. Client-side: check whitelist `RESTORABLE_FIELDS[entity]` — nếu không hợp lệ, trả lỗi `field_not_restorable`.
 2. Gọi RPC `restore_audit_field(entity, entity_id, field, old_value_jsonb, audit_id, reason)` (`SECURITY DEFINER`).
 3. RPC:
@@ -106,6 +114,7 @@ Hành vi:
 4. UI hiện toast "Đã khôi phục giá trị vào lúc <at>" + refresh timeline.
 
 **KHÔNG cho restore**:
+
 - Trường ngoài whitelist.
 - Khi entity đang bị soft-deleted.
 - Khi user chỉ có role `ktv`/`to_truong`.
@@ -125,6 +134,7 @@ Restore hàng loạt nhiều trường 1 lần: gọi RPC lặp trong transactio
 ## 8. Test — Definition of Done
 
 **Unit** (mở rộng `record-timeline.test.ts` + file mới `history-panel.test.ts`):
+
 - `useChangeLog` (mock supabase): trả về items sắp theo `at DESC`, nhóm đúng events ≤3s.
 - `computeChanges` bỏ qua IGNORE + `_id` + `tsv`; diff đúng scalar/jsonb.
 - `restoreField`:
@@ -140,14 +150,14 @@ Restore hàng loạt nhiều trường 1 lần: gọi RPC lặp trong transactio
 
 ## 9. Rủi ro & giảm thiểu
 
-| Rủi ro | Giảm thiểu |
-|---|---|
-| Restore field bị Model kế thừa (P/N) → mất đồng bộ | Whitelist loại trừ; RPC re-check theo `inherited-readonly` config |
-| Old value là JSON lớn (thuoc_tinh) | Cho restore từng key trong `thuoc_tinh.*`, không restore whole blob |
-| RLS chặn đọc audit chéo đơn vị → panel trống trong lúc có history | Hiển thị nhãn "Bị ẩn theo quyền" khi count phía server > count nhận về |
-| Loạt bulk-edit tạo hàng nghìn rows nhiễu | Group ≤3s + pagination 50 rows + preset filter "chỉ trường tôi có quyền" |
-| Trigger đổi shape `old_data`/`new_data` trong tương lai | Test guard schema; `computeChanges` đã tolerant với null |
-| Cột blacklist bị lộ nút Restore do label nhầm | Whitelist là allow-list rõ ràng; test đảm bảo không xuất hiện bất kỳ `*_id` |
+| Rủi ro                                                            | Giảm thiểu                                                                  |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Restore field bị Model kế thừa (P/N) → mất đồng bộ                | Whitelist loại trừ; RPC re-check theo `inherited-readonly` config           |
+| Old value là JSON lớn (thuoc_tinh)                                | Cho restore từng key trong `thuoc_tinh.*`, không restore whole blob         |
+| RLS chặn đọc audit chéo đơn vị → panel trống trong lúc có history | Hiển thị nhãn "Bị ẩn theo quyền" khi count phía server > count nhận về      |
+| Loạt bulk-edit tạo hàng nghìn rows nhiễu                          | Group ≤3s + pagination 50 rows + preset filter "chỉ trường tôi có quyền"    |
+| Trigger đổi shape `old_data`/`new_data` trong tương lai           | Test guard schema; `computeChanges` đã tolerant với null                    |
+| Cột blacklist bị lộ nút Restore do label nhầm                     | Whitelist là allow-list rõ ràng; test đảm bảo không xuất hiện bất kỳ `*_id` |
 
 ## 10. Câu hỏi làm rõ
 

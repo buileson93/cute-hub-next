@@ -5,6 +5,7 @@ Sau đợt refactor cấu trúc thư mục AppShell và thư viện Bản quyề
 ## 1. Đối chiếu và khôi phục AppShell (T17-T22)
 
 Kiểm tra sự đầy đủ của các module mới tách từ `AppShell.tsx` (bản 952 dòng):
+
 - **Trạng thái thu gọn (isCollapsed):** Đã port vào `AppShell.tsx` mới, sử dụng `localStorage` "mirats-sidebar-collapsed". Hiện tại mặc định là `true` (thu gọn).
 - **Điều hướng Workspace (Sidebar Rail):** Đã tách thành logic trong `AppShell.tsx` sử dụng `workspaces` từ `nav-contract.ts`.
 - **TopBar & Tìm kiếm:** `TopBar.tsx` đã xử lý `mirats:open-command-palette` và phím tắt ⌘K/Ctrl+K.
@@ -15,6 +16,7 @@ Kiểm tra sự đầy đủ của các module mới tách từ `AppShell.tsx` (
 ## 2. Đồng bộ thư viện Bản quyền phần mềm
 
 Đổi từ `ban-quyen-thiet-bi.ts` sang bộ API mới:
+
 - `ban-quyen.ts`: Chứa logic tính toán (hạn dùng, trạng thái), hook danh sách và chi tiết.
 - `ban-quyen-detail.ts`: Quản lý tệp đính kèm (`useBanQuyenTep`) và Audit log.
 - `ban-quyen-alerts.ts`: Hook quét cảnh báo hết hạn (`useBanQuyenAlertScanner`).
@@ -35,12 +37,12 @@ Kiểm tra sự đầy đủ của các module mới tách từ `AppShell.tsx` (
 
 ## Báo cáo đối chiếu dự kiến
 
-| Thành phần | Trạng thái | Vị trí hiện tại |
-| :--- | :--- | :--- |
-| Sidebar Collapse State | Còn | `app-shell/AppShell.tsx` |
-| Sidebar Logo/Rail | Còn | `app-shell/index.tsx` |
-| TopBar Search | Còn | `app-shell/TopBar.tsx` |
-| Mobile Navigation | Còn | `app-shell/MobileNav.tsx` |
-| License Expiry Logic | Còn | `lib/mirats/ban-quyen.ts` |
-| License File Upload | Còn | `lib/mirats/ban-quyen-detail.ts` |
-| License Alerts | Còn | `lib/mirats/ban-quyen-alerts.ts` |
+| Thành phần             | Trạng thái | Vị trí hiện tại                  |
+| :--------------------- | :--------- | :------------------------------- |
+| Sidebar Collapse State | Còn        | `app-shell/AppShell.tsx`         |
+| Sidebar Logo/Rail      | Còn        | `app-shell/index.tsx`            |
+| TopBar Search          | Còn        | `app-shell/TopBar.tsx`           |
+| Mobile Navigation      | Còn        | `app-shell/MobileNav.tsx`        |
+| License Expiry Logic   | Còn        | `lib/mirats/ban-quyen.ts`        |
+| License File Upload    | Còn        | `lib/mirats/ban-quyen-detail.ts` |
+| License Alerts         | Còn        | `lib/mirats/ban-quyen-alerts.ts` |

@@ -49,10 +49,23 @@ const EMPTY: ParsedIncident = {
 
 /** Vai trò của một mục (routing theo header keyword). */
 type SectionRole =
-  | "don_vi" | "he_thong" | "mo_ta" | "nguyen_nhan"
-  | "thay_the" | "xu_ly" | "danh_gia" | "de_xuat" | "unknown";
+  | "don_vi"
+  | "he_thong"
+  | "mo_ta"
+  | "nguyen_nhan"
+  | "thay_the"
+  | "xu_ly"
+  | "danh_gia"
+  | "de_xuat"
+  | "unknown";
 
-interface Section { raw: string; body: string; role: SectionRole; header: string; num: number }
+interface Section {
+  raw: string;
+  body: string;
+  role: SectionRole;
+  header: string;
+  num: number;
+}
 
 /** Bỏ prefix header đầu content: "Mô tả sự cố: ...". */
 function stripHeader(s: string): { header: string; body: string } {
@@ -66,14 +79,20 @@ function classifyRole(header: string, body: string): SectionRole {
   const s = (header + " " + body).toLowerCase();
   if (/nguy[êe]n\s*nh[âa]n/.test(header.toLowerCase())) return "nguyen_nhan";
   if (/x[ửu]\s*l[ýy]/.test(header.toLowerCase())) return "xu_ly";
-  if (/thay\s*th[ếe]|d[ựu]\s*ph[òo]ng|đ[ườu]ng\s*truy[ềe]n\s*thay/.test(header.toLowerCase())) return "thay_the";
+  if (/thay\s*th[ếe]|d[ựu]\s*ph[òo]ng|đ[ườu]ng\s*truy[ềe]n\s*thay/.test(header.toLowerCase()))
+    return "thay_the";
   if (/đánh\s*giá|danh gia|ảnh\s*hưởng|anh huong/.test(header.toLowerCase())) return "danh_gia";
   if (/đề\s*xuất|de xuat|kiến\s*nghị/.test(header.toLowerCase())) return "de_xuat";
   if (/mô\s*t[ảa]|mo ta|di[ễe]n\s*bi[ếe]n|s[ựu]\s*c[ốo]/.test(header.toLowerCase())) return "mo_ta";
-  if (/h[ệe]\s*th[ốo]ng|thi[ếe]t\s*b[ịi]|đ[ườu]ng\s*truy[ềe]n/.test(header.toLowerCase())) return "he_thong";
+  if (/h[ệe]\s*th[ốo]ng|thi[ếe]t\s*b[ịi]|đ[ườu]ng\s*truy[ềe]n/.test(header.toLowerCase()))
+    return "he_thong";
   if (/b[áa]o\s*c[áa]o|ttbdkt|trung\s*t[âa]m/.test(header.toLowerCase())) return "don_vi";
   // fallback theo body
-  if (/\b(reset|thay|khắc phục|kiểm tra|sửa chữa)\b/i.test(s) && /\b(ca trực|đã|tiến hành)\b/i.test(s)) return "xu_ly";
+  if (
+    /\b(reset|thay|khắc phục|kiểm tra|sửa chữa)\b/i.test(s) &&
+    /\b(ca trực|đã|tiến hành)\b/i.test(s)
+  )
+    return "xu_ly";
   return "unknown";
 }
 
@@ -149,7 +168,10 @@ function classifyLevel(desc: string, impact: string): string {
 function shortSymptom(desc: string, systemHint: string): string {
   if (!desc) return systemHint ? `Sự cố ${systemHint}` : "";
   // Bỏ đoạn thời gian dài kiểu "Từ 02h45 đến 09h00 ngày dd/mm/yyyy"
-  let s = desc.replace(/(Từ|Lúc|từ|lúc)\s+\d{1,2}[h:]\d{0,2}[^\n\.]{0,80}?ngày\s+\d{1,2}[\/-]\d{1,2}[\/-]\d{4}[\.:]?\s*/g, "");
+  let s = desc.replace(
+    /(Từ|Lúc|từ|lúc)\s+\d{1,2}[h:]\d{0,2}[^\n\.]{0,80}?ngày\s+\d{1,2}[\/-]\d{1,2}[\/-]\d{4}[\.:]?\s*/g,
+    "",
+  );
   // Lấy câu đầu — chỉ ngắt tại "chấm + khoảng trắng" (tránh cắt "120.45MHz").
   s = s.split(/(?:\.\s|\n)/)[0].trim();
   s = s.replace(/\.$/, "").trim();
@@ -195,8 +217,14 @@ export function parseIncidentByRules(input: string): RuleParseResult {
   const criticalHit = critical.filter((r) => sections.some((s) => s.role === r)).length;
   let conf = 0.4 + 0.15 * criticalHit; // 4/4 = 1.0
   if (!desc3) conf -= 0.3;
-  if (!parsed.thoi_gian_bat_dau) { conf -= 0.15; notes.push("Không suy được thời gian bắt đầu"); }
-  if (!systemHint) { conf -= 0.2; notes.push("Không xác định được hệ thống"); }
+  if (!parsed.thoi_gian_bat_dau) {
+    conf -= 0.15;
+    notes.push("Không suy được thời gian bắt đầu");
+  }
+  if (!systemHint) {
+    conf -= 0.2;
+    notes.push("Không xác định được hệ thống");
+  }
   if (!handle6 && !propose8) notes.push("Chưa có biện pháp xử lý");
   conf = Math.max(0, Math.min(1, conf));
 

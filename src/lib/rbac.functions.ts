@@ -2,7 +2,15 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 
-const ROLES = ["admin", "phong_kt", "phu_trach_dv", "ktv", "readonly", "quan_ly_du_an", "to_truong"] as const;
+const ROLES = [
+  "admin",
+  "phong_kt",
+  "phu_trach_dv",
+  "ktv",
+  "readonly",
+  "quan_ly_du_an",
+  "to_truong",
+] as const;
 
 async function assertAdmin(supabase: any, userId: string) {
   const { data, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
@@ -45,8 +53,17 @@ export const listUsersWithScope = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
-    const [{ data: profiles }, { data: roles }, { data: scopes }, { data: toChuc }, { data: donVi }] = await Promise.all([
-      supabaseAdmin.from("profiles").select("id,email,ho_ten,active,created_at").order("created_at", { ascending: false }),
+    const [
+      { data: profiles },
+      { data: roles },
+      { data: scopes },
+      { data: toChuc },
+      { data: donVi },
+    ] = await Promise.all([
+      supabaseAdmin
+        .from("profiles")
+        .select("id,email,ho_ten,active,created_at")
+        .order("created_at", { ascending: false }),
       supabaseAdmin.from("user_roles").select("user_id,role"),
       supabaseAdmin.from("user_scope").select("id,user_id,to_chuc_id,don_vi_id,note,created_at"),
       supabaseAdmin.from("dm_to_chuc").select("id,ma,ten"),
@@ -79,24 +96,37 @@ export const listUsersWithScope = createServerFn({ method: "GET" })
 export const setUserScope = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
-    z.object({
-      user_id: z.string().uuid(),
-      scopes: z.array(z.object({
-        to_chuc_id: z.string().uuid().nullable(),
-        don_vi_id: z.string().uuid().nullable(),
-      })),
-    }).parse(input),
+    z
+      .object({
+        user_id: z.string().uuid(),
+        scopes: z.array(
+          z.object({
+            to_chuc_id: z.string().uuid().nullable(),
+            don_vi_id: z.string().uuid().nullable(),
+          }),
+        ),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     await supabaseAdmin.from("user_scope").delete().eq("user_id", data.user_id);
     if (data.scopes.length > 0) {
-      const rows = data.scopes.map((s) => ({ user_id: data.user_id, to_chuc_id: s.to_chuc_id, don_vi_id: s.don_vi_id, created_by: context.userId }));
+      const rows = data.scopes.map((s) => ({
+        user_id: data.user_id,
+        to_chuc_id: s.to_chuc_id,
+        don_vi_id: s.don_vi_id,
+        created_by: context.userId,
+      }));
       const { error } = await supabaseAdmin.from("user_scope").insert(rows);
       if (error) throw new Error(error.message);
     }
-    await supabaseAdmin.rpc("log_auth_event", { _event: "scope_change", _target: data.user_id, _detail: { scopes: data.scopes } as any });
+    await supabaseAdmin.rpc("log_auth_event", {
+      _event: "scope_change",
+      _target: data.user_id,
+      _detail: { scopes: data.scopes } as any,
+    });
     return { ok: true };
   });
 
@@ -106,7 +136,9 @@ export const getRoleMatrix = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase, unauthenticated } = context as any;
     if (unauthenticated || !supabase) return [];
-    const { data, error } = await supabase.from("role_permission").select("role,module,action,allowed");
+    const { data, error } = await supabase
+      .from("role_permission")
+      .select("role,module,action,allowed");
     if (error) throw new Error(error.message);
     return (data ?? []) as any[];
   });
@@ -114,18 +146,25 @@ export const getRoleMatrix = createServerFn({ method: "GET" })
 export const setRolePermission = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
-    z.object({
-      role: z.enum(ROLES),
-      module: z.string().min(1),
-      action: z.string().min(1),
-      allowed: z.boolean(),
-    }).parse(input),
+    z
+      .object({
+        role: z.enum(ROLES),
+        module: z.string().min(1),
+        action: z.string().min(1),
+        allowed: z.boolean(),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     const { error } = await supabaseAdmin.from("role_permission").upsert({
-      role: data.role, module: data.module, action: data.action, allowed: data.allowed, updated_by: context.userId, updated_at: new Date().toISOString(),
+      role: data.role,
+      module: data.module,
+      action: data.action,
+      allowed: data.allowed,
+      updated_by: context.userId,
+      updated_at: new Date().toISOString(),
     });
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -135,13 +174,22 @@ export const setRolePermission = createServerFn({ method: "POST" })
 export const createAccessRequest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
-    z.object({
-      module: z.string(), action: z.string(), reason: z.string().max(500).optional(), ttl_minutes: z.number().min(15).max(1440).default(60),
-    }).parse(input),
+    z
+      .object({
+        module: z.string(),
+        action: z.string(),
+        reason: z.string().max(500).optional(),
+        ttl_minutes: z.number().min(15).max(1440).default(60),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase.from("access_request").insert({
-      user_id: context.userId, module: data.module, action: data.action, reason: data.reason, ttl_minutes: data.ttl_minutes,
+      user_id: context.userId,
+      module: data.module,
+      action: data.action,
+      reason: data.reason,
+      ttl_minutes: data.ttl_minutes,
     });
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -153,7 +201,11 @@ export const listAccessRequests = createServerFn({ method: "GET" })
     const { supabase, unauthenticated, userId } = context as any;
     if (unauthenticated || !supabase) return [];
     await assertAdmin(supabase, userId);
-    const { data, error } = await supabase.from("access_request").select("*").order("created_at", { ascending: false }).limit(200);
+    const { data, error } = await supabase
+      .from("access_request")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(200);
     if (error) throw new Error(error.message);
     return (data ?? []) as any[];
   });
@@ -164,13 +216,24 @@ export const resolveAccessRequest = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
-    const { data: req } = await supabaseAdmin.from("access_request").select("*").eq("id", data.id).single();
+    const { data: req } = await supabaseAdmin
+      .from("access_request")
+      .select("*")
+      .eq("id", data.id)
+      .single();
     if (!req) throw new Error("Not found");
-    const expires = data.approve ? new Date(Date.now() + (req.ttl_minutes ?? 60) * 60_000).toISOString() : null;
-    const { error } = await supabaseAdmin.from("access_request").update({
-      status: data.approve ? "approved" : "rejected",
-      approved_by: context.userId, approved_at: new Date().toISOString(), expires_at: expires,
-    }).eq("id", data.id);
+    const expires = data.approve
+      ? new Date(Date.now() + (req.ttl_minutes ?? 60) * 60_000).toISOString()
+      : null;
+    const { error } = await supabaseAdmin
+      .from("access_request")
+      .update({
+        status: data.approve ? "approved" : "rejected",
+        approved_by: context.userId,
+        approved_at: new Date().toISOString(),
+        expires_at: expires,
+      })
+      .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -179,7 +242,14 @@ export const resolveAccessRequest = createServerFn({ method: "POST" })
 export const logFeatureUsage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
-    z.object({ feature: z.string().max(120), path: z.string().max(300).optional(), params: z.record(z.string(), z.any()).optional(), duration_ms: z.number().int().optional() }).parse(input),
+    z
+      .object({
+        feature: z.string().max(120),
+        path: z.string().max(300).optional(),
+        params: z.record(z.string(), z.any()).optional(),
+        duration_ms: z.number().int().optional(),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     await (context.supabase.rpc as any)("log_feature_usage", {
@@ -191,20 +261,30 @@ export const logFeatureUsage = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-
 // ===== Audit v2 =====
 export const listAuditV2 = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
-    z.object({
-      user_id: z.string().uuid().optional(), entity: z.string().optional(), action: z.string().optional(),
-      severity: z.string().optional(), from: z.string().optional(), to: z.string().optional(), limit: z.number().max(500).default(200),
-    }).parse(input),
+    z
+      .object({
+        user_id: z.string().uuid().optional(),
+        entity: z.string().optional(),
+        action: z.string().optional(),
+        severity: z.string().optional(),
+        from: z.string().optional(),
+        to: z.string().optional(),
+        limit: z.number().max(500).default(200),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
-    let q = supabaseAdmin.from("audit_log").select("*").order("created_at", { ascending: false }).limit(data.limit);
+    let q = supabaseAdmin
+      .from("audit_log")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(data.limit);
     if (data.user_id) q = q.eq("user_id", data.user_id);
     if (data.entity) q = q.eq("entity", data.entity);
     if (data.action) q = q.eq("action", data.action);
@@ -216,14 +296,17 @@ export const listAuditV2 = createServerFn({ method: "POST" })
     return (rows ?? []).map((r: any) => ({ ...r, ip: r.ip ? String(r.ip) : null }));
   });
 
-
 export const listFeatureUsageAggregate = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     const since = new Date(Date.now() - 7 * 24 * 3600_000).toISOString();
-    const { data } = await supabaseAdmin.from("feature_usage_log").select("feature,user_id,created_at").gte("created_at", since).limit(5000);
+    const { data } = await supabaseAdmin
+      .from("feature_usage_log")
+      .select("feature,user_id,created_at")
+      .gte("created_at", since)
+      .limit(5000);
     const byFeature = new Map<string, number>();
     const byUser = new Map<string, number>();
     for (const r of data ?? []) {
@@ -231,8 +314,14 @@ export const listFeatureUsageAggregate = createServerFn({ method: "GET" })
       if (r.user_id) byUser.set(r.user_id, (byUser.get(r.user_id) ?? 0) + 1);
     }
     return {
-      topFeatures: [...byFeature].sort((a, b) => b[1] - a[1]).slice(0, 20).map(([feature, count]) => ({ feature, count })),
-      topUsers: [...byUser].sort((a, b) => b[1] - a[1]).slice(0, 20).map(([user_id, count]) => ({ user_id, count })),
+      topFeatures: [...byFeature]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 20)
+        .map(([feature, count]) => ({ feature, count })),
+      topUsers: [...byUser]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 20)
+        .map(([user_id, count]) => ({ user_id, count })),
       total: data?.length ?? 0,
     };
   });
@@ -242,19 +331,30 @@ export const listAnomalies = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase, unauthenticated } = context as any;
     if (unauthenticated || !supabase) return [];
-    const { data, error } = await supabase.from("anomaly_alert").select("*").order("created_at", { ascending: false }).limit(200);
+    const { data, error } = await supabase
+      .from("anomaly_alert")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(200);
     if (error) throw new Error(error.message);
     return (data ?? []) as any[];
   });
 
 export const resolveAnomaly = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) => z.object({ id: z.string().uuid(), status: z.enum(["ack", "resolved"]) }).parse(input))
+  .inputValidator((input) =>
+    z.object({ id: z.string().uuid(), status: z.enum(["ack", "resolved"]) }).parse(input),
+  )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase, context.userId);
-    const { error } = await context.supabase.from("anomaly_alert").update({
-      status: data.status, resolved_by: context.userId, resolved_at: new Date().toISOString(),
-    }).eq("id", data.id);
+    const { error } = await context.supabase
+      .from("anomaly_alert")
+      .update({
+        status: data.status,
+        resolved_by: context.userId,
+        resolved_at: new Date().toISOString(),
+      })
+      .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -269,9 +369,16 @@ export const previewAsUser = createServerFn({ method: "POST" })
     const [rolesRes, scopeRes, permsRes] = await Promise.all([
       supabaseAdmin.from("user_roles").select("role").eq("user_id", data.user_id),
       supabaseAdmin.from("user_scope").select("to_chuc_id,don_vi_id").eq("user_id", data.user_id),
-      supabaseAdmin.from("role_permission").select("role,module,action,allowed").eq("allowed", true),
+      supabaseAdmin
+        .from("role_permission")
+        .select("role,module,action,allowed")
+        .eq("allowed", true),
     ]);
-    await supabaseAdmin.rpc("log_auth_event", { _event: "impersonate", _target: data.user_id, _detail: {} as any });
+    await supabaseAdmin.rpc("log_auth_event", {
+      _event: "impersonate",
+      _target: data.user_id,
+      _detail: {} as any,
+    });
     const myRoles = new Set((rolesRes.data ?? []).map((r: any) => r.role));
     const allowed: Record<string, string[]> = {};
     for (const p of permsRes.data ?? []) {

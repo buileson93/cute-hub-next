@@ -7,8 +7,12 @@ import { thongDiepLoi, kickNeuHetPhien } from "@/lib/mirats/errors";
 import { toast } from "sonner";
 
 export type PmTrangThai =
-  | "sap_den_han" | "den_han" | "qua_han"
-  | "dang_thuc_hien" | "hoan_thanh" | "bo_qua";
+  | "sap_den_han"
+  | "den_han"
+  | "qua_han"
+  | "dang_thuc_hien"
+  | "hoan_thanh"
+  | "bo_qua";
 
 export interface PmCongViecRow {
   id: string;
@@ -27,18 +31,37 @@ export interface PmCongViecRow {
   estimated: boolean;
   created_at: string;
   updated_at: string;
-  chinh_sach?: { ten: string; noi_dung: string | null; chu_ky_loai: string; chu_ky_gia_tri: number | null };
+  chinh_sach?: {
+    ten: string;
+    noi_dung: string | null;
+    chu_ky_loai: string;
+    chu_ky_gia_tri: number | null;
+  };
   don_vi?: { ten_don_vi: string } | null;
   phu_trach?: { ho_ten: string } | null;
 }
 
-export const PM_STATUS_META: Record<PmTrangThai, { label: string; variant: "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "error" | "info" }> = {
-  sap_den_han:    { label: "Sắp đến hạn",  variant: "info" },
-  den_han:        { label: "Đến hạn",       variant: "warning" },
-  qua_han:        { label: "Quá hạn",       variant: "error" },
-  dang_thuc_hien: { label: "Đang thực hiện",variant: "info" },
-  hoan_thanh:     { label: "Hoàn thành",    variant: "success" },
-  bo_qua:         { label: "Bỏ qua",        variant: "secondary" },
+export const PM_STATUS_META: Record<
+  PmTrangThai,
+  {
+    label: string;
+    variant:
+      | "default"
+      | "secondary"
+      | "destructive"
+      | "outline"
+      | "success"
+      | "warning"
+      | "error"
+      | "info";
+  }
+> = {
+  sap_den_han: { label: "Sắp đến hạn", variant: "info" },
+  den_han: { label: "Đến hạn", variant: "warning" },
+  qua_han: { label: "Quá hạn", variant: "error" },
+  dang_thuc_hien: { label: "Đang thực hiện", variant: "info" },
+  hoan_thanh: { label: "Hoàn thành", variant: "success" },
+  bo_qua: { label: "Bỏ qua", variant: "secondary" },
 };
 
 const KEY = ["pm_cong_viec"] as const;
@@ -56,7 +79,10 @@ export function usePmCongViec(filter?: { trang_thai?: PmTrangThai[] }) {
         .limit(1000);
       if (filter?.trang_thai?.length) q = q.in("trang_thai", filter.trang_thai);
       const { data, error } = await q;
-      if (error) { await kickNeuHetPhien(error); throw error; }
+      if (error) {
+        await kickNeuHetPhien(error);
+        throw error;
+      }
       return (data ?? []) as unknown as PmCongViecRow[];
     },
     staleTime: 30_000,
@@ -68,7 +94,10 @@ export function useSinhPmCongViec() {
   return useMutation({
     mutationFn: async () => {
       const { data, error } = await supabase.rpc("pm_sinh_cong_viec", {});
-      if (error) { await kickNeuHetPhien(error); throw error; }
+      if (error) {
+        await kickNeuHetPhien(error);
+        throw error;
+      }
       return data as { created: number; updated: number };
     },
     onSuccess: (r) => {
@@ -102,7 +131,10 @@ export function useHoanThanhPm() {
       if (input.ghi_chu) args._ghi_chu = input.ghi_chu;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await supabase.rpc("pm_hoan_thanh_cong_viec", args as any);
-      if (error) { await kickNeuHetPhien(error); throw error; }
+      if (error) {
+        await kickNeuHetPhien(error);
+        throw error;
+      }
       return data as unknown as { bao_tri_id: string; next_pm_id: string | null };
     },
     onSuccess: () => {
@@ -122,7 +154,10 @@ export function useBoQuaPm() {
         _task_id: p.taskId,
         _ly_do: p.ly_do,
       });
-      if (error) { await kickNeuHetPhien(error); throw error; }
+      if (error) {
+        await kickNeuHetPhien(error);
+        throw error;
+      }
       return data;
     },
     onSuccess: () => {

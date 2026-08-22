@@ -47,19 +47,21 @@ export const xuatBaoCao = createServerFn({ method: "POST" })
 
     if (data.loai === "ly_lich_thiet_bi") {
       if (!data.thiet_bi_ma) throw new Error("Thiếu mã tài sản");
-      const { data: tb } = await supabase
+      const { data: tb } = (await supabase
         .from("thiet_bi")
         .select("id, ma_thiet_bi, ten_thiet_bi, nam_dua_vao_khai_thac, ngay_kiem_ke_ke_tiep")
         .eq("ma_thiet_bi", data.thiet_bi_ma)
-        .maybeSingle() as { data: any };
+        .maybeSingle()) as { data: any };
       nguon.thiet_bi = tb
-        ? [{
-            id: tb.id,
-            ma: tb.ma_thiet_bi,
-            ten: tb.ten_thiet_bi ?? "",
-            ngay_dua_vao: tb.nam_dua_vao_khai_thac ? String(tb.nam_dua_vao_khai_thac) : null,
-            ngay_kiem_ke_ke_tiep: tb.ngay_kiem_ke_ke_tiep ?? null,
-          }]
+        ? [
+            {
+              id: tb.id,
+              ma: tb.ma_thiet_bi,
+              ten: tb.ten_thiet_bi ?? "",
+              ngay_dua_vao: tb.nam_dua_vao_khai_thac ? String(tb.nam_dua_vao_khai_thac) : null,
+              ngay_kiem_ke_ke_tiep: tb.ngay_kiem_ke_ke_tiep ?? null,
+            },
+          ]
         : [];
       const tbId = tb?.id;
       if (tbId) {
@@ -95,7 +97,9 @@ export const xuatBaoCao = createServerFn({ method: "POST" })
       const den = data.den ?? new Date().toISOString();
       const { data: bt } = await supabase
         .from("bao_tri")
-        .select("id, thiet_bi_id, ngay_thuc_hien, ket_qua, trang_thai_duyet, nguoi_thuc_hien, ngay_ke_tiep, thiet_bi:thiet_bi_id(ma_thiet_bi, ten_thiet_bi)")
+        .select(
+          "id, thiet_bi_id, ngay_thuc_hien, ket_qua, trang_thai_duyet, nguoi_thuc_hien, ngay_ke_tiep, thiet_bi:thiet_bi_id(ma_thiet_bi, ten_thiet_bi)",
+        )
         .gte("ngay_thuc_hien", tu)
         .lte("ngay_thuc_hien", den)
         .eq("luu_tru", false);
@@ -142,8 +146,14 @@ export const xuatBaoCao = createServerFn({ method: "POST" })
     }
 
     let data_out;
-    if (data.loai === "ly_lich_thiet_bi") data_out = buildBaoCaoLyLichThietBi(nguon, { thietBiMa: data.thiet_bi_ma });
-    else if (data.loai === "bao_duong_ky") data_out = buildBaoCaoBaoDuongKy(nguon, { tu: data.tu ?? "", den: data.den ?? "", donVi: data.don_vi });
+    if (data.loai === "ly_lich_thiet_bi")
+      data_out = buildBaoCaoLyLichThietBi(nguon, { thietBiMa: data.thiet_bi_ma });
+    else if (data.loai === "bao_duong_ky")
+      data_out = buildBaoCaoBaoDuongKy(nguon, {
+        tu: data.tu ?? "",
+        den: data.den ?? "",
+        donVi: data.don_vi,
+      });
     else data_out = buildBaoCaoSapHetHan(nguon, { nguongNgay: data.nguong_ngay });
 
     const buf = xuatBaoCaoExcel(data_out);

@@ -78,7 +78,7 @@ export function buildKeysetQuery(cfg: KeysetQueryConfig): KeysetQueryResult {
 /** Sinh cursor tiếp theo từ hàng cuối của trang hiện tại. */
 export function nextCursor<T extends Record<string, unknown>>(
   rows: T[],
-  sortField: string
+  sortField: string,
 ): KeysetCursor | null {
   if (!rows.length) return null;
   const last = rows[rows.length - 1];

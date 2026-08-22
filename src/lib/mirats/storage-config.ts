@@ -65,7 +65,6 @@ function parse(raw: string | null | undefined): StorageConfig {
   }
 }
 
-
 export async function fetchStorageConfig(): Promise<StorageConfig> {
   const { data } = await supabase
     .from("app_cai_dat")

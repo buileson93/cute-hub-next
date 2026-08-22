@@ -11,7 +11,6 @@
 
 ---
 
-
 ## 🚀 Giới thiệu
 
 MIRATS số hóa toàn bộ công tác quản lý kỹ thuật của một đơn vị vận hành hạ tầng: từ **kiểm kê tài sản**, **phân lớp hệ thống**, **theo dõi bảo dưỡng – hỏng hóc – sự cố**, đến **vẽ sơ đồ hệ thống trực quan** và **quản lý giấy phép khai thác**. Giao diện tiếng Việt, tối ưu cho người dùng nghiệp vụ.
@@ -21,6 +20,7 @@ MIRATS số hóa toàn bộ công tác quản lý kỹ thuật của một đơn
 ## ✨ Tính năng chính
 
 ### 🗂️ Hệ Thống tài sản (phân lớp 7 tầng)
+
 Cấu trúc dữ liệu có khả năng mở rộng (scalable) theo mô hình nghiệp vụ:
 
 ```text
@@ -36,9 +36,10 @@ Toàn hệ thống
 - Kế thừa tự động theo **Model** (NSX / loại / bộ trường) qua trigger CSDL.
 - Nhập/xuất **CSV idempotent** (nhập lại không nhân bản) và **mẫu All-in-one (.xlsx)** nhiều sheet có dropdown kiểm tra hợp lệ.
 - Trường kỹ thuật mở rộng (JSONB) đồng bộ với CSDL; bulk edit / gộp trùng kiểu Snipe-IT.
-- Nhãn giấy phép động: N1 → *Giấy phép khai thác*, N2 → *Quyết định khai thác*, N3 → không yêu cầu.
+- Nhãn giấy phép động: N1 → _Giấy phép khai thác_, N2 → _Quyết định khai thác_, N3 → không yêu cầu.
 
 ### 🧭 Sơ đồ hệ thống (phong cách FigJam)
+
 - Thanh công cụ nổi: khối Tài sản, Hệ thống, Ghi chú dán, Hình khối, Văn bản, bảng màu.
 - **Thư viện đường nối đa dạng:** cáp mạng, cáp quang (hiệu ứng dòng chảy), cáp điện, sóng vô tuyến, cáp đồng trục, liên kết logic.
 - Chấm nối 4 cạnh, nối tự do giữa các node.
@@ -48,6 +49,7 @@ Toàn hệ thống
 - Chèn/upload hình ảnh cho từng khối (thư viện hình).
 
 ### 🛠️ Vận hành kỹ thuật
+
 - **Bảo dưỡng**, **Hỏng hóc**, **Sự cố**, **Tuổi thọ tài sản**, **Kiểm kê định kỳ**.
 - **Phiếu công việc bảo dưỡng (Work Order)** `/bao-tri/cong-viec`: chính sách PM → sinh phiếu định kỳ, KPI theo đơn vị.
 - **Kho & vật tư** `/vat-tu`: sổ cái bất biến (NHAP/XUAT/CHUYEN/KIEM_KE), cảnh báo tồn tối thiểu.
@@ -58,12 +60,14 @@ Toàn hệ thống
 - **Sổ lý lịch** tài sản & hệ thống: dòng thời gian bảo dưỡng/sự cố/thay thế.
 
 ### 🎓 Product Tour (hướng dẫn người dùng)
+
 - Spotlight làm nổi bật phần tử, phần còn lại chìm tối.
 - Thẻ hướng dẫn có animation, tự động định vị, điều hướng Quay lại / Tiếp / Bỏ qua.
 - Tự khởi động cho người dùng mới, mở lại bất kỳ lúc nào qua nút Trợ giúp.
 - Tooltip nhỏ khi hover các nút chức năng.
 
 ### 🔐 Quản trị & bảo mật
+
 - **Phân quyền** theo vai trò (lưu ở bảng `user_roles` riêng, chống leo thang đặc quyền).
 - **Nhật ký (Audit log)** ghi thay đổi từng trường, hỗ trợ **rollback** dữ liệu cũ.
 - **Sơ đồ CSDL** tương tác (expand/thu gọn cột, phân màu nhóm bảng).
@@ -73,14 +77,14 @@ Toàn hệ thống
 
 ## 🧱 Công nghệ
 
-| Lớp | Công nghệ |
-| --- | --- |
-| Framework | TanStack Start v1 (SSR + server functions) |
-| UI | React 19, Tailwind CSS v4, shadcn/ui, Radix UI |
-| Sơ đồ | @xyflow/react (React Flow), @dagrejs/dagre, html-to-image |
-| Backend | Lovable Cloud (Supabase): Postgres, Auth, Storage, RLS |
-| Data | TanStack Query, Zod |
-| Build | Vite 7, Bun |
+| Lớp       | Công nghệ                                                 |
+| --------- | --------------------------------------------------------- |
+| Framework | TanStack Start v1 (SSR + server functions)                |
+| UI        | React 19, Tailwind CSS v4, shadcn/ui, Radix UI            |
+| Sơ đồ     | @xyflow/react (React Flow), @dagrejs/dagre, html-to-image |
+| Backend   | Lovable Cloud (Supabase): Postgres, Auth, Storage, RLS    |
+| Data      | TanStack Query, Zod                                       |
+| Build     | Vite 7, Bun                                               |
 
 ---
 
@@ -129,6 +133,7 @@ Dự án hỗ trợ **đồng bộ hai chiều** với GitHub qua Lovable:
 3. Nhấn **Create Repository** để tạo repo chứa mã nguồn.
 
 Sau khi kết nối:
+
 - Thay đổi trong Lovable **tự động push** lên GitHub.
 - Commit đẩy lên GitHub **tự động sync** ngược về Lovable (thời gian thực).
 - Có thể clone repo, phát triển ở IDE, dùng branch/pull request và CI/CD GitHub Actions song song.

@@ -52,6 +52,7 @@ Build a client-side administrative tool to process OCR for existing PDF document
 ## Technical Details
 
 ### OCR Stats Interface
+
 ```typescript
 interface OcrStats {
   totalDocs: number;
@@ -63,8 +64,10 @@ interface OcrStats {
 ```
 
 ### Auto-Pause Logic
+
 - Trigger pause if `performance.memory.usedJSHeapSize` exceeds 80% of `jsHeapSizeLimit`.
 - Trigger pause if `timePerPage` exceeds 3x the baseline average for the current device tier.
 
 ### Navigation Integration
+
 - Add "Quản trị OCR" to the sidebar under the Admin section in `src/components/mirats/app-shell/AppShell.tsx`.

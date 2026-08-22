@@ -15,6 +15,7 @@ Implement a vertical, Astryx-standardized project timeline for MIRATS. This incl
 ### 1. Database Schema (Supabase)
 
 #### New Tables & Triggers
+
 - `du_an_su_kien`: Stores the unified timeline events.
 - `du_an_su_kien_tep`: Junction table or view to associate files with events.
 - Triggers on `du_an`, `du_an_moc`, `du_an_cong_viec`, `lean_ux_canvases`, `pitches`, and `cong_van` to record events automatically.
@@ -22,12 +23,14 @@ Implement a vertical, Astryx-standardized project timeline for MIRATS. This incl
 ### 2. Backend Logic (TanStack Start)
 
 #### Server Functions
+
 - `getProjectEvents`: Fetches filtered and paginated events for a specific project.
 - `logProjectEvent`: A server-side utility to manually record events that can't be captured via triggers.
 
 ### 3. UI Components (Astryx & React)
 
 #### Project Timeline View (`src/components/mirats/projects/timeline/`)
+
 - `ProjectTimeline.tsx`: Main container using `LayoutContent`.
 - `TimelineList.tsx`: Edge-to-edge list implementation with vertical axis and StatusDots.
 - `TimelineItem.tsx`: Individual row showing actor, summary, metadata tokens, and nested file rows.
@@ -37,12 +40,14 @@ Implement a vertical, Astryx-standardized project timeline for MIRATS. This incl
 ### 4. Integration
 
 #### Route Update
+
 - Connect the `Timeline` tab in `src/routes/_app.du-an.$id.tsx` to the new `ProjectTimeline` component.
 - Ensure URL state persistence for filters and the selected event ID (inspector state).
 
 ## Technical Details
 
 ### Database Migration
+
 ```sql
 CREATE TYPE public.project_event_type AS ENUM (
   'project_created', 'project_updated',
@@ -76,6 +81,7 @@ GRANT INSERT ON public.du_an_su_kien TO service_role; -- Triggers run as service
 ```
 
 ### UI Specifications
+
 - **Vertical Axis**: 2px wide line using MIRATS Blue (#0074e2) or gray based on event status.
 - **Inspector**: Standardized 380px width, responsive overlay on mobile.
 - **Performance**: Virtualized list if events exceed 500+ to maintain < 100ms interaction time.

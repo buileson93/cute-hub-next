@@ -23,7 +23,7 @@ export function CheckinMap({
   useEffect(() => {
     let huy = false;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let markers: any[] = [];
+    const markers: any[] = [];
 
     (async () => {
       const L = (await import("leaflet")).default;
@@ -97,7 +97,8 @@ export function CheckinMap({
 }
 
 function escapeHtml(s: string) {
-  return s.replace(/[&<>"']/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string,
+  return s.replace(
+    /[&<>"']/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] as string,
   );
 }

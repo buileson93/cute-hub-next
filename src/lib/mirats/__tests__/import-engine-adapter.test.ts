@@ -67,16 +67,23 @@ describe("buildRunOptions — ngữ cảnh màn hình tự điền", () => {
 });
 
 describe("toBulkInput — parity với Import Studio", () => {
-  const rows = [{ ma: "SONY", ten: "Sony" }, { ma: "", ten: "Bosch" }];
+  const rows = [
+    { ma: "SONY", ten: "Sony" },
+    { ma: "", ten: "Bosch" },
+  ];
 
   it("danh mục nền: preview trùng khớp payload Import Studio", () => {
     const opts = buildRunOptions({ entity: "danh_muc", catTable: "dm_nha_san_xuat" }, rows);
-    expect(toBulkInput(opts, false)).toEqual(studioPayload("danh_muc", "dm_nha_san_xuat", rows, false));
+    expect(toBulkInput(opts, false)).toEqual(
+      studioPayload("danh_muc", "dm_nha_san_xuat", rows, false),
+    );
   });
 
   it("danh mục nền: commit trùng khớp payload Import Studio", () => {
     const opts = buildRunOptions({ entity: "danh_muc", catTable: "dm_nha_san_xuat" }, rows);
-    expect(toBulkInput(opts, true)).toEqual(studioPayload("danh_muc", "dm_nha_san_xuat", rows, true));
+    expect(toBulkInput(opts, true)).toEqual(
+      studioPayload("danh_muc", "dm_nha_san_xuat", rows, true),
+    );
   });
 
   it("entity model: commit trùng khớp payload Import Studio", () => {
@@ -89,13 +96,22 @@ describe("toBulkInput — parity với Import Studio", () => {
     const opts = buildRunOptions({ entity: "dm_he_thong" }, rows, extra);
     expect(toBulkInput(opts, false).extraRefs).toEqual(extra);
     expect(toBulkInput(opts, true).extraRefs).toBeUndefined();
-    expect(toBulkInput(opts, false)).toEqual(studioPayload("dm_he_thong", undefined, rows, false, extra));
+    expect(toBulkInput(opts, false)).toEqual(
+      studioPayload("dm_he_thong", undefined, rows, false, extra),
+    );
   });
 
   it("allowRefCreate đi cùng cả preview lẫn commit khi admin xác nhận", () => {
-    const opts = buildRunOptions({ entity: "dm_he_thong", allowRefCreate: CONFIRMABLE_TABLES }, rows);
-    expect(toBulkInput(opts, false)).toEqual(studioPayload("dm_he_thong", undefined, rows, false, undefined, true));
-    expect(toBulkInput(opts, true)).toEqual(studioPayload("dm_he_thong", undefined, rows, true, undefined, true));
+    const opts = buildRunOptions(
+      { entity: "dm_he_thong", allowRefCreate: CONFIRMABLE_TABLES },
+      rows,
+    );
+    expect(toBulkInput(opts, false)).toEqual(
+      studioPayload("dm_he_thong", undefined, rows, false, undefined, true),
+    );
+    expect(toBulkInput(opts, true)).toEqual(
+      studioPayload("dm_he_thong", undefined, rows, true, undefined, true),
+    );
   });
 });
 
@@ -105,11 +121,19 @@ describe("normalizeResult — chuẩn hoá kết quả runBulkImport", () => {
       committed: false,
       summary: { total: 2, create: 1, update: 1, error: 0, refCreate: 0, refConfirm: 0 },
       preview: [
-        { index: 0, action: "create", key: "SONY", messages: [], warnings: ["Mã tự sinh"], refCreations: [] },
+        {
+          index: 0,
+          action: "create",
+          key: "SONY",
+          messages: [],
+          warnings: ["Mã tự sinh"],
+          refCreations: [],
+        },
         { index: 1, action: "update", key: "BOSCH", messages: [], warnings: [], refCreations: [] },
       ],
       confirms: [{ table: "dm_phan_loai", label: "Phân loại", value: "Nhóm X" }],
-      entity: "danh_muc", table: "dm_nha_san_xuat",
+      entity: "danh_muc",
+      table: "dm_nha_san_xuat",
     };
     const out = normalizeResult(res);
     expect(out).toMatchObject({ total: 2, create: 1, update: 1, error: 0 });
@@ -121,16 +145,34 @@ describe("normalizeResult — chuẩn hoá kết quả runBulkImport", () => {
   it("ghi thật: dùng created/updated/writeErrors và suy dòng lỗi từ errors", () => {
     const res: BulkImportResult = {
       committed: true,
-      summary: { total: 3, create: 2, update: 1, error: 0, refCreate: 0, refConfirm: 0, created: 2, updated: 1, writeErrors: 1 },
+      summary: {
+        total: 3,
+        create: 2,
+        update: 1,
+        error: 0,
+        refCreate: 0,
+        refConfirm: 0,
+        created: 2,
+        updated: 1,
+        writeErrors: 1,
+      },
       errors: [{ key: "X1", message: "trùng serial" }],
-      entity: "thiet_bi", table: "thiet_bi",
+      entity: "thiet_bi",
+      table: "thiet_bi",
     };
     const out = normalizeResult(res);
     expect(out.create).toBe(2);
     expect(out.update).toBe(1);
     expect(out.error).toBe(1);
     expect(out.rows).toEqual([
-      { index: -1, action: "error", key: "X1", messages: ["trùng serial"], warnings: [], refCreations: [] },
+      {
+        index: -1,
+        action: "error",
+        key: "X1",
+        messages: ["trùng serial"],
+        warnings: [],
+        refCreations: [],
+      },
     ]);
   });
 });
@@ -139,15 +181,23 @@ describe("createServerImportEngine — gọi runBulkImport đúng chế độ", 
   const okResult: BulkImportResult = {
     committed: false,
     summary: { total: 1, create: 1, update: 0, error: 0, refCreate: 0, refConfirm: 0 },
-    preview: [{ index: 0, action: "create", key: "SONY", messages: [], warnings: [], refCreations: [] }],
-    entity: "danh_muc", table: "dm_nha_san_xuat",
+    preview: [
+      { index: 0, action: "create", key: "SONY", messages: [], warnings: [], refCreations: [] },
+    ],
+    entity: "danh_muc",
+    table: "dm_nha_san_xuat",
   };
 
   it("preview gọi commit=false; commit gọi commit=true", async () => {
     const captured: BulkImportInput[] = [];
-    const run = vi.fn(async (args: { data: BulkImportInput }) => { captured.push(args.data); return okResult; });
+    const run = vi.fn(async (args: { data: BulkImportInput }) => {
+      captured.push(args.data);
+      return okResult;
+    });
     const engine = createServerImportEngine(run);
-    const opts = buildRunOptions({ entity: "danh_muc", catTable: "dm_nha_san_xuat" }, [{ ma: "SONY", ten: "Sony" }]);
+    const opts = buildRunOptions({ entity: "danh_muc", catTable: "dm_nha_san_xuat" }, [
+      { ma: "SONY", ten: "Sony" },
+    ]);
 
     await engine.preview(opts);
     expect(captured[0].commit).toBe(false);
@@ -158,7 +208,10 @@ describe("createServerImportEngine — gọi runBulkImport đúng chế độ", 
 
   it("cùng ngữ cảnh + cùng dòng → payload commit y hệt Import Studio", async () => {
     const captured: BulkImportInput[] = [];
-    const run = vi.fn(async (args: { data: BulkImportInput }) => { captured.push(args.data); return okResult; });
+    const run = vi.fn(async (args: { data: BulkImportInput }) => {
+      captured.push(args.data);
+      return okResult;
+    });
     const engine = createServerImportEngine(run);
     const rows = [{ ma: "SONY", ten: "Sony" }];
     await engine.commit(buildRunOptions({ entity: "danh_muc", catTable: "dm_nha_san_xuat" }, rows));

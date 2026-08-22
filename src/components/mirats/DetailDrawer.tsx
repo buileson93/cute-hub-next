@@ -11,7 +11,11 @@ import * as React from "react";
 // Full-page nav dùng <a href> — TanStack Link cần literal `to`.
 import { ExternalLink } from "lucide-react";
 import {
-  Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -57,8 +61,18 @@ export interface DetailDrawerProps {
 }
 
 export function DetailDrawer({
-  open, onOpenChange, loai, row, hrefFull, roles,
-  onSua, onXoa, onHoanThanh, onDong, forceReadOnly, className,
+  open,
+  onOpenChange,
+  loai,
+  row,
+  hrefFull,
+  roles,
+  onSua,
+  onXoa,
+  onHoanThanh,
+  onDong,
+  forceReadOnly,
+  className,
 }: DetailDrawerProps) {
   if (!loai) {
     return (
@@ -75,38 +89,32 @@ export function DetailDrawer({
 
   const view = entityView(loai);
   const tieuDe = row ? view.tieuDe(row) || view.ten : view.ten;
-  const phu = row ? view.phu?.(row) ?? "" : "";
+  const phu = row ? (view.phu?.(row) ?? "") : "";
   const highlightFields = row ? view.highlight.map((f) => renderField(f, row)) : [];
   const chiTietFields = row ? view.chiTiet.map((f) => renderField(f, row)) : [];
-  const badgeCode = row && view.badgeTrangThai
-    ? (row[view.badgeTrangThai.key] as string | null | undefined)
-    : null;
+  const badgeCode =
+    row && view.badgeTrangThai ? (row[view.badgeTrangThai.key] as string | null | undefined) : null;
   const domain = LOAI_TO_DOMAIN[loai];
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className={cn(
-          "flex w-full flex-col gap-0 p-0 sm:max-w-xl",
-          className,
-        )}
+        className={cn("flex w-full flex-col gap-0 p-0 sm:max-w-xl", className)}
       >
         {/* Header */}
         <SheetHeader className="space-y-1 border-b px-6 py-4 text-left">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <Badge variant="outline" size="sm" className="mb-1 uppercase tracking-wider bg-primary/5 text-primary border-primary/20">
+              <Badge
+                variant="outline"
+                size="sm"
+                className="mb-1 uppercase tracking-wider bg-primary/5 text-primary border-primary/20"
+              >
                 {view.ten}
               </Badge>
-              <SheetTitle className="truncate text-base font-semibold">
-                {tieuDe}
-              </SheetTitle>
-              {phu && (
-                <SheetDescription className="truncate text-xs">
-                  {phu}
-                </SheetDescription>
-              )}
+              <SheetTitle className="truncate text-base font-semibold">{tieuDe}</SheetTitle>
+              {phu && <SheetDescription className="truncate text-xs">{phu}</SheetDescription>}
             </div>
             {view.badgeTrangThai && (
               <StatusBadge domain={view.badgeTrangThai.domain} code={badgeCode ?? null} />

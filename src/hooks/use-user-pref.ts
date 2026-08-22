@@ -41,30 +41,44 @@ export function useUserPref<T>(key: string, defaultValue: T) {
   });
 
   const [local, setLocal] = useState<T>(data ?? defaultValue);
-  useEffect(() => { if (data !== undefined) setLocal(data); }, [data]);
+  useEffect(() => {
+    if (data !== undefined) setLocal(data);
+  }, [data]);
 
-  const setPref = useCallback((next: T | ((prev: T) => T)) => {
-    setLocal((prev) => {
-      const value = typeof next === "function" ? (next as (p: T) => T)(prev) : next;
-      qc.setQueryData(["user-pref", userId ?? "guest", key], value);
+  const setPref = useCallback(
+    (next: T | ((prev: T) => T)) => {
+      setLocal((prev) => {
+        const value = typeof next === "function" ? (next as (p: T) => T)(prev) : next;
+        qc.setQueryData(["user-pref", userId ?? "guest", key], value);
+        if (timerRef.current) clearTimeout(timerRef.current);
+        timerRef.current = setTimeout(async () => {
+          if (userId) {
+            await supabase
+              .from("user_layout_prefs")
+              .upsert(
+                { user_id: userId, key, value: value as never },
+                { onConflict: "user_id,key" },
+              );
+          } else {
+            try {
+              window.localStorage.setItem(lsKey, JSON.stringify(value));
+            } catch {
+              /* ignore */
+            }
+          }
+        }, 500);
+        return value;
+      });
+    },
+    [key, lsKey, qc, userId],
+  );
+
+  useEffect(
+    () => () => {
       if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(async () => {
-        if (userId) {
-          await supabase
-            .from("user_layout_prefs")
-            .upsert(
-              { user_id: userId, key, value: value as never },
-              { onConflict: "user_id,key" },
-            );
-        } else {
-          try { window.localStorage.setItem(lsKey, JSON.stringify(value)); } catch { /* ignore */ }
-        }
-      }, 500);
-      return value;
-    });
-  }, [key, lsKey, qc, userId]);
-
-  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
+    },
+    [],
+  );
 
   return [local, setPref] as const;
 }

@@ -15,9 +15,12 @@ export function useDashboardBrief(donViIds?: string[]) {
     queryKey: ["dashboard_brief_today", donViIds],
     staleTime: 60_000,
     queryFn: async (): Promise<DashboardBrief> => {
-      const { data, error } = await supabase.rpc("dashboard_brief_today" as never, { 
-        p_don_vi_ids: donViIds 
-      } as never);
+      const { data, error } = await supabase.rpc(
+        "dashboard_brief_today" as never,
+        {
+          p_don_vi_ids: donViIds,
+        } as never,
+      );
       if (error) throw error;
       return data as unknown as DashboardBrief;
     },
@@ -26,7 +29,7 @@ export function useDashboardBrief(donViIds?: string[]) {
 
 export interface ActivityFeedRow {
   at: string;
-  loai: 'su_co' | 'bao_tri' | 'ban_giao' | 'kiem_ke';
+  loai: "su_co" | "bao_tri" | "ban_giao" | "kiem_ke";
   tieu_de: string;
   ref_route: string;
   ref_id: string;
@@ -37,10 +40,13 @@ export function useActivityFeed(donViIds?: string[], limit = 20) {
     queryKey: ["dashboard_activity_feed", donViIds, limit],
     staleTime: 30_000,
     queryFn: async (): Promise<ActivityFeedRow[]> => {
-      const { data, error } = await supabase.rpc("dashboard_activity_feed" as never, {
-        p_don_vi_ids: donViIds,
-        p_limit: limit
-      } as never);
+      const { data, error } = await supabase.rpc(
+        "dashboard_activity_feed" as never,
+        {
+          p_don_vi_ids: donViIds,
+          p_limit: limit,
+        } as never,
+      );
       if (error) throw error;
       return (data ?? []) as ActivityFeedRow[];
     },
@@ -61,11 +67,13 @@ export interface DashboardKpis {
 
 export function useDashboardKpis(donViIds?: string[], fromDate?: string, toDate?: string) {
   const dTo = toDate || new Date().toISOString().slice(0, 10);
-  const dFrom = fromDate || (() => {
-    const d = new Date();
-    d.setDate(d.getDate() - 30);
-    return d.toISOString().slice(0, 10);
-  })();
+  const dFrom =
+    fromDate ||
+    (() => {
+      const d = new Date();
+      d.setDate(d.getDate() - 30);
+      return d.toISOString().slice(0, 10);
+    })();
 
   return useQuery({
     queryKey: ["dashboard_kpis", donViIds, dFrom, dTo],
@@ -74,7 +82,7 @@ export function useDashboardKpis(donViIds?: string[], fromDate?: string, toDate?
       const { data, error } = await supabase.rpc("dashboard_kpis", {
         p_don_vi_ids: donViIds,
         p_from: dFrom,
-        p_to: dTo
+        p_to: dTo,
       });
       if (error) throw error;
       return data as unknown as DashboardKpis;
@@ -97,21 +105,26 @@ export interface DashboardHealth {
 
 export function useDashboardHealth(donViIds?: string[], fromDate?: string, toDate?: string) {
   const dTo = toDate || new Date().toISOString().slice(0, 10);
-  const dFrom = fromDate || (() => {
-    const d = new Date();
-    d.setDate(d.getDate() - 30);
-    return d.toISOString().slice(0, 10);
-  })();
+  const dFrom =
+    fromDate ||
+    (() => {
+      const d = new Date();
+      d.setDate(d.getDate() - 30);
+      return d.toISOString().slice(0, 10);
+    })();
 
   return useQuery({
     queryKey: ["dashboard_health", donViIds, dFrom, dTo],
     staleTime: 60_000,
     queryFn: async (): Promise<DashboardHealth> => {
-      const { data, error } = await supabase.rpc("dashboard_health" as never, {
-        p_don_vi_ids: donViIds,
-        p_from: dFrom,
-        p_to: dTo
-      } as never);
+      const { data, error } = await supabase.rpc(
+        "dashboard_health" as never,
+        {
+          p_don_vi_ids: donViIds,
+          p_from: dFrom,
+          p_to: dTo,
+        } as never,
+      );
       if (error) throw error;
       return data as unknown as DashboardHealth;
     },

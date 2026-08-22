@@ -7,11 +7,7 @@
 // ============================================================================
 
 import { supabase } from "@/integrations/backend/client";
-import type {
-  ChecklistItem,
-  ChecklistSection,
-  ResultKind,
-} from "@/lib/mirats/checklist";
+import type { ChecklistItem, ChecklistSection, ResultKind } from "@/lib/mirats/checklist";
 import { parseItemOptions } from "@/lib/mirats/checklist-item-options";
 
 const RESULT_KINDS: ResultKind[] = ["so", "dat_khong_dat", "chon", "text"];
@@ -97,7 +93,9 @@ export function buildSections(
 }
 
 /** Có phải mẫu dạng checklist? (có ít nhất 1 section) */
-export function isChecklistTemplate(sections: readonly ChecklistSection[] | null | undefined): boolean {
+export function isChecklistTemplate(
+  sections: readonly ChecklistSection[] | null | undefined,
+): boolean {
   return !!sections && sections.length > 0;
 }
 

@@ -10,13 +10,16 @@ The MindMap (Sơ đồ) tab in the System Tree page is currently invisible (rend
 ## Proposed Changes
 
 ### 1. DataState Component
+
 - Modify `src/components/mirats/DataState.tsx` to wrap the `success` state children in a `div` if a `className` is provided. This ensures that layout classes like `h-full` or `flex-1` are not lost when the data finishes loading.
 
 ### 2. System Tree Route
+
 - Update `src/routes/_app.he-thong.cay.tsx` to wrap the `CayMindMap` component in a `div` with `h-full`, matching the pattern used for the `TreeView`.
 - Ensure the `DataState` wrapper is correctly configured to fill the `PageBody`.
 
 ### 3. MindMap Component
+
 - Refine the `fitView` logic in `src/components/mirats/he-thong-cay/CayMindMap.tsx` to ensure it triggers once the container has valid dimensions.
 - Adjust initial zoom and centering to provide a better overview of the 800+ assets.
 
@@ -29,13 +32,15 @@ The MindMap (Sơ đồ) tab in the System Tree page is currently invisible (rend
 ## Verification Plan
 
 ### Automated Tests
+
 - Run `npx tsc --noEmit` to ensure type safety.
 - Use a Playwright script to verify:
-    1. Navigation to `/he-thong/cay`.
-    2. Switching to the "Sơ đồ" tab.
-    3. Checking that the `.react-flow` element has a non-zero height.
-    4. Checking that `react-flow__node` elements are present in the DOM.
+  1. Navigation to `/he-thong/cay`.
+  2. Switching to the "Sơ đồ" tab.
+  3. Checking that the `.react-flow` element has a non-zero height.
+  4. Checking that `react-flow__node` elements are present in the DOM.
 
 ### Manual Verification
+
 - Verify the MindMap displays correctly in the preview at `/he-thong/cay`.
 - Confirm that the "Recenter" button works as expected.

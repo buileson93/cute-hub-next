@@ -1,10 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  isValidSignatureDataUrl,
-  dataUrlToBlob,
-  buildChuKyPath,
-  CHU_KY_BUCKET,
-} from "../chu-ky";
+import { isValidSignatureDataUrl, dataUrlToBlob, buildChuKyPath, CHU_KY_BUCKET } from "../chu-ky";
 
 // PNG 1x1 trong suốt (base64 hợp lệ)
 const PNG_1x1 =

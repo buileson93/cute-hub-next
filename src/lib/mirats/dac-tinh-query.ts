@@ -19,10 +19,16 @@ export interface DacTinhPageParams {
 }
 
 /** Chặn %/_/, trong .ilike() để tránh vỡ pattern. */
-export function escapeIlike(s: string) { return s.replace(/[%_,]/g, ""); }
+export function escapeIlike(s: string) {
+  return s.replace(/[%_,]/g, "");
+}
 
 /** Chain-like giao diện tối thiểu (khớp Supabase PostgREST — thenable). */
-export interface DacTinhQueryBuilder extends PromiseLike<{ data: DacTinhPageRow[] | null; error: unknown; count: number | null }> {
+export interface DacTinhQueryBuilder extends PromiseLike<{
+  data: DacTinhPageRow[] | null;
+  error: unknown;
+  count: number | null;
+}> {
   range(from: number, to: number): DacTinhQueryBuilder;
   or(filter: string): DacTinhQueryBuilder;
   order(column: string, opts?: { ascending?: boolean; nullsFirst?: boolean }): DacTinhQueryBuilder;
@@ -66,4 +72,3 @@ export async function fetchDacTinhPage(
   if (error) throw error;
   return { rows: data ?? [], tong: count ?? 0 };
 }
-

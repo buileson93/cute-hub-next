@@ -7,10 +7,23 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  Camera, FileSignature, MapPin, Timer, Table as TableIcon, Calculator,
-  PackageSearch, Wrench, Layers,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Camera,
+  FileSignature,
+  MapPin,
+  Timer,
+  Table as TableIcon,
+  Calculator,
+  PackageSearch,
+  Wrench,
+  Layers,
 } from "lucide-react";
 
 export type PreviewField = {
@@ -38,7 +51,11 @@ function LabelRow({ f }: { f: PreviewField }) {
         {f.required && <span className="ml-0.5 text-rose-600">*</span>}
       </Label>
       {f.unit && <span className="text-xs text-muted-foreground">({f.unit})</span>}
-      {f.tieu_chuan && <Badge variant="outline" className="text-[10px]">TC: {f.tieu_chuan}</Badge>}
+      {f.tieu_chuan && (
+        <Badge variant="outline" className="text-[10px]">
+          TC: {f.tieu_chuan}
+        </Badge>
+      )}
     </div>
   );
 }
@@ -112,9 +129,15 @@ function renderInner(f: PreviewField, ph: string | undefined) {
     case "select":
       return (
         <Select disabled>
-          <SelectTrigger><SelectValue placeholder={ph ?? "Chọn…"} /></SelectTrigger>
+          <SelectTrigger>
+            <SelectValue placeholder={ph ?? "Chọn…"} />
+          </SelectTrigger>
           <SelectContent>
-            {(f.options ?? []).map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+            {(f.options ?? []).map((o) => (
+              <SelectItem key={o} value={o}>
+                {o}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       );
@@ -123,7 +146,9 @@ function renderInner(f: PreviewField, ph: string | undefined) {
         <div className="flex flex-wrap gap-1 rounded-md border p-2 text-xs text-muted-foreground">
           {(f.options ?? []).length === 0 && <span>Chưa có lựa chọn</span>}
           {(f.options ?? []).map((o) => (
-            <Badge key={o} variant="secondary" className="font-normal">{o}</Badge>
+            <Badge key={o} variant="secondary" className="font-normal">
+              {o}
+            </Badge>
           ))}
         </div>
       );
@@ -150,8 +175,12 @@ function renderInner(f: PreviewField, ph: string | undefined) {
       );
     case "geo":
       return (
-        <Input disabled placeholder={ph ?? "Toạ độ GPS (lat, lng)"}
-          className="pl-8" style={{ backgroundImage: "none" }} />
+        <Input
+          disabled
+          placeholder={ph ?? "Toạ độ GPS (lat, lng)"}
+          className="pl-8"
+          style={{ backgroundImage: "none" }}
+        />
       );
     case "duration":
       return (
@@ -230,16 +259,21 @@ function renderInner(f: PreviewField, ph: string | undefined) {
               <tr>
                 {(f.columns ?? []).map((c) => (
                   <th key={c.key} className="px-2 py-1 text-left font-medium">
-                    {c.label}{c.unit ? ` (${c.unit})` : ""}
+                    {c.label}
+                    {c.unit ? ` (${c.unit})` : ""}
                   </th>
                 ))}
-                {(f.columns ?? []).length === 0 && <th className="px-2 py-1 text-muted-foreground">Chưa khai cột</th>}
+                {(f.columns ?? []).length === 0 && (
+                  <th className="px-2 py-1 text-muted-foreground">Chưa khai cột</th>
+                )}
               </tr>
             </thead>
             <tbody>
               <tr>
                 {(f.columns ?? []).map((c) => (
-                  <td key={c.key} className="border-t px-2 py-1 text-muted-foreground">—</td>
+                  <td key={c.key} className="border-t px-2 py-1 text-muted-foreground">
+                    —
+                  </td>
                 ))}
               </tr>
             </tbody>
@@ -259,11 +293,16 @@ function renderInner(f: PreviewField, ph: string | undefined) {
             {(f.columns ?? []).map((c) => (
               <div key={c.key} className="rounded border bg-background px-2 py-1 text-xs">
                 <span className="font-medium">{c.label}</span>
-                <span className="ml-2 text-muted-foreground">({c.kind}{c.unit ? ` · ${c.unit}` : ""})</span>
+                <span className="ml-2 text-muted-foreground">
+                  ({c.kind}
+                  {c.unit ? ` · ${c.unit}` : ""})
+                </span>
               </div>
             ))}
             {(f.columns ?? []).length === 0 && (
-              <div className="text-[11px] text-amber-600">Chưa cấu hình trường con — mở Inspector để thêm.</div>
+              <div className="text-[11px] text-amber-600">
+                Chưa cấu hình trường con — mở Inspector để thêm.
+              </div>
             )}
           </div>
         </div>
@@ -292,12 +331,19 @@ function refIcon(kind: string) {
 }
 function refPlaceholder(kind: string) {
   switch (kind) {
-    case "user_ref": return "Chọn người dùng…";
-    case "don_vi_ref": return "Chọn đơn vị…";
-    case "thiet_bi_ref": return "Chọn tài sản…";
-    case "linh_kien_ref": return "Chọn linh kiện…";
-    case "vat_tu_ref": return "Chọn vật tư…";
-    case "he_thong_thanh_phan_ref": return "Chọn thành phần hệ thống…";
-    default: return "";
+    case "user_ref":
+      return "Chọn người dùng…";
+    case "don_vi_ref":
+      return "Chọn đơn vị…";
+    case "thiet_bi_ref":
+      return "Chọn tài sản…";
+    case "linh_kien_ref":
+      return "Chọn linh kiện…";
+    case "vat_tu_ref":
+      return "Chọn vật tư…";
+    case "he_thong_thanh_phan_ref":
+      return "Chọn thành phần hệ thống…";
+    default:
+      return "";
   }
 }

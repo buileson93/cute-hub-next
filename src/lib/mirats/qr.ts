@@ -17,9 +17,11 @@ export type QrTarget =
   | { kind: "unknown"; raw: string };
 
 /** Dựng URL đầy đủ + path cho tem QR của một tài sản. */
-export function buildAssetQrPayload(
-  input: { origin: string; maThietBi: string },
-): { url: string; path: string; ma: string } {
+export function buildAssetQrPayload(input: { origin: string; maThietBi: string }): {
+  url: string;
+  path: string;
+  ma: string;
+} {
   const ma = (input.maThietBi ?? "").trim();
   if (!ma) throw new Error("buildAssetQrPayload: maThietBi rỗng — không được in tem không có mã");
   return {

@@ -31,7 +31,7 @@ export class OcrProviderRegistry {
   getAllProviders(): OcrProvider[] {
     return Array.from(this.providers.values());
   }
-  
+
   async disposeAll() {
     for (const provider of this.providers.values()) {
       await provider.dispose();

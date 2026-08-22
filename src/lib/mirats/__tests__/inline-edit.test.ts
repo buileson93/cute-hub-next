@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  validateField,
-  buildUpdatePayload,
-  isReadOnlyField,
-} from "@/lib/mirats/ui/inline-edit";
+import { validateField, buildUpdatePayload, isReadOnlyField } from "@/lib/mirats/ui/inline-edit";
 
 describe("inline-edit — validateField", () => {
   it("từ chối field bất biến ma_thiet_bi (Task 18)", () => {
@@ -63,12 +59,8 @@ describe("inline-edit — buildUpdatePayload", () => {
   });
 
   it("field chỉ-đọc → ném lỗi ngay ở logic", () => {
-    expect(() =>
-      buildUpdatePayload("thiet_bi", "tb-1", "ma_thiet_bi", "TB_X"),
-    ).toThrow();
-    expect(() =>
-      buildUpdatePayload("vat_tu", "vt-1", "so_luong_ton", 10),
-    ).toThrow();
+    expect(() => buildUpdatePayload("thiet_bi", "tb-1", "ma_thiet_bi", "TB_X")).toThrow();
+    expect(() => buildUpdatePayload("vat_tu", "vt-1", "so_luong_ton", 10)).toThrow();
   });
 });
 
@@ -79,7 +71,7 @@ describe("inline-edit — buildUpdatePayload", () => {
 import { resolveEditIntent, type CayView } from "@/lib/mirats/ui/inline-edit";
 
 describe("P6 — resolveEditIntent hội tụ 3 view", () => {
-  const runFromAllViews = <T,>(fn: (view: CayView) => T): T[] =>
+  const runFromAllViews = <T>(fn: (view: CayView) => T): T[] =>
     (["tree", "table", "mindmap"] as const).map(fn);
 
   it("đổi tên hệ thống (kind=ht) từ 3 view ⇒ cùng intent renameEntity", () => {
@@ -206,20 +198,36 @@ describe("P6 — useCellEditor dispatch tới đúng mutation", () => {
       saveNode: [] as unknown[],
     };
     const dispatch = (intent: ReturnType<typeof resolve>) => {
-      if (intent.target === "renameEntity") spies.renameEntity.push({ kind: intent.kind, id: intent.id, ten: intent.ten });
-      if (intent.target === "saveCell") spies.saveCell.push({ ma: intent.ma, col: intent.col, value: intent.value });
-      if (intent.target === "saveNode") spies.saveNode.push({ kind: intent.kind, ma: intent.ma, field: intent.field, value: intent.value });
+      if (intent.target === "renameEntity")
+        spies.renameEntity.push({ kind: intent.kind, id: intent.id, ten: intent.ten });
+      if (intent.target === "saveCell")
+        spies.saveCell.push({ ma: intent.ma, col: intent.col, value: intent.value });
+      if (intent.target === "saveNode")
+        spies.saveNode.push({
+          kind: intent.kind,
+          ma: intent.ma,
+          field: intent.field,
+          value: intent.value,
+        });
     };
     for (const _view of ["tree", "table", "mindmap"] as const) {
-      dispatch(resolve({
-        kind: "ht", ma: "HT_A", field: "ten", value: "Tên A",
-        isReal: true, realId: "uuid-A",
-      }));
+      dispatch(
+        resolve({
+          kind: "ht",
+          ma: "HT_A",
+          field: "ten",
+          value: "Tên A",
+          isReal: true,
+          realId: "uuid-A",
+        }),
+      );
     }
     expect(spies.renameEntity).toHaveLength(3);
     expect(spies.saveCell).toHaveLength(0);
     expect(spies.saveNode).toHaveLength(0);
     expect(spies.renameEntity[0]).toEqual({ kind: "ht", id: "uuid-A", ten: "Tên A" });
-    expect(spies.renameEntity.every((a) => JSON.stringify(a) === JSON.stringify(spies.renameEntity[0]))).toBe(true);
+    expect(
+      spies.renameEntity.every((a) => JSON.stringify(a) === JSON.stringify(spies.renameEntity[0])),
+    ).toBe(true);
   });
 });

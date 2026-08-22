@@ -43,10 +43,7 @@ describe("resolveThietBiRefs", () => {
   });
 
   it("nhiều ứng viên cùng tên → không tự gán, vẫn báo lệch", () => {
-    const r = resolveThietBiRefs(
-      { model: "AWOS-500", model_id: null },
-      { nsx, ncc, model, loai },
-    );
+    const r = resolveThietBiRefs({ model: "AWOS-500", model_id: null }, { nsx, ncc, model, loai });
     expect(r.goiY.model_id).toBeUndefined();
     expect(r.lech).toBe(true);
   });

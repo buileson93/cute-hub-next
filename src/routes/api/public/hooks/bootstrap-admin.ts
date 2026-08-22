@@ -39,7 +39,11 @@ export const Route = createFileRoute("/api/public/hooks/bootstrap-admin")({
             return Response.json({ error: "Unauthorized" }, { status: 401 });
           }
 
-          const body = await request.json() as { email?: string; password?: string; ho_ten?: string };
+          const body = (await request.json()) as {
+            email?: string;
+            password?: string;
+            ho_ten?: string;
+          };
           if (!body.email || !body.password) {
             return Response.json({ error: "email + password required" }, { status: 400 });
           }
@@ -68,9 +72,12 @@ export const Route = createFileRoute("/api/public/hooks/bootstrap-admin")({
           const { count: c2 } = await supabaseAdmin
             .from("user_roles")
             .select("*", { count: "exact", head: true })
-            .eq("user_id", created.user.id).eq("role", "admin");
+            .eq("user_id", created.user.id)
+            .eq("role", "admin");
           if ((c2 ?? 0) === 0) {
-            await supabaseAdmin.from("user_roles").insert({ user_id: created.user.id, role: "admin" });
+            await supabaseAdmin
+              .from("user_roles")
+              .insert({ user_id: created.user.id, role: "admin" });
           }
           console.info("[bootstrap-admin] Admin provisioned", {
             id: created.user.id,

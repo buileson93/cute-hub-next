@@ -1,12 +1,14 @@
 # MIRATS 2.0 — Astryx UI Standard
 
 ## Architecture
+
 - **Framework**: React 19.2 + TanStack Start v1 (Full-stack).
 - **Styling**: Tailwind CSS v4 (Lightning CSS) + shadcn/ui.
 - **Design System**: Astryx DF3 (Stone skin).
 - **Density**: Scalable density using `data-density` attribute (compact, comfortable, spacious).
 
 ## Design Tokens
+
 - **Typography**:
   - Headings/Body: **Figtree**.
   - Numerics: **IBM Plex Mono** (Tabular).
@@ -20,12 +22,14 @@
   - Background: OKLCH-based semantic tokens.
 
 ## Archetypes
+
 1. **Page Archetype**: `PageFrame` -> `PageHeader` -> `PageBody`.
 2. **Table Archetype**: `StandardTable` with compact density.
 3. **Detail Archetype**: `InfoGrid`, `EdgeTabs`, `astryx-card`.
 4. **Specialized Archetype**: Island-based architecture for React Flow, Maps, and 3D.
 
 ## Guardrails
+
 - **No Inline Theme**: Use `df3-theme.ts` exclusively.
 - **No Hardcoded Colors**: Use CSS variables or Tailwind semantic classes.
 - **Accessibility**: Use `AppTooltip` for icon-only actions. All interactive elements must have `aria-label`.

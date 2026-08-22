@@ -13,7 +13,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Card } from "@/components/ui/card";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { getAiAdminConfig, updateAiAdminConfig } from "@/lib/ai/config.functions";
@@ -51,7 +55,9 @@ function AdminAiPage() {
   });
 
   const [form, setForm] = useState<any>(null);
-  useEffect(() => { if (data) setForm(data); }, [data]);
+  useEffect(() => {
+    if (data) setForm(data);
+  }, [data]);
 
   const save = useMutation({
     mutationFn: (payload: any) => updFn({ data: payload }),
@@ -92,7 +98,11 @@ function AdminAiPage() {
         help="Chọn nhà cung cấp AI, model, prompt hệ thống và giới hạn cho trợ lý MIRATS AI."
         actions={
           <Button onClick={submit} disabled={save.isPending} size="sm">
-            {save.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+            {save.isPending ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="mr-2 h-4 w-4" />
+            )}
             Lưu cấu hình
           </Button>
         }
@@ -102,9 +112,14 @@ function AdminAiPage() {
         <div className="flex items-center justify-between">
           <div>
             <Label className="text-sm font-medium">Bật trợ lý AI</Label>
-            <p className="text-xs text-muted-foreground">Khi tắt, nút "Hỏi AI" và MCP server sẽ không hoạt động.</p>
+            <p className="text-xs text-muted-foreground">
+              Khi tắt, nút "Hỏi AI" và MCP server sẽ không hoạt động.
+            </p>
           </div>
-          <Switch checked={form.enabled} onCheckedChange={(v) => setForm({ ...form, enabled: v })} />
+          <Switch
+            checked={form.enabled}
+            onCheckedChange={(v) => setForm({ ...form, enabled: v })}
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -116,7 +131,9 @@ function AdminAiPage() {
               placeholder="Beta"
               maxLength={20}
             />
-            <p className="text-[11px] text-muted-foreground">Hiện trên nút và tiêu đề panel chat.</p>
+            <p className="text-[11px] text-muted-foreground">
+              Hiện trên nút và tiêu đề panel chat.
+            </p>
           </div>
           <div className="space-y-1.5">
             <Label>Giới hạn token / trả lời</Label>
@@ -133,11 +150,10 @@ function AdminAiPage() {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <Label>Nhà cung cấp</Label>
-            <Select
-              value={form.provider}
-              onValueChange={(v) => setForm({ ...form, provider: v })}
-            >
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select value={form.provider} onValueChange={(v) => setForm({ ...form, provider: v })}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="lovable">Lovable AI Gateway (miễn phí)</SelectItem>
                 <SelectItem value="custom">Endpoint OpenAI-compatible (tuỳ chọn)</SelectItem>
@@ -149,9 +165,15 @@ function AdminAiPage() {
             <Label>Model</Label>
             {form.provider === "lovable" ? (
               <Select value={form.model} onValueChange={(v) => setForm({ ...form, model: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
-                  {LOVABLE_MODELS.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                  {LOVABLE_MODELS.map((m) => (
+                    <SelectItem key={m} value={m}>
+                      {m}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             ) : (
@@ -169,7 +191,9 @@ function AdminAiPage() {
             <div className="col-span-2 flex items-start gap-2 text-xs text-muted-foreground">
               <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
               <span>
-                Endpoint phải tương thích OpenAI Chat Completions API. API key lưu ở dạng secret trên máy chủ; nhập tên biến (ví dụ <code className="font-mono">OPENAI_API_KEY</code>).
+                Endpoint phải tương thích OpenAI Chat Completions API. API key lưu ở dạng secret
+                trên máy chủ; nhập tên biến (ví dụ <code className="font-mono">OPENAI_API_KEY</code>
+                ).
               </span>
             </div>
             <div className="space-y-1.5">
@@ -200,7 +224,8 @@ function AdminAiPage() {
             className="font-mono text-xs"
           />
           <p className="text-[11px] text-muted-foreground">
-            Xác định giọng điệu, ngôn ngữ và giới hạn của trợ lý. Nên yêu cầu trả lời tiếng Việt và chỉ dùng dữ liệu từ tool.
+            Xác định giọng điệu, ngôn ngữ và giới hạn của trợ lý. Nên yêu cầu trả lời tiếng Việt và
+            chỉ dùng dữ liệu từ tool.
           </p>
         </div>
       </Card>
@@ -210,14 +235,25 @@ function AdminAiPage() {
           <Sparkles className="h-4 w-4" /> Tool AI được cấp
         </div>
         <ul className="ml-5 list-disc space-y-0.5 text-xs text-muted-foreground">
-          <li><code>search_global</code> — tìm toàn hệ thống</li>
-          <li><code>list_thiet_bi</code> / <code>get_thiet_bi</code> — tài sản</li>
-          <li><code>list_giay_phep_sap_het_han</code> — giấy phép hết hạn</li>
-          <li><code>list_form_submissions</code> — biểu mẫu</li>
-          <li><code>count_thiet_bi_by_trang_thai</code> — thống kê</li>
+          <li>
+            <code>search_global</code> — tìm toàn hệ thống
+          </li>
+          <li>
+            <code>list_thiet_bi</code> / <code>get_thiet_bi</code> — tài sản
+          </li>
+          <li>
+            <code>list_giay_phep_sap_het_han</code> — giấy phép hết hạn
+          </li>
+          <li>
+            <code>list_form_submissions</code> — biểu mẫu
+          </li>
+          <li>
+            <code>count_thiet_bi_by_trang_thai</code> — thống kê
+          </li>
         </ul>
         <p className="text-[11px] text-muted-foreground">
-          Mọi tool <b>chỉ đọc</b> và tuân RLS đơn vị của người đang chat. Cùng bộ tool này được MCP server phát ra tại <code>/mcp</code> để dùng với ChatGPT/Claude bên ngoài.
+          Mọi tool <b>chỉ đọc</b> và tuân RLS đơn vị của người đang chat. Cùng bộ tool này được MCP
+          server phát ra tại <code>/mcp</code> để dùng với ChatGPT/Claude bên ngoài.
         </p>
       </Card>
     </div>

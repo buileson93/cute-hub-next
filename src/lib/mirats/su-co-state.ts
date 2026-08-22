@@ -17,21 +17,13 @@ import { statuses, storedValuesFor } from "@/lib/mirats/trang-thai";
 export type SuCoState = "Mới" | "Đang xử lý" | "Đã khắc phục" | "Đóng";
 
 /** Thứ tự vòng đời sự cố — derive từ trang-thai.ts (nhãn VN theo thứ tự khai báo). */
-export const SU_CO_STATES: SuCoState[] = statuses("su_co").map(
-  (s) => s.label as SuCoState,
-);
+export const SU_CO_STATES: SuCoState[] = statuses("su_co").map((s) => s.label as SuCoState);
 
 /** Trạng thái "đang mở" — cần theo dõi / xử lý (dùng cho badge & Dashboard). */
-export const OPEN_STATES: ReadonlySet<string> = storedValuesFor("su_co", [
-  "open",
-  "in_progress",
-]);
+export const OPEN_STATES: ReadonlySet<string> = storedValuesFor("su_co", ["open", "in_progress"]);
 
 /** Trạng thái coi như đã kết thúc (không còn mở). */
-export const CLOSED_STATES: ReadonlySet<string> = storedValuesFor("su_co", [
-  "closed",
-  "cancelled",
-]);
+export const CLOSED_STATES: ReadonlySet<string> = storedValuesFor("su_co", ["closed", "cancelled"]);
 
 export function isOpenState(trangThai: string | null | undefined): boolean {
   return OPEN_STATES.has((trangThai ?? "").trim());
@@ -49,10 +41,10 @@ export function isClosedState(trangThai: string | null | undefined): boolean {
  *   Đóng       → Đang xử lý (mở lại)
  */
 export const ALLOWED_TRANSITIONS: Record<SuCoState, SuCoState[]> = {
-  "Mới": ["Đang xử lý", "Đã khắc phục", "Đóng"],
+  Mới: ["Đang xử lý", "Đã khắc phục", "Đóng"],
   "Đang xử lý": ["Đã khắc phục", "Đóng", "Mới"],
   "Đã khắc phục": ["Đóng", "Đang xử lý"],
-  "Đóng": ["Đang xử lý"],
+  Đóng: ["Đang xử lý"],
 };
 
 function isSuCoState(v: string | null | undefined): v is SuCoState {
@@ -60,7 +52,10 @@ function isSuCoState(v: string | null | undefined): v is SuCoState {
 }
 
 /** Có được phép chuyển từ trạng thái `from` sang `to` không (theo vòng đời). */
-export function canTransition(from: string | null | undefined, to: string | null | undefined): boolean {
+export function canTransition(
+  from: string | null | undefined,
+  to: string | null | undefined,
+): boolean {
   if (!isSuCoState(from) || !isSuCoState(to)) return false;
   if (from === to) return false;
   return ALLOWED_TRANSITIONS[from].includes(to);
@@ -93,9 +88,7 @@ export function canReopen(
  * khi đã có `thoi_diem_khac_phuc`. Hàm này trả về `true` nếu row có đủ
  * điều kiện để được đánh dấu "Đã khắc phục" (đã có mốc khắc phục).
  */
-export function canClose(
-  row: { thoi_diem_khac_phuc?: string | null } | null | undefined,
-): boolean {
+export function canClose(row: { thoi_diem_khac_phuc?: string | null } | null | undefined): boolean {
   if (!row) return false;
   const v = row.thoi_diem_khac_phuc;
   return typeof v === "string" && v.trim().length > 0;
@@ -112,7 +105,6 @@ export function canFinalize(
   if (!row) return false;
   return (row.trang_thai ?? "").trim() === "Đã khắc phục" && canManageSuCoState(roles);
 }
-
 
 /** Đếm số sự cố đang mở — nguồn dùng chung cho badge & Dashboard. */
 export function countOpenIncidents(list: readonly SuCo[]): number {

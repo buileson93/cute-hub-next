@@ -11,10 +11,12 @@ interface LayoutProps {
  */
 export function StartPanel({ children, className }: LayoutProps) {
   return (
-    <aside className={cn(
-      "hidden lg:flex flex-col w-64 shrink-0 border-r bg-muted/5 sticky top-0 h-[calc(100vh-theme(spacing.12))]",
-      className
-    )}>
+    <aside
+      className={cn(
+        "hidden lg:flex flex-col w-64 shrink-0 border-r bg-muted/5 sticky top-0 h-[calc(100vh-theme(spacing.12))]",
+        className,
+      )}
+    >
       {children}
     </aside>
   );
@@ -25,10 +27,12 @@ export function StartPanel({ children, className }: LayoutProps) {
  */
 export function EndPanel({ children, className }: LayoutProps) {
   return (
-    <aside className={cn(
-      "hidden xl:flex flex-col w-80 shrink-0 border-l bg-muted/5 sticky top-0 h-[calc(100vh-theme(spacing.12))]",
-      className
-    )}>
+    <aside
+      className={cn(
+        "hidden xl:flex flex-col w-80 shrink-0 border-l bg-muted/5 sticky top-0 h-[calc(100vh-theme(spacing.12))]",
+        className,
+      )}
+    >
       {children}
     </aside>
   );
@@ -37,9 +41,13 @@ export function EndPanel({ children, className }: LayoutProps) {
 /**
  * Responsive Grid for content cards
  */
-export function ContentGrid({ children, className, minChildWidth = "320px" }: LayoutProps & { minChildWidth?: string }) {
+export function ContentGrid({
+  children,
+  className,
+  minChildWidth = "320px",
+}: LayoutProps & { minChildWidth?: string }) {
   return (
-    <div 
+    <div
       className={cn("grid gap-4", className)}
       style={{ gridTemplateColumns: `repeat(auto-fill, minmax(${minChildWidth}, 1fr))` }}
     >
@@ -53,10 +61,12 @@ export function ContentGrid({ children, className, minChildWidth = "320px" }: La
  */
 export function PageFooter({ children, className }: LayoutProps) {
   return (
-    <footer className={cn(
-      "mt-auto border-t bg-background/80 backdrop-blur-md p-4 sticky bottom-0 z-20",
-      className
-    )}>
+    <footer
+      className={cn(
+        "mt-auto border-t bg-background/80 backdrop-blur-md p-4 sticky bottom-0 z-20",
+        className,
+      )}
+    >
       {children}
     </footer>
   );

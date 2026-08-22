@@ -11,7 +11,13 @@ export type ExportContext = {
   bucket: Bucket;
   rows: ReliabilityRow[];
   totals: { totalIncidents: number; totalClosed: number; weightedMttr: number };
-  trendData: Array<{ label: string; bucket_start: string; so_su_co: number; so_dong: number; mttr_gio: number | null }>;
+  trendData: Array<{
+    label: string;
+    bucket_start: string;
+    so_su_co: number;
+    so_dong: number;
+    mttr_gio: number | null;
+  }>;
   heatmapGrid: number[][];
   severity: Array<{ muc_do: string; so_su_co: number; so_dong: number }>;
   paretoData: Array<{ fullName: string; so_su_co: number; cum_pct: number }>;
@@ -48,7 +54,19 @@ export function exportReliabilityCsv({ from, to, rows }: ExportContext) {
 }
 
 export async function exportReliabilityExcel(ctx: ExportContext) {
-  const { from, to, bucket, rows, totals, trendData, heatmapGrid, severity, paretoData, paretoVital, topMttr } = ctx;
+  const {
+    from,
+    to,
+    bucket,
+    rows,
+    totals,
+    trendData,
+    heatmapGrid,
+    severity,
+    paretoData,
+    paretoVital,
+    topMttr,
+  } = ctx;
   if (!rows.length) {
     toast.info("Không có dữ liệu để xuất");
     return;
@@ -68,14 +86,24 @@ export async function exportReliabilityExcel(ctx: ExportContext) {
       [],
       ["Tổng sự cố", totals.totalIncidents],
       ["Đã đóng", totals.totalClosed],
-      ["MTTR bình quân (phút)", Number.isFinite(totals.weightedMttr) ? Number(totals.weightedMttr.toFixed(2)) : 0],
+      [
+        "MTTR bình quân (phút)",
+        Number.isFinite(totals.weightedMttr) ? Number(totals.weightedMttr.toFixed(2)) : 0,
+      ],
       ["Số hệ thống", rows.length],
       ["Pareto: hệ thống trọng yếu (~80%)", `${paretoVital}/${paretoData.length}`],
     ]);
 
     add("Theo hệ thống", [
       ["Mã HT", "Tên hệ thống", "Số sự cố", "Đã đóng", "MTTR (phút)", "MTBF (giờ)"],
-      ...rows.map((r) => [r.ma ?? "", r.ten ?? "", r.so_su_co, r.so_dong, r.mttr_phut ?? "", r.mtbf_gio ?? ""]),
+      ...rows.map((r) => [
+        r.ma ?? "",
+        r.ten ?? "",
+        r.so_su_co,
+        r.so_dong,
+        r.mttr_phut ?? "",
+        r.mtbf_gio ?? "",
+      ]),
     ]);
 
     add("Xu hướng", [
@@ -175,7 +203,14 @@ export async function exportReliabilityPdf({ from, to, bucket, rows }: ExportCon
         ctx.drawImage(canvas, 0, yOffset, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
         if (!first) pdf.addPage();
         const sliceImgH = (sliceH * imgW) / canvas.width;
-        pdf.addImage(tmp.toDataURL("image/jpeg", 0.9), "JPEG", margin, first ? topOffset : margin, imgW, sliceImgH);
+        pdf.addImage(
+          tmp.toDataURL("image/jpeg", 0.9),
+          "JPEG",
+          margin,
+          first ? topOffset : margin,
+          imgW,
+          sliceImgH,
+        );
         first = false;
         yOffset += sliceH;
       }

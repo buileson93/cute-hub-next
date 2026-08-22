@@ -7,10 +7,7 @@ import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import {
-  useContextualPosition,
-  type AnchorRect,
-} from "@/hooks/use-contextual-position";
+import { useContextualPosition, type AnchorRect } from "@/hooks/use-contextual-position";
 
 export interface ContextualAction {
   id: string;
@@ -60,10 +57,7 @@ export function ContextualToolbar({
     }
     window.addEventListener("keydown", onKey);
     // Delay để tránh dismiss ngay khi vừa hiện.
-    const id = window.setTimeout(
-      () => window.addEventListener("mousedown", onDown),
-      0,
-    );
+    const id = window.setTimeout(() => window.addEventListener("mousedown", onDown), 0);
     return () => {
       window.clearTimeout(id);
       window.removeEventListener("keydown", onKey);

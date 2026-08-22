@@ -31,8 +31,7 @@ export type FailItemResult = {
   su_co_id?: string | null;
 };
 
-const isBlank = (v: unknown): boolean =>
-  v == null || (typeof v === "string" && v.trim() === "");
+const isBlank = (v: unknown): boolean => v == null || (typeof v === "string" && v.trim() === "");
 
 /** Hạng mục có ĐỦ ĐIỀU KIỆN để phát sinh sự cố: không đạt + có hành động. */
 export function isActionableFail(item: FailItemResult): boolean {
@@ -77,15 +76,10 @@ export type SuCoDraft = {
  * Dựng mô tả hiện tượng từ hạng mục không đạt: tên + giá trị đo/tiêu chuẩn +
  * ghi chú. Đây là dữ liệu THUẦN, RPC dùng để INSERT.
  */
-export function buildSuCoDraft(
-  item: FailItemResult,
-  ctx: SubmissionContext,
-): SuCoDraft {
+export function buildSuCoDraft(item: FailItemResult, ctx: SubmissionContext): SuCoDraft {
   const parts: string[] = [`Bảo dưỡng: hạng mục "${item.ten}" KHÔNG ĐẠT`];
   if (item.gia_tri_so != null) {
-    parts.push(
-      `Giá trị đo: ${item.gia_tri_so}${item.don_vi ? " " + item.don_vi : ""}`,
-    );
+    parts.push(`Giá trị đo: ${item.gia_tri_so}${item.don_vi ? " " + item.don_vi : ""}`);
   }
   if (!isBlank(item.tieu_chuan)) parts.push(`Tiêu chuẩn: ${item.tieu_chuan}`);
   if (!isBlank(item.ghi_chu)) parts.push(`Ghi chú: ${item.ghi_chu}`);

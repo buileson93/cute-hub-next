@@ -21,17 +21,17 @@ export class PdfTextProvider implements OcrProvider {
   }
 
   async recognize(input: any, options?: OcrProviderOptions): Promise<OcrPageResult> {
-    // This is a special provider that needs the actual PDF Page object, 
+    // This is a special provider that needs the actual PDF Page object,
     // but the interface expects a rendered input for standard OCR.
     // In our pipeline, we will call this specifically if the source is a PDF.
-    
+
     // Implementation placeholder for extracting text content from pdfjs page
     return {
       page: 1, // Should be passed in options
       method: "text-layer",
       rawText: "",
       confidence: 1.0,
-      providerId: this.id
+      providerId: this.id,
     };
   }
 

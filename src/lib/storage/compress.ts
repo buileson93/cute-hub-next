@@ -32,13 +32,24 @@ export interface CompressResult {
 }
 
 const IMAGE_COMPRESSIBLE = new Set([
-  "image/jpeg", "image/jpg", "image/png", "image/webp",
-  "image/bmp", "image/tiff", "image/x-png", "image/x-ms-bmp",
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+  "image/bmp",
+  "image/tiff",
+  "image/x-png",
+  "image/x-ms-bmp",
 ]);
 // Giữ nguyên: vector, GIF động, AVIF (đã tối ưu), HEIC (trình duyệt không decode được).
 const IMAGE_KEEP = new Set([
-  "image/svg+xml", "image/gif", "image/avif",
-  "image/heic", "image/heif", "image/heic-sequence", "image/heif-sequence",
+  "image/svg+xml",
+  "image/gif",
+  "image/avif",
+  "image/heic",
+  "image/heif",
+  "image/heic-sequence",
+  "image/heif-sequence",
 ]);
 
 function inferType(input: Blob | File): string {
@@ -65,7 +76,8 @@ async function compressImage(file: Blob, maxDim: number, quality: number): Promi
     const w = Math.max(1, Math.round(bmp.width * scale));
     const h = Math.max(1, Math.round(bmp.height * scale));
     const canvas = document.createElement("canvas");
-    canvas.width = w; canvas.height = h;
+    canvas.width = w;
+    canvas.height = h;
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
     ctx.drawImage(bmp, 0, 0, w, h);
@@ -90,8 +102,12 @@ async function compressPdf(file: Blob): Promise<Blob | null> {
     const buf = await file.arrayBuffer();
     const doc = await PDFDocument.load(buf, { updateMetadata: false, ignoreEncryption: true });
     // Bỏ metadata tuỳ chỉnh — không cần cho file đính kèm.
-    doc.setTitle(""); doc.setAuthor(""); doc.setSubject("");
-    doc.setKeywords([]); doc.setProducer(""); doc.setCreator("");
+    doc.setTitle("");
+    doc.setAuthor("");
+    doc.setSubject("");
+    doc.setKeywords([]);
+    doc.setProducer("");
+    doc.setCreator("");
     const bytes = await doc.save({ useObjectStreams: true, addDefaultPage: false });
     return new Blob([bytes.buffer as ArrayBuffer], { type: "application/pdf" });
   } catch {
@@ -110,12 +126,26 @@ export async function compressForUpload(
   const type = inferType(file);
 
   if (opts.skip) {
-    return { blob: file, contentType: type, originalSize, newSize: originalSize, compressed: false, kind: "passthrough" };
+    return {
+      blob: file,
+      contentType: type,
+      originalSize,
+      newSize: originalSize,
+      compressed: false,
+      kind: "passthrough",
+    };
   }
 
   // Ảnh
   if (IMAGE_KEEP.has(type)) {
-    return { blob: file, contentType: type, originalSize, newSize: originalSize, compressed: false, kind: "image" };
+    return {
+      blob: file,
+      contentType: type,
+      originalSize,
+      newSize: originalSize,
+      compressed: false,
+      kind: "image",
+    };
   }
   if (IMAGE_COMPRESSIBLE.has(type)) {
     const maxDim = opts.maxDim ?? 3200;
@@ -123,21 +153,56 @@ export async function compressForUpload(
     const out = await compressImage(file, maxDim, quality);
     if (out && out.size > 0 && out.size < originalSize) {
       const ct = out.type || "image/webp";
-      return { blob: out, contentType: ct, originalSize, newSize: out.size, compressed: true, kind: "image" };
+      return {
+        blob: out,
+        contentType: ct,
+        originalSize,
+        newSize: out.size,
+        compressed: true,
+        kind: "image",
+      };
     }
-    return { blob: file, contentType: type, originalSize, newSize: originalSize, compressed: false, kind: "image" };
+    return {
+      blob: file,
+      contentType: type,
+      originalSize,
+      newSize: originalSize,
+      compressed: false,
+      kind: "image",
+    };
   }
 
   // PDF
   if (type === "application/pdf") {
     const out = await compressPdf(file);
     if (out && out.size > 0 && out.size < originalSize) {
-      return { blob: out, contentType: "application/pdf", originalSize, newSize: out.size, compressed: true, kind: "pdf" };
+      return {
+        blob: out,
+        contentType: "application/pdf",
+        originalSize,
+        newSize: out.size,
+        compressed: true,
+        kind: "pdf",
+      };
     }
-    return { blob: file, contentType: "application/pdf", originalSize, newSize: originalSize, compressed: false, kind: "pdf" };
+    return {
+      blob: file,
+      contentType: "application/pdf",
+      originalSize,
+      newSize: originalSize,
+      compressed: false,
+      kind: "pdf",
+    };
   }
 
-  return { blob: file, contentType: type, originalSize, newSize: originalSize, compressed: false, kind: "passthrough" };
+  return {
+    blob: file,
+    contentType: type,
+    originalSize,
+    newSize: originalSize,
+    compressed: false,
+    kind: "passthrough",
+  };
 }
 
 export function formatSavings(r: CompressResult): string {
@@ -177,13 +242,15 @@ export async function runQueue<T, R>(
   const n = Math.max(1, Math.min(limit, items.length || 1));
   const runners: Promise<void>[] = [];
   for (let k = 0; k < n; k++) {
-    runners.push((async () => {
-      while (true) {
-        const i = cursor++;
-        if (i >= items.length) return;
-        results[i] = await worker(items[i], i);
-      }
-    })());
+    runners.push(
+      (async () => {
+        while (true) {
+          const i = cursor++;
+          if (i >= items.length) return;
+          results[i] = await worker(items[i], i);
+        }
+      })(),
+    );
   }
   await Promise.all(runners);
   return results;

@@ -76,10 +76,7 @@ export function useFieldSets() {
   return useQuery({
     queryKey: ["field_set"],
     queryFn: async (): Promise<FieldSet[]> => {
-      const { data, error } = await sb
-        .from("field_set")
-        .select("id,ten,mo_ta")
-        .order("ten");
+      const { data, error } = await sb.from("field_set").select("id,ten,mo_ta").order("ten");
       if (error) throw new Error(error.message);
       return (data ?? []) as FieldSet[];
     },
@@ -107,7 +104,9 @@ export function useCayThayDoi() {
     queryFn: async (): Promise<CayThayDoi[]> => {
       const { data, error } = await sb
         .from("cay_thay_doi")
-        .select("id,loai,he_thong_id,mo_ta,payload,trang_thai,da_ap_dung,da_hoan_tac,nguoi_tao,created_at")
+        .select(
+          "id,loai,he_thong_id,mo_ta,payload,trang_thai,da_ap_dung,da_hoan_tac,nguoi_tao,created_at",
+        )
         .order("created_at", { ascending: false })
         .limit(100);
       if (error) throw new Error(error.message);
@@ -152,7 +151,8 @@ export function useCayRpc() {
       if (v._silent) return;
       toast.success(d?.applied ? "Đã áp dụng vào cơ sở dữ liệu" : "Đã gửi, chờ admin duyệt");
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Không lưu được thay đổi"),
+    onError: (e: unknown) =>
+      toast.error(e instanceof Error ? e.message : "Không lưu được thay đổi"),
   });
 
   // Gửi nhiều thay đổi cùng lúc (gán/gỡ hàng loạt) — trả về danh sách id đã áp dụng
@@ -191,7 +191,8 @@ export function useCayRpc() {
           : `Đã gửi ${d.total} thay đổi, chờ admin duyệt`,
       );
     },
-    onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Không lưu được thay đổi"),
+    onError: (e: unknown) =>
+      toast.error(e instanceof Error ? e.message : "Không lưu được thay đổi"),
   });
 
   const duyet = useMutation({

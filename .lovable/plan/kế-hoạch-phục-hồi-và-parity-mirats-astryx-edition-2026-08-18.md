@@ -2,15 +2,15 @@
 
 ## 1. Phân tích Diff & Trạng thái Parity
 
-| Route / Component | Hành vi chuẩn (chaytot) | Implementation hiện tại | Trạng thái | Mức | File/Dòng liên quan | Test Parity |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Home Dashboard** (`/_app/`) | Hiển thị KPI Availability, MTTR, PM | Unified Dashboard Hook + HeartBeat | **Thay đúng** | P0 | `src/routes/_app.index.tsx` | So khớp số liệu với `useUnifiedDashboardStats` |
-| **System Tree** (`/he-thong/cay`) | Cây phân cấp 4 tầng, MindMap ReactFlow | Modular CayProvider, MindMap tab | **Thay đúng** (đã fix 5 lỗi) | P0 | `src/routes/_app.he-thong.cay.tsx` | Test mở rộng node & Search focus |
-| **StandardTable** | High-density, multi-select, export | Astryx token, Virtualizer, Density toggle | **Thay đúng** | P1 | `src/components/mirats/StandardTable.tsx` | Test Virtual scroll & Column preference |
-| **Unified Write** | Gửi mutation qua RPC/secure helper | `save-entity-securely.ts` | **Thay đúng** | P1 | `src/components/mirats/he-thong-cay/mutations.ts` | Test Permission check & Audit log |
-| **UI Contrast** | Nút xám/chữ trắng khó nhìn | Token `bg-primary` & high-contrast variants | **Đang thay** | P1 | `src/styles.css`, `AppShell.tsx` | A11y Contrast Ratio check |
-| **Lean Project OS** | Gantt/Kanban truyền thống | Lean UX Canvas, Hill Chart, Pitch/Betting | **Mới** (Giữ parity) | P2 | `src/components/mirats/projects/*` | Test Backward compat với Kanban cũ |
-| **Search (PowerSearch)** | Header search & Cmd+K | Unified PowerSearch (Split-pane) | **Thay đúng** | P1 | `src/components/mirats/search/PowerSearch.tsx` | Test AI intent matching & Shortcut |
+| Route / Component                 | Hành vi chuẩn (chaytot)                | Implementation hiện tại                     | Trạng thái                   | Mức | File/Dòng liên quan                               | Test Parity                                    |
+| :-------------------------------- | :------------------------------------- | :------------------------------------------ | :--------------------------- | :-- | :------------------------------------------------ | :--------------------------------------------- |
+| **Home Dashboard** (`/_app/`)     | Hiển thị KPI Availability, MTTR, PM    | Unified Dashboard Hook + HeartBeat          | **Thay đúng**                | P0  | `src/routes/_app.index.tsx`                       | So khớp số liệu với `useUnifiedDashboardStats` |
+| **System Tree** (`/he-thong/cay`) | Cây phân cấp 4 tầng, MindMap ReactFlow | Modular CayProvider, MindMap tab            | **Thay đúng** (đã fix 5 lỗi) | P0  | `src/routes/_app.he-thong.cay.tsx`                | Test mở rộng node & Search focus               |
+| **StandardTable**                 | High-density, multi-select, export     | Astryx token, Virtualizer, Density toggle   | **Thay đúng**                | P1  | `src/components/mirats/StandardTable.tsx`         | Test Virtual scroll & Column preference        |
+| **Unified Write**                 | Gửi mutation qua RPC/secure helper     | `save-entity-securely.ts`                   | **Thay đúng**                | P1  | `src/components/mirats/he-thong-cay/mutations.ts` | Test Permission check & Audit log              |
+| **UI Contrast**                   | Nút xám/chữ trắng khó nhìn             | Token `bg-primary` & high-contrast variants | **Đang thay**                | P1  | `src/styles.css`, `AppShell.tsx`                  | A11y Contrast Ratio check                      |
+| **Lean Project OS**               | Gantt/Kanban truyền thống              | Lean UX Canvas, Hill Chart, Pitch/Betting   | **Mới** (Giữ parity)         | P2  | `src/components/mirats/projects/*`                | Test Backward compat với Kanban cũ             |
+| **Search (PowerSearch)**          | Header search & Cmd+K                  | Unified PowerSearch (Split-pane)            | **Thay đúng**                | P1  | `src/components/mirats/search/PowerSearch.tsx`    | Test AI intent matching & Shortcut             |
 
 ## 2. Kiểm tra Ràng buộc Tuyệt đối
 

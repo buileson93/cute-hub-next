@@ -5,15 +5,18 @@ Người dùng phản hồi nút "Đăng nhập" vẫn chưa đúng thiết kế
 ## Các thay đổi kỹ thuật
 
 ### 1. Sửa lỗi CSS hiển thị nút
+
 - Trong `src/routes/auth.tsx`, loại bỏ `!flex` (vì nó đang bị ghi đè hoặc không ăn nhập với Astryx logic dẫn đến `display: block` ở runtime).
 - Ép kiểu hiển thị `inline-flex` chuẩn của Astryx nhưng đảm bảo `width: 100%`.
 - Kiểm tra lại các utility class `!h-14` (tương đương 56px) để đảm bảo nút có độ cao lớn như thiết kế.
 
 ### 2. Tinh chỉnh Layout Form
+
 - Đảm bảo khoảng cách giữa các trường (Email, Mật khẩu) và nút Đăng nhập đạt độ thưa tối ưu (spacing-y-6 hoặc 8).
 - Kiểm tra `border-radius` của nút (hiện là 16px - `rounded-2xl`), đảm bảo khớp hoàn toàn với thiết kế bo tròn mạnh.
 
 ### 3. Đồng bộ hóa Button Component (nếu cần)
+
 - Kiểm tra `src/components/ui/button.tsx` để đảm bảo khi dùng `size="lg"` nó không bị giới hạn chiều cao bởi các breakpoint `md:h-10`. Trong trang Auth, chúng ta cần kích thước cố định lớn.
 
 ## Các bước thực hiện
@@ -28,4 +31,3 @@ Người dùng phản hồi nút "Đăng nhập" vẫn chưa đúng thiết kế
 
 > [!IMPORTANT]
 > Nút Đăng nhập trong hình mẫu có độ cao lớn và bo góc mạnh. Tôi sẽ ép chiều cao 56px và bo góc 16px. Bạn đã phản hồi "có bạn cân đối cho đẹp là được", tôi sẽ tự điều chỉnh font chữ và khoảng cách để đạt thẩm mỹ cao nhất.
-

@@ -44,12 +44,21 @@ const KIND_LABEL: Record<FieldDef["kind"], string> = {
 
 /** Ghi chú + cờ kế thừa cho từng trường (chồng lên định nghĩa gốc). */
 export const FIELD_NOTES: Record<string, { note: string; inherited?: boolean }> = {
-  ma_thiet_bi: { note: "Khoá định danh. Có sẵn mã = CẬP NHẬT tài sản đó; để trống = THÊM MỚI (hệ thống tự sinh mã)." },
+  ma_thiet_bi: {
+    note: "Khoá định danh. Có sẵn mã = CẬP NHẬT tài sản đó; để trống = THÊM MỚI (hệ thống tự sinh mã).",
+  },
   ten_thiet_bi: { note: "Tên hiển thị của tài sản / thành phần." },
-  he_thong: { note: "CHỌN mã hệ thống từ dropdown. Quyết định tài sản thuộc hệ thống nào (để trống sẽ bị cảnh báo)." },
-  model: { note: "CHỌN model. Khi chọn model → P/N, Chủng loại, Nhà sản xuất được KẾ THỪA tự động (xem sheet ③). Có thể để trống các trường kế thừa." },
+  he_thong: {
+    note: "CHỌN mã hệ thống từ dropdown. Quyết định tài sản thuộc hệ thống nào (để trống sẽ bị cảnh báo).",
+  },
+  model: {
+    note: "CHỌN model. Khi chọn model → P/N, Chủng loại, Nhà sản xuất được KẾ THỪA tự động (xem sheet ③). Có thể để trống các trường kế thừa.",
+  },
   ma_serial: { note: "Riêng từng tài sản. Không bắt buộc nhưng KHÔNG được trùng." },
-  p_n: { inherited: true, note: "KẾ THỪA từ Model. Chỉ điền khi cần ghi đè riêng cho tài sản này." },
+  p_n: {
+    inherited: true,
+    note: "KẾ THỪA từ Model. Chỉ điền khi cần ghi đè riêng cho tài sản này.",
+  },
   ma_tai_san_bravo: { note: "Mã tài sản kế toán (Bravo), nếu có." },
   thanh_phan: { note: "Tên thành phần con của tài sản (nếu là thành phần)." },
   nha_san_xuat: { inherited: true, note: "KẾ THỪA từ Model. Chọn từ dropdown chỉ khi ghi đè." },
@@ -66,7 +75,13 @@ export const FIELD_NOTES: Record<string, { note: string; inherited?: boolean }> 
   ghi_chu: { note: "Ghi chú thêm (tự do)." },
 };
 
-type FieldMeta = { label: string; kind: string; required?: boolean; inherited?: boolean; note: string };
+type FieldMeta = {
+  label: string;
+  kind: string;
+  required?: boolean;
+  inherited?: boolean;
+  note: string;
+};
 
 /** Định nghĩa 1 trường để in sheet hướng dẫn — dựng từ import-config + ghi chú. */
 function fieldMeta(h: string): FieldMeta {
@@ -83,7 +98,6 @@ function fieldMeta(h: string): FieldMeta {
 
 export { DROPDOWN_SOURCES };
 
-
 /** A, B, …, Z, AA… cho công thức Data Validation. */
 function colLetter(n: number): string {
   let s = "";
@@ -97,7 +111,10 @@ function colLetter(n: number): string {
 }
 
 async function loadDistinct(table: string, col: "ma" | "ten"): Promise<string[]> {
-  const { data, error } = await supabase.from(table as never).select(col).limit(5000);
+  const { data, error } = await supabase
+    .from(table as never)
+    .select(col)
+    .limit(5000);
   if (error) return [];
   const set = new Set<string>();
   for (const r of (data ?? []) as Array<Record<string, unknown>>) {
@@ -115,8 +132,12 @@ async function loadModelRefs(): Promise<ModelRef[]> {
     supabase.from("dm_loai_thiet_bi").select("id, ten").limit(5000),
     supabase.from("dm_nha_san_xuat").select("id, ten").limit(5000),
   ]);
-  const loaiMap = new Map((loai ?? []).map((r: Record<string, unknown>) => [r.id as string, r.ten as string]));
-  const nsxMap = new Map((nsx ?? []).map((r: Record<string, unknown>) => [r.id as string, r.ten as string]));
+  const loaiMap = new Map(
+    (loai ?? []).map((r: Record<string, unknown>) => [r.id as string, r.ten as string]),
+  );
+  const nsxMap = new Map(
+    (nsx ?? []).map((r: Record<string, unknown>) => [r.id as string, r.ten as string]),
+  );
   return ((models ?? []) as Array<Record<string, unknown>>)
     .map((m) => ({
       ten: (m.ten as string) ?? "",
@@ -159,7 +180,8 @@ export async function exportDeviceTemplateXlsx({ headers, rows, fileName }: Expo
 
   // ---- ① Sheet HƯỚNG DẪN / ĐỊNH NGHĨA TRƯỜNG ----
   const guide = wb.addWorksheet("① Hướng dẫn");
-  guide.getCell("A1").value = "HƯỚNG DẪN NHẬP LIỆU THIẾT BỊ — định nghĩa các trường ở sheet ② Nhập liệu";
+  guide.getCell("A1").value =
+    "HƯỚNG DẪN NHẬP LIỆU THIẾT BỊ — định nghĩa các trường ở sheet ② Nhập liệu";
   guide.getCell("A1").font = { bold: true, size: 13, color: { argb: "FF1E3A8A" } };
   guide.mergeCells("A1:F1");
   guide.getCell("A2").value =
@@ -167,7 +189,14 @@ export async function exportDeviceTemplateXlsx({ headers, rows, fileName }: Expo
   guide.getCell("A2").font = { italic: true, color: { argb: "FF64748B" } };
   guide.mergeCells("A2:F2");
 
-  const gHead = ["Tên cột (trong file)", "Ý nghĩa", "Kiểu dữ liệu", "Bắt buộc", "Kế thừa từ Model", "Ghi chú"];
+  const gHead = [
+    "Tên cột (trong file)",
+    "Ý nghĩa",
+    "Kiểu dữ liệu",
+    "Bắt buộc",
+    "Kế thừa từ Model",
+    "Ghi chú",
+  ];
   const gHeaderRow = guide.addRow([]); // row 3 spacer
   guide.addRow(gHead);
   const gHeaderIdx = 4;
@@ -191,7 +220,8 @@ export async function exportDeviceTemplateXlsx({ headers, rows, fileName }: Expo
     ]);
     row.alignment = { vertical: "top", wrapText: true };
     row.eachCell((c) => (c.border = border));
-    if (m?.required) row.getCell(1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFEF9C3" } };
+    if (m?.required)
+      row.getCell(1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFEF9C3" } };
     if (m?.inherited) row.getCell(5).font = { color: { argb: "FF7C3AED" }, bold: true };
   }
   guide.getColumn(1).width = 22;
@@ -224,7 +254,11 @@ export async function exportDeviceTemplateXlsx({ headers, rows, fileName }: Expo
   headerRow.eachCell((c, col) => {
     const h = headers[col - 1];
     const required = fieldMeta(h).required;
-    c.fill = { type: "pattern", pattern: "solid", fgColor: { argb: required ? "FFFEF08A" : "FFE8EEF7" } };
+    c.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: required ? "FFFEF08A" : "FFE8EEF7" },
+    };
     c.alignment = { vertical: "middle" };
     c.border = border;
   });
@@ -244,7 +278,9 @@ export async function exportDeviceTemplateXlsx({ headers, rows, fileName }: Expo
     const dmCol = colLetter(dmColOf[h]);
     const formulae = [`DanhMuc!$${dmCol}$2:$${dmCol}$${list.length + 1}`];
     const excelCol = colLetter(i + 1);
-    (ws as unknown as { dataValidations: { add: (r: string, v: unknown) => void } }).dataValidations.add(`${excelCol}2:${excelCol}${lastDataRow}`, {
+    (
+      ws as unknown as { dataValidations: { add: (r: string, v: unknown) => void } }
+    ).dataValidations.add(`${excelCol}2:${excelCol}${lastDataRow}`, {
       type: "list",
       allowBlank: true,
       formulae,
@@ -257,11 +293,18 @@ export async function exportDeviceTemplateXlsx({ headers, rows, fileName }: Expo
 
   // ---- ③ Sheet MODEL (tham chiếu kế thừa) ----
   const ms = wb.addWorksheet("③ Model (kế thừa)");
-  ms.getCell("A1").value = "TRA CỨU MODEL — chọn Model ở sheet ② thì các trường dưới được kế thừa tự động";
+  ms.getCell("A1").value =
+    "TRA CỨU MODEL — chọn Model ở sheet ② thì các trường dưới được kế thừa tự động";
   ms.getCell("A1").font = { bold: true, size: 12, color: { argb: "FF7C3AED" } };
   ms.mergeCells("A1:E1");
   ms.addRow([]);
-  const mHead = ["Model (tên)", "Mã model", "P/N (kế thừa)", "Chủng loại (kế thừa)", "Nhà sản xuất (kế thừa)"];
+  const mHead = [
+    "Model (tên)",
+    "Mã model",
+    "P/N (kế thừa)",
+    "Chủng loại (kế thừa)",
+    "Nhà sản xuất (kế thừa)",
+  ];
   ms.addRow(mHead);
   const mHeaderIdx = 3;
   const mr = ms.getRow(mHeaderIdx);
@@ -283,7 +326,9 @@ export async function exportDeviceTemplateXlsx({ headers, rows, fileName }: Expo
 
   // Mở file ở sheet Nhập liệu cho tiện.
   ws.state = "visible";
-  wb.views = [{ activeTab: 2, x: 0, y: 0, width: 10000, height: 20000, firstSheet: 0, visibility: "visible" }];
+  wb.views = [
+    { activeTab: 2, x: 0, y: 0, width: 10000, height: 20000, firstSheet: 0, visibility: "visible" },
+  ];
 
   const buf = await wb.xlsx.writeBuffer();
   const blob = new Blob([buf], {

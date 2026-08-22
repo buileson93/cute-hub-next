@@ -46,24 +46,26 @@ export function MultiRoleBadge({
               <span className="font-mono text-[11px]">{info.ma_thiet_bi}</span>
             </>
           )}
-          <span
-            className="ml-0.5 rounded px-1 text-[10px] font-bold bg-primary/20 text-primary"
-          >
+          <span className="ml-0.5 rounded px-1 text-[10px] font-bold bg-primary/20 text-primary">
             ×{info.count}
           </span>
         </Badge>
       </HoverCardTrigger>
       <HoverCardContent className="w-80 p-3 text-xs" side={side}>
         <div className="mb-2 flex items-center gap-2 font-medium">
-          <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: col.dot }} />
+          <span
+            className="inline-block h-2.5 w-2.5 rounded-full"
+            style={{ backgroundColor: col.dot }}
+          />
           Tài sản đa vai trò ({info.count} vai trò)
         </div>
         <div className="mb-2 font-mono text-[11px] text-muted-foreground">
-          {info.ma_thiet_bi}{info.ma_serial ? ` · SN ${info.ma_serial}` : ""}
+          {info.ma_thiet_bi}
+          {info.ma_serial ? ` · SN ${info.ma_serial}` : ""}
         </div>
         <div className="mb-2 rounded border border-amber-400/50 bg-amber-50 px-2 py-1 text-[11px] leading-snug text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
-          Cùng một thiết bị vật lý đang giữ đồng thời {info.count} vai trò
-          "thành phần hệ thống" ở các hệ thống khác nhau.
+          Cùng một thiết bị vật lý đang giữ đồng thời {info.count} vai trò "thành phần hệ thống" ở
+          các hệ thống khác nhau.
         </div>
         <ul className="space-y-1.5">
           {info.roles.map((r) => {
@@ -77,11 +79,17 @@ export function MultiRoleBadge({
                 <div className="text-[11px] text-muted-foreground">
                   <span className="font-mono">{r.ma_thanh_phan}</span>
                   {r.ten_he_thong && (
-                    <> · <Link
-                      to="/he-thong/$id"
-                      params={{ id: r.he_thong_id }}
-                      className="text-primary hover:underline"
-                    >{r.ten_he_thong}</Link></>
+                    <>
+                      {" "}
+                      ·{" "}
+                      <Link
+                        to="/he-thong/$id"
+                        params={{ id: r.he_thong_id }}
+                        className="text-primary hover:underline"
+                      >
+                        {r.ten_he_thong}
+                      </Link>
+                    </>
                   )}
                 </div>
               </li>

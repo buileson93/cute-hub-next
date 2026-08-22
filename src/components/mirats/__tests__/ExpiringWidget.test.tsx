@@ -7,10 +7,34 @@ import type { ExpiringRow } from "@/lib/mirats/db-expiring";
 afterEach(() => cleanup());
 
 const rows: ExpiringRow[] = [
-  { loai: "bao_hanh", thiet_bi_id: "tb-1", ten: "Máy UHF A", ngay_het_han: "2026-07-20", so_ngay_con_lai: 10 },
-  { loai: "giay_phep", thiet_bi_id: "tb-2", ten: "GP khai thác B", ngay_het_han: "2026-08-10", so_ngay_con_lai: 45 },
-  { loai: "bao_hanh", thiet_bi_id: "tb-3", ten: "Switch C", ngay_het_han: "2026-09-20", so_ngay_con_lai: 80 },
-  { loai: "giay_phep", thiet_bi_id: "tb-4", ten: "GP D", ngay_het_han: "2026-12-01", so_ngay_con_lai: 150 },
+  {
+    loai: "bao_hanh",
+    thiet_bi_id: "tb-1",
+    ten: "Máy UHF A",
+    ngay_het_han: "2026-07-20",
+    so_ngay_con_lai: 10,
+  },
+  {
+    loai: "giay_phep",
+    thiet_bi_id: "tb-2",
+    ten: "GP khai thác B",
+    ngay_het_han: "2026-08-10",
+    so_ngay_con_lai: 45,
+  },
+  {
+    loai: "bao_hanh",
+    thiet_bi_id: "tb-3",
+    ten: "Switch C",
+    ngay_het_han: "2026-09-20",
+    so_ngay_con_lai: 80,
+  },
+  {
+    loai: "giay_phep",
+    thiet_bi_id: "tb-4",
+    ten: "GP D",
+    ngay_het_han: "2026-12-01",
+    so_ngay_con_lai: 150,
+  },
 ];
 
 describe("ExpiringWidget — danh sách sắp hết hạn theo ngưỡng", () => {

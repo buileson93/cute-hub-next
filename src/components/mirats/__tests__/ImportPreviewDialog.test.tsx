@@ -106,7 +106,10 @@ describe("ImportPreviewDialog", () => {
     render(
       <ImportPreviewDialog
         {...baseProps}
-        rows={[{ ma: "", ten: "" }, { ma: "NCC2", ten: "Công ty B" }]}
+        rows={[
+          { ma: "", ten: "" },
+          { ma: "NCC2", ten: "Công ty B" },
+        ]}
         statuses={[
           {
             action: "error",
@@ -142,7 +145,10 @@ describe("ImportPreviewDialog", () => {
       <ImportPreviewDialog
         {...baseProps}
         statuses={[
-          { action: "error", issues: [{ field: "ten", value: "", message: "trống", level: "error" }] },
+          {
+            action: "error",
+            issues: [{ field: "ten", value: "", message: "trống", level: "error" }],
+          },
           { action: "create" },
         ]}
         onDownloadErrors={onDownloadErrors}
@@ -154,16 +160,12 @@ describe("ImportPreviewDialog", () => {
     expect(onDownloadErrors).toHaveBeenCalledTimes(1);
   });
 
-
-
   it("chế độ diff trước/sau: hiện toggle và tô ô đã đổi", async () => {
     render(
       <ImportPreviewDialog
         {...baseProps}
         rows={[{ ma: "NCC1", ten: "Công ty A đổi tên" }]}
-        statuses={[
-          { action: "update", before: { ma: "NCC1", ten: "Công ty A" } },
-        ]}
+        statuses={[{ action: "update", before: { ma: "NCC1", ten: "Công ty A" } }]}
         onCommit={vi.fn()}
         onClose={vi.fn()}
       />,
@@ -171,13 +173,10 @@ describe("ImportPreviewDialog", () => {
     const toggle = screen.getByRole("button", { name: /so sánh trước\/sau/i });
     expect(toggle.getAttribute("aria-pressed")).toBe("false");
     fireEvent.click(toggle);
-    await waitFor(() =>
-      expect(toggle.getAttribute("aria-pressed")).toBe("true"),
-    );
+    await waitFor(() => expect(toggle.getAttribute("aria-pressed")).toBe("true"));
     const changed = document.body.querySelector('td[data-field="ten"][data-changed="true"]');
     expect(changed).toBeTruthy();
     expect(changed?.textContent).toMatch(/Công ty A/);
     expect(changed?.textContent).toMatch(/Công ty A đổi tên/);
   });
 });
-

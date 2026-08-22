@@ -18,8 +18,18 @@ import {
 
 export interface CellEditorMutations {
   renameEntity: (args: { kind: CayKind; id: string; ten: string }) => Promise<unknown> | unknown;
-  saveCell: (args: { ma: string; col: string; value: string | number | null }) => Promise<unknown> | unknown;
-  saveNode: (args: { kind: CayKind; ma: string; ten?: string; du_lieu?: Record<string, unknown>; phys?: Record<string, string | number | null> }) => Promise<unknown> | unknown;
+  saveCell: (args: {
+    ma: string;
+    col: string;
+    value: string | number | null;
+  }) => Promise<unknown> | unknown;
+  saveNode: (args: {
+    kind: CayKind;
+    ma: string;
+    ten?: string;
+    du_lieu?: Record<string, unknown>;
+    phys?: Record<string, string | number | null>;
+  }) => Promise<unknown> | unknown;
 }
 
 export interface UseCellEditorOptions {
@@ -86,7 +96,11 @@ export function useCellEditor(opts: UseCellEditorOptions): UseCellEditorApi {
         case "saveNode": {
           // Field "ten" → mutation nhận `ten`; ngược lại đi qua `du_lieu`.
           if (intent.field === "ten") {
-            await mutations.saveNode({ kind: intent.kind, ma: intent.ma, ten: String(intent.value ?? "") });
+            await mutations.saveNode({
+              kind: intent.kind,
+              ma: intent.ma,
+              ten: String(intent.value ?? ""),
+            });
           } else {
             await mutations.saveNode({
               kind: intent.kind,
@@ -103,16 +117,15 @@ export function useCellEditor(opts: UseCellEditorOptions): UseCellEditorApi {
   );
 
   const keyHandler = React.useCallback(
-    (input: CommitInput, onCancel?: () => void) =>
-      (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          void commit(input);
-        } else if (e.key === "Escape") {
-          e.preventDefault();
-          onCancel?.();
-        }
-      },
+    (input: CommitInput, onCancel?: () => void) => (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        void commit(input);
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        onCancel?.();
+      }
+    },
     [commit],
   );
 

@@ -27,7 +27,10 @@ export function CompletenessRing({
   };
 
   return (
-    <div className={cn("relative inline-flex items-center justify-center", className)} style={{ width: size, height: size }}>
+    <div
+      className={cn("relative inline-flex items-center justify-center", className)}
+      style={{ width: size, height: size }}
+    >
       <svg width={size} height={size} className="rotate-[-90deg]">
         <circle
           cx={size / 2}
@@ -51,11 +54,7 @@ export function CompletenessRing({
           className={cn("transition-all duration-500", getTone(value))}
         />
       </svg>
-      {showText && (
-        <span className="absolute text-[10px] font-bold">
-          {Math.round(value)}%
-        </span>
-      )}
+      {showText && <span className="absolute text-[10px] font-bold">{Math.round(value)}%</span>}
     </div>
   );
 }

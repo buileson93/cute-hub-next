@@ -12,15 +12,37 @@ import { useTonKhoModel } from "@/lib/mirats/kho";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-  HardDrive, Clock, PackageOpen, Wrench, ArrowRightLeft, History, X,
-  Pencil, Plug, Settings2, Save, RefreshCw, ExternalLink, Info,
+  HardDrive,
+  Clock,
+  PackageOpen,
+  Wrench,
+  ArrowRightLeft,
+  History,
+  X,
+  Pencil,
+  Plug,
+  Settings2,
+  Save,
+  RefreshCw,
+  ExternalLink,
+  Info,
 } from "lucide-react";
 import {
-  Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
 } from "@/components/ui/sheet";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,8 +54,16 @@ import { Combobox } from "@/components/mirats/Combobox";
 import { LayerSectionHeader } from "@/lib/mirats/layer-vocab";
 import { supabase } from "@/integrations/backend/client";
 import {
-  useThietBiChon, useLapThietBi, useThaoThietBi, useThayTheThietBi, useDieuChuyen,
-  useLyLichViTri, useLuuViTri, useThietBiDangLap, rankChonDevices, type ViTriChucNangTree,
+  useThietBiChon,
+  useLapThietBi,
+  useThaoThietBi,
+  useThayTheThietBi,
+  useDieuChuyen,
+  useLyLichViTri,
+  useLuuViTri,
+  useThietBiDangLap,
+  rankChonDevices,
+  type ViTriChucNangTree,
   type ThietBiChon,
 } from "@/lib/mirats/he-thong-thanh-phan";
 import { LyLichThanhPhanPanel, LyLichHeThongPanel } from "@/components/mirats/LyLichLayerPanel";
@@ -41,13 +71,20 @@ import { ChangeLogPanel } from "@/components/mirats/ChangeLogPanel";
 import { ThaoTaiSanDialog } from "@/components/mirats/ThaoTaiSanDialog";
 import { OperationDialog, type OperationMode } from "@/components/mirats/OperationDialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { useCan } from "@/hooks/use-permissions";
 import { showUndoToast } from "@/components/mirats/UndoToast";
 
-
 // Danh mục dùng chung cho form sửa thành phần
-function useCatalog<T extends { id: string; ten: string }>(table: "dm_loai_thiet_bi" | "dm_vi_tri" | "dm_trang_thai_thiet_bi") {
+function useCatalog<T extends { id: string; ten: string }>(
+  table: "dm_loai_thiet_bi" | "dm_vi_tri" | "dm_trang_thai_thiet_bi",
+) {
   return useQuery({
     queryKey: ["catalog-simple", table],
     queryFn: async (): Promise<T[]> => {
@@ -59,7 +96,12 @@ function useCatalog<T extends { id: string; ten: string }>(table: "dm_loai_thiet
 }
 
 export function ThanhPhanChiTietDialog({
-  viTri, heThongId, canManage, onOpenDevice, onRecord, onClose,
+  viTri,
+  heThongId,
+  canManage,
+  onOpenDevice,
+  onRecord,
+  onClose,
 }: {
   viTri: ViTriChucNangTree;
   heThongId: string;
@@ -72,9 +114,14 @@ export function ThanhPhanChiTietDialog({
   // thay vì dùng snapshot `viTri.device` truyền từ prop → không lệch pha sau khi save.
   const { data: dangLapMap } = useThietBiDangLap(heThongId);
   const dev = dangLapMap
-    ? (dangLapMap.get(viTri.id)
-        ? { thiet_bi_id: dangLapMap.get(viTri.id)!.thiet_bi_id, ma_thiet_bi: dangLapMap.get(viTri.id)!.ma_thiet_bi, ten_thiet_bi: dangLapMap.get(viTri.id)!.ten_thiet_bi, ma_serial: dangLapMap.get(viTri.id)!.ma_serial }
-        : null)
+    ? dangLapMap.get(viTri.id)
+      ? {
+          thiet_bi_id: dangLapMap.get(viTri.id)!.thiet_bi_id,
+          ma_thiet_bi: dangLapMap.get(viTri.id)!.ma_thiet_bi,
+          ten_thiet_bi: dangLapMap.get(viTri.id)!.ten_thiet_bi,
+          ma_serial: dangLapMap.get(viTri.id)!.ma_serial,
+        }
+      : null
     : viTri.device;
   const ngung = viTri.trang_thai === "ngung";
   const [edit, setEdit] = useState(false);
@@ -82,21 +129,25 @@ export function ThanhPhanChiTietDialog({
   const [editFields, setEditFields] = useState(false);
   const queryClient = useQueryClient();
 
-  const opTarget = useMemo(() => viTri ? ({
-    heThongId: heThongId,
-    thanhPhanId: viTri.id,
-    maThanhPhan: viTri.ma_thanh_phan,
-    tenThanhPhan: viTri.ten,
-    loaiYeuCau: viTri.loai_thiet_bi_yeu_cau,
-  }) : null, [viTri, heThongId]);
+  const opTarget = useMemo(
+    () =>
+      viTri
+        ? {
+            heThongId: heThongId,
+            thanhPhanId: viTri.id,
+            maThanhPhan: viTri.ma_thanh_phan,
+            tenThanhPhan: viTri.ten,
+            loaiYeuCau: viTri.loai_thiet_bi_yeu_cau,
+          }
+        : null,
+    [viTri, heThongId],
+  );
 
   const handleOpSuccess = () => {
     queryClient.invalidateQueries({ queryKey: ["thanh-phan-chi-tiet", viTri.id] });
     queryClient.invalidateQueries({ queryKey: ["thiet-bi-dang-lap", heThongId] });
     setOpMode(null);
   };
-
-
 
   // Quyền lắp/tháo/thay tài sản (thu hẹp theo phạm vi của tài khoản con).
   // canManage đã tính đủ quyền theo vai trò tổng; canAssign kiểm tra thêm
@@ -112,9 +163,15 @@ export function ThanhPhanChiTietDialog({
             <Plug className="h-4 w-4 shrink-0 text-sky-600" />
             <span>{viTri.ten}</span>
             {viTri.ma_thanh_phan && (
-              <span className="font-mono text-xs font-normal text-muted-foreground">{viTri.ma_thanh_phan}</span>
+              <span className="font-mono text-xs font-normal text-muted-foreground">
+                {viTri.ma_thanh_phan}
+              </span>
             )}
-            {ngung && <Badge variant="outline" className="border-muted-foreground/40">Đã ngừng</Badge>}
+            {ngung && (
+              <Badge variant="outline" className="border-muted-foreground/40">
+                Đã ngừng
+              </Badge>
+            )}
             {!ngung && viTri.bat_buoc && <Badge variant="secondary">Bắt buộc</Badge>}
           </SheetTitle>
           <SheetDescription className="sr-only">Chi tiết vị trí chức năng</SheetDescription>
@@ -125,24 +182,40 @@ export function ThanhPhanChiTietDialog({
           {canManage && (
             <div className="rounded-lg border p-3">
               <div className="mb-2 flex items-center justify-between gap-2">
-                <LayerSectionHeader layer="tp" subtitle="Vai trò / vị trí chức năng (KHÔNG phải tài sản vật lý)" />
+                <LayerSectionHeader
+                  layer="tp"
+                  subtitle="Vai trò / vị trí chức năng (KHÔNG phải tài sản vật lý)"
+                />
                 <Button
-                  size="sm" variant={editFields ? "secondary" : "outline"} className="h-7"
+                  size="sm"
+                  variant={editFields ? "secondary" : "outline"}
+                  className="h-7"
                   onClick={() => setEditFields((v) => !v)}
                 >
-                  {editFields
-                    ? <><X className="mr-1 h-3.5 w-3.5" /> Đóng</>
-                    : <><Settings2 className="mr-1 h-3.5 w-3.5" /> Sửa thành phần</>}
+                  {editFields ? (
+                    <>
+                      <X className="mr-1 h-3.5 w-3.5" /> Đóng
+                    </>
+                  ) : (
+                    <>
+                      <Settings2 className="mr-1 h-3.5 w-3.5" /> Sửa thành phần
+                    </>
+                  )}
                 </Button>
               </div>
               {editFields ? (
                 <>
                   <p className="mb-2 rounded-md bg-muted/50 px-2 py-1.5 text-[11px] text-muted-foreground">
-                    Đang sửa <b>thành phần hệ thống</b> (mã <span className="font-mono">TPHT_…</span>). Để sửa
-                    trường của <b>tài sản vật lý</b> đang lắp (bao gồm serial, model, ngày mua…), bấm
-                    nút <b>Sửa tài sản</b> ở khối bên dưới.
+                    Đang sửa <b>thành phần hệ thống</b> (mã{" "}
+                    <span className="font-mono">TPHT_…</span>). Để sửa trường của{" "}
+                    <b>tài sản vật lý</b> đang lắp (bao gồm serial, model, ngày mua…), bấm nút{" "}
+                    <b>Sửa tài sản</b> ở khối bên dưới.
                   </p>
-                  <ThanhPhanFieldsForm heThongId={heThongId} viTri={viTri} onDone={() => setEditFields(false)} />
+                  <ThanhPhanFieldsForm
+                    heThongId={heThongId}
+                    viTri={viTri}
+                    onDone={() => setEditFields(false)}
+                  />
                 </>
               ) : (
                 <dl className="space-y-1 text-sm">
@@ -153,9 +226,9 @@ export function ThanhPhanChiTietDialog({
               )}
             </div>
           )}
-          {!canManage && viTri.mo_ta && <p className="text-sm text-muted-foreground">{viTri.mo_ta}</p>}
-
-
+          {!canManage && viTri.mo_ta && (
+            <p className="text-sm text-muted-foreground">{viTri.mo_ta}</p>
+          )}
 
           {/* Tài sản đang được "pin" vào thành phần */}
           <div className="rounded-lg border p-3">
@@ -163,15 +236,21 @@ export function ThanhPhanChiTietDialog({
               <LayerSectionHeader layer="tb" subtitle="Tài sản vật lý đang lắp (mã TB_…)" />
               {canEdit && (
                 <Button
-                  size="sm" variant={edit ? "secondary" : "outline"} className="h-7"
-                  onClick={() => { setEdit((v) => !v); setOpMode(null); }}
+                  size="sm"
+                  variant={edit ? "secondary" : "outline"}
+                  className="h-7"
+                  onClick={() => {
+                    setEdit((v) => !v);
+                    setOpMode(null);
+                  }}
                 >
                   <Pencil className="mr-1 h-3.5 w-3.5" /> {edit ? "Xong" : "Lắp / đổi tài sản"}
                 </Button>
-
               )}
               {canManage && !canAssign && (
-                <span className="text-[11px] text-muted-foreground">Ngoài phạm vi quyền lắp/tháo</span>
+                <span className="text-[11px] text-muted-foreground">
+                  Ngoài phạm vi quyền lắp/tháo
+                </span>
               )}
             </div>
 
@@ -179,7 +258,9 @@ export function ThanhPhanChiTietDialog({
               <div className="flex flex-wrap items-center gap-2">
                 <HardDrive className="h-4 w-4 shrink-0 text-emerald-600" />
                 <span className="font-medium">{dev.ten_thiet_bi || dev.ma_thiet_bi}</span>
-                <Badge variant="outline" className="gap-1 font-mono font-normal">{dev.ma_thiet_bi}</Badge>
+                <Badge variant="outline" className="gap-1 font-mono font-normal">
+                  {dev.ma_thiet_bi}
+                </Badge>
                 {dev.ma_serial && (
                   <Badge variant="outline" className="gap-1 font-normal text-muted-foreground">
                     S/N {dev.ma_serial}
@@ -192,13 +273,16 @@ export function ThanhPhanChiTietDialog({
                     </Button>
                   )}
                   {onRecord && (
-                    <Button size="sm" variant="ghost" onClick={() => onRecord(dev.ma_thiet_bi, dev.ten_thiet_bi || dev.ma_thiet_bi)}>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => onRecord(dev.ma_thiet_bi, dev.ten_thiet_bi || dev.ma_thiet_bi)}
+                    >
                       <History className="mr-1 h-3.5 w-3.5" /> Lý lịch
                     </Button>
                   )}
                 </div>
               </div>
-
             ) : (
               <div className="flex items-start gap-2 rounded-md border border-dashed border-muted-foreground/30 bg-muted/40 px-3 py-3 text-sm">
                 <PackageOpen className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
@@ -206,13 +290,21 @@ export function ThanhPhanChiTietDialog({
                   <div className="font-medium text-foreground">Vị trí trống</div>
                   <div className="text-xs text-muted-foreground">
                     Chưa có tài sản vật lý nào được lắp vào thành phần này
-                    {viTri.bat_buoc ? " (thành phần bắt buộc — cần lắp tài sản để hệ thống hoạt động)." : "."}
+                    {viTri.bat_buoc
+                      ? " (thành phần bắt buộc — cần lắp tài sản để hệ thống hoạt động)."
+                      : "."}
                   </div>
                   {canEdit && !edit && (
-                    <Button size="sm" className="mt-2 h-7" onClick={() => { setEdit(true); setOpMode("lap"); }}>
+                    <Button
+                      size="sm"
+                      className="mt-2 h-7"
+                      onClick={() => {
+                        setEdit(true);
+                        setOpMode("lap");
+                      }}
+                    >
                       <PackageOpen className="mr-1 h-3.5 w-3.5" /> Lắp tài sản vào đây
                     </Button>
-
                   )}
                 </div>
               </div>
@@ -244,7 +336,6 @@ export function ThanhPhanChiTietDialog({
             </div>
           )}
 
-
           {/* Sổ lý lịch thành phần */}
           <div className="rounded-lg border bg-muted/20 p-3">
             <Tabs defaultValue="history" className="w-full">
@@ -256,15 +347,15 @@ export function ThanhPhanChiTietDialog({
                   <Settings2 className="mr-1.5 h-3.5 w-3.5" /> Nhật ký sửa
                 </TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="history" className="mt-4">
-                <LyLichThanhPhanPanel 
-                  thanhPhanId={viTri.id} 
+                <LyLichThanhPhanPanel
+                  thanhPhanId={viTri.id}
                   canEdit={canManage}
                   empty="Chưa có sự kiện vận hành nào cho thành phần này."
                 />
               </TabsContent>
-              
+
               <TabsContent value="audit" className="mt-4">
                 <ChangeLogPanel entity="he_thong_thanh_phan" entityId={viTri.id} />
               </TabsContent>
@@ -278,7 +369,6 @@ export function ThanhPhanChiTietDialog({
               </Button>
             </div>
           </div>
-
         </div>
         {opMode && opTarget && (
           <OperationDialog
@@ -293,17 +383,20 @@ export function ThanhPhanChiTietDialog({
   );
 }
 
-
 /** Trích thông báo lỗi thân thiện từ mọi kiểu error (Error/PostgrestError/plain). */
 function errMsg(e: unknown, fallback: string): string {
   if (!e) return fallback;
   if (typeof e === "string") return e;
   if (typeof e === "object") {
     const anyErr = e as { message?: unknown; details?: unknown; hint?: unknown; code?: string };
-    
-    // T43: Bắt lỗi UNIQUE constraint của Postgres (23505) 
+
+    // T43: Bắt lỗi UNIQUE constraint của Postgres (23505)
     // liên quan đến uq_gcn_thiet_bi_active.
-    if (anyErr.code === "23505" && typeof anyErr.message === "string" && anyErr.message.includes("uq_gcn_thiet_bi_active")) {
+    if (
+      anyErr.code === "23505" &&
+      typeof anyErr.message === "string" &&
+      anyErr.message.includes("uq_gcn_thiet_bi_active")
+    ) {
       return "Tài sản này đang được lắp ở một vị trí khác. Vui lòng tháo tài sản ra trước khi lắp vào vị trí mới.";
     }
 
@@ -328,14 +421,18 @@ function ThaoButton({ heThongId, viTri }: { heThongId: string; viTri: ViTriChucN
         <ArrowRightLeft className="mr-1 h-3.5 w-3.5" /> Tháo
       </Button>
       <ThaoTaiSanDialog
-        target={open ? {
-          heThongId,
-          thanhPhanId: viTri.id,
-          maThanhPhan: viTri.ma_thanh_phan ?? null,
-          tenThanhPhan: viTri.ten,
-          viTriHienTaiId: viTri.vi_tri_id ?? null,
-          viTriHienTaiTen: null,
-        } : null}
+        target={
+          open
+            ? {
+                heThongId,
+                thanhPhanId: viTri.id,
+                maThanhPhan: viTri.ma_thanh_phan ?? null,
+                tenThanhPhan: viTri.ten,
+                viTriHienTaiId: viTri.vi_tri_id ?? null,
+                viTriHienTaiTen: null,
+              }
+            : null
+        }
         onClose={() => {
           setOpen(false);
           if (current) {
@@ -343,9 +440,19 @@ function ThaoButton({ heThongId, viTri }: { heThongId: string; viTri: ViTriChucN
             showUndoToast({
               message: `Đã tháo ${current.ma_thiet_bi} khỏi ${viTriLabel} — hoàn tác trong 12s?`,
               onUndo: () =>
-                lapMut.mutateAsync({ thanhPhanId: viTri.id, thietBiId: current.thiet_bi_id, ghiChu: "Hoàn tác thao tác tháo" })
-                  .then(() => { toast.success(`Đã hoàn tác — lắp lại ${current.ma_thiet_bi} vào ${viTriLabel}`); })
-                  .catch((e) => { toast.error(errMsg(e, "Không hoàn tác được")); throw e; }),
+                lapMut
+                  .mutateAsync({
+                    thanhPhanId: viTri.id,
+                    thietBiId: current.thiet_bi_id,
+                    ghiChu: "Hoàn tác thao tác tháo",
+                  })
+                  .then(() => {
+                    toast.success(`Đã hoàn tác — lắp lại ${current.ma_thiet_bi} vào ${viTriLabel}`);
+                  })
+                  .catch((e) => {
+                    toast.error(errMsg(e, "Không hoàn tác được"));
+                    throw e;
+                  }),
             });
           }
         }}
@@ -354,9 +461,11 @@ function ThaoButton({ heThongId, viTri }: { heThongId: string; viTri: ViTriChucN
   );
 }
 
-
 function ChangeDeviceForm({
-  heThongId, viTri, isReplace, onDone,
+  heThongId,
+  viTri,
+  isReplace,
+  onDone,
 }: {
   heThongId: string;
   viTri: ViTriChucNangTree;
@@ -364,9 +473,12 @@ function ChangeDeviceForm({
   onDone: () => void;
 }) {
   const { data: allRaw = [], isLoading } = useThietBiChon();
-  
+
   // T45: Lọc cấm lắp CCDC/Vật tư vào thành phần hệ thống
-  const all = useMemo(() => allRaw.filter(r => (r as any).vai_tro === "he_thong" || !(r as any).vai_tro), [allRaw]);
+  const all = useMemo(
+    () => allRaw.filter((r) => (r as any).vai_tro === "he_thong" || !(r as any).vai_tro),
+    [allRaw],
+  );
 
   const lapMut = useLapThietBi(heThongId);
 
@@ -393,30 +505,37 @@ function ChangeDeviceForm({
   const [swapAsk, setSwapAsk] = useState<ThietBiChon | null>(null);
 
   const options = useMemo(
-    () => rankChonDevices(all, viTri.loai_thiet_bi_yeu_cau).map((r) => {
-      const modelStock = tonKhoModel?.find(t => t.model_id === r.loai_thiet_bi_id);
-      return {
-        value: r.id,
-        label: `${r.ma_thiet_bi}${r.ten_thiet_bi ? " · " + r.ten_thiet_bi : ""}`,
-        hint: [
-          r.ma_serial ? "SN " + r.ma_serial : "",
-          (r as any).vai_tro === "ccdc" ? "CÔNG CỤ DỤNG CỤ" : "",
-          (r as any).vai_tro === "vat_tu" ? "VẬT TƯ DỰ PHÒNG" : "",
-          r.khopLoai ? "" : "khác phân loại",
-          r.dangLap ? "đang lắp: " + (r.viTriHienTai ?? "nơi khác") : (r.trang_thai_ten ?? "rảnh"),
-          modelStock ? `Tồn kho model: ${modelStock.serial_total} serial, ${modelStock.bulk_quantity} SL` : "",
-        ].filter(Boolean).join(" · "),
-      };
-    }),
+    () =>
+      rankChonDevices(all, viTri.loai_thiet_bi_yeu_cau).map((r) => {
+        const modelStock = tonKhoModel?.find((t) => t.model_id === r.loai_thiet_bi_id);
+        return {
+          value: r.id,
+          label: `${r.ma_thiet_bi}${r.ten_thiet_bi ? " · " + r.ten_thiet_bi : ""}`,
+          hint: [
+            r.ma_serial ? "SN " + r.ma_serial : "",
+            (r as any).vai_tro === "ccdc" ? "CÔNG CỤ DỤNG CỤ" : "",
+            (r as any).vai_tro === "vat_tu" ? "VẬT TƯ DỰ PHÒNG" : "",
+            r.khopLoai ? "" : "khác phân loại",
+            r.dangLap
+              ? "đang lắp: " + (r.viTriHienTai ?? "nơi khác")
+              : (r.trang_thai_ten ?? "rảnh"),
+            modelStock
+              ? `Tồn kho model: ${modelStock.serial_total} serial, ${modelStock.bulk_quantity} SL`
+              : "",
+          ]
+            .filter(Boolean)
+            .join(" · "),
+        };
+      }),
 
     [all, viTri.loai_thiet_bi_yeu_cau, tonKhoModel],
   );
 
-
   const viTriOptions = useMemo(
-    () => viTriList
-      .filter((v) => v.id !== (viTri.vi_tri_id ?? ""))
-      .map((v) => ({ value: v.id, label: v.ten })),
+    () =>
+      viTriList
+        .filter((v) => v.id !== (viTri.vi_tri_id ?? ""))
+        .map((v) => ({ value: v.id, label: v.ten })),
     [viTriList, viTri.vi_tri_id],
   );
 
@@ -450,9 +569,17 @@ function ChangeDeviceForm({
         showUndoToast({
           message: `Đã lắp ${tbLabel} vào ${viTriLabel}`,
           onUndo: () =>
-            thaoMut.mutateAsync({ thanhPhanId: viTri.id, lyDo: "hoàn tác lắp" })
-              .then(() => { toast.success(`Đã hoàn tác — tháo ${picked.ma_thiet_bi} khỏi ${viTriLabel}`, { description: "Đã đóng bản ghi trong gan_chuc_nang." }); })
-              .catch((e) => { toast.error(errMsg(e, "Không hoàn tác được")); throw e; }),
+            thaoMut
+              .mutateAsync({ thanhPhanId: viTri.id, lyDo: "hoàn tác lắp" })
+              .then(() => {
+                toast.success(`Đã hoàn tác — tháo ${picked.ma_thiet_bi} khỏi ${viTriLabel}`, {
+                  description: "Đã đóng bản ghi trong gan_chuc_nang.",
+                });
+              })
+              .catch((e) => {
+                toast.error(errMsg(e, "Không hoàn tác được"));
+                throw e;
+              }),
         });
       }
       onDone();
@@ -480,26 +607,42 @@ function ChangeDeviceForm({
   };
 
   const submit = async () => {
-    if (!chon) { toast.error("Chọn tài sản"); return; }
+    if (!chon) {
+      toast.error("Chọn tài sản");
+      return;
+    }
     const picked = all.find((d) => d.id === chon);
-    if (!picked) { toast.error("Không tìm thấy tài sản"); return; }
+    if (!picked) {
+      toast.error("Không tìm thấy tài sản");
+      return;
+    }
     // Không phải chế độ thay thế + tài sản đang bận nơi khác → hỏi hoán đổi.
-    if (!isReplace && picked.dangLap) { setSwapAsk(picked); return; }
+    if (!isReplace && picked.dangLap) {
+      setSwapAsk(picked);
+      return;
+    }
     await doLap(picked);
   };
 
   return (
     <div className="space-y-3 rounded-lg border bg-muted/30 p-3">
       <div className="flex items-center justify-between">
-        <Label>{isReplace ? "Thay thế bằng tài sản" : "Lắp tài sản"} ({options.length} tài sản)</Label>
-        <Button size="icon" variant="ghost" className="h-6 w-6" onClick={onDone} aria-label="Nút"><X className="h-3.5 w-3.5" /></Button>
+        <Label>
+          {isReplace ? "Thay thế bằng tài sản" : "Lắp tài sản"} ({options.length} tài sản)
+        </Label>
+        <Button size="icon" variant="ghost" className="h-6 w-6" onClick={onDone} aria-label="Nút">
+          <X className="h-3.5 w-3.5" />
+        </Button>
       </div>
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Đang tải danh sách tài sản…</p>
       ) : (
         <Combobox
-          options={options} value={chon} onChange={setChon}
-          placeholder="Chọn tài sản…" searchPlaceholder="Tìm theo mã / tên / serial…"
+          options={options}
+          value={chon}
+          onChange={setChon}
+          placeholder="Chọn tài sản…"
+          searchPlaceholder="Tìm theo mã / tên / serial…"
           emptyText="Không tìm thấy tài sản"
         />
       )}
@@ -510,17 +653,16 @@ function ChangeDeviceForm({
           <div className="flex items-start gap-2 rounded-md border border-sky-200 bg-sky-50/70 p-2 text-xs text-sky-900 dark:border-sky-900/40 dark:bg-sky-900/10 dark:text-sky-100">
             <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
             <span>
-              Tài sản <b>{picked.ma_thiet_bi}</b> chưa có hệ thống mặc định.
-              Khi lắp, hệ thống sẽ <b>tự điền</b> hệ thống của thành phần
-              &ldquo;{viTri.ten}&rdquo; vào tài sản này.
+              Tài sản <b>{picked.ma_thiet_bi}</b> chưa có hệ thống mặc định. Khi lắp, hệ thống sẽ{" "}
+              <b>tự điền</b> hệ thống của thành phần &ldquo;{viTri.ten}&rdquo; vào tài sản này.
             </span>
           </div>
         );
       })()}
       <p className="text-xs text-muted-foreground">
-        Có thể chọn mọi tài sản. Tài sản đúng phân loại và đang rảnh được ưu tiên lên đầu.
-        Nếu chọn tài sản đang lắp nơi khác, hệ thống sẽ hỏi bạn <b>giữ nguyên</b> (gán thêm
-        vai trò) hay <b>chuyển</b> tài sản sang vị trí này.
+        Có thể chọn mọi tài sản. Tài sản đúng phân loại và đang rảnh được ưu tiên lên đầu. Nếu chọn
+        tài sản đang lắp nơi khác, hệ thống sẽ hỏi bạn <b>giữ nguyên</b> (gán thêm vai trò) hay{" "}
+        <b>chuyển</b> tài sản sang vị trí này.
       </p>
       {isReplace && current && (
         <div className="space-y-1 rounded-md border border-amber-200 bg-amber-50/60 p-2 dark:border-amber-900/40 dark:bg-amber-900/10">
@@ -536,8 +678,8 @@ function ChangeDeviceForm({
             emptyText="Không có vị trí phù hợp"
           />
           <p className="text-[11px] text-muted-foreground">
-            Bỏ trống → tài sản cũ giữ nguyên vị trí. Khuyến nghị chọn <b>kho sửa chữa</b> nếu
-            gắn với hỏng hóc.
+            Bỏ trống → tài sản cũ giữ nguyên vị trí. Khuyến nghị chọn <b>kho sửa chữa</b> nếu gắn
+            với hỏng hóc.
           </p>
         </div>
       )}
@@ -546,24 +688,32 @@ function ChangeDeviceForm({
         <Textarea value={ghiChu} onChange={(e) => setGhiChu(e.target.value)} rows={2} />
       </div>
       <div className="flex justify-end gap-2">
-        <Button size="sm" variant="outline" onClick={onDone}>Huỷ</Button>
+        <Button size="sm" variant="outline" onClick={onDone}>
+          Huỷ
+        </Button>
         <Button size="sm" onClick={submit} disabled={dangXuLy}>
           {isReplace ? "Thay thế" : "Lắp"}
         </Button>
       </div>
 
-      <AlertDialog open={!!swapAsk} onOpenChange={(o) => { if (!o) setSwapAsk(null); }}>
+      <AlertDialog
+        open={!!swapAsk}
+        onOpenChange={(o) => {
+          if (!o) setSwapAsk(null);
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Tài sản đang lắp ở nơi khác</AlertDialogTitle>
             <AlertDialogDescription>
               {swapAsk && (
                 <>
-                  <b>{swapAsk.ma_thiet_bi}</b>{swapAsk.ten_thiet_bi ? ` · ${swapAsk.ten_thiet_bi}` : ""} hiện đang lắp tại
-                  {" "}<b>{swapAsk.viTriHienTai ?? "một vị trí khác"}</b>.
+                  <b>{swapAsk.ma_thiet_bi}</b>
+                  {swapAsk.ten_thiet_bi ? ` · ${swapAsk.ten_thiet_bi}` : ""} hiện đang lắp tại{" "}
+                  <b>{swapAsk.viTriHienTai ?? "một vị trí khác"}</b>.
                   <br />
-                  Chọn <b>Chuyển</b> để đóng vai trò cũ và mở vai trò mới tại "{viTri.ten}",
-                  hoặc <b>Gán thêm vai trò</b> nếu tài sản đảm nhiệm đồng thời nhiều vị trí.
+                  Chọn <b>Chuyển</b> để đóng vai trò cũ và mở vai trò mới tại "{viTri.ten}", hoặc{" "}
+                  <b>Gán thêm vai trò</b> nếu tài sản đảm nhiệm đồng thời nhiều vị trí.
                 </>
               )}
             </AlertDialogDescription>
@@ -573,13 +723,22 @@ function ChangeDeviceForm({
             <Button
               variant="outline"
               disabled={dangXuLy}
-              onClick={async () => { const p = swapAsk!; setSwapAsk(null); await doLap(p); }}
+              onClick={async () => {
+                const p = swapAsk!;
+                setSwapAsk(null);
+                await doLap(p);
+              }}
             >
               Gán thêm vai trò
             </Button>
             <AlertDialogAction
               disabled={dangXuLy}
-              onClick={async (ev) => { ev.preventDefault(); const p = swapAsk!; setSwapAsk(null); await doChuyen(p); }}
+              onClick={async (ev) => {
+                ev.preventDefault();
+                const p = swapAsk!;
+                setSwapAsk(null);
+                await doChuyen(p);
+              }}
             >
               Chuyển sang đây
             </AlertDialogAction>
@@ -601,7 +760,9 @@ function FieldRow({ label, value, mono }: { label: string; value: string; mono?:
 
 // ---- Sửa TRỰC TIẾP các trường của thành phần hệ thống → lưu thẳng CSDL -------
 function ThanhPhanFieldsForm({
-  heThongId, viTri, onDone,
+  heThongId,
+  viTri,
+  onDone,
 }: {
   heThongId: string;
   viTri: ViTriChucNangTree;
@@ -621,12 +782,21 @@ function ThanhPhanFieldsForm({
   const [viTriId, setViTriId] = useState(viTri.vi_tri_id ?? "");
   const [ttId, setTtId] = useState(viTri.trang_thai_id ?? "");
 
-  const loaiOptions = useMemo(() => loaiList.map((l) => ({ value: l.id, label: l.ten })), [loaiList]);
-  const viTriOptions = useMemo(() => viTriList.map((l) => ({ value: l.id, label: l.ten })), [viTriList]);
+  const loaiOptions = useMemo(
+    () => loaiList.map((l) => ({ value: l.id, label: l.ten })),
+    [loaiList],
+  );
+  const viTriOptions = useMemo(
+    () => viTriList.map((l) => ({ value: l.id, label: l.ten })),
+    [viTriList],
+  );
   const ttOptions = useMemo(() => ttList.map((l) => ({ value: l.id, label: l.ten })), [ttList]);
 
   const submit = () => {
-    if (!ten.trim()) { toast.error("Nhập tên thành phần"); return; }
+    if (!ten.trim()) {
+      toast.error("Nhập tên thành phần");
+      return;
+    }
     // Mã trống → tự sinh (đảm bảo KHÔNG trùng với các mã đã có trong CSDL)
     const doLuu = async () => {
       let maFinal = ma.trim();
@@ -653,7 +823,10 @@ function ThanhPhanFieldsForm({
           trang_thai_id: ttId || null,
         },
         {
-          onSuccess: () => { toast.success("Đã lưu thông tin thành phần vào CSDL"); onDone(); },
+          onSuccess: () => {
+            toast.success("Đã lưu thông tin thành phần vào CSDL");
+            onDone();
+          },
           onError: (e) => toast.error(e instanceof Error ? e.message : "Lưu thất bại"),
         },
       );
@@ -699,22 +872,45 @@ function ThanhPhanFieldsForm({
       </div>
       <div className="space-y-1">
         <Label className="text-xs">Chủng loại yêu cầu</Label>
-        <Combobox options={loaiOptions} value={loai} onChange={setLoai} placeholder="Không ràng buộc loại" emptyText="Không có loại" />
+        <Combobox
+          options={loaiOptions}
+          value={loai}
+          onChange={setLoai}
+          placeholder="Không ràng buộc loại"
+          emptyText="Không có loại"
+        />
       </div>
       <div className="grid grid-cols-2 gap-2">
         <div className="space-y-1">
           <Label className="text-xs">Vị trí lắp đặt</Label>
-          <Combobox options={viTriOptions} value={viTriId} onChange={setViTriId} placeholder="Chọn vị trí" emptyText="Không có vị trí" />
+          <Combobox
+            options={viTriOptions}
+            value={viTriId}
+            onChange={setViTriId}
+            placeholder="Chọn vị trí"
+            emptyText="Không có vị trí"
+          />
         </div>
         <div className="space-y-1">
           <Label className="text-xs">Trạng thái</Label>
-          <Combobox options={ttOptions} value={ttId} onChange={setTtId} placeholder="Chọn trạng thái" emptyText="Không có trạng thái" />
+          <Combobox
+            options={ttOptions}
+            value={ttId}
+            onChange={setTtId}
+            placeholder="Chọn trạng thái"
+            emptyText="Không có trạng thái"
+          />
         </div>
       </div>
       <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-2">
         <div className="space-y-1">
           <Label className="text-xs">Thứ tự</Label>
-          <Input value={thuTu} onChange={(e) => setThuTu(e.target.value)} inputMode="numeric" placeholder="1" />
+          <Input
+            value={thuTu}
+            onChange={(e) => setThuTu(e.target.value)}
+            inputMode="numeric"
+            placeholder="1"
+          />
         </div>
         <label className="col-span-2 mt-6 flex items-center gap-2 text-sm">
           <Switch checked={batBuoc} onCheckedChange={setBatBuoc} /> Bắt buộc
@@ -725,7 +921,9 @@ function ThanhPhanFieldsForm({
         <Textarea value={moTa} onChange={(e) => setMoTa(e.target.value)} rows={2} />
       </div>
       <div className="flex justify-end gap-2">
-        <Button size="sm" variant="outline" onClick={onDone}>Huỷ</Button>
+        <Button size="sm" variant="outline" onClick={onDone}>
+          Huỷ
+        </Button>
         <Button size="sm" onClick={submit} disabled={luuMut.isPending}>
           <Save className="mr-1 h-3.5 w-3.5" /> Lưu vào CSDL
         </Button>
@@ -734,26 +932,34 @@ function ThanhPhanFieldsForm({
   );
 }
 
-
 function ViTriLichSu({ thanhPhanId }: { thanhPhanId: string }) {
   const { data = [], isLoading } = useLyLichViTri(thanhPhanId);
   if (isLoading) return <p className="text-xs text-muted-foreground">Đang tải lý lịch…</p>;
-  if (data.length === 0) return <p className="text-xs text-muted-foreground">Chưa có lịch sử lắp đặt.</p>;
+  if (data.length === 0)
+    return <p className="text-xs text-muted-foreground">Chưa có lịch sử lắp đặt.</p>;
   const fmt = (s: string | null) =>
     s
       ? new Date(s).toLocaleString("vi-VN", {
-          hour: "2-digit", minute: "2-digit",
-          day: "2-digit", month: "2-digit", year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
         })
       : "nay";
   return (
     <ol className="space-y-1.5">
       {data.map((r) => (
-        <li key={r.gan_id} className="flex flex-wrap items-center gap-2 rounded-md bg-muted/40 px-2 py-1.5 text-xs">
+        <li
+          key={r.gan_id}
+          className="flex flex-wrap items-center gap-2 rounded-md bg-muted/40 px-2 py-1.5 text-xs"
+        >
           <HardDrive className="h-3 w-3 text-muted-foreground" />
           <span className="font-mono">{r.ma_thiet_bi}</span>
           {r.ma_serial && <span className="text-muted-foreground">SN {r.ma_serial}</span>}
-          <span className="text-muted-foreground">· {fmt(r.tu_ngay)} → {fmt(r.den_ngay)}</span>
+          <span className="text-muted-foreground">
+            · {fmt(r.tu_ngay)} → {fmt(r.den_ngay)}
+          </span>
           <Badge variant={r.den_ngay ? "outline" : "secondary"} className="ml-auto">
             {r.den_ngay ? r.ly_do : "Đang lắp"}
           </Badge>
@@ -768,7 +974,9 @@ function ViTriLichSu({ thanhPhanId }: { thanhPhanId: string }) {
 // + nút mở sổ lý lịch của hệ thống mẹ trong 1 Dialog riêng.
 // ─────────────────────────────────────────────────────────────────────────────
 function SoLyLichThanhPhanSection({
-  thanhPhanId, heThongId, canEdit,
+  thanhPhanId,
+  heThongId,
+  canEdit,
 }: {
   thanhPhanId: string;
   heThongId: string;
@@ -795,7 +1003,9 @@ function SoLyLichThanhPhanSection({
           <History className="h-3.5 w-3.5" /> Sổ lý lịch thành phần
         </div>
         <Button
-          size="sm" variant="outline" className="h-7"
+          size="sm"
+          variant="outline"
+          className="h-7"
           onClick={() => setOpenHT(true)}
           title="Xem sổ lý lịch của hệ thống mẹ"
         >
@@ -860,5 +1070,3 @@ function SoLyLichThanhPhanSection({
     </div>
   );
 }
-
-

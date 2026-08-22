@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  NGUONG_CANH_BAO,
-  DEFAULT_NGAY_SAP_HET_HAN,
-  nguongCho,
-} from "../han-canh-bao";
+import { NGUONG_CANH_BAO, DEFAULT_NGAY_SAP_HET_HAN, nguongCho } from "../han-canh-bao";
 
 describe("han-canh-bao", () => {
   it("hằng số ngưỡng theo thứ tự tăng dần 30/60/90", () => {

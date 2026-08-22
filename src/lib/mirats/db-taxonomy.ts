@@ -75,7 +75,7 @@ export interface DbTaxonomy {
   plNameMap: Map<string, string>;
   lvNameMap: Map<string, string>;
   htNameMap: Map<string, string>; // id hệ thống → tên
-  htMaMap: Map<string, string>;   // mã hệ thống (ma) → tên
+  htMaMap: Map<string, string>; // mã hệ thống (ma) → tên
   nhomNameMap: Map<string, string>;
   nhomMaMap: Map<string, string>; // mã nhóm (ma) → tên
   donViList: Array<{ id: string; ma: string; ten: string; mo_ta: string }>;
@@ -207,13 +207,15 @@ async function loadTaxonomy(): Promise<DbTaxonomy> {
     await Promise.all([
       supabase.from("dm_phan_loai").select("id, ma, ten, thu_tu").order("thu_tu"),
       supabase.from("dm_nhom_he_thong").select("id, ma, ten, phan_loai_id, thu_tu").order("thu_tu"),
-      fetchAllRows((from, to) => 
+      fetchAllRows((from, to) =>
         supabase
           .from("dm_he_thong")
-          .select("id, ma, ten, ma_tai_san_bravo, thu_tu, phan_loai_id, nhom_he_thong_id, don_vi_id, gp_so, gp_han")
+          .select(
+            "id, ma, ten, ma_tai_san_bravo, thu_tu, phan_loai_id, nhom_he_thong_id, don_vi_id, gp_so, gp_han",
+          )
           .order("ten")
-          .range(from, to)
-      ).then(data => ({ data, error: null })),
+          .range(from, to),
+      ).then((data) => ({ data, error: null })),
       supabase.from("dm_don_vi").select("id, ma, ten, mo_ta, thu_tu").order("thu_tu"),
       supabase.from("dm_trang_thai_thiet_bi").select("id, ma, ten, thu_tu").order("thu_tu"),
       fetchAllRows((from, to) =>
@@ -221,15 +223,15 @@ async function loadTaxonomy(): Promise<DbTaxonomy> {
           .from("dm_vi_tri")
           .select("id, ma, ten, mo_ta, thu_tu")
           .order("thu_tu")
-          .range(from, to)
-      ).then(data => ({ data, error: null })),
+          .range(from, to),
+      ).then((data) => ({ data, error: null })),
       supabase.from("dm_loai_thiet_bi").select("id, ma, ten, thu_tu").order("thu_tu"),
       fetchAllRows((from, to) =>
         supabase
           .from("dm_model")
           .select("id, ma, ten, hinh_anh, mo_ta, p_n, nha_san_xuat_id")
-          .range(from, to)
-      ).then(data => ({ data, error: null })),
+          .range(from, to),
+      ).then((data) => ({ data, error: null })),
       supabase.from("dm_nha_san_xuat").select("id, ten"),
       supabase.from("cay_node_edit").select("ma, du_lieu").eq("kind", "ht"),
       fetchAllThietBi(),
@@ -256,8 +258,13 @@ async function loadTaxonomy(): Promise<DbTaxonomy> {
   const vt = (vtRes.data ?? []) as Array<CatRow & { mo_ta: string | null }>;
   const lt = (ltRes.data ?? []) as CatRow[];
   const md = (mdRes.data ?? []) as Array<{
-    id: string; ma: string | null; ten: string | null; hinh_anh: string | null;
-    mo_ta: string | null; p_n: string | null; nha_san_xuat_id: string | null;
+    id: string;
+    ma: string | null;
+    ten: string | null;
+    hinh_anh: string | null;
+    mo_ta: string | null;
+    p_n: string | null;
+    nha_san_xuat_id: string | null;
   }>;
   const nsx = (nsxRes.data ?? []) as Array<{ id: string; ten: string | null }>;
   const edits = (editRes.data ?? []) as Array<{
@@ -393,7 +400,7 @@ async function loadTaxonomy(): Promise<DbTaxonomy> {
         return {
           _modelId: (r.model_id as string) ?? "",
           _modelMa: m?.ma ?? "",
-          _modelTen: m?.ten ?? ((r.model as string) ?? ""),
+          _modelTen: m?.ten ?? (r.model as string) ?? "",
           _modelAnh: m?.hinh_anh ?? "",
           _modelMoTa: m?.mo_ta ?? "",
           _modelPn: m?.p_n ?? "",
@@ -490,7 +497,9 @@ export function buildSystemNameOverrideMap(
     const sysId = i < 0 ? r.ma : r.ma.slice(i + HT_SEP.length);
     if (!sysId || sysId === "__none__") continue;
     if (realSystemIds.has(sysId)) continue; // node thật → dùng bảng gốc, bỏ qua override
-    const name = r.ten?.trim() || (typeof r.du_lieu?.ten_mindmap === "string" ? String(r.du_lieu.ten_mindmap).trim() : "");
+    const name =
+      r.ten?.trim() ||
+      (typeof r.du_lieu?.ten_mindmap === "string" ? String(r.du_lieu.ten_mindmap).trim() : "");
     if (name) map.set(sysId, name);
   }
   return map;
@@ -508,7 +517,9 @@ export function buildDeviceNameOverrideMap(
   for (const r of rows) {
     if (!r.ma) continue;
     if (realDeviceMa.has(r.ma)) continue;
-    const name = r.ten?.trim() || (typeof r.du_lieu?.ten_mindmap === "string" ? String(r.du_lieu.ten_mindmap).trim() : "");
+    const name =
+      r.ten?.trim() ||
+      (typeof r.du_lieu?.ten_mindmap === "string" ? String(r.du_lieu.ten_mindmap).trim() : "");
     if (name) map.set(r.ma, name);
   }
   return map;
@@ -527,7 +538,11 @@ export function useSystemNameOverrides() {
       if (htRes.error) throw htRes.error;
       const realIds = new Set<string>((htRes.data ?? []).map((r) => r.id as string));
       return buildSystemNameOverrideMap(
-        (editRes.data ?? []) as Array<{ ma: string; ten: string | null; du_lieu: Record<string, unknown> | null }>,
+        (editRes.data ?? []) as Array<{
+          ma: string;
+          ten: string | null;
+          du_lieu: Record<string, unknown> | null;
+        }>,
         realIds,
       );
     },
@@ -549,11 +564,14 @@ export function useDeviceNameOverrides() {
       if (editRes.error) throw editRes.error;
       const realMa = new Set<string>(tbRows.map((r) => r.ma_thiet_bi));
       return buildDeviceNameOverrideMap(
-        (editRes.data ?? []) as Array<{ ma: string; ten: string | null; du_lieu: Record<string, unknown> | null }>,
+        (editRes.data ?? []) as Array<{
+          ma: string;
+          ten: string | null;
+          du_lieu: Record<string, unknown> | null;
+        }>,
         realMa,
       );
     },
     staleTime: 30_000,
   });
 }
-

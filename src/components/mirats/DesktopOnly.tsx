@@ -17,11 +17,11 @@ interface DesktopOnlyProps {
  * Hàng rào bảo vệ: Hiển thị thông báo khi tính năng chỉ hoạt động tốt trên Desktop.
  * Quy định U6: Mọi route hạng G3 phải được bao bọc bởi component này.
  */
-export function DesktopOnly({ 
-  children, 
-  reason = "Tính năng này cần màn hình rộng để sử dụng hiệu quả.", 
+export function DesktopOnly({
+  children,
+  reason = "Tính năng này cần màn hình rộng để sử dụng hiệu quả.",
   pinPath,
-  featureName = "Tính năng chuyên sâu"
+  featureName = "Tính năng chuyên sâu",
 }: DesktopOnlyProps) {
   const isMobile = useIsMobile();
 
@@ -46,9 +46,7 @@ export function DesktopOnly({
         </div>
         <div className="space-y-2 max-w-sm">
           <h3 className="font-semibold text-lg">Chỉ dành cho máy tính</h3>
-          <p className="text-sm text-muted-foreground">
-            {reason}
-          </p>
+          <p className="text-sm text-muted-foreground">{reason}</p>
         </div>
         <div className="flex flex-wrap gap-2 justify-center">
           <Button variant="outline" size="sm" onClick={handleSendEmail} className="gap-2">

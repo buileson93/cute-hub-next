@@ -5,13 +5,15 @@ The user reported that the "Select All" feature is not working and that technica
 ## Proposed Changes
 
 ### 1. Fix Table Selection Logic
+
 - **File:** `src/components/mirats/StandardTable.tsx`
 - **Change:** Update the header checkbox to use `filteredRows` (the results after search and column filters) instead of the raw `rows` prop.
 - **Why:** This ensures "Select All" respects active filters and correctly reflects the current view state.
 
 ### 2. Optimize Information Density via Hover
+
 - **File:** `src/components/mirats/ThanhPhanTable.tsx`
-- **Change (Component Column):** 
+- **Change (Component Column):**
   - Remove the always-visible `CodeBadge` for the component code (`ma`).
   - Wrap the component name in a tooltip (`AppTooltip`) that displays the ID.
   - Optionally show the ID in a smaller, dimmer font only when the row is hovered.
@@ -21,6 +23,7 @@ The user reported that the "Select All" feature is not working and that technica
 - **Why:** Reduces visual clutter and column width while keeping the information accessible for power users.
 
 ### 3. Verification
+
 - Verify that clicking "Select All" selects all filtered items across all pages (if paginated).
 - Verify that the table columns shrink as the technical IDs are hidden.
 - Verify that the IDs are still discoverable via hover.
@@ -28,9 +31,11 @@ The user reported that the "Select All" feature is not working and that technica
 ## Technical Details
 
 ### Selection Logic
+
 In `StandardTable.tsx`, replace `rows` with `filteredRows` in:
+
 ```tsx
-<Checkbox 
+<Checkbox
   checked={selected?.size === filteredRows.length && filteredRows.length > 0}
   onCheckedChange={(checked) => {
     if (checked) setSelected?.(new Set(filteredRows.map(getRowIdInternal)));
@@ -40,5 +45,5 @@ In `StandardTable.tsx`, replace `rows` with `filteredRows` in:
 ```
 
 ### Hover Mapping
-In `ThanhPhanTable.tsx`, update the `cell` renderers for `ten` and `thietBi` columns to use `AppTooltip` for the technical IDs.
 
+In `ThanhPhanTable.tsx`, update the `cell` renderers for `ten` and `thietBi` columns to use `AppTooltip` for the technical IDs.

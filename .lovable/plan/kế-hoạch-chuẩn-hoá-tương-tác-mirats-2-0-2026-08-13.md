@@ -4,15 +4,15 @@ Chuẩn hoá toàn bộ trạng thái tương tác (hover, focus, active, select
 
 ## A. Bảng trạng thái tương tác mục tiêu
 
-| Thành phần | Hover | Focus | Active | Selected | Disabled | Duration | Ghi chú |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Hàng bảng** | Mức 1: `bg-muted/60` | Ring nội bộ | — | `bg-primary/5` | Opacity 0.5 | 120ms | Pointer nếu bấm được |
-| **Item Sidebar** | `bg-muted` | Ring offset | `bg-primary/8` + Line | — | Opacity 0.5 | 120ms | Line mảnh 2px bên trái |
-| **Nút chính** | Đậm hơn 10% | Ring 2px | Scale 0.98 | — | Not-allowed | 120ms | Dùng transition cụ thể |
-| **Card bấm được** | Mức 2: Border + Shadow | Ring | Scale 0.99 | — | — | 200ms | Dùng shadow-sm |
-| **KPI Card** | Mức 2 (nếu link) | Ring | — | — | — | 200ms | Card tĩnh không hover |
-| **Input / Control** | Border primary | Ring 1px | — | — | Gray background | 120ms | — |
-| **Node Mindmap** | Nền nhẹ + Nút | — | Ring primary | — | — | 320ms | Chỉ lập kế hoạch |
+| Thành phần          | Hover                  | Focus       | Active                | Selected       | Disabled        | Duration | Ghi chú                |
+| :------------------ | :--------------------- | :---------- | :-------------------- | :------------- | :-------------- | :------- | :--------------------- |
+| **Hàng bảng**       | Mức 1: `bg-muted/60`   | Ring nội bộ | —                     | `bg-primary/5` | Opacity 0.5     | 120ms    | Pointer nếu bấm được   |
+| **Item Sidebar**    | `bg-muted`             | Ring offset | `bg-primary/8` + Line | —              | Opacity 0.5     | 120ms    | Line mảnh 2px bên trái |
+| **Nút chính**       | Đậm hơn 10%            | Ring 2px    | Scale 0.98            | —              | Not-allowed     | 120ms    | Dùng transition cụ thể |
+| **Card bấm được**   | Mức 2: Border + Shadow | Ring        | Scale 0.99            | —              | —               | 200ms    | Dùng shadow-sm         |
+| **KPI Card**        | Mức 2 (nếu link)       | Ring        | —                     | —              | —               | 200ms    | Card tĩnh không hover  |
+| **Input / Control** | Border primary         | Ring 1px    | —                     | —              | Gray background | 120ms    | —                      |
+| **Node Mindmap**    | Nền nhẹ + Nút          | —           | Ring primary          | —              | —               | 320ms    | Chỉ lập kế hoạch       |
 
 ## B. Token tương tác bổ sung (styles.css)
 
@@ -37,6 +37,7 @@ Chuẩn hoá toàn bộ trạng thái tương tác (hover, focus, active, select
 ## C. Cải thiện Transition (Loại bỏ transition-all)
 
 Thay thế `transition-all` bằng `transition-mirats-fast` hoặc các thuộc tính cụ thể tại 41 vị trí:
+
 - **Hàng bảng & Danh sách**: Chỉ transition `background-color`.
 - **Card**: Transition `border-color, box-shadow, transform`.
 - **Sidebar**: Transition `background-color, color`.
@@ -49,12 +50,12 @@ Thay thế `transition-all` bằng `transition-mirats-fast` hoặc các thuộc 
 
 ## E. Rà soát vùng bấm được
 
-| File | Vị trí | Vấn đề | Giải pháp |
-| :--- | :--- | :--- | :--- |
-| `StandardTable.tsx` | Toàn bộ hàng | Thiếu pointer/hover khi `onRowClick` có hiệu lực | Thêm `cursor-pointer hover:bg-muted/60` |
-| `CayMindMap.tsx` | Node | Hover hiện tại quá mạnh (shadow-sm) | Chuyển sang Mức 1 (nền nhẹ) |
-| `Sidebar.tsx` | Rail Logo | `group-hover:scale-[1.06]` quá lớn | Giảm xuống `scale-[1.02]` |
-| `InventoryDashboard.tsx`| Mini cards | Thiếu feedback khi hover | Thêm Mức 2 |
+| File                     | Vị trí       | Vấn đề                                           | Giải pháp                               |
+| :----------------------- | :----------- | :----------------------------------------------- | :-------------------------------------- |
+| `StandardTable.tsx`      | Toàn bộ hàng | Thiếu pointer/hover khi `onRowClick` có hiệu lực | Thêm `cursor-pointer hover:bg-muted/60` |
+| `CayMindMap.tsx`         | Node         | Hover hiện tại quá mạnh (shadow-sm)              | Chuyển sang Mức 1 (nền nhẹ)             |
+| `Sidebar.tsx`            | Rail Logo    | `group-hover:scale-[1.06]` quá lớn               | Giảm xuống `scale-[1.02]`               |
+| `InventoryDashboard.tsx` | Mini cards   | Thiếu feedback khi hover                         | Thêm Mức 2                              |
 
 ## F. Kế hoạch triển khai (Commits)
 
@@ -66,7 +67,7 @@ Thay thế `transition-all` bằng `transition-mirats-fast` hoặc các thuộc 
 
 ## G. Kịch bản Test
 
--   **Mouse**: Di chuyển nhanh qua bảng 1000 dòng, kiểm tra hover không giật (no reflow).
--   **Keyboard**: Tab qua toàn bộ Sidebar, TopBar và Table Actions (nút thao tác ẩn phải hiện khi focus).
--   **Touch**: Kiểm tra các hành động hover (như nút xoá trong list) vẫn có thể kích hoạt bằng cách bấm (không bị ẩn vĩnh viễn).
--   **Motion**: Bật "Reduce Motion" trong OS, kiểm tra Scale/Slide biến mất nhưng đổi màu vẫn còn.
+- **Mouse**: Di chuyển nhanh qua bảng 1000 dòng, kiểm tra hover không giật (no reflow).
+- **Keyboard**: Tab qua toàn bộ Sidebar, TopBar và Table Actions (nút thao tác ẩn phải hiện khi focus).
+- **Touch**: Kiểm tra các hành động hover (như nút xoá trong list) vẫn có thể kích hoạt bằng cách bấm (không bị ẩn vĩnh viễn).
+- **Motion**: Bật "Reduce Motion" trong OS, kiểm tra Scale/Slide biến mất nhưng đổi màu vẫn còn.

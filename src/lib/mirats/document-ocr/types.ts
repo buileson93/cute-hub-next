@@ -47,12 +47,12 @@ export type OcrSourceType = "model_tai_lieu" | "thiet_bi_tep_dinh_kem";
 /**
  * OCR Error codes
  */
-export type OcrErrorCode = 
-  | "PDF_ENCRYPTED" 
-  | "PDF_TOO_LARGE" 
+export type OcrErrorCode =
+  | "PDF_ENCRYPTED"
+  | "PDF_TOO_LARGE"
   | "PDF_CORRUPT"
-  | "URL_EXPIRED" 
-  | "ACCESS_DENIED" 
+  | "URL_EXPIRED"
+  | "ACCESS_DENIED"
   | "NETWORK_ERROR"
   | "TIMEOUT"
   | "EMPTY_PDF"
@@ -118,4 +118,3 @@ export interface UnprocessedPdfItem {
   model_ma?: string;
   thiet_bi_ma?: string;
 }
-

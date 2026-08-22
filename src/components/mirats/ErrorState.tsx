@@ -10,12 +10,7 @@ interface Props {
   className?: string;
 }
 
-export function ErrorState({
-  title = "Đã xảy ra lỗi",
-  message,
-  onRetry,
-  className,
-}: Props) {
+export function ErrorState({ title = "Đã xảy ra lỗi", message, onRetry, className }: Props) {
   return (
     <div
       role="alert"
@@ -27,9 +22,7 @@ export function ErrorState({
       <AlertTriangle className="h-6 w-6 text-destructive" aria-hidden />
       <div className="text-sm font-medium text-destructive">{title}</div>
       {message && (
-        <div className="text-xs text-destructive/80 max-w-md whitespace-pre-wrap">
-          {message}
-        </div>
+        <div className="text-xs text-destructive/80 max-w-md whitespace-pre-wrap">{message}</div>
       )}
       {onRetry && (
         <Button size="sm" variant="outline" className="mt-2" onClick={onRetry}>

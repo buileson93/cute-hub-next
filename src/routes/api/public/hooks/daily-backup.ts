@@ -61,10 +61,21 @@ export const Route = createFileRoute("/api/public/hooks/daily-backup")({
               const { createAdminStorage } = await import("@/lib/storage/server");
               await createAdminStorage(supabaseAdmin).from("database-backups").remove(paths);
             }
-            await supabaseAdmin.from("backup_lich_su").delete().in("id", olds.map((o: any) => o.id));
+            await supabaseAdmin
+              .from("backup_lich_su")
+              .delete()
+              .in(
+                "id",
+                olds.map((o: any) => o.id),
+              );
           }
 
-          return Response.json({ ok: true, id: res.record?.id, tables: res.record?.so_bang, rows: res.record?.so_dong });
+          return Response.json({
+            ok: true,
+            id: res.record?.id,
+            tables: res.record?.so_bang,
+            rows: res.record?.so_dong,
+          });
         } catch (e) {
           const msg = e instanceof Error ? e.message : String(e);
           console.error("[daily-backup]", msg);

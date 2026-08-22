@@ -1,9 +1,7 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import {
-  ProductTourProvider, useProductTour,
-} from "@/components/mirats/ProductTour";
+import { ProductTourProvider, useProductTour } from "@/components/mirats/ProductTour";
 import { cn } from "@/lib/utils";
 import { AiChatButton } from "@/components/mirats/AiChatButton";
 import { useRouteTracker } from "@/hooks/use-route-tracker";
@@ -12,22 +10,10 @@ import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { useUserPref } from "@/hooks/use-user-pref";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetTrigger,
-  SheetHeader,
-  SheetTitle
-} from "@/components/ui/sheet";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
 
 import {
   type Workspace,
@@ -38,17 +24,10 @@ import {
 } from "@/lib/mirats/nav-contract";
 import { type UiDensityMode, UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 
-import { 
-  SidebarLogoRail, 
-  UserMenu, 
-  TourButton, 
-  TOUR_STEPS 
-} from "./index";
+import { SidebarLogoRail, UserMenu, TourButton, TOUR_STEPS } from "./index";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 import { MobileNav } from "./MobileNav";
-
-
 
 /** Tự động mở tour MỘT LẦN cho mỗi tài khoản ở lần đăng nhập đầu tiên. */
 function TourAutoStart({
@@ -94,7 +73,6 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const [density] = useUserPref<UiDensityMode>("ui-density", "compact");
 
-
   useEffect(() => {
     const saved = localStorage.getItem("mirats-sidebar-collapsed");
     // Mặc định là thu gọn (true)
@@ -109,26 +87,29 @@ export function AppShell({ children }: { children: ReactNode }) {
     try {
       const raw = localStorage.getItem("mirats-ws-last-route");
       if (raw) setWsLastRoute(JSON.parse(raw) as Record<string, string>);
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   const visibleWorkspaces = useMemo(
     () => workspaces.filter((ws) => !ws.roles || ws.roles.some((r) => hasRole(r))),
-    [hasRole]
+    [hasRole],
   );
 
   const railWorkspaces = useMemo(
     () => visibleWorkspaces.filter((w) => w.id !== "trao-doi" && w.id !== "he-thong"),
-    [visibleWorkspaces]
+    [visibleWorkspaces],
   );
-  
+
   const adminWs = useMemo(
     () => visibleWorkspaces.find((w) => w.id === "he-thong") ?? null,
-    [visibleWorkspaces]
+    [visibleWorkspaces],
   );
 
   const activeWsId = resolveActiveWorkspace(pathname);
-  const activeWs = visibleWorkspaces.find((w) => w.id === activeWsId) ?? visibleWorkspaces[0] ?? workspaces[0];
+  const activeWs =
+    visibleWorkspaces.find((w) => w.id === activeWsId) ?? visibleWorkspaces[0] ?? workspaces[0];
 
   useEffect(() => {
     setWsLastRoute((prev) => {
@@ -141,7 +122,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   function gotoWorkspace(ws: Workspace) {
     const remembered = wsLastRoute[ws.id];
-    const target = remembered && resolveActiveWorkspace(remembered) === ws.id
+    const target =
+      remembered && resolveActiveWorkspace(remembered) === ws.id
         ? remembered
         : firstItemOf(ws, hasRole);
     navigate({ to: target as never });
@@ -155,12 +137,12 @@ export function AppShell({ children }: { children: ReactNode }) {
         onSeen={refresh}
       />
       <TooltipProvider delayDuration={300}>
-        <div 
+        <div
           data-density={density}
           className="flex min-h-dvh w-full overflow-hidden bg-background text-foreground"
         >
           {/* Desktop Navigation Container */}
-          <div 
+          <div
             className="hidden md:flex h-dvh sticky top-0 z-30"
             onPointerEnter={() => setIsHovered(true)}
             onPointerLeave={() => {
@@ -169,12 +151,17 @@ export function AppShell({ children }: { children: ReactNode }) {
             }}
           >
             {/* Rail (Desktop) */}
-            <aside className={cn(
-              "h-full shrink-0 flex-col items-center py-3 flex transition-[width] border-r border-[#0074e2]/10 bg-background/50 z-20",
-              UI_DENSITY.RAIL_W
-            )}>
+            <aside
+              className={cn(
+                "h-full shrink-0 flex-col items-center py-3 flex transition-[width] border-r border-[#0074e2]/10 bg-background/50 z-20",
+                UI_DENSITY.RAIL_W,
+              )}
+            >
               <SidebarLogoRail />
-              <nav data-tour="rail" className="flex flex-1 flex-col items-center gap-1 data-[density=compact]:gap-1 comfortable:gap-2">
+              <nav
+                data-tour="rail"
+                className="flex flex-1 flex-col items-center gap-1 data-[density=compact]:gap-1 comfortable:gap-2"
+              >
                 {railWorkspaces.map((ws) => (
                   <Tooltip key={ws.id}>
                     <TooltipTrigger asChild>
@@ -184,7 +171,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                         className={cn(
                           "group relative flex items-center justify-center transition-mirats-fast rounded-full",
                           "w-9 h-9 data-[density=comfortable]:w-10 data-[density=comfortable]:h-10 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col active:scale-95",
-                          ws.id === activeWs.id ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
+                          ws.id === activeWs.id
+                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                            : "text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors",
                         )}
                         data-active={ws.id === activeWs.id}
                       >
@@ -208,7 +197,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                         className={cn(
                           "flex items-center justify-center rounded-full transition-mirats-fast",
                           "w-9 h-9 data-[density=comfortable]:w-10 data-[density=comfortable]:h-10 data-[density=comfortable]:rounded-xl data-[density=comfortable]:flex-col",
-                          adminWs.id === activeWs.id ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 active:scale-95" : "text-muted-foreground hover:bg-primary/10 hover:text-primary active:scale-95 transition-colors"
+                          adminWs.id === activeWs.id
+                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 active:scale-95"
+                            : "text-muted-foreground hover:bg-primary/10 hover:text-primary active:scale-95 transition-colors",
                         )}
                       >
                         <adminWs.icon className="h-[18px] w-[18px] data-[density=comfortable]:h-5 data-[density=comfortable]:w-5" />
@@ -224,22 +215,29 @@ export function AppShell({ children }: { children: ReactNode }) {
             </aside>
 
             {/* Sub-sidebar (Desktop) */}
-            <aside 
+            <aside
               className={cn(
                 "h-full shrink-0 flex-col flex transition-[width] duration-300 ease-in-out overflow-hidden border-r border-[#0074e2]/10 bg-background z-10",
-                (isCollapsed && !isHovered) ? "w-0 border-r-0 pointer-events-none" : UI_DENSITY.SIDEBAR_W
+                isCollapsed && !isHovered
+                  ? "w-0 border-r-0 pointer-events-none"
+                  : UI_DENSITY.SIDEBAR_W,
               )}
             >
-              <div className={cn(
-                "flex items-center border-b px-3 data-[density=comfortable]:px-4 font-bold tracking-tight overflow-hidden whitespace-nowrap transition-[padding,opacity,width] duration-300",
-                UI_DENSITY.APP_HEADER_H,
-                (isCollapsed && !isHovered) && "opacity-0"
-              )}>
-                {(hoveredWsId ? visibleWorkspaces.find(w => w.id === hoveredWsId) : activeWs)?.label}
+              <div
+                className={cn(
+                  "flex items-center border-b px-3 data-[density=comfortable]:px-4 font-bold tracking-tight overflow-hidden whitespace-nowrap transition-[padding,opacity,width] duration-300",
+                  UI_DENSITY.APP_HEADER_H,
+                  isCollapsed && !isHovered && "opacity-0",
+                )}
+              >
+                {
+                  (hoveredWsId ? visibleWorkspaces.find((w) => w.id === hoveredWsId) : activeWs)
+                    ?.label
+                }
               </div>
               <div className="flex-1 overflow-y-auto overflow-x-hidden">
-                <Sidebar 
-                  collapsed={isCollapsed && !isHovered} 
+                <Sidebar
+                  collapsed={isCollapsed && !isHovered}
                   activeWsId={hoveredWsId || activeWs.id}
                 />
               </div>
@@ -248,49 +246,61 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           {/* Main content area */}
           <div className="flex min-w-0 flex-1 flex-col h-full">
-            <header className={cn(
-              "sticky top-0 z-10 flex items-center justify-between gap-3 px-4 border-b border-[#0074e2]/10 bg-background/80 backdrop-blur-md",
-              UI_DENSITY.APP_HEADER_H
-            )}>
-
-               <div className="flex flex-1 items-center gap-4">
-                  <Link to="/" className="md:hidden shrink-0"><SidebarLogoRail /></Link>
-                  <div className="hidden md:block"><TourButton /></div>
-                  <TopBar 
-                    renderMobileMenu={
-                      <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-                        <SheetTrigger asChild>
-                          <Button variant="ghost" size="icon" className="md:hidden shrink-0">
-                            <Menu className="h-5 w-5" />
-                          </Button>
-                        </SheetTrigger>
-                        <SheetContent side="left" className="w-[86vw] p-0 focus:outline-none">
-                          <SheetHeader className="border-b h-14 px-6 flex flex-row items-center gap-2">
-                             <SidebarLogoRail />
-                             <SheetTitle className="text-sm font-bold">MIRATS</SheetTitle>
-                          </SheetHeader>
-                          <div className="overflow-y-auto h-[calc(100dvh-3.5rem)]">
-                             <Sidebar 
-                               activeWsId={activeWs.id}
-                               onNavigate={() => setIsMobileMenuOpen(false)} 
-                             />
-                          </div>
-                        </SheetContent>
-                      </Sheet>
-                    }
-                  />
-               </div>
-               <div className="flex items-center gap-3">
-                  <div className="astryx-user-menu-wrapper"><UserMenu /></div>
-               </div>
+            <header
+              className={cn(
+                "sticky top-0 z-10 flex items-center justify-between gap-3 px-4 border-b border-[#0074e2]/10 bg-background/80 backdrop-blur-md",
+                UI_DENSITY.APP_HEADER_H,
+              )}
+            >
+              <div className="flex flex-1 items-center gap-4">
+                <Link to="/" className="md:hidden shrink-0">
+                  <SidebarLogoRail />
+                </Link>
+                <div className="hidden md:block">
+                  <TourButton />
+                </div>
+                <TopBar
+                  renderMobileMenu={
+                    <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                      <SheetTrigger asChild>
+                        <Button variant="ghost" size="icon" className="md:hidden shrink-0">
+                          <Menu className="h-5 w-5" />
+                        </Button>
+                      </SheetTrigger>
+                      <SheetContent side="left" className="w-[86vw] p-0 focus:outline-none">
+                        <SheetHeader className="border-b h-14 px-6 flex flex-row items-center gap-2">
+                          <SidebarLogoRail />
+                          <SheetTitle className="text-sm font-bold">MIRATS</SheetTitle>
+                        </SheetHeader>
+                        <div className="overflow-y-auto h-[calc(100dvh-3.5rem)]">
+                          <Sidebar
+                            activeWsId={activeWs.id}
+                            onNavigate={() => setIsMobileMenuOpen(false)}
+                          />
+                        </div>
+                      </SheetContent>
+                    </Sheet>
+                  }
+                />
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="astryx-user-menu-wrapper">
+                  <UserMenu />
+                </div>
+              </div>
             </header>
-            <main className={cn("flex-1 min-w-0 overflow-y-auto md:pb-0 [@container] relative h-full", UI_DENSITY.MAIN_PB_MOBILE)}>{children}</main>
+            <main
+              className={cn(
+                "flex-1 min-w-0 overflow-y-auto md:pb-0 [@container] relative h-full",
+                UI_DENSITY.MAIN_PB_MOBILE,
+              )}
+            >
+              {children}
+            </main>
           </div>
-          
+
           <MobileNav activeWsId={activeWs.id} wsLastRoute={wsLastRoute} />
           <AiChatButton />
-
-          
         </div>
       </TooltipProvider>
     </ProductTourProvider>

@@ -2,12 +2,17 @@ import { useMemo, useState } from "react";
 import { GitBranch, ListTree, Loader2, Plus, Search, AlertTriangle, FileText } from "lucide-react";
 import { LayoutPanel } from "@/components/astryx/layout-panel";
 
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { CongVanTimeline } from "./CongVanTimeline";
 import { CongVanTree } from "./CongVanTree";
 import { CongVanSheet } from "./CongVanSheet";
@@ -27,7 +32,7 @@ export function CongVanPanel({ duAnId, canEdit }: { duAnId: string; canEdit: boo
     return congVans.filter((c) => {
       if (loai !== "all" && c.loai !== loai) return false;
       if (!needle) return true;
-      
+
       const searchContent = [
         c.so_cong_van,
         c.trich_yeu,
@@ -36,33 +41,41 @@ export function CongVanPanel({ duAnId, canEdit }: { duAnId: string; canEdit: boo
         c.ghi_chu,
         // Search in OCR metadata if available
         (c.metadata as any)?.ocr_summary,
-        (c.metadata as any)?.full_text_preview
-      ].filter(Boolean).join(" ").toLowerCase();
-      
+        (c.metadata as any)?.full_text_preview,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
       return searchContent.includes(needle);
     });
   }, [congVans, q, loai]);
 
-
   const quaHan = useMemo(() => {
     const now = Date.now();
     return congVans.filter(
-      (c) => c.han_phuc_dap && new Date(c.han_phuc_dap).getTime() < now
-        && !["hoan_tat", "da_phat_hanh", "huy"].includes(c.trang_thai),
+      (c) =>
+        c.han_phuc_dap &&
+        new Date(c.han_phuc_dap).getTime() < now &&
+        !["hoan_tat", "da_phat_hanh", "huy"].includes(c.trang_thai),
     );
   }, [congVans]);
 
   const soLuong = useMemo(() => buildGraph(congVans, links).chains.length, [congVans, links]);
 
-  const openNew = () => { setEditing(null); setOpen(true); };
-  const openCv = (cv: CongVanRow) => { setEditing(cv); setOpen(true); };
+  const openNew = () => {
+    setEditing(null);
+    setOpen(true);
+  };
+  const openCv = (cv: CongVanRow) => {
+    setEditing(cv);
+    setOpen(true);
+  };
 
   if (error) {
     return (
       <LayoutPanel variant="error" title="Lỗi tải dữ liệu">
-        <div className="p-4 text-sm text-rose-600">
-          Không tải được công văn: {error.message}
-        </div>
+        <div className="p-4 text-sm text-rose-600">Không tải được công văn: {error.message}</div>
       </LayoutPanel>
     );
   }
@@ -89,7 +102,9 @@ export function CongVanPanel({ duAnId, canEdit }: { duAnId: string; canEdit: boo
             <SelectContent>
               <SelectItem value="all">Tất cả loại</SelectItem>
               {Object.entries(LOAI_META).map(([k, m]) => (
-                <SelectItem key={k} value={k}>{m.label}</SelectItem>
+                <SelectItem key={k} value={k}>
+                  {m.label}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -103,11 +118,15 @@ export function CongVanPanel({ duAnId, canEdit }: { duAnId: string; canEdit: boo
       footer={
         <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
           <div className="flex items-center gap-1">
-            <Badge variant="secondary" className="h-4 px-1 text-[10px]">{filtered.length}</Badge>
+            <Badge variant="secondary" className="h-4 px-1 text-[10px]">
+              {filtered.length}
+            </Badge>
             <span>văn bản</span>
           </div>
           <div className="flex items-center gap-1">
-            <Badge variant="secondary" className="h-4 px-1 text-[10px]">{soLuong}</Badge>
+            <Badge variant="secondary" className="h-4 px-1 text-[10px]">
+              {soLuong}
+            </Badge>
             <span>luồng liên kết</span>
           </div>
           {quaHan.length > 0 && (
@@ -127,13 +146,13 @@ export function CongVanPanel({ duAnId, canEdit }: { duAnId: string; canEdit: boo
         <Tabs defaultValue="timeline" className="w-full">
           <div className="border-b px-4">
             <TabsList className="h-10 bg-transparent p-0">
-              <TabsTrigger 
-                value="timeline" 
+              <TabsTrigger
+                value="timeline"
                 className="relative h-10 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-medium text-muted-foreground data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
               >
                 <GitBranch className="mr-1.5 h-4 w-4" /> Timeline
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="tree"
                 className="relative h-10 rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-medium text-muted-foreground data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none"
               >
@@ -141,7 +160,7 @@ export function CongVanPanel({ duAnId, canEdit }: { duAnId: string; canEdit: boo
               </TabsTrigger>
             </TabsList>
           </div>
-          
+
           <div className="p-4">
             <TabsContent value="timeline" className="mt-0 outline-none">
               <CongVanTimeline congVans={filtered} links={links} teps={teps} onOpen={openCv} />
@@ -149,7 +168,9 @@ export function CongVanPanel({ duAnId, canEdit }: { duAnId: string; canEdit: boo
             <TabsContent value="tree" className="mt-0 outline-none">
               <CongVanTree
                 congVans={[...filtered].sort((a, b) => cvMoc(a).getTime() - cvMoc(b).getTime())}
-                links={links} teps={teps} onOpen={openCv}
+                links={links}
+                teps={teps}
+                onOpen={openCv}
               />
             </TabsContent>
           </div>

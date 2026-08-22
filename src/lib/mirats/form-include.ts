@@ -102,12 +102,7 @@ type Accum = {
 };
 
 /** Duyệt 1 node, gộp nội dung riêng + include (đệ quy). */
-function walk(
-  versionId: string,
-  map: Map<string, VersionNode>,
-  path: string[],
-  acc: Accum,
-): void {
+function walk(versionId: string, map: Map<string, VersionNode>, path: string[], acc: Accum): void {
   // 1) Cycle: version đang nằm trên đường đi hiện tại.
   if (path.includes(versionId)) {
     throw new IncludeCycleError([...path, versionId]);
@@ -157,9 +152,7 @@ function walk(
   for (const en of entries) {
     if (en.kind === "section") {
       if (acc.seenSectionCodes.has(en.section.ma_section)) {
-        throw new IncludeDuplicateError(
-          `Trùng mã section: "${en.section.ma_section}".`,
-        );
+        throw new IncludeDuplicateError(`Trùng mã section: "${en.section.ma_section}".`);
       }
       acc.seenSectionCodes.add(en.section.ma_section);
       acc.sections.push(en.section);
@@ -212,7 +205,8 @@ export function validateIncludeGraph(
     return { ok: true };
   } catch (e) {
     if (e instanceof IncludeCycleError) return { ok: false, error: e.message, kind: "cycle" };
-    if (e instanceof IncludeDuplicateError) return { ok: false, error: e.message, kind: "duplicate" };
+    if (e instanceof IncludeDuplicateError)
+      return { ok: false, error: e.message, kind: "duplicate" };
     if (e instanceof IncludeMissingError) return { ok: false, error: e.message, kind: "missing" };
     throw e;
   }

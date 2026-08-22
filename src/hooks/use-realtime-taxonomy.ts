@@ -15,9 +15,7 @@ import { supabase } from "@/integrations/backend/client";
 export function useRealtimeTaxonomy() {
   const qc = useQueryClient();
   // Giữ tên channel duy nhất cho mỗi lần mount — không đổi giữa các render.
-  const channelNameRef = useRef<string>(
-    `rt:taxonomy:${Math.random().toString(36).slice(2)}`,
-  );
+  const channelNameRef = useRef<string>(`rt:taxonomy:${Math.random().toString(36).slice(2)}`);
 
   useEffect(() => {
     const channelName = channelNameRef.current;
@@ -42,14 +40,17 @@ export function useRealtimeTaxonomy() {
     try {
       ch = supabase
         .channel(channelName)
-        .on("postgres_changes", { event: "*", schema: "public", table: "he_thong_thanh_phan" }, bust)
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "he_thong_thanh_phan" },
+          bust,
+        )
         .on("postgres_changes", { event: "*", schema: "public", table: "gan_chuc_nang" }, bust)
         .on("postgres_changes", { event: "*", schema: "public", table: "dm_he_thong" }, bust)
         .on("postgres_changes", { event: "*", schema: "public", table: "thiet_bi" }, bust)
         .on("postgres_changes", { event: "*", schema: "public", table: "cay_node_edit" }, bust)
         .subscribe((status, err) => {
           if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
-            // eslint-disable-next-line no-console
             console.warn("[realtime-taxonomy] subscribe status", {
               status,
               channel: channelName,
@@ -59,7 +60,6 @@ export function useRealtimeTaxonomy() {
           }
         });
     } catch (e) {
-      // eslint-disable-next-line no-console
       console.error("[realtime-taxonomy] subscribe threw", {
         channel: channelName,
         route,
@@ -73,7 +73,6 @@ export function useRealtimeTaxonomy() {
       try {
         if (ch) supabase.removeChannel(ch);
       } catch (e) {
-        // eslint-disable-next-line no-console
         console.warn("[realtime-taxonomy] removeChannel failed", {
           channel: channelName,
           route,

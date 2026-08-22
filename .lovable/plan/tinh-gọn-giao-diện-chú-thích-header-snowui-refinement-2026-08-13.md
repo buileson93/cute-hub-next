@@ -5,11 +5,13 @@
 Lỗi trùng lặp tại `/he-thong/thanh-phan` sẽ được xử lý bằng cách loại bỏ hoàn toàn khối header trong component con và chuyển quy tắc nghiệp vụ vào `help` của `PageHeader`.
 
 ### 1. Phân tích đoạn lặp
+
 - **Route (`_app.he-thong.thanh-phan.tsx`)**: Vẽ `PageHeader` với description dài.
 - **Component (`ThanhPhanTable.tsx`)**: Vẽ thêm `h1` và `p` (dòng 400-413) mô tả các cấp hệ thống.
 - **Kết quả**: Thừa ~90px, nội dung lặp lại 2 lần.
 
 ### 2. Hành động
+
 - **Xóa** khối header (dòng 397-441) trong `ThanhPhanTable.tsx`.
 - **Cập nhật** `PageHeader` trong route để dùng `help` thay cho `description`.
 - **Port** thông tin "Thành phần chưa lắp tài sản..." vào tooltip của `InfoHint`.
@@ -18,13 +20,13 @@ Lỗi trùng lặp tại `/he-thong/thanh-phan` sẽ được xử lý bằng c�
 
 ## B. Bảng kiểm toán Chữ chú thích (Audit & Phân bậc)
 
-| File | Dòng | Nội dung gốc | Bậc | Hành động & Điểm đến | Tiết kiệm (px) |
-|:---|:---:|:---|:---:|:---|:---:|
-| `ThanhPhanTable.tsx` | 412 | "Bảng ở mức thành phần hệ thống..." | 1 | **XOÁ** (Dư thừa vì các cột đã thể hiện điều này) | 40px |
-| `ThanhPhanTable.tsx` | 413 | "Thành phần chưa lắp tài sản thì..." | 2 | **TOOLTIP** (Chuyển vào `help` của PageHeader) | - |
-| `_app.he-thong.cay.tsx` | 331 | "Mindmap hệ thống..." | 1 | **XOÁ** (Tiêu đề tab đã đủ rõ) | 20px |
-| `_app.he-thong.$id.tsx` | 359 | "Sổ lý lịch" (Breadcrumb lặp) | 1 | **XOÁ** (Đã có breadcrumb ở TopBar) | 15px |
-| `_app.danh-muc.model.tsx`| 367 | "Gắn hình ảnh minh hoạ..." | 3 | **RÚT NGẮN** (Subtitle: "Quản lý mẫu tài sản & hình ảnh") | 10px |
+| File                      | Dòng | Nội dung gốc                         | Bậc | Hành động & Điểm đến                                      | Tiết kiệm (px) |
+| :------------------------ | :--: | :----------------------------------- | :-: | :-------------------------------------------------------- | :------------: |
+| `ThanhPhanTable.tsx`      | 412  | "Bảng ở mức thành phần hệ thống..."  |  1  | **XOÁ** (Dư thừa vì các cột đã thể hiện điều này)         |      40px      |
+| `ThanhPhanTable.tsx`      | 413  | "Thành phần chưa lắp tài sản thì..." |  2  | **TOOLTIP** (Chuyển vào `help` của PageHeader)            |       -        |
+| `_app.he-thong.cay.tsx`   | 331  | "Mindmap hệ thống..."                |  1  | **XOÁ** (Tiêu đề tab đã đủ rõ)                            |      20px      |
+| `_app.he-thong.$id.tsx`   | 359  | "Sổ lý lịch" (Breadcrumb lặp)        |  1  | **XOÁ** (Đã có breadcrumb ở TopBar)                       |      15px      |
+| `_app.danh-muc.model.tsx` | 367  | "Gắn hình ảnh minh hoạ..."           |  3  | **RÚT NGẮN** (Subtitle: "Quản lý mẫu tài sản & hình ảnh") |      10px      |
 
 **Tổng chiều cao tiết kiệm ước tính**: 80px - 120px trên mỗi trang chính.
 
@@ -34,13 +36,13 @@ Lỗi trùng lặp tại `/he-thong/thanh-phan` sẽ được xử lý bằng c�
 
 Cưỡng chế giới hạn ký tự để đảm bảo giao diện luôn sạch.
 
-| Slot | Mục đích | Giới hạn | Quy tắc hiển thị |
-|:---|:---|:---:|:---|
-| **subtitle** | Trạng thái/Phạm vi | < 30 ký tự | Luôn hiện, cùng hàng với title |
-| **description** | Chỉ dẫn hành động khẩn | < 80 ký tự | Hiện dưới title, chỉ dùng khi thật sự cần |
-| **help** | Quy tắc/Định nghĩa | Không giới hạn | **Ẩn trong InfoHint (tooltip)** |
+| Slot            | Mục đích               |    Giới hạn    | Quy tắc hiển thị                          |
+| :-------------- | :--------------------- | :------------: | :---------------------------------------- |
+| **subtitle**    | Trạng thái/Phạm vi     |   < 30 ký tự   | Luôn hiện, cùng hàng với title            |
+| **description** | Chỉ dẫn hành động khẩn |   < 80 ký tự   | Hiện dưới title, chỉ dùng khi thật sự cần |
+| **help**        | Quy tắc/Định nghĩa     | Không giới hạn | **Ẩn trong InfoHint (tooltip)**           |
 
-*Ghi chú: Nếu description > 80 ký tự, bắt buộc phải chuyển vào `help` hoặc `HelpDrawer`.*
+_Ghi chú: Nếu description > 80 ký tự, bắt buộc phải chuyển vào `help` hoặc `HelpDrawer`._
 
 ---
 

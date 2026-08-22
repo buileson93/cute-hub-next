@@ -13,7 +13,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import { Plus, MessageSquare, Search } from "lucide-react";
 import { timeAgo } from "@/lib/time";
 import { cn } from "@/lib/utils";
@@ -73,9 +80,7 @@ function MessagesLayout() {
     }
     const otherIds = Array.from(
       new Set(
-        (allParts ?? [])
-          .map((p) => (p as Participant).user_id)
-          .filter((id) => id !== user.id),
+        (allParts ?? []).map((p) => (p as Participant).user_id).filter((id) => id !== user.id),
       ),
     );
     if (otherIds.length) {
@@ -87,7 +92,10 @@ function MessagesLayout() {
       for (const p of (profs ?? []) as ProfileMini[]) byId[p.id] = p;
       const map: Record<string, ProfileMini[]> = {};
       for (const [cid, uids] of Object.entries(partsByConv)) {
-        map[cid] = uids.filter((u) => u !== user.id).map((u) => byId[u]).filter(Boolean);
+        map[cid] = uids
+          .filter((u) => u !== user.id)
+          .map((u) => byId[u])
+          .filter(Boolean);
       }
       setParts(map);
     }
@@ -99,7 +107,16 @@ function MessagesLayout() {
     const ch = freshChannel("conv-list")
       .on("postgres_changes", { event: "*", schema: "public", table: "conversations" }, loadConvs)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, loadConvs)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "conversation_participant", filter: `user_id=eq.${user.id}` }, loadConvs)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "conversation_participant",
+          filter: `user_id=eq.${user.id}`,
+        },
+        loadConvs,
+      )
       .subscribe();
     return () => {
       supabase.removeChannel(ch);
@@ -147,7 +164,9 @@ function MessagesLayout() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-sm font-medium">{title}</div>
-                        <div className="text-[11px] text-muted-foreground">{timeAgo(c.last_message_at)}</div>
+                        <div className="text-[11px] text-muted-foreground">
+                          {timeAgo(c.last_message_at)}
+                        </div>
                       </div>
                     </Link>
                   </li>
@@ -269,7 +288,9 @@ function NewConversationDialog({
         </div>
         <ul className="max-h-[360px] overflow-y-auto">
           {filtered.length === 0 ? (
-            <li className="py-6 text-center text-sm text-muted-foreground">Không có người dùng phù hợp</li>
+            <li className="py-6 text-center text-sm text-muted-foreground">
+              Không có người dùng phù hợp
+            </li>
           ) : (
             filtered.map((u) => (
               <li key={u.id}>

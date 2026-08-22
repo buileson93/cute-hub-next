@@ -1,14 +1,45 @@
 import React from "react";
 import type { DbDevice } from "@/lib/mirats/db-taxonomy";
 import type { ViTriChucNangTree } from "@/lib/mirats/he-thong-thanh-phan";
-import { Boxes, Layers, FolderTree, Network, Cpu, Puzzle, Building2, Plug, MapPin } from "lucide-react";
+import {
+  Boxes,
+  Layers,
+  FolderTree,
+  Network,
+  Cpu,
+  Puzzle,
+  Building2,
+  Plug,
+  MapPin,
+} from "lucide-react";
 
 export type EditKind = "pl" | "lv" | "nh" | "ht" | "tb" | "tp";
 
 export type DevNode = { tb: DbDevice; children: DbDevice[] };
-export type HtGroup = { ma: string; ten: string; devices: DevNode[]; count: number; donViMa: string | null; isCustom?: boolean };
-export type NhGroup = { ma: string; ten: string; systems: HtGroup[]; count: number; passthrough?: boolean; mau?: string; isCustom?: boolean };
-export type LvGroup = { id: string; ten: string; groups: NhGroup[]; count: number; passthrough?: boolean };
+export type HtGroup = {
+  ma: string;
+  ten: string;
+  devices: DevNode[];
+  count: number;
+  donViMa: string | null;
+  isCustom?: boolean;
+};
+export type NhGroup = {
+  ma: string;
+  ten: string;
+  systems: HtGroup[];
+  count: number;
+  passthrough?: boolean;
+  mau?: string;
+  isCustom?: boolean;
+};
+export type LvGroup = {
+  id: string;
+  ten: string;
+  groups: NhGroup[];
+  count: number;
+  passthrough?: boolean;
+};
 export type PlGroup = { id: string; ten: string; tone: string; fields: LvGroup[]; count: number };
 
 export type StatusCat = "hoat_dong" | "du_phong" | "hong" | "ngung" | "khac";
@@ -68,7 +99,14 @@ export type MoveDeviceReq = {
   toPlLabel?: string;
 };
 
-export type MoveTarget = { plId: string; plLabel: string; lvId: string; lvLabel: string; nhKey: string; nhLabel: string };
+export type MoveTarget = {
+  plId: string;
+  plLabel: string;
+  lvId: string;
+  lvLabel: string;
+  nhKey: string;
+  nhLabel: string;
+};
 
 export type OverrideMap = Map<string, { ten: string | null; du_lieu: Record<string, unknown> }>;
 
@@ -107,7 +145,12 @@ export type MindData = {
   onIncident?: () => void;
   onMaint?: () => void;
   moveTargets?: MoveTarget[];
-  onMove?: (toNhomId: string, toLvId: string | undefined, toNhKey: string | undefined, toNhTen: string | undefined) => void;
+  onMove?: (
+    toNhomId: string,
+    toLvId: string | undefined,
+    toNhKey: string | undefined,
+    toNhTen: string | undefined,
+  ) => void;
 };
 
 export const PHYS_TABLE_BY_LAYER: Record<string, { table: string; keyCol: string }> = {
@@ -125,12 +168,28 @@ export const LEVEL_META: Record<
   root: { label: "Gốc", badge: "border-primary/30 bg-primary/10 text-primary", Icon: Building2 },
   pl: { label: "Phân loại", badge: "border-rose-500/30 bg-rose-500/10 text-rose-600", Icon: Boxes },
   lv: { label: "Lĩnh vực", badge: "border-primary/30 bg-primary/10 text-primary", Icon: Layers },
-  nh: { label: "Nhóm hệ thống", badge: "border-violet-500/30 bg-violet-500/10 text-violet-600", Icon: FolderTree },
-  ht: { label: "Hệ thống", badge: "border-blue-500/30 bg-blue-500/10 text-blue-600", Icon: Network },
+  nh: {
+    label: "Nhóm hệ thống",
+    badge: "border-violet-500/30 bg-violet-500/10 text-violet-600",
+    Icon: FolderTree,
+  },
+  ht: {
+    label: "Hệ thống",
+    badge: "border-blue-500/30 bg-blue-500/10 text-blue-600",
+    Icon: Network,
+  },
   tb: { label: "Tài sản", badge: "border-border bg-muted text-muted-foreground", Icon: Cpu },
-  tp: { label: "Thành phần hệ thống", badge: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600", Icon: Puzzle },
+  tp: {
+    label: "Thành phần hệ thống",
+    badge: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600",
+    Icon: Puzzle,
+  },
   vtg: { label: "Vị trí", badge: "border-sky-500/30 bg-sky-500/10 text-sky-600", Icon: Plug },
-  vt: { label: "Vị trí lắp đặt", badge: "border-sky-500/25 bg-sky-500/10 text-sky-500", Icon: MapPin },
+  vt: {
+    label: "Vị trí lắp đặt",
+    badge: "border-sky-500/25 bg-sky-500/10 text-sky-500",
+    Icon: MapPin,
+  },
 };
 
 export const STATUS_TONE: Record<StatusCat, string> = {

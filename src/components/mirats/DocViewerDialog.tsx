@@ -17,13 +17,31 @@ function detectKind(fileName: string, mimeType?: string | null): Kind {
   const m = (mimeType ?? "").toLowerCase();
   if (m === "application/pdf" || n.endsWith(".pdf")) return "pdf";
   if (m.startsWith("image/") || /\.(png|jpe?g|gif|webp|bmp|svg|avif)$/.test(n)) return "image";
-  if (/\.(docx?|xlsx?|pptx?)$/.test(n) || m.includes("officedocument") || m.includes("msword") || m.includes("ms-excel") || m.includes("ms-powerpoint")) return "office";
+  if (
+    /\.(docx?|xlsx?|pptx?)$/.test(n) ||
+    m.includes("officedocument") ||
+    m.includes("msword") ||
+    m.includes("ms-excel") ||
+    m.includes("ms-powerpoint")
+  )
+    return "office";
   return "other";
 }
 
 export function DocViewerDialog({
-  open, onOpenChange, url, fileName, mimeType, isLoading, error, onRetry, initialPage, query,
-  tepId, sourceType, sourceId
+  open,
+  onOpenChange,
+  url,
+  fileName,
+  mimeType,
+  isLoading,
+  error,
+  onRetry,
+  initialPage,
+  query,
+  tepId,
+  sourceType,
+  sourceId,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -39,21 +57,20 @@ export function DocViewerDialog({
   sourceType?: string;
   sourceId?: string;
 }) {
-
   const kind = detectKind(fileName, mimeType);
-  
+
   const finalUrl = useMemo(() => {
     if (!url) return null;
 
     // Hardening: Prevent untrusted URLs
     // Only allow local blobs, data URLs (images), or specific trusted domains (Supabase/MIRATS)
-    const isTrusted = 
-      url.startsWith('blob:') || 
-      url.startsWith('data:') || 
-      url.includes('.supabase.co/') || 
-      url.includes('localhost') ||
-      url.includes('.lovable.app/');
-      
+    const isTrusted =
+      url.startsWith("blob:") ||
+      url.startsWith("data:") ||
+      url.includes(".supabase.co/") ||
+      url.includes("localhost") ||
+      url.includes(".lovable.app/");
+
     if (!isTrusted) {
       console.warn("Attempted to load untrusted URL in DocViewer:", url);
       return null;
@@ -63,8 +80,9 @@ export function DocViewerDialog({
     return `${url}#page=${initialPage}`;
   }, [url, kind, initialPage]);
 
-
-  const officeSrc = url ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}` : null;
+  const officeSrc = url
+    ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`
+    : null;
   const canDownload = useCanDownloadAttachments();
 
   return (
@@ -76,11 +94,15 @@ export function DocViewerDialog({
             {url && (
               <>
                 <Button asChild size="sm" variant="ghost" title="Mở tab mới">
-                  <a href={url} target="_blank" rel="noreferrer"><ExternalLink className="h-4 w-4" /></a>
+                  <a href={url} target="_blank" rel="noreferrer">
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
                 </Button>
                 {canDownload && (
                   <Button asChild size="sm" variant="ghost" title="Tải xuống">
-                    <a href={url} download={fileName}><Download className="h-4 w-4" /></a>
+                    <a href={url} download={fileName}>
+                      <Download className="h-4 w-4" />
+                    </a>
                   </Button>
                 )}
               </>
@@ -94,7 +116,9 @@ export function DocViewerDialog({
               <div className="max-w-md space-y-1">
                 <div className="font-medium text-red-700">Không tải được file giấy phép</div>
                 <p className="text-xs text-muted-foreground">{error}</p>
-                <p className="text-xs text-muted-foreground">Có thể do lỗi mạng hoặc bạn không có quyền truy cập file này.</p>
+                <p className="text-xs text-muted-foreground">
+                  Có thể do lỗi mạng hoặc bạn không có quyền truy cập file này.
+                </p>
               </div>
               {onRetry && (
                 <Button size="sm" variant="outline" onClick={onRetry}>
@@ -119,7 +143,7 @@ export function DocViewerDialog({
                   </span>
                 </div>
               )}
-              <iframe src={finalUrl || url || ''} title={fileName} className="flex-1 w-full" />
+              <iframe src={finalUrl || url || ""} title={fileName} className="flex-1 w-full" />
             </div>
           ) : kind === "image" ? (
             <div className="flex h-full items-center justify-center p-4">
@@ -132,7 +156,9 @@ export function DocViewerDialog({
               <p>Loại tệp này chưa hỗ trợ xem trực tiếp trong ứng dụng.</p>
               {canDownload ? (
                 <Button asChild size="sm">
-                  <a href={url} download={fileName}><Download className="mr-2 h-4 w-4" /> Tải xuống</a>
+                  <a href={url} download={fileName}>
+                    <Download className="mr-2 h-4 w-4" /> Tải xuống
+                  </a>
                 </Button>
               ) : (
                 <p className="text-xs">Tài khoản của bạn không có quyền tải tệp này.</p>

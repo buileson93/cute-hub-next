@@ -13,14 +13,17 @@ export function getTodayDateString(): string {
   const localTime = now.getTime();
   const localOffset = now.getTimezoneOffset() * 60000;
   const utc = localTime + localOffset;
-  const saigonTime = new Date(utc + (3600000 * 7));
+  const saigonTime = new Date(utc + 3600000 * 7);
   return saigonTime.toISOString().slice(0, 10);
 }
 
 /**
  * Validates that start_date is before or equal to due_date.
  */
-export function isValidDateRange(start: string | null | undefined, end: string | null | undefined): boolean {
+export function isValidDateRange(
+  start: string | null | undefined,
+  end: string | null | undefined,
+): boolean {
   if (!start || !end) return true;
   return new Date(start) <= new Date(end);
 }

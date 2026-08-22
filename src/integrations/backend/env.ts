@@ -86,7 +86,6 @@ export function resolveBrowserBackend(): ResolvedBrowserBackend {
   };
 }
 
-
 /**
  * Cấu hình cho code chạy trên server.
  * CHỈ gọi bên trong `.handler()` của server function hoặc trong server route handler.

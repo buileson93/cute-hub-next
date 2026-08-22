@@ -118,7 +118,12 @@ export function buildSubmissionInsert(args: BuildSubmissionArgs): SubmissionInse
     template_code: args.template.code,
     template_version: args.template.version,
     template_snapshot: compileSchema(
-      { id: args.template.id, code: args.template.code, ten: args.template.ten, version: args.template.version },
+      {
+        id: args.template.id,
+        code: args.template.code,
+        ten: args.template.ten,
+        version: args.template.version,
+      },
       args.fields ?? [],
     ),
     he_thong_id: args.heThongId,

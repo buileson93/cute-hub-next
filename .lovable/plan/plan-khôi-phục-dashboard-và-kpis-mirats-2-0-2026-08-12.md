@@ -13,6 +13,7 @@ Khôi phục các khối chỉ số quan trọng (Availability, MTTR, MTBF), PM 
 ## Proposed Changes
 
 ### Logic và Data Loading (`src/routes/_app.index.tsx`)
+
 - Thay đổi `loader` để đảm bảo prefetch các query cơ bản từ `useDbTaxonomy`, `useLicensesData`, và `useOperationsData` (thông qua `useScope` dependencies).
 - Cập nhật Component `Dashboard` để sử dụng `useScope()` lấy dữ liệu thiết bị, sự cố, và bảo trì theo phạm vi đơn vị.
 - Tích hợp `usePmOnTimeKpi` từ `@/lib/mirats/bao-tri-kpi` để lấy tỉ lệ PM đúng hạn.
@@ -21,6 +22,7 @@ Khôi phục các khối chỉ số quan trọng (Availability, MTTR, MTBF), PM 
 - Sửa cơ chế SSR: Thay `useSuspenseQuery` bằng `useQuery` với trạng thái loading/error tường minh để tránh treo trang khi prefetch lỗi.
 
 ### UI Components (`src/routes/_app.index.tsx`)
+
 - **Khối KPIs độ tin cậy:** Thêm hàng card hiển thị Availability, MTTR, MTBF với màu sắc chỉ thị (xanh/cam/đỏ).
 - **Khối Sức khỏe tài sản:** Thêm biểu đồ donut hoặc thanh tiến độ hiển thị tỉ lệ tài sản xếp loại A, B, C, D.
 - **Khối PM đúng hạn:** Hiển thị tỉ lệ phần trăm hoàn thành PM đúng hạn.
@@ -28,6 +30,7 @@ Khôi phục các khối chỉ số quan trọng (Availability, MTTR, MTBF), PM 
 - **Tabs chi tiết:** Thêm tab hiển thị bảng danh sách thiết bị có sức khỏe thấp (loại C, D).
 
 ### Bảo trì tính năng mới
+
 - Giữ nguyên `HeartBeatStrip` (Nhịp tim hệ thống).
 - Giữ nguyên `LiveTimeline` (Nhật ký vận hành).
 - Giữ các chỉ số Completeness hiện có nhưng sắp xếp lại bố cục cho hài hòa.
@@ -35,6 +38,7 @@ Khôi phục các khối chỉ số quan trọng (Availability, MTTR, MTBF), PM 
 ## Technical Details
 
 ### Imports phục hồi
+
 ```typescript
 import { availability, mttr, mtbf, formatKpiValue } from "@/lib/mirats/reliability";
 import { healthDetail } from "@/lib/mirats/metrics";
@@ -45,16 +49,19 @@ import { fmtDowntime } from "@/lib/mirats/format";
 ```
 
 ### Cấu trúc dữ liệu tính toán
+
 - `devices`: `scope.thietBi`
 - `incidents`: `scope.suCo`
 - `reliability`: `availability({ assetCount: devices.length, windowHours: 720, incidents })`
 - `healthStats`: Duyệt `devices` gọi `healthDetail(t)` và gom nhóm theo `xepLoai`.
 
 ### Xử lý SSR
+
 - Trong `loader`: Gọi `queryClient.prefetchQuery` cho các core functions.
 - Trong `Dashboard`: Dùng `useQuery` và kiểm tra `if (isLoading) return <LoadingSkeleton />` thay vì suspend.
 
 ### Ràng buộc
+
 - Ngôn ngữ: Tiếng Việt.
 - Styling: Tailwind CSS, Apple-like minimal.
 - An toàn: Không bypass RLS.

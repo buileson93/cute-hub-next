@@ -6,38 +6,71 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { 
-  Link2, Plus, Share2, Filter, ArrowRight, ArrowLeftRight, Trash2, 
-  Ban, Play, Network, List, Share, Loader2
+import {
+  Link2,
+  Plus,
+  Share2,
+  Filter,
+  ArrowRight,
+  ArrowLeftRight,
+  Trash2,
+  Ban,
+  Play,
+  Network,
+  List,
+  Share,
+  Loader2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
-import { 
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, 
-  AlertDialogTrigger 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { 
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { Combobox } from "@/components/mirats/Combobox";
 
-import { 
-  useDoThiHeThong, useLoaiLienKet, useHeThongPickList,
-  useAddLienKet, useUpdateLienKet, useDeleteLienKet,
+import {
+  useDoThiHeThong,
+  useLoaiLienKet,
+  useHeThongPickList,
+  useAddLienKet,
+  useUpdateLienKet,
+  useDeleteLienKet,
   usePhanTichTacDong,
-  LOP_LABEL
+  LOP_LABEL,
 } from "@/lib/mirats/lien-ket";
-import { 
-  buildSystemGraph, toCoreGraph, LOAI_LIEN_KET_LABEL, 
-  type DoThiRow, type LoaiLienKetMa 
+import {
+  buildSystemGraph,
+  toCoreGraph,
+  LOAI_LIEN_KET_LABEL,
+  type DoThiRow,
+  type LoaiLienKetMa,
 } from "@/lib/mirats/system-graph";
 import { filterGraph, egoGraph } from "@/lib/mirats/graph-core";
 import { GraphCanvas, type LegendItem } from "@/components/mirats/GraphCanvas";
@@ -63,7 +96,7 @@ function LienKetPage() {
   const { rows, isLoading } = useDoThiHeThong();
   const { loaiList } = useLoaiLienKet();
   const { heThongList } = useHeThongPickList();
-  
+
   const addMut = useAddLienKet();
   const updateMut = useUpdateLienKet();
   const deleteMut = useDeleteLienKet();
@@ -75,9 +108,9 @@ function LienKetPage() {
 
   const canManage = true; // TODO: RBAC check
 
-  const htOptions = useMemo(() => 
-    heThongList.map(h => ({ value: h.id, label: h.ten })),
-    [heThongList]
+  const htOptions = useMemo(
+    () => heThongList.map((h) => ({ value: h.id, label: h.ten })),
+    [heThongList],
   );
 
   const filtered = useMemo(() => {
@@ -105,10 +138,7 @@ function LienKetPage() {
         icon={Link2}
         title="Liên kết hệ thống"
         subtitle={`${rows.length} Đấu nối kỹ thuật`}
-        breadcrumbs={[
-          { label: "Hệ thống", to: "/he-thong/cay" },
-          { label: "Liên kết & Đấu nối" }
-        ]}
+        breadcrumbs={[{ label: "Hệ thống", to: "/he-thong/cay" }, { label: "Liên kết & Đấu nối" }]}
         description="Quản lý đấu nối thực tế giữa các hệ thống (VHF, VCCS, Network...). Phân tích tác động và dự phòng dịch vụ."
         actions={
           <div className="flex items-center gap-2">
@@ -123,7 +153,9 @@ function LienKetPage() {
                 <DialogContent className="max-w-lg rounded-2xl">
                   <DialogHeader>
                     <DialogTitle>Khai báo liên kết mới</DialogTitle>
-                    <DialogDescription>Thiết lập đấu nối tín hiệu hoặc phụ thuộc giữa hai hệ thống.</DialogDescription>
+                    <DialogDescription>
+                      Thiết lập đấu nối tín hiệu hoặc phụ thuộc giữa hai hệ thống.
+                    </DialogDescription>
                   </DialogHeader>
                   <LienKetForm
                     heThongOptions={htOptions}
@@ -169,20 +201,32 @@ function LienKetPage() {
             <div className="w-48">
               <Combobox
                 options={[{ value: "", label: "Tất cả hệ thống" }, ...htOptions]}
-                value={fHeThong} 
-                onChange={setFHeThong} 
+                value={fHeThong}
+                onChange={setFHeThong}
                 placeholder="Lọc hệ thống..."
                 className="h-8 text-[11px]"
               />
             </div>
-            <Select value={fLoai || "__all"} onValueChange={(v) => setFLoai(v === "__all" ? "" : v)}>
-              <SelectTrigger className="h-8 w-36 text-[11px]"><SelectValue placeholder="Loại liên kết" /></SelectTrigger>
+            <Select
+              value={fLoai || "__all"}
+              onValueChange={(v) => setFLoai(v === "__all" ? "" : v)}
+            >
+              <SelectTrigger className="h-8 w-36 text-[11px]">
+                <SelectValue placeholder="Loại liên kết" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__all">Tất cả loại</SelectItem>
-                {loaiList.map((l) => <SelectItem key={l.id} value={l.ma}>{l.ten}</SelectItem>)}
+                {loaiList.map((l) => (
+                  <SelectItem key={l.id} value={l.ma}>
+                    {l.ten}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
-            <Badge variant="outline" className="h-8 px-3 font-mono text-[10px] uppercase tracking-wider">
+            <Badge
+              variant="outline"
+              className="h-8 px-3 font-mono text-[10px] uppercase tracking-wider"
+            >
               {filtered.length} Kết nối
             </Badge>
           </div>
@@ -228,17 +272,30 @@ function loaiBadge(ma: string, mau?: string | null) {
       </Badge>
     );
   }
-  return <Badge variant="outline" className="text-[10px] h-5">{label}</Badge>;
+  return (
+    <Badge variant="outline" className="text-[10px] h-5">
+      {label}
+    </Badge>
+  );
 }
 
-function LienKetTable({ rows, canManage, onDelete, onSetTrangThai }: {
+function LienKetTable({
+  rows,
+  canManage,
+  onDelete,
+  onSetTrangThai,
+}: {
   rows: DoThiRow[];
   canManage: boolean;
   onDelete: (id: string) => void;
   onSetTrangThai: (id: string, trang_thai: "hoat_dong" | "tam_ngung") => void;
 }) {
   if (rows.length === 0) {
-    return <div className="p-8 text-center text-sm text-muted-foreground italic">Chưa có liên kết nào khớp bộ lọc.</div>;
+    return (
+      <div className="p-8 text-center text-sm text-muted-foreground italic">
+        Chưa có liên kết nào khớp bộ lọc.
+      </div>
+    );
   }
   return (
     <div className="rounded-xl border bg-background shadow-sm overflow-hidden">
@@ -260,65 +317,91 @@ function LienKetTable({ rows, canManage, onDelete, onSetTrangThai }: {
             {rows.map((r) => {
               const active = r.trang_thai === "hoat_dong";
               return (
-              <tr key={r.id} className="hover:bg-muted/10 transition-colors">
-                <td className="p-3 pl-4 font-medium text-[12px]">{r.nguon_ten}</td>
-                <td className="p-3 text-muted-foreground">
-                  {r.huong === "hai_chieu" ? <ArrowLeftRight className="h-3.5 w-3.5" /> : <ArrowRight className="h-3.5 w-3.5" />}
-                </td>
-                <td className="p-3 font-medium text-[12px]">{r.dich_ten}</td>
-                <td className="p-3">{loaiBadge(r.loai_ma, r.mau_sac)}</td>
-                <td className="p-3 text-[11px] font-mono text-muted-foreground uppercase">{LOP_LABEL[r.lop]}</td>
-                <td className="p-3 text-[11px] text-muted-foreground">
-                  {r.giao_thuc || "—"}
-                </td>
-                <td className="p-3">
-                  <Badge variant={active ? "default" : "secondary"} className="h-5 text-[10px] px-2">
-                    {active ? "Hoạt động" : "Tạm ngừng"}
-                  </Badge>
-                </td>
-                {canManage && (
-                  <td className="p-3 pr-4 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      {active ? (
-                        <AppTooltip noiDung="Tạm ngừng">
-                          <Button
-                            size="icon" variant="ghost" aria-label="Tạm ngừng liên kết" className="h-7 w-7"
-                            onClick={() => onSetTrangThai(r.id, "tam_ngung")}
-                          >
-                            <Ban className="h-3.5 w-3.5" />
-                          </Button>
-                        </AppTooltip>
-                      ) : (
-                        <AppTooltip noiDung="Kích hoạt">
-                          <Button
-                            size="icon" variant="ghost" aria-label="Kích hoạt liên kết" className="h-7 w-7 text-primary"
-                            onClick={() => onSetTrangThai(r.id, "hoat_dong")}
-                          >
-                            <Play className="h-3.5 w-3.5" />
-                          </Button>
-                        </AppTooltip>
-                      )}
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button size="icon" variant="ghost" aria-label="Xoá liên kết" className="h-7 w-7 text-destructive"><Trash2 className="h-3.5 w-3.5" /></Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className="rounded-2xl">
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Xác nhận xóa?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Xóa vĩnh viễn liên kết giữa <strong>{r.nguon_ten}</strong> và <strong>{r.dich_ten}</strong>.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel className="rounded-xl">Hủy</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => onDelete(r.id)} className="rounded-xl bg-destructive hover:bg-destructive/90">Xóa</AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
+                <tr key={r.id} className="hover:bg-muted/10 transition-colors">
+                  <td className="p-3 pl-4 font-medium text-[12px]">{r.nguon_ten}</td>
+                  <td className="p-3 text-muted-foreground">
+                    {r.huong === "hai_chieu" ? (
+                      <ArrowLeftRight className="h-3.5 w-3.5" />
+                    ) : (
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    )}
                   </td>
-                )}
-              </tr>
+                  <td className="p-3 font-medium text-[12px]">{r.dich_ten}</td>
+                  <td className="p-3">{loaiBadge(r.loai_ma, r.mau_sac)}</td>
+                  <td className="p-3 text-[11px] font-mono text-muted-foreground uppercase">
+                    {LOP_LABEL[r.lop]}
+                  </td>
+                  <td className="p-3 text-[11px] text-muted-foreground">{r.giao_thuc || "—"}</td>
+                  <td className="p-3">
+                    <Badge
+                      variant={active ? "default" : "secondary"}
+                      className="h-5 text-[10px] px-2"
+                    >
+                      {active ? "Hoạt động" : "Tạm ngừng"}
+                    </Badge>
+                  </td>
+                  {canManage && (
+                    <td className="p-3 pr-4 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        {active ? (
+                          <AppTooltip noiDung="Tạm ngừng">
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              aria-label="Tạm ngừng liên kết"
+                              className="h-7 w-7"
+                              onClick={() => onSetTrangThai(r.id, "tam_ngung")}
+                            >
+                              <Ban className="h-3.5 w-3.5" />
+                            </Button>
+                          </AppTooltip>
+                        ) : (
+                          <AppTooltip noiDung="Kích hoạt">
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              aria-label="Kích hoạt liên kết"
+                              className="h-7 w-7 text-primary"
+                              onClick={() => onSetTrangThai(r.id, "hoat_dong")}
+                            >
+                              <Play className="h-3.5 w-3.5" />
+                            </Button>
+                          </AppTooltip>
+                        )}
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              aria-label="Xoá liên kết"
+                              className="h-7 w-7 text-destructive"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent className="rounded-2xl">
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Xác nhận xóa?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Xóa vĩnh viễn liên kết giữa <strong>{r.nguon_ten}</strong> và{" "}
+                                <strong>{r.dich_ten}</strong>.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel className="rounded-xl">Hủy</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => onDelete(r.id)}
+                                className="rounded-xl bg-destructive hover:bg-destructive/90"
+                              >
+                                Xóa
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </td>
+                  )}
+                </tr>
               );
             })}
           </tbody>
@@ -373,7 +456,9 @@ function GraphView({ rows, allRows: _allRows }: { rows: DoThiRow[]; allRows: DoT
         <div className="flex items-center gap-1.5">
           <Filter className="h-3 w-3 text-muted-foreground" />
           <Select value={lopFilter} onValueChange={(v) => setLopFilter(v as any)}>
-            <SelectTrigger className="h-7 w-24 text-[10px]"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="h-7 w-24 text-[10px]">
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tất cả lớp</SelectItem>
               <SelectItem value="vat_ly">Vật lý</SelectItem>
@@ -383,10 +468,16 @@ function GraphView({ rows, allRows: _allRows }: { rows: DoThiRow[]; allRows: DoT
         </div>
         <div className="flex items-center gap-1.5">
           <Select value={loaiFilter} onValueChange={setLoaiFilter}>
-            <SelectTrigger className="h-7 w-32 text-[10px]"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="h-7 w-32 text-[10px]">
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tất cả loại</SelectItem>
-              {loaiList.map(l => <SelectItem key={l.ma} value={l.ma}>{l.ten}</SelectItem>)}
+              {loaiList.map((l) => (
+                <SelectItem key={l.ma} value={l.ma}>
+                  {l.ten}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>

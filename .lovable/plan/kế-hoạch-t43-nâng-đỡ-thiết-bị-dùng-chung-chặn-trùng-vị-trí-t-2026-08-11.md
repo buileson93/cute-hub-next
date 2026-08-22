@@ -5,7 +5,7 @@ Ngăn chặn tình trạng một tài sản vật lý (`thiet_bi`) được ghi 
 ## Giai đoạn 1: Xác minh và Dọn dẹp dữ liệu (Chỉ đọc)
 
 - **Bước 1: Xác minh chỉ mục hiện tại**
-  - Đã xác minh qua `schema.sql`: 
+  - Đã xác minh qua `schema.sql`:
     - `uq_gcn_thanh_phan_active` (UNIQUE trên `thanh_phan_id` WHERE `den_ngay IS NULL`) -> ĐÚNG.
     - `idx_gan_chuc_nang_thiet_bi_open` (INDEX thường trên `thiet_bi_id` WHERE `den_ngay IS NULL`) -> ĐÚNG (chưa UNIQUE).
 - **Bước 2: Kiểm tra dữ liệu bẩn**

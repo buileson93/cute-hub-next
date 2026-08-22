@@ -76,7 +76,11 @@ export function bienBanMatchesDevice(
  * Kỳ bảo dưỡng kế tiếp: fromDate + chu_ky_ngay.
  * Nếu chu kỳ không hợp lệ (null/<=0) trả về giá trị cũ (giữ nguyên).
  */
-export function nextDueDate(fromISO: string, chuKyNgay: number | null | undefined, current: string | null): string | null {
+export function nextDueDate(
+  fromISO: string,
+  chuKyNgay: number | null | undefined,
+  current: string | null,
+): string | null {
   if (chuKyNgay == null || chuKyNgay <= 0) return current;
   const d = new Date(fromISO + "T00:00:00Z");
   d.setUTCDate(d.getUTCDate() + chuKyNgay);
@@ -104,7 +108,10 @@ export interface KpiBaoTriAgg {
  * Tổng hợp KPI theo đơn vị — phản chiếu view v_kpi_bao_tri.
  * `today` mặc định là hôm nay (ISO date), cho phép truyền vào để test.
  */
-export function computeKpiBaoTri(rows: CongViecKpiRow[], today = new Date().toISOString().slice(0, 10)): KpiBaoTriAgg[] {
+export function computeKpiBaoTri(
+  rows: CongViecKpiRow[],
+  today = new Date().toISOString().slice(0, 10),
+): KpiBaoTriAgg[] {
   const groups = new Map<string, KpiBaoTriAgg>();
   for (const r of rows) {
     const key = r.don_vi_id_snapshot ?? "__NULL__";
@@ -127,12 +134,20 @@ export function computeKpiBaoTri(rows: CongViecKpiRow[], today = new Date().toIS
     if (done) g.da_hoan_thanh += 1;
     if (open) g.dang_mo += 1;
     if (open && r.ngay_den_han != null && r.ngay_den_han < today) g.qua_han += 1;
-    if (done && r.ngay_den_han != null && r.ngay_hoan_thanh != null && r.ngay_hoan_thanh <= r.ngay_den_han) {
+    if (
+      done &&
+      r.ngay_den_han != null &&
+      r.ngay_hoan_thanh != null &&
+      r.ngay_hoan_thanh <= r.ngay_den_han
+    ) {
       g.hoan_thanh_dung_han += 1;
     }
   }
   for (const g of groups.values()) {
-    g.ty_le_dung_han = g.da_hoan_thanh > 0 ? Math.round((1000 * g.hoan_thanh_dung_han) / g.da_hoan_thanh) / 10 : null;
+    g.ty_le_dung_han =
+      g.da_hoan_thanh > 0
+        ? Math.round((1000 * g.hoan_thanh_dung_han) / g.da_hoan_thanh) / 10
+        : null;
   }
   return [...groups.values()];
 }

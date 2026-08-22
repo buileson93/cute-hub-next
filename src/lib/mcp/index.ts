@@ -32,13 +32,7 @@ import {
   listKhoGiaoDich,
   metricTimeseries,
 } from "./tools-domains";
-import {
-  createSuCo,
-  createBaoTri,
-  createHongHoc,
-  ghiKiemKe,
-  closeVanDe,
-} from "./tools-write";
+import { createSuCo, createBaoTri, createHongHoc, ghiKiemKe, closeVanDe } from "./tools-write";
 
 const projectRef = import.meta.env.VITE_SUPABASE_PROJECT_ID ?? "project-ref-unset";
 

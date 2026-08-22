@@ -19,8 +19,21 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ShieldCheck, Users, Grid3x3, Eye, Inbox, Trash2, Plus } from "lucide-react";
 
@@ -29,7 +42,15 @@ export const Route = createFileRoute("/_app/admin/permissions")({
   component: PermissionsPage,
 });
 
-const ROLES = ["admin", "phong_kt", "phu_trach_dv", "to_truong", "ktv", "quan_ly_du_an", "readonly"] as const;
+const ROLES = [
+  "admin",
+  "phong_kt",
+  "phu_trach_dv",
+  "to_truong",
+  "ktv",
+  "quan_ly_du_an",
+  "readonly",
+] as const;
 const MODULES = [
   { key: "thiet_bi", label: "Tài sản" },
   { key: "he_thong", label: "Hệ thống" },
@@ -46,7 +67,16 @@ const MODULES = [
   { key: "audit", label: "Nhật ký" },
   { key: "ai", label: "AI" },
 ];
-const ACTIONS = ["view", "create", "edit", "delete", "force_delete", "approve", "export", "import"] as const;
+const ACTIONS = [
+  "view",
+  "create",
+  "edit",
+  "delete",
+  "force_delete",
+  "approve",
+  "export",
+  "import",
+] as const;
 
 function PermissionsPage() {
   return (
@@ -58,15 +88,35 @@ function PermissionsPage() {
       />
       <Tabs defaultValue="users" className="w-full">
         <TabsList>
-          <TabsTrigger value="users"><Users className="w-4 h-4 mr-2" />Người dùng</TabsTrigger>
-          <TabsTrigger value="matrix"><Grid3x3 className="w-4 h-4 mr-2" />Ma trận quyền</TabsTrigger>
-          <TabsTrigger value="viewas"><Eye className="w-4 h-4 mr-2" />View as user</TabsTrigger>
-          <TabsTrigger value="requests"><Inbox className="w-4 h-4 mr-2" />Yêu cầu quyền</TabsTrigger>
+          <TabsTrigger value="users">
+            <Users className="w-4 h-4 mr-2" />
+            Người dùng
+          </TabsTrigger>
+          <TabsTrigger value="matrix">
+            <Grid3x3 className="w-4 h-4 mr-2" />
+            Ma trận quyền
+          </TabsTrigger>
+          <TabsTrigger value="viewas">
+            <Eye className="w-4 h-4 mr-2" />
+            View as user
+          </TabsTrigger>
+          <TabsTrigger value="requests">
+            <Inbox className="w-4 h-4 mr-2" />
+            Yêu cầu quyền
+          </TabsTrigger>
         </TabsList>
-        <TabsContent value="users"><UsersTab /></TabsContent>
-        <TabsContent value="matrix"><MatrixTab /></TabsContent>
-        <TabsContent value="viewas"><ViewAsTab /></TabsContent>
-        <TabsContent value="requests"><RequestsTab /></TabsContent>
+        <TabsContent value="users">
+          <UsersTab />
+        </TabsContent>
+        <TabsContent value="matrix">
+          <MatrixTab />
+        </TabsContent>
+        <TabsContent value="viewas">
+          <ViewAsTab />
+        </TabsContent>
+        <TabsContent value="requests">
+          <RequestsTab />
+        </TabsContent>
       </Tabs>
     </div>
   );
@@ -84,7 +134,9 @@ function UsersTab() {
 
   return (
     <Card>
-      <CardHeader><CardTitle>Danh sách tài khoản</CardTitle></CardHeader>
+      <CardHeader>
+        <CardTitle>Danh sách tài khoản</CardTitle>
+      </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
@@ -103,14 +155,23 @@ function UsersTab() {
                   <div className="text-xs text-muted-foreground">{u.email}</div>
                 </TableCell>
                 <TableCell className="space-x-1">
-                  {u.roles.length === 0 ? <span className="text-muted-foreground text-sm">—</span> :
-                    u.roles.map((r: string) => <Badge key={r} variant="secondary">{r}</Badge>)}
+                  {u.roles.length === 0 ? (
+                    <span className="text-muted-foreground text-sm">—</span>
+                  ) : (
+                    u.roles.map((r: string) => (
+                      <Badge key={r} variant="secondary">
+                        {r}
+                      </Badge>
+                    ))
+                  )}
                 </TableCell>
                 <TableCell>
                   <ScopeSummary scopes={u.scopes} toChuc={data.toChuc} donVi={data.donVi} />
                 </TableCell>
                 <TableCell>
-                  <Button size="sm" variant="outline" onClick={() => setEditUserId(u.id)}>Chỉnh phạm vi</Button>
+                  <Button size="sm" variant="outline" onClick={() => setEditUserId(u.id)}>
+                    Chỉnh phạm vi
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -119,8 +180,17 @@ function UsersTab() {
       </CardContent>
       <Sheet open={!!editUser} onOpenChange={(o) => !o && setEditUserId(null)}>
         <SheetContent className="sm:max-w-lg">
-          <SheetHeader><SheetTitle>Phạm vi truy cập: {editUser?.ho_ten || editUser?.email}</SheetTitle></SheetHeader>
-          {editUser && <ScopeEditor user={editUser} toChuc={data.toChuc} donVi={data.donVi} onClose={() => setEditUserId(null)} />}
+          <SheetHeader>
+            <SheetTitle>Phạm vi truy cập: {editUser?.ho_ten || editUser?.email}</SheetTitle>
+          </SheetHeader>
+          {editUser && (
+            <ScopeEditor
+              user={editUser}
+              toChuc={data.toChuc}
+              donVi={data.donVi}
+              onClose={() => setEditUserId(null)}
+            />
+          )}
         </SheetContent>
       </Sheet>
     </Card>
@@ -136,16 +206,20 @@ function ScopeSummary({ scopes, toChuc, donVi }: any) {
       {scopes.map((s: any, i: number) => {
         const t = toChuc.find((x: any) => x.id === s.to_chuc_id);
         const d = donVi.find((x: any) => x.id === s.don_vi_id);
-        return <Badge key={i} variant="outline">{d?.ma || t?.ma || "?"}</Badge>;
+        return (
+          <Badge key={i} variant="outline">
+            {d?.ma || t?.ma || "?"}
+          </Badge>
+        );
       })}
     </div>
   );
 }
 
 function ScopeEditor({ user, toChuc, donVi, onClose }: any) {
-  const [scopes, setScopes] = useState<Array<{ to_chuc_id: string | null; don_vi_id: string | null }>>(
-    user.scopes.map((s: any) => ({ to_chuc_id: s.to_chuc_id, don_vi_id: s.don_vi_id })),
-  );
+  const [scopes, setScopes] = useState<
+    Array<{ to_chuc_id: string | null; don_vi_id: string | null }>
+  >(user.scopes.map((s: any) => ({ to_chuc_id: s.to_chuc_id, don_vi_id: s.don_vi_id })));
   const fn = useServerFn(setUserScope);
   const qc = useQueryClient();
   const mut = useMutation({
@@ -161,39 +235,76 @@ function ScopeEditor({ user, toChuc, donVi, onClose }: any) {
   return (
     <div className="space-y-3 mt-4">
       <div className="text-sm text-muted-foreground">
-        Bỏ trống cả 2 cột = toàn cục. Chỉ Tổ chức = mọi đơn vị thuộc tổ chức. Chỉ Đơn vị = duy nhất đơn vị đó.
+        Bỏ trống cả 2 cột = toàn cục. Chỉ Tổ chức = mọi đơn vị thuộc tổ chức. Chỉ Đơn vị = duy nhất
+        đơn vị đó.
       </div>
-      <Button size="sm" variant="outline" onClick={() => setScopes([...scopes, { to_chuc_id: null, don_vi_id: null }])}>
-        <Plus className="w-4 h-4 mr-1" />Thêm phạm vi
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => setScopes([...scopes, { to_chuc_id: null, don_vi_id: null }])}
+      >
+        <Plus className="w-4 h-4 mr-1" />
+        Thêm phạm vi
       </Button>
       {scopes.map((s, i) => (
         <div key={i} className="flex gap-2 items-center border rounded p-2">
-          <Select value={s.to_chuc_id ?? "__none__"} onValueChange={(v) => {
-            const next = [...scopes]; next[i].to_chuc_id = v === "__none__" ? null : v; setScopes(next);
-          }}>
-            <SelectTrigger className="w-40"><SelectValue placeholder="Tổ chức" /></SelectTrigger>
+          <Select
+            value={s.to_chuc_id ?? "__none__"}
+            onValueChange={(v) => {
+              const next = [...scopes];
+              next[i].to_chuc_id = v === "__none__" ? null : v;
+              setScopes(next);
+            }}
+          >
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Tổ chức" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="__none__">— Tổ chức —</SelectItem>
-              {toChuc.map((t: any) => <SelectItem key={t.id} value={t.id}>{t.ma}</SelectItem>)}
+              {toChuc.map((t: any) => (
+                <SelectItem key={t.id} value={t.id}>
+                  {t.ma}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
-          <Select value={s.don_vi_id ?? "__none__"} onValueChange={(v) => {
-            const next = [...scopes]; next[i].don_vi_id = v === "__none__" ? null : v; setScopes(next);
-          }}>
-            <SelectTrigger className="w-40"><SelectValue placeholder="Đơn vị" /></SelectTrigger>
+          <Select
+            value={s.don_vi_id ?? "__none__"}
+            onValueChange={(v) => {
+              const next = [...scopes];
+              next[i].don_vi_id = v === "__none__" ? null : v;
+              setScopes(next);
+            }}
+          >
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Đơn vị" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="__none__">— Đơn vị —</SelectItem>
-              {donVi.map((d: any) => <SelectItem key={d.id} value={d.id}>{d.ma}</SelectItem>)}
+              {donVi.map((d: any) => (
+                <SelectItem key={d.id} value={d.id}>
+                  {d.ma}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
-          <Button size="icon" variant="ghost" aria-label="Xoá phân quyền" onClick={() => setScopes(scopes.filter((_, j) => j !== i))}>
+          <Button
+            size="icon"
+            variant="ghost"
+            aria-label="Xoá phân quyền"
+            onClick={() => setScopes(scopes.filter((_, j) => j !== i))}
+          >
             <Trash2 className="w-4 h-4" />
           </Button>
         </div>
       ))}
       <div className="pt-2 flex gap-2">
-        <Button onClick={() => mut.mutate()} disabled={mut.isPending}>Lưu</Button>
-        <Button variant="outline" onClick={onClose}>Hủy</Button>
+        <Button onClick={() => mut.mutate()} disabled={mut.isPending}>
+          Lưu
+        </Button>
+        <Button variant="outline" onClick={onClose}>
+          Hủy
+        </Button>
       </div>
     </div>
   );
@@ -224,8 +335,16 @@ function MatrixTab() {
       <CardHeader className="flex-row items-center gap-3">
         <CardTitle>Ma trận vai trò × module × hành động</CardTitle>
         <Select value={role} onValueChange={setRole}>
-          <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
-          <SelectContent>{ROLES.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
+          <SelectTrigger className="w-48">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {ROLES.map((r) => (
+              <SelectItem key={r} value={r}>
+                {r}
+              </SelectItem>
+            ))}
+          </SelectContent>
         </Select>
       </CardHeader>
       <CardContent>
@@ -233,7 +352,11 @@ function MatrixTab() {
           <TableHeader>
             <TableRow>
               <TableHead>Module</TableHead>
-              {ACTIONS.map((a) => <TableHead key={a} className="text-center capitalize">{a}</TableHead>)}
+              {ACTIONS.map((a) => (
+                <TableHead key={a} className="text-center capitalize">
+                  {a}
+                </TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -247,7 +370,9 @@ function MatrixTab() {
                       <Switch
                         checked={allowed}
                         disabled={role === "admin"}
-                        onCheckedChange={(v) => mut.mutate({ module: m.key, action: a, allowed: !!v })}
+                        onCheckedChange={(v) =>
+                          mut.mutate({ module: m.key, action: a, allowed: !!v })
+                        }
                       />
                     </TableCell>
                   );
@@ -256,7 +381,11 @@ function MatrixTab() {
             ))}
           </TableBody>
         </Table>
-        {role === "admin" && <p className="text-xs text-muted-foreground mt-2">Admin có toàn quyền — không thể chỉnh sửa.</p>}
+        {role === "admin" && (
+          <p className="text-xs text-muted-foreground mt-2">
+            Admin có toàn quyền — không thể chỉnh sửa.
+          </p>
+        )}
       </CardContent>
     </Card>
   );
@@ -276,13 +405,19 @@ function ViewAsTab() {
 
   return (
     <Card>
-      <CardHeader><CardTitle>Xem quyền của tài khoản khác</CardTitle></CardHeader>
+      <CardHeader>
+        <CardTitle>Xem quyền của tài khoản khác</CardTitle>
+      </CardHeader>
       <CardContent className="space-y-4">
         <Select value={uid ?? ""} onValueChange={setUid}>
-          <SelectTrigger className="w-80"><SelectValue placeholder="Chọn tài khoản để xem quyền" /></SelectTrigger>
+          <SelectTrigger className="w-80">
+            <SelectValue placeholder="Chọn tài khoản để xem quyền" />
+          </SelectTrigger>
           <SelectContent>
             {(users.data as any)?.users.map((u: any) => (
-              <SelectItem key={u.id} value={u.id}>{u.ho_ten || u.email}</SelectItem>
+              <SelectItem key={u.id} value={u.id}>
+                {u.ho_ten || u.email}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -290,15 +425,33 @@ function ViewAsTab() {
           <div className="border-2 border-warning bg-warning/10 rounded p-4 space-y-3">
             <div className="flex items-center gap-2">
               <Eye className="w-4 h-4" />
-              <span className="font-semibold">Đang xem quyền của user này (chỉ preview, không thay đổi session).</span>
+              <span className="font-semibold">
+                Đang xem quyền của user này (chỉ preview, không thay đổi session).
+              </span>
             </div>
-            <div><span className="text-sm text-muted-foreground">Vai trò: </span>
-              {(preview.data as any).roles.map((r: string) => <Badge key={r} className="mr-1">{r}</Badge>)}
+            <div>
+              <span className="text-sm text-muted-foreground">Vai trò: </span>
+              {(preview.data as any).roles.map((r: string) => (
+                <Badge key={r} className="mr-1">
+                  {r}
+                </Badge>
+              ))}
             </div>
-            <div><span className="text-sm text-muted-foreground">Phạm vi: </span>
-              {(preview.data as any).isGlobal ? <Badge>Toàn cục</Badge> :
-                (preview.data as any).scope.map((s: any, i: number) =>
-                  <Badge key={i} variant="outline">{s.don_vi_id ? "DV:" + s.don_vi_id.slice(0, 8) : s.to_chuc_id ? "TC:" + s.to_chuc_id.slice(0, 8) : "?"}</Badge>)}
+            <div>
+              <span className="text-sm text-muted-foreground">Phạm vi: </span>
+              {(preview.data as any).isGlobal ? (
+                <Badge>Toàn cục</Badge>
+              ) : (
+                (preview.data as any).scope.map((s: any, i: number) => (
+                  <Badge key={i} variant="outline">
+                    {s.don_vi_id
+                      ? "DV:" + s.don_vi_id.slice(0, 8)
+                      : s.to_chuc_id
+                        ? "TC:" + s.to_chuc_id.slice(0, 8)
+                        : "?"}
+                  </Badge>
+                ))
+              )}
             </div>
             <div className="space-y-1">
               <div className="text-sm font-medium">Quyền hiệu lực:</div>
@@ -310,8 +463,15 @@ function ViewAsTab() {
                       <TableRow key={m.key}>
                         <TableCell className="w-40">{m.label}</TableCell>
                         <TableCell>
-                          {acts.length === 0 ? <span className="text-muted-foreground text-sm">—</span> :
-                            acts.map((a: string) => <Badge key={a} variant="secondary" className="mr-1 capitalize">{a}</Badge>)}
+                          {acts.length === 0 ? (
+                            <span className="text-muted-foreground text-sm">—</span>
+                          ) : (
+                            acts.map((a: string) => (
+                              <Badge key={a} variant="secondary" className="mr-1 capitalize">
+                                {a}
+                              </Badge>
+                            ))
+                          )}
                         </TableCell>
                       </TableRow>
                     );
@@ -342,7 +502,9 @@ function RequestsTab() {
 
   return (
     <Card>
-      <CardHeader><CardTitle>Yêu cầu cấp quyền tạm thời</CardTitle></CardHeader>
+      <CardHeader>
+        <CardTitle>Yêu cầu cấp quyền tạm thời</CardTitle>
+      </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
@@ -359,17 +521,41 @@ function RequestsTab() {
           <TableBody>
             {((q.data as any[]) ?? []).map((r: any) => (
               <TableRow key={r.id}>
-                <TableCell className="text-xs">{new Date(r.created_at).toLocaleString("vi-VN")}</TableCell>
+                <TableCell className="text-xs">
+                  {new Date(r.created_at).toLocaleString("vi-VN")}
+                </TableCell>
                 <TableCell className="text-xs">{r.user_id.slice(0, 8)}</TableCell>
-                <TableCell><Badge variant="outline">{r.module}</Badge> <Badge>{r.action}</Badge></TableCell>
+                <TableCell>
+                  <Badge variant="outline">{r.module}</Badge> <Badge>{r.action}</Badge>
+                </TableCell>
                 <TableCell className="max-w-xs truncate">{r.reason || "—"}</TableCell>
                 <TableCell>{r.ttl_minutes}p</TableCell>
-                <TableCell><Badge variant={r.status === "pending" ? "secondary" : r.status === "approved" ? "default" : "destructive"}>{r.status}</Badge></TableCell>
+                <TableCell>
+                  <Badge
+                    variant={
+                      r.status === "pending"
+                        ? "secondary"
+                        : r.status === "approved"
+                          ? "default"
+                          : "destructive"
+                    }
+                  >
+                    {r.status}
+                  </Badge>
+                </TableCell>
                 <TableCell className="space-x-1">
                   {r.status === "pending" && (
                     <>
-                      <Button size="sm" onClick={() => mut.mutate({ id: r.id, approve: true })}>Duyệt</Button>
-                      <Button size="sm" variant="outline" onClick={() => mut.mutate({ id: r.id, approve: false })}>Từ chối</Button>
+                      <Button size="sm" onClick={() => mut.mutate({ id: r.id, approve: true })}>
+                        Duyệt
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => mut.mutate({ id: r.id, approve: false })}
+                      >
+                        Từ chối
+                      </Button>
                     </>
                   )}
                 </TableCell>

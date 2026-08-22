@@ -7,12 +7,14 @@ type: feature
 # T32 — Sticky Header & Locked Columns
 
 ## Problem
+
 The shared `StandardTable.tsx` lost its sticky header and column locking functionality during previous refactors. This makes large tables (like System Components) difficult to read as headers disappear on scroll and identifier columns (like names) disappear on horizontal scroll.
 
 ## Proposed Changes
 
 ### 1. `src/components/mirats/StandardTable.tsx`
-- **Sticky Header**: 
+
+- **Sticky Header**:
   - Add `sticky top-0 z-20` to `TableHead` elements in `TableHeader`.
   - Ensure background is opaque (use `bg-muted` or similar).
   - Add vertical borders between header cells: `border-r border-border/50 last:border-r-0`.
@@ -27,6 +29,7 @@ The shared `StandardTable.tsx` lost its sticky header and column locking functio
   - Ensure the `Card` wrapper has `overflow-auto`.
 
 ## Verification Plan
+
 1. **Automated**: `npx tsc --noEmit` and `npm run test`.
 2. **Visual Manual Check**:
    - `/he-thong/thanh-phan`: Check sticky header and locked "Tên" column (confirmed `sticky: true` exists in source).
@@ -35,6 +38,7 @@ The shared `StandardTable.tsx` lost its sticky header and column locking functio
 3. **Audit**: Confirm `maxHeightClass` default is sufficient.
 
 ## Constraints
+
 - Do not modify `ui/table.tsx`.
 - Do not change prop signatures.
 - Maintain existing column filtering/ordering logic.

@@ -4,16 +4,16 @@ Dựa trên kết quả kiểm toán mã nguồn hiện tại, giao diện đang
 
 ## A. Bảng kiểm toán thành phần hiện tại
 
-| Thành phần | File chính | Class hiện tại | Kích thước thực tế | Đề xuất giá trị gọn | Ảnh hưởng |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **App Header** | `AppShell.tsx` | `h-14` | 56px | 48px (`h-12`) | Tăng diện tích dọc cho nội dung |
-| **Sidebar Rail** | `AppShell.tsx` | `w-16` | 64px | 56px (`w-14`) | Tinh gọn thanh điều hướng chính |
-| **Sub-sidebar** | `AppShell.tsx` | `w-60` | 240px | 220px | Mở rộng vùng làm việc ngang |
-| **Sidebar Item** | `Sidebar.tsx` | `px-3 py-2 gap-3` | ~40px height | `px-2 py-1 gap-2` | Hiển thị được nhiều menu hơn |
-| **Page Padding** | `ui-density.ts` | `p-4 md:p-6` | 24px | `p-3 md:p-4` | Giảm khoảng trắng bao quanh |
-| **Card Content** | `Card.tsx` (UI) | `p-6` | 24px | `p-4` | Quan trọng nhất để giảm độ loãng |
-| **Table Row** | `StandardTable.tsx` | `estimateSize: 48` | 48px | 36px | Tăng mật độ dữ liệu hàng |
-| **Section Gap** | `ui-density.ts` | `gap-4` | 16px | `gap-3` | Gắn kết các khối dữ liệu |
+| Thành phần       | File chính          | Class hiện tại     | Kích thước thực tế | Đề xuất giá trị gọn | Ảnh hưởng                        |
+| :--------------- | :------------------ | :----------------- | :----------------- | :------------------ | :------------------------------- |
+| **App Header**   | `AppShell.tsx`      | `h-14`             | 56px               | 48px (`h-12`)       | Tăng diện tích dọc cho nội dung  |
+| **Sidebar Rail** | `AppShell.tsx`      | `w-16`             | 64px               | 56px (`w-14`)       | Tinh gọn thanh điều hướng chính  |
+| **Sub-sidebar**  | `AppShell.tsx`      | `w-60`             | 240px              | 220px               | Mở rộng vùng làm việc ngang      |
+| **Sidebar Item** | `Sidebar.tsx`       | `px-3 py-2 gap-3`  | ~40px height       | `px-2 py-1 gap-2`   | Hiển thị được nhiều menu hơn     |
+| **Page Padding** | `ui-density.ts`     | `p-4 md:p-6`       | 24px               | `p-3 md:p-4`        | Giảm khoảng trắng bao quanh      |
+| **Card Content** | `Card.tsx` (UI)     | `p-6`              | 24px               | `p-4`               | Quan trọng nhất để giảm độ loãng |
+| **Table Row**    | `StandardTable.tsx` | `estimateSize: 48` | 48px               | 36px                | Tăng mật độ dữ liệu hàng         |
+| **Section Gap**  | `ui-density.ts`     | `gap-4`            | 16px               | `gap-3`             | Gắn kết các khối dữ liệu         |
 
 ## B. Danh sách class spacing hard-code (Cần chuyển sang Token)
 
@@ -27,6 +27,7 @@ Các class này xuất hiện phổ biến (>20 lần) và đang phá vỡ tính
 ## C. Các điểm Padding cộng dồn (Double Padding)
 
 Giao diện đang bị hiện tượng "whitespace chồng lấn" tại:
+
 - **PageBody (`p-6`) + Card (`p-6`)**: Tổng cộng 48px lề trái/phải trước khi thấy chữ.
 - **Dialog (`p-6`) + Form (`space-y-4`)**: Khoảng cách từ tiêu đề đến ô nhập liệu quá lớn.
 - **StandardTable (`space-y-3`) + Toolbar (`px-1`)**: Gây lệch nhẹ so với nội dung bảng phía dưới.
@@ -52,13 +53,14 @@ export const UI_DENSITY = {
     table_row_h: "36",
     font_base: "text-sm",
     header_h: "h-12",
-  }
-}
+  },
+};
 ```
 
 ## E. Thành phần KHÔNG được thu nhỏ (Safe Zones)
 
 Để đảm bảo khả dụng (Accessibility), các mục sau sẽ giữ nguyên kích thước:
+
 1.  **Vùng chạm Mobile**: Các nút trong `MobileNav` giữ chiều cao tối thiểu 44px.
 2.  **Ô nhập liệu (Height)**: Không giảm dưới 32px để đảm bảo dễ bấm và hiển thị font chữ tiếng Việt không bị cắt dấu (descenders).
 3.  **Nút hành động chính (Primary Actions)**: Giữ kích thước `h-10` trong các form quan trọng để tránh bấm nhầm.
@@ -66,6 +68,7 @@ export const UI_DENSITY = {
 ## F. Ước lượng hiệu quả (1440x900)
 
 Sau khi áp dụng bộ token Compact:
+
 - **Dữ liệu bảng**: Tăng từ ~12 hàng lên ~18 hàng hiển thị (tăng **50%**).
 - **KPI Card**: Hiển thị được 5-6 card trên một hàng thay vì 4.
 - **Dashboard**: Giảm được ~150px chiều dọc lãng phí từ header và padding, giúp thấy được biểu đồ ngay khi load trang mà không cần cuộn.

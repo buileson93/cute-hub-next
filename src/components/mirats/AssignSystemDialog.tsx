@@ -8,7 +8,12 @@
 import { useMemo, useState } from "react";
 import { Check, Search } from "lucide-react";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,9 +53,7 @@ export function AssignSystemDialog({
       _label: systemName ? systemName(s.id, s.ten) : s.ten,
     }));
     if (!nq) return list;
-    return list.filter(
-      (s) => normalize(s._label).includes(nq) || normalize(s.ma).includes(nq),
-    );
+    return list.filter((s) => normalize(s._label).includes(nq) || normalize(s.ma).includes(nq));
   }, [systems, systemName, q]);
 
   const handleOpenChange = (o: boolean) => {
@@ -67,7 +70,8 @@ export function AssignSystemDialog({
         <DialogHeader>
           <DialogTitle>Gán vào hệ thống</DialogTitle>
           <DialogDescription>
-            Chọn hệ thống đích cho <b>{count}</b> tài sản. Tài sản sẽ nhận phân loại/lĩnh vực của hệ thống đích.
+            Chọn hệ thống đích cho <b>{count}</b> tài sản. Tài sản sẽ nhận phân loại/lĩnh vực của hệ
+            thống đích.
           </DialogDescription>
         </DialogHeader>
 
@@ -106,7 +110,11 @@ export function AssignSystemDialog({
                 />
                 <div className="min-w-0">
                   <div className="truncate font-medium">{s._label}</div>
-                  {s.ma && <div className="truncate font-mono text-[11px] text-muted-foreground">{s.ma}</div>}
+                  {s.ma && (
+                    <div className="truncate font-mono text-[11px] text-muted-foreground">
+                      {s.ma}
+                    </div>
+                  )}
                 </div>
               </button>
             ))
@@ -114,7 +122,9 @@ export function AssignSystemDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => handleOpenChange(false)}>Huỷ</Button>
+          <Button variant="outline" onClick={() => handleOpenChange(false)}>
+            Huỷ
+          </Button>
           <Button
             disabled={!selected}
             onClick={() => {

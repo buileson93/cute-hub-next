@@ -5,10 +5,31 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo, useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Download, HardDrive, Loader2, Package, PackageOpen, PackagePlus, PackageMinus,
-  MoreHorizontal, Search, X, History, Tag, Info, Pencil, Plus, Trash2, PackageX, 
-  Settings2, ShieldCheck, CheckCircle2, AlertTriangle, LayoutGrid, Timer, HeartPulse,
-  MapPin
+  Download,
+  HardDrive,
+  Loader2,
+  Package,
+  PackageOpen,
+  PackagePlus,
+  PackageMinus,
+  MoreHorizontal,
+  Search,
+  X,
+  History,
+  Tag,
+  Info,
+  Pencil,
+  Plus,
+  Trash2,
+  PackageX,
+  Settings2,
+  ShieldCheck,
+  CheckCircle2,
+  AlertTriangle,
+  LayoutGrid,
+  Timer,
+  HeartPulse,
+  MapPin,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -21,18 +42,30 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover, PopoverContent, PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { PageHeader } from "@/components/mirats/PageHeader";
@@ -53,19 +86,18 @@ import { useUserPref } from "@/hooks/use-user-pref";
 import { useCayRpc } from "@/lib/mirats/cay-reorg";
 import { normalize } from "@/lib/mirats/global-search";
 import {
-  useDbTaxonomy, useSystemNameOverrides, useDeviceNameOverrides, type DbDevice,
+  useDbTaxonomy,
+  useSystemNameOverrides,
+  useDeviceNameOverrides,
+  type DbDevice,
 } from "@/lib/mirats/db-taxonomy";
 import { isRetiredStatus } from "@/components/mirats/ThietBiLifecycleActions";
 import { supabase } from "@/integrations/backend/client";
-import {
-  sortDacTinh, matchFilter, type DacTinh, type CheDoLoc,
-} from "@/lib/mirats/dac-tinh";
+import { sortDacTinh, matchFilter, type DacTinh, type CheDoLoc } from "@/lib/mirats/dac-tinh";
 import { MauChip } from "@/components/mirats/MauChip";
 import { storage } from "@/lib/storage";
 import { cn } from "@/lib/utils";
 import { ACTION_PATTERNS } from "@/lib/mirats/ui/action-patterns";
-
-
 
 // Bộ lọc lưu trên URL để "quay lại trang" giữ nguyên trạng thái đã chọn.
 // - q, loai, tt: text đơn trị (bỏ khi rỗng / "all")
@@ -83,7 +115,6 @@ type TbSearch = {
   compatibleSystem?: string;
 };
 
-
 const TAG_MODES: readonly CheDoLoc[] = ["any", "all", "none"] as const;
 
 export const Route = createFileRoute("/_app/danh-muc/thiet-bi")({
@@ -94,32 +125,33 @@ export const Route = createFileRoute("/_app/danh-muc/thiet-bi")({
     const rawTags = Array.isArray(s.tags)
       ? (s.tags.filter((x) => typeof x === "string" && x) as string[])
       : typeof s.tags === "string" && s.tags
-      ? [s.tags]
-      : [];
+        ? [s.tags]
+        : [];
     const tags = rawTags.length ? Array.from(new Set(rawTags)) : undefined;
-    const mode = TAG_MODES.includes(s.mode as CheDoLoc) && s.mode !== "any"
-      ? (s.mode as CheDoLoc)
-      : undefined;
+    const mode =
+      TAG_MODES.includes(s.mode as CheDoLoc) && s.mode !== "any" ? (s.mode as CheDoLoc) : undefined;
     const standalone = s.standalone === true || s.standalone === "true" ? true : undefined;
     const retired = s.retired === true || s.retired === "true" ? true : undefined;
-    const compatibleSystem = typeof s.compatibleSystem === "string" && s.compatibleSystem ? s.compatibleSystem : undefined;
+    const compatibleSystem =
+      typeof s.compatibleSystem === "string" && s.compatibleSystem ? s.compatibleSystem : undefined;
     return { q, loai, tt, tags, mode, standalone, retired, compatibleSystem };
-
   },
   head: () => ({
     meta: [
       { title: "Danh mục tài sản — MIRATS" },
-      { name: "description", content: "Danh mục toàn bộ tài sản: cả tài sản trong hệ thống lẫn tài sản độc lập (vật tư dự phòng, công cụ dụng cụ)." },
+      {
+        name: "description",
+        content:
+          "Danh mục toàn bộ tài sản: cả tài sản trong hệ thống lẫn tài sản độc lập (vật tư dự phòng, công cụ dụng cụ).",
+      },
       { property: "og:title", content: "Danh mục tài sản — MIRATS" },
       { property: "og:description", content: "Danh mục tài sản." },
-
     ],
   }),
   component: DanhMucThietBiPage,
 });
 
 const STANDALONE = "— Độc lập (chưa gán hệ thống) —";
-
 
 /** Thẻ hover cho model (dm_model) đã gán — có ảnh + thông số cơ bản. */
 function ModelHoverContent({ d }: { d: DbDevice }) {
@@ -160,12 +192,18 @@ function ModelHoverContent({ d }: { d: DbDevice }) {
         )}
       </div>
       <div className="space-y-1 p-3">
-        {rows.length ? rows.map(([l, v]) => (
-          <div key={l} className="flex gap-2 text-xs">
-            <span className="w-24 shrink-0 text-muted-foreground">{l}</span>
-            <span className="min-w-0 flex-1 break-words font-medium">{v}</span>
+        {rows.length ? (
+          rows.map(([l, v]) => (
+            <div key={l} className="flex gap-2 text-xs">
+              <span className="w-24 shrink-0 text-muted-foreground">{l}</span>
+              <span className="min-w-0 flex-1 break-words font-medium">{v}</span>
+            </div>
+          ))
+        ) : (
+          <div className="text-xs text-muted-foreground">
+            Chưa có thông tin chi tiết cho mẫu này.
           </div>
-        )) : <div className="text-xs text-muted-foreground">Chưa có thông tin chi tiết cho mẫu này.</div>}
+        )}
       </div>
     </>
   );
@@ -183,7 +221,7 @@ function DanhMucThietBiPage() {
   const { data: taxo, isLoading, error } = useDbTaxonomy();
   const { data: nameOv } = useSystemNameOverrides();
   const { data: devNameOv } = useDeviceNameOverrides();
-  
+
   const { hasRole } = useSession();
   const canManage = hasRole("admin") || hasRole("phong_kt");
   const isAdmin = hasRole("admin");
@@ -265,7 +303,8 @@ function DanhMucThietBiPage() {
       const { data, error } = await supabase
         .from("dm_dac_tinh")
         .select("id, ma, ten, thu_tu, mau")
-        .order("thu_tu", { nullsFirst: false }).order("ma");
+        .order("thu_tu", { nullsFirst: false })
+        .order("ma");
       if (error) throw error;
       return (data ?? []) as Array<DacTinh & { id: string }>;
     },
@@ -318,7 +357,6 @@ function DanhMucThietBiPage() {
     return m;
   }, [loaiMauList]);
 
-
   // Gán / gỡ tài sản khỏi hệ thống.
   const [assignTargets, setAssignTargets] = useState<DbDevice[] | null>(null);
   const [removeTargets, setRemoveTargets] = useState<DbDevice[] | null>(null);
@@ -330,9 +368,18 @@ function DanhMucThietBiPage() {
   // Dialog Thêm/Sửa tài sản trực tiếp trong trang Danh mục.
   const [formMode, setFormMode] = useState<"create" | "edit" | null>(null);
   const [formDevice, setFormDevice] = useState<DbDevice | null>(null);
-  const openDetail = useCallback((d: DbDevice) => { setDetailDevice(d); setDetailOpen(true); }, []);
-  const openCreate = useCallback(() => { setFormDevice(null); setFormMode("create"); }, []);
-  const openEdit = useCallback((d: DbDevice) => { setFormDevice(d); setFormMode("edit"); }, []);
+  const openDetail = useCallback((d: DbDevice) => {
+    setDetailDevice(d);
+    setDetailOpen(true);
+  }, []);
+  const openCreate = useCallback(() => {
+    setFormDevice(null);
+    setFormMode("create");
+  }, []);
+  const openEdit = useCallback((d: DbDevice) => {
+    setFormDevice(d);
+    setFormMode("edit");
+  }, []);
 
   // Xoá tài sản: 2 chế độ — "Ngừng khai thác" (giữ lịch sử) và "Xoá vĩnh viễn"
   // (chỉ dùng cho bản ghi nhập nhầm, chưa phát sinh lịch sử; chỉ admin).
@@ -341,13 +388,18 @@ function DanhMucThietBiPage() {
   const [deleteReason, setDeleteReason] = useState("");
   const [deleteThanhLy, setDeleteThanhLy] = useState(false);
   const closeDelete = useCallback(() => {
-    setDeleteTargets(null); setDeleteReason(""); setDeleteThanhLy(false); setDeleteKind("retire");
+    setDeleteTargets(null);
+    setDeleteReason("");
+    setDeleteThanhLy(false);
+    setDeleteKind("retire");
   }, []);
 
   const retireMut = useMutation({
     mutationFn: async (mas: string[]) => {
       const { data, error } = await supabase.rpc("ngung_khai_thac_thiet_bi", {
-        _mas: mas, _ly_do: deleteReason || undefined, _thanh_ly: deleteThanhLy,
+        _mas: mas,
+        _ly_do: deleteReason || undefined,
+        _thanh_ly: deleteThanhLy,
       });
       if (error) throw error;
       return data as { trang_thai: string };
@@ -371,7 +423,10 @@ function DanhMucThietBiPage() {
       qc.invalidateQueries({ queryKey: ["change_log"] });
       const daXoa = d?.so_da_xoa ?? 0;
       const boQua = d?.so_bo_qua ?? 0;
-      if (daXoa > 0) toast.success(`Đã xoá vĩnh viễn ${daXoa} bản ghi${boQua ? ` — bỏ qua ${boQua} bản ghi đã có lịch sử` : ""}`);
+      if (daXoa > 0)
+        toast.success(
+          `Đã xoá vĩnh viễn ${daXoa} bản ghi${boQua ? ` — bỏ qua ${boQua} bản ghi đã có lịch sử` : ""}`,
+        );
       else toast.error("Không xoá được: tài sản đã có lịch sử. Hãy dùng “Ngừng khai thác”.");
       closeDelete();
     },
@@ -380,24 +435,24 @@ function DanhMucThietBiPage() {
   const deleteBusy = retireMut.isPending || purgeMut.isPending;
 
   const htName = (id: string | undefined, fallback: string) => (id && nameOv?.get(id)) || fallback;
-  const tbName = useCallback(
-    (d: DbDevice) => devNameOv?.get(d.ma_thiet_bi) || d.ten,
-    [devNameOv],
-  );
+  const tbName = useCallback((d: DbDevice) => devNameOv?.get(d.ma_thiet_bi) || d.ten, [devNameOv]);
 
   // Tra mã hệ thống theo id (để cột "he_thong" khi XUẤT là MÃ hợp lệ, nạp lại được).
-  const htMaById = useMemo(
-    () => new Map((taxo?.htList ?? []).map((h) => [h.id, h.ma])),
-    [taxo],
-  );
+  const htMaById = useMemo(() => new Map((taxo?.htList ?? []).map((h) => [h.id, h.ma])), [taxo]);
 
   // Danh mục lọc nhanh (chủng loại / trạng thái) từ dữ liệu hiện có.
   const loaiOptions = useMemo(
-    () => Array.from(new Set((taxo?.devices ?? []).map((d) => d._loaiTbTen).filter(Boolean))).sort((a, b) => a.localeCompare(b, "vi")),
+    () =>
+      Array.from(new Set((taxo?.devices ?? []).map((d) => d._loaiTbTen).filter(Boolean))).sort(
+        (a, b) => a.localeCompare(b, "vi"),
+      ),
     [taxo],
   );
   const ttOptions = useMemo(
-    () => Array.from(new Set((taxo?.devices ?? []).map((d) => d.trang_thai).filter(Boolean))).sort((a, b) => a.localeCompare(b, "vi")),
+    () =>
+      Array.from(new Set((taxo?.devices ?? []).map((d) => d.trang_thai).filter(Boolean))).sort(
+        (a, b) => a.localeCompare(b, "vi"),
+      ),
     [taxo],
   );
 
@@ -410,7 +465,7 @@ function DanhMucThietBiPage() {
         .select("thiet_bi_id, he_thong_id");
       if (error) throw error;
       return data;
-    }
+    },
   });
   const compatibleMap = useMemo(() => {
     const m = new Map<string, Set<string>>();
@@ -423,7 +478,6 @@ function DanhMucThietBiPage() {
   }, [tuongThichRows]);
 
   const devices = useMemo(() => {
-
     let all = taxo?.devices ?? [];
     if (!scopeAll) all = all.filter((d) => !donViCode || d.don_vi === donViCode);
     if (!showRetired) all = all.filter((d) => !isRetiredStatus(d.trang_thai));
@@ -431,27 +485,38 @@ function DanhMucThietBiPage() {
     if (filterLoai !== "all") all = all.filter((d) => d._loaiTbTen === filterLoai);
     if (filterTt !== "all") all = all.filter((d) => d.trang_thai === filterTt);
     if (tagSelected.length) {
-      all = all.filter((d) =>
-        matchFilter(tagsByDevice.get(d.id) ?? [], tagSelected, tagMode),
-      );
+      all = all.filter((d) => matchFilter(tagsByDevice.get(d.id) ?? [], tagSelected, tagMode));
     }
     const nq = normalize(search).trim();
     if (nq) {
-      all = all.filter((d) =>
-        normalize(tbName(d)).includes(nq) ||
-        normalize(d.ma_thiet_bi).includes(nq) ||
-        normalize(d.serial ?? "").includes(nq) ||
-        normalize(d._loaiTbTen ?? "").includes(nq) ||
-        normalize(d.trang_thai ?? "").includes(nq),
+      all = all.filter(
+        (d) =>
+          normalize(tbName(d)).includes(nq) ||
+          normalize(d.ma_thiet_bi).includes(nq) ||
+          normalize(d.serial ?? "").includes(nq) ||
+          normalize(d._loaiTbTen ?? "").includes(nq) ||
+          normalize(d.trang_thai ?? "").includes(nq),
       );
     }
     if (sp.compatibleSystem) {
       all = all.filter((d) => compatibleMap.get(d.id)?.has(sp.compatibleSystem!));
     }
     return all;
-  }, [taxo, scopeAll, donViCode, showRetired, onlyStandalone, filterLoai, filterTt, sp, tbName, tagsByDevice, tagSelected, tagMode, compatibleMap]);
-
-
+  }, [
+    taxo,
+    scopeAll,
+    donViCode,
+    showRetired,
+    onlyStandalone,
+    filterLoai,
+    filterTt,
+    sp,
+    tbName,
+    tagsByDevice,
+    tagSelected,
+    tagMode,
+    compatibleMap,
+  ]);
 
   const standaloneCount = useMemo(
     () => (taxo?.devices ?? []).filter((d) => !d._htId).length,
@@ -479,267 +544,542 @@ function DanhMucThietBiPage() {
     },
     [taxo, tbName],
   );
-  const hasActiveFilter = search.trim() !== "" || filterLoai !== "all" || filterTt !== "all" || tagSelected.length > 0;
+  const hasActiveFilter =
+    search.trim() !== "" || filterLoai !== "all" || filterTt !== "all" || tagSelected.length > 0;
   const clearFilters = useCallback(
-    () => patchSearch({ q: undefined, loai: undefined, tt: undefined, tags: undefined, mode: undefined }),
+    () =>
+      patchSearch({
+        q: undefined,
+        loai: undefined,
+        tt: undefined,
+        tags: undefined,
+        mode: undefined,
+      }),
     [patchSearch],
   );
 
   // Hoàn tác các thay đổi vừa áp dụng (đảo ngược thứ tự để an toàn).
-  const rollbackIds = useCallback(async (ids: string[]) => {
-    for (const id of [...ids].reverse()) {
-      await hoanTac.mutateAsync({ id, silent: true });
-    }
-    toast.success(`Đã hoàn tác ${ids.length} thay đổi`);
-  }, [hoanTac]);
+  const rollbackIds = useCallback(
+    async (ids: string[]) => {
+      for (const id of [...ids].reverse()) {
+        await hoanTac.mutateAsync({ id, silent: true });
+      }
+      toast.success(`Đã hoàn tác ${ids.length} thay đổi`);
+    },
+    [hoanTac],
+  );
 
   // Áp dụng danh sách thay đổi rồi hiển thị nút Hoàn tác có thời hạn (nếu admin
   // áp dụng ngay). Nếu chỉ ở trạng thái chờ duyệt thì báo bình thường.
-  const applyWithUndo = useCallback(async (
-    items: Array<{ loai: "move_device"; he_thong_id: string; mo_ta: string; payload: Record<string, unknown> }>,
-    undoMessage: (n: number) => string,
-  ) => {
-    if (!items.length) return;
-    try {
-      if (items.length === 1) {
-        const res = await submit.mutateAsync({ ...items[0], _silent: true });
-        if (res?.applied && res.id) {
-          showUndoToast({ message: undoMessage(1), onUndo: () => rollbackIds([res.id]) });
+  const applyWithUndo = useCallback(
+    async (
+      items: Array<{
+        loai: "move_device";
+        he_thong_id: string;
+        mo_ta: string;
+        payload: Record<string, unknown>;
+      }>,
+      undoMessage: (n: number) => string,
+    ) => {
+      if (!items.length) return;
+      try {
+        if (items.length === 1) {
+          const res = await submit.mutateAsync({ ...items[0], _silent: true });
+          if (res?.applied && res.id) {
+            showUndoToast({ message: undoMessage(1), onUndo: () => rollbackIds([res.id]) });
+          } else {
+            toast.success("Đã gửi, chờ admin duyệt");
+          }
         } else {
-          toast.success("Đã gửi, chờ admin duyệt");
+          const res = await submitMany.mutateAsync({ items, silent: true });
+          if (res.appliedIds.length) {
+            showUndoToast({
+              message: undoMessage(res.appliedIds.length),
+              onUndo: () => rollbackIds(res.appliedIds),
+            });
+          }
+          if (res.applied < res.total) {
+            toast.success(`Đã gửi ${res.total - res.applied} thay đổi, chờ admin duyệt`);
+          }
         }
-      } else {
-        const res = await submitMany.mutateAsync({ items, silent: true });
-        if (res.appliedIds.length) {
-          showUndoToast({ message: undoMessage(res.appliedIds.length), onUndo: () => rollbackIds(res.appliedIds) });
-        }
-        if (res.applied < res.total) {
-          toast.success(`Đã gửi ${res.total - res.applied} thay đổi, chờ admin duyệt`);
-        }
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Không lưu được thay đổi");
       }
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Không lưu được thay đổi");
-    }
-  }, [submit, submitMany, rollbackIds]);
+    },
+    [submit, submitMany, rollbackIds],
+  );
 
   // Gửi gán tài sản vào hệ thống đích.
-  const doAssign = useCallback((devs: DbDevice[], htId: string, htLabel: string) => {
-    if (!devs.length) return;
-    void applyWithUndo(
-      devs.map((d) => ({
-        loai: "move_device" as const,
-        he_thong_id: "",
-        mo_ta: `Gán tài sản "${d.ten}" vào hệ thống ${htLabel}`,
-        payload: { device_ma: d.ma_thiet_bi, to_ht_id: htId },
-      })),
-      (n) => `Đã gán ${n} tài sản vào ${htLabel}`,
-    );
-  }, [applyWithUndo]);
+  const doAssign = useCallback(
+    (devs: DbDevice[], htId: string, htLabel: string) => {
+      if (!devs.length) return;
+      void applyWithUndo(
+        devs.map((d) => ({
+          loai: "move_device" as const,
+          he_thong_id: "",
+          mo_ta: `Gán tài sản "${d.ten}" vào hệ thống ${htLabel}`,
+          payload: { device_ma: d.ma_thiet_bi, to_ht_id: htId },
+        })),
+        (n) => `Đã gán ${n} tài sản vào ${htLabel}`,
+      );
+    },
+    [applyWithUndo],
+  );
 
   // Gửi gỡ tài sản khỏi hệ thống (trở thành độc lập).
-  const doRemove = useCallback((devs: DbDevice[]) => {
-    const inSystem = devs.filter((d) => d._htId);
-    if (!inSystem.length) { toast.error("Không có tài sản nào đang thuộc hệ thống để gỡ"); return; }
-    void applyWithUndo(
-      inSystem.map((d) => ({
-        loai: "move_device" as const,
-        he_thong_id: "",
-        mo_ta: `Gỡ tài sản "${d.ten}" khỏi hệ thống (thành độc lập)`,
-        payload: { device_ma: d.ma_thiet_bi, detach: true },
-      })),
-      (n) => `Đã gỡ ${n} tài sản khỏi hệ thống`,
-    );
-  }, [applyWithUndo]);
+  const doRemove = useCallback(
+    (devs: DbDevice[]) => {
+      const inSystem = devs.filter((d) => d._htId);
+      if (!inSystem.length) {
+        toast.error("Không có tài sản nào đang thuộc hệ thống để gỡ");
+        return;
+      }
+      void applyWithUndo(
+        inSystem.map((d) => ({
+          loai: "move_device" as const,
+          he_thong_id: "",
+          mo_ta: `Gỡ tài sản "${d.ten}" khỏi hệ thống (thành độc lập)`,
+          payload: { device_ma: d.ma_thiet_bi, detach: true },
+        })),
+        (n) => `Đã gỡ ${n} tài sản khỏi hệ thống`,
+      );
+    },
+    [applyWithUndo],
+  );
 
-
-  const columns = useMemo<StdColumn<DbDevice>[]>(() => [
-    // ---- Nhóm Định danh (Gộp SN, Bravo, P/N) ----
-    {
-      key: "tb", header: "Tài sản", type: "id", group: "Định danh", width: 240, sticky: true,
-      priority: "primary" as const,
-      value: (d) => tbName(d),
-      render: (d) => (
-        <div className="flex items-center gap-2">
-          <HardDrive className="h-4 w-4 shrink-0 text-muted-foreground" />
-          <div className="min-w-0">
-            <div className="truncate font-medium">{tbName(d)}</div>
-            <div className="flex items-center gap-2">
-              <code className="text-[10px] text-muted-foreground">{d.ma_thiet_bi}</code>
-              {d.serial && <span className="text-[10px] text-muted-foreground/60">SN: {d.serial}</span>}
-              {d._maBravo && <span className="text-[10px] text-muted-foreground/60">B: {d._maBravo}</span>}
+  const columns = useMemo<StdColumn<DbDevice>[]>(
+    () => [
+      // ---- Nhóm Định danh (Gộp SN, Bravo, P/N) ----
+      {
+        key: "tb",
+        header: "Tài sản",
+        type: "id",
+        group: "Định danh",
+        width: 240,
+        sticky: true,
+        priority: "primary" as const,
+        value: (d) => tbName(d),
+        render: (d) => (
+          <div className="flex items-center gap-2">
+            <HardDrive className="h-4 w-4 shrink-0 text-muted-foreground" />
+            <div className="min-w-0">
+              <div className="truncate font-medium">{tbName(d)}</div>
+              <div className="flex items-center gap-2">
+                <code className="text-[10px] text-muted-foreground">{d.ma_thiet_bi}</code>
+                {d.serial && (
+                  <span className="text-[10px] text-muted-foreground/60">SN: {d.serial}</span>
+                )}
+                {d._maBravo && (
+                  <span className="text-[10px] text-muted-foreground/60">B: {d._maBravo}</span>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      ),
-    },
-    { key: "pn", header: "P/N", group: "Định danh", type: "longtext", width: 120, value: (d) => d.p_n, priority: "detail" as const, defaultHidden: true },
-    
-    // ---- Nhóm Mẫu & Loại (Gộp Chủng loại) ----
-    {
-      key: "mau", header: "Mẫu & Loại", group: "Phân loại", type: "taxonomy", width: 200,
-      priority: "secondary" as const,
-      value: (d) => `${d._modelTen || ""} ${d._loaiTbTen || ""}`,
-      render: (d) => (
-        <div className="space-y-1">
-          {d._modelTen && (
-            <CenterHoverCard
-              openDelay={250} closeDelay={100} contentClassName="p-0"
-              trigger={<span className="block cursor-help truncate text-[13px] underline decoration-dotted underline-offset-2">{d._modelTen}</span>}
-            >
-              <ModelHoverContent d={d} />
-            </CenterHoverCard>
-          )}
-          {d._loaiTbTen && <MauChip ten={d._loaiTbTen} mau={loaiMauByTen.get(d._loaiTbTen) ?? null} className="scale-90 origin-left" />}
-        </div>
-      ),
-    },
-    {
-      key: "dacTinh", header: "Nhãn tài sản", group: "Phân loại", width: 200,
-      priority: "detail" as const,
-      sortValue: (d) => (tagsByDevice.get(d.id) ?? []).length,
-      value: (d) => (tagsByDevice.get(d.id) ?? []).map((tid) => dacTinhById.get(tid)?.ma).filter(Boolean).join(" "),
-      render: (d) => {
-        const ids = tagsByDevice.get(d.id) ?? [];
-        if (!ids.length) return <span className="text-muted-foreground">—</span>;
-        const items = ids.map(id => dacTinhById.get(id)).filter(Boolean) as DacTinh[];
-        const sorted = sortDacTinh(items);
-        return (
-          <div className="flex flex-wrap gap-1" onClick={(e) => e.stopPropagation()}>
-            {sorted.map((t) => (
-              <button key={t.ma} type="button" onClick={() => setTagSelected(prev => prev.includes(t.ma) ? prev.filter(x => x !== t.ma) : [...prev, t.ma])}>
-                <MauChip ten={t.ten} mau={t.mau ?? null} className={cn("scale-90 origin-left", tagSelected.includes(t.ma) && "ring-1 ring-primary")} />
-              </button>
-            ))}
-          </div>
-        );
+        ),
       },
-    },
+      {
+        key: "pn",
+        header: "P/N",
+        group: "Định danh",
+        type: "longtext",
+        width: 120,
+        value: (d) => d.p_n,
+        priority: "detail" as const,
+        defaultHidden: true,
+      },
 
-    // ---- Nhóm Không gian (Hệ thống + Vị trí) ----
-    {
-      key: "ht", header: "Hệ thống & Vị trí", group: "Không gian", width: 220,
-      priority: "secondary" as const,
-      value: (d) => `${d._htId ? htName(d._htId, d._htTen) : "Độc lập"} ${d._viTriTen || d.vi_tri || ""}`,
-      render: (d) => (
-        <div className="space-y-0.5">
-          <div className="flex items-center gap-1">
-            {d._htId ? (
-              <span className="truncate font-medium text-[13px]">{htName(d._htId, d._htTen)}</span>
-            ) : (
-              <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 px-1 py-0.5 text-[10px] font-medium text-amber-600">
-                <PackageOpen className="h-3 w-3" /> Độc lập
-              </span>
+      // ---- Nhóm Mẫu & Loại (Gộp Chủng loại) ----
+      {
+        key: "mau",
+        header: "Mẫu & Loại",
+        group: "Phân loại",
+        type: "taxonomy",
+        width: 200,
+        priority: "secondary" as const,
+        value: (d) => `${d._modelTen || ""} ${d._loaiTbTen || ""}`,
+        render: (d) => (
+          <div className="space-y-1">
+            {d._modelTen && (
+              <CenterHoverCard
+                openDelay={250}
+                closeDelay={100}
+                contentClassName="p-0"
+                trigger={
+                  <span className="block cursor-help truncate text-[13px] underline decoration-dotted underline-offset-2">
+                    {d._modelTen}
+                  </span>
+                }
+              >
+                <ModelHoverContent d={d} />
+              </CenterHoverCard>
+            )}
+            {d._loaiTbTen && (
+              <MauChip
+                ten={d._loaiTbTen}
+                mau={loaiMauByTen.get(d._loaiTbTen) ?? null}
+                className="scale-90 origin-left"
+              />
             )}
           </div>
-          {(d._viTriTen || d.vi_tri) && (
-            <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
-              <MapPin className="h-3 w-3" />
-              <span className="truncate">{d._viTriTen || d.vi_tri}</span>
+        ),
+      },
+      {
+        key: "dacTinh",
+        header: "Nhãn tài sản",
+        group: "Phân loại",
+        width: 200,
+        priority: "detail" as const,
+        sortValue: (d) => (tagsByDevice.get(d.id) ?? []).length,
+        value: (d) =>
+          (tagsByDevice.get(d.id) ?? [])
+            .map((tid) => dacTinhById.get(tid)?.ma)
+            .filter(Boolean)
+            .join(" "),
+        render: (d) => {
+          const ids = tagsByDevice.get(d.id) ?? [];
+          if (!ids.length) return <span className="text-muted-foreground">—</span>;
+          const items = ids.map((id) => dacTinhById.get(id)).filter(Boolean) as DacTinh[];
+          const sorted = sortDacTinh(items);
+          return (
+            <div className="flex flex-wrap gap-1" onClick={(e) => e.stopPropagation()}>
+              {sorted.map((t) => (
+                <button
+                  key={t.ma}
+                  type="button"
+                  onClick={() =>
+                    setTagSelected((prev) =>
+                      prev.includes(t.ma) ? prev.filter((x) => x !== t.ma) : [...prev, t.ma],
+                    )
+                  }
+                >
+                  <MauChip
+                    ten={t.ten}
+                    mau={t.mau ?? null}
+                    className={cn(
+                      "scale-90 origin-left",
+                      tagSelected.includes(t.ma) && "ring-1 ring-primary",
+                    )}
+                  />
+                </button>
+              ))}
             </div>
-          )}
-        </div>
-      ),
-    },
-    { key: "dv", header: "Đơn vị", group: "Không gian", type: "taxonomy", width: 100, priority: "detail" as const, value: (d) => d.don_vi },
-    { key: "noiql", header: "Nơi QL", group: "Không gian", type: "longtext", width: 120, priority: "detail" as const, value: (d) => d._noiQuanLy, defaultHidden: true },
+          );
+        },
+      },
 
-    // ---- Trạng thái ----
-    { key: "tt", header: "Trạng thái", group: "Trạng thái", type: "status", width: 120, priority: "primary" as const, value: (d) => d.trang_thai },
-    { key: "nguoigiu", header: "Người giữ", group: "Trạng thái", type: "user", width: 140, priority: "detail" as const, value: (d) => d._nguoiGiu, defaultHidden: true },
+      // ---- Nhóm Không gian (Hệ thống + Vị trí) ----
+      {
+        key: "ht",
+        header: "Hệ thống & Vị trí",
+        group: "Không gian",
+        width: 220,
+        priority: "secondary" as const,
+        value: (d) =>
+          `${d._htId ? htName(d._htId, d._htTen) : "Độc lập"} ${d._viTriTen || d.vi_tri || ""}`,
+        render: (d) => (
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-1">
+              {d._htId ? (
+                <span className="truncate font-medium text-[13px]">
+                  {htName(d._htId, d._htTen)}
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 px-1 py-0.5 text-[10px] font-medium text-amber-600">
+                  <PackageOpen className="h-3 w-3" /> Độc lập
+                </span>
+              )}
+            </div>
+            {(d._viTriTen || d.vi_tri) && (
+              <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                <MapPin className="h-3 w-3" />
+                <span className="truncate">{d._viTriTen || d.vi_tri}</span>
+              </div>
+            )}
+          </div>
+        ),
+      },
+      {
+        key: "dv",
+        header: "Đơn vị",
+        group: "Không gian",
+        type: "taxonomy",
+        width: 100,
+        priority: "detail" as const,
+        value: (d) => d.don_vi,
+      },
+      {
+        key: "noiql",
+        header: "Nơi QL",
+        group: "Không gian",
+        type: "longtext",
+        width: 120,
+        priority: "detail" as const,
+        value: (d) => d._noiQuanLy,
+        defaultHidden: true,
+      },
 
-    // ---- Vòng đời ----
-    {
-      key: "tuoitho", header: "Sức khoẻ", group: "Vòng đời", type: "percent", width: 100,
-      priority: "secondary" as const,
-      value: (d) => d._tyLeTuoiTho,
-      sortValue: (d) => d._tyLeTuoiTho ?? -1,
+      // ---- Trạng thái ----
+      {
+        key: "tt",
+        header: "Trạng thái",
+        group: "Trạng thái",
+        type: "status",
+        width: 120,
+        priority: "primary" as const,
+        value: (d) => d.trang_thai,
+      },
+      {
+        key: "nguoigiu",
+        header: "Người giữ",
+        group: "Trạng thái",
+        type: "user",
+        width: 140,
+        priority: "detail" as const,
+        value: (d) => d._nguoiGiu,
+        defaultHidden: true,
+      },
 
-      render: (d) => {
-        const pct = d._tyLeTuoiTho;
-        if (pct == null) return <span className="text-muted-foreground">—</span>;
-        return <Progress value={pct} className={cn("h-1.5", pct >= 90 ? "[&>div]:bg-red-500" : pct >= 70 ? "[&>div]:bg-amber-500" : "[&>div]:bg-emerald-500")} />;
-      }
-    },
-    { key: "ngaymua", header: "Ngày mua", group: "Vòng đời", type: "date", width: 110, value: (d) => d.ngay_mua, defaultHidden: true },
-    { key: "baohanh", header: "Hạn BH", group: "Vòng đời", type: "expiring", width: 110, value: (d) => d.han_bao_hanh, defaultHidden: true },
+      // ---- Vòng đời ----
+      {
+        key: "tuoitho",
+        header: "Sức khoẻ",
+        group: "Vòng đời",
+        type: "percent",
+        width: 100,
+        priority: "secondary" as const,
+        value: (d) => d._tyLeTuoiTho,
+        sortValue: (d) => d._tyLeTuoiTho ?? -1,
 
-    { key: "ghichu", header: "Ghi chú", group: "Ghi chú", type: "longtext", width: 200, value: (d) => d.ghi_chu, defaultHidden: true },
+        render: (d) => {
+          const pct = d._tyLeTuoiTho;
+          if (pct == null) return <span className="text-muted-foreground">—</span>;
+          return (
+            <Progress
+              value={pct}
+              className={cn(
+                "h-1.5",
+                pct >= 90
+                  ? "[&>div]:bg-red-500"
+                  : pct >= 70
+                    ? "[&>div]:bg-amber-500"
+                    : "[&>div]:bg-emerald-500",
+              )}
+            />
+          );
+        },
+      },
+      {
+        key: "ngaymua",
+        header: "Ngày mua",
+        group: "Vòng đời",
+        type: "date",
+        width: 110,
+        value: (d) => d.ngay_mua,
+        defaultHidden: true,
+      },
+      {
+        key: "baohanh",
+        header: "Hạn BH",
+        group: "Vòng đời",
+        type: "expiring",
+        width: 110,
+        value: (d) => d.han_bao_hanh,
+        defaultHidden: true,
+      },
 
-    ...(canManage ? [{
-      key: "actions", header: "", group: "Thao tác", type: "actions" as const, width: 140, align: "right" as const,
-      render: (d: DbDevice) => (
-        <div className="flex items-center justify-end gap-0.5" onClick={(e) => e.stopPropagation()}>
-          <Button size="icon" variant={ACTION_PATTERNS.ROW_ACTION} aria-label="Xem chi tiết thiết bị" className="h-7 w-7" onClick={() => openDetail(d)} title="Chi tiết"><Info className="h-3.5 w-3.5" /></Button>
-          <Button size="icon" variant={ACTION_PATTERNS.ROW_ACTION} aria-label="Chỉnh sửa thiết bị" className="h-7 w-7" onClick={() => openEdit(d)} title="Sửa"><Pencil className="h-3.5 w-3.5" /></Button>
-          <Button size="icon" variant={ACTION_PATTERNS.ROW_ACTION} aria-label="Gán thiết bị" className="h-7 w-7" onClick={() => setAssignTargets([d])} title="Gán"><PackagePlus className="h-3.5 w-3.5" /></Button>
-          <Button size="icon" variant={ACTION_PATTERNS.ROW_ACTION} aria-label="Gỡ thiết bị" className="h-7 w-7 text-amber-600" disabled={!d._htId} onClick={() => setRemoveTargets([d])} title="Gỡ"><PackageMinus className="h-3.5 w-3.5" /></Button>
-          {editOn && <Button size="icon" variant={ACTION_PATTERNS.ROW_ACTION} aria-label="Xoá thiết bị" className="h-7 w-7 text-destructive" onClick={() => { setDeleteTargets([d]); setDeleteKind("retire"); }} title="Xoá"><Trash2 className="h-3.5 w-3.5" /></Button>}
+      {
+        key: "ghichu",
+        header: "Ghi chú",
+        group: "Ghi chú",
+        type: "longtext",
+        width: 200,
+        value: (d) => d.ghi_chu,
+        defaultHidden: true,
+      },
 
-        </div>
-      ),
-    }] : []),
-  ], [nameOv, tbName, canManage, editOn, tagsByDevice, dacTinhById, tagSelected, openDetail, loaiMauByTen]);
+      ...(canManage
+        ? [
+            {
+              key: "actions",
+              header: "",
+              group: "Thao tác",
+              type: "actions" as const,
+              width: 140,
+              align: "right" as const,
+              render: (d: DbDevice) => (
+                <div
+                  className="flex items-center justify-end gap-0.5"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Button
+                    size="icon"
+                    variant={ACTION_PATTERNS.ROW_ACTION}
+                    aria-label="Xem chi tiết thiết bị"
+                    className="h-7 w-7"
+                    onClick={() => openDetail(d)}
+                    title="Chi tiết"
+                  >
+                    <Info className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant={ACTION_PATTERNS.ROW_ACTION}
+                    aria-label="Chỉnh sửa thiết bị"
+                    className="h-7 w-7"
+                    onClick={() => openEdit(d)}
+                    title="Sửa"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant={ACTION_PATTERNS.ROW_ACTION}
+                    aria-label="Gán thiết bị"
+                    className="h-7 w-7"
+                    onClick={() => setAssignTargets([d])}
+                    title="Gán"
+                  >
+                    <PackagePlus className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant={ACTION_PATTERNS.ROW_ACTION}
+                    aria-label="Gỡ thiết bị"
+                    className="h-7 w-7 text-amber-600"
+                    disabled={!d._htId}
+                    onClick={() => setRemoveTargets([d])}
+                    title="Gỡ"
+                  >
+                    <PackageMinus className="h-3.5 w-3.5" />
+                  </Button>
+                  {editOn && (
+                    <Button
+                      size="icon"
+                      variant={ACTION_PATTERNS.ROW_ACTION}
+                      aria-label="Xoá thiết bị"
+                      className="h-7 w-7 text-destructive"
+                      onClick={() => {
+                        setDeleteTargets([d]);
+                        setDeleteKind("retire");
+                      }}
+                      title="Xoá"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                </div>
+              ),
+            },
+          ]
+        : []),
+    ],
+    [
+      nameOv,
+      tbName,
+      canManage,
+      editOn,
+      tagsByDevice,
+      dacTinhById,
+      tagSelected,
+      openDetail,
+      loaiMauByTen,
+    ],
+  );
 
   // ---- Xuất .xlsx (theo bộ lọc hiện tại hoặc dòng đang chọn) ----
   // Ánh xạ khoá cột (giao diện) → trường CSDL + cách lấy giá trị, để file nạp lại được.
   // "ma_thiet_bi" LUÔN được xuất (khoá cập nhật) dù cột có ẩn hay không.
-  const EXPORT_MAP = useMemo<Record<string, { h: string; get: (d: DbDevice) => string }>>(() => ({
-    tb: { h: "ten_thiet_bi", get: (d) => tbName(d) },
-    serial: { h: "ma_serial", get: (d) => d.serial },
-    bravo: { h: "ma_tai_san_bravo", get: (d) => d._maBravo },
-    thanhphan: { h: "thanh_phan", get: (d) => d._thanhPhan },
-    mau: { h: "model", get: (d) => d._modelTen },
-    loai: { h: "loai_thiet_bi", get: (d) => d._loaiTbTen },
-    pn: { h: "p_n", get: (d) => d.p_n },
-    nsx: { h: "nha_san_xuat", get: (d) => d.nha_san_xuat },
-    ncc: { h: "nha_cung_cap", get: (d) => d.nha_cung_cap },
-    tt: { h: "trang_thai", get: (d) => d.trang_thai },
-    ht: { h: "he_thong", get: (d) => htMaById.get(d._htId) ?? "" },
-    dv: { h: "don_vi", get: (d) => d.don_vi },
-    vt: { h: "vi_tri", get: (d) => d._viTriTen || d.vi_tri },
-    noiql: { h: "noi_quan_ly", get: (d) => d._noiQuanLy },
-    phanloai: { h: "phan_loai", get: (d) => d._phanLoai },
-    namsx: { h: "nam_san_xuat", get: (d) => num(d._namSanXuat) },
-    namkt: { h: "nam_dua_vao_khai_thac", get: (d) => num(d._namKhaiThac) },
-    tuoitho: { h: "ty_le_tuoi_tho", get: (d) => num(d._tyLeTuoiTho) },
-    ngaymua: { h: "ngay_mua", get: (d) => d.ngay_mua },
-    baohanh: { h: "han_bao_hanh", get: (d) => d.han_bao_hanh },
-    ghichu: { h: "ghi_chu", get: (d) => d.ghi_chu ?? "" },
-  }), [tbName, htMaById]);
+  const EXPORT_MAP = useMemo<Record<string, { h: string; get: (d: DbDevice) => string }>>(
+    () => ({
+      tb: { h: "ten_thiet_bi", get: (d) => tbName(d) },
+      serial: { h: "ma_serial", get: (d) => d.serial },
+      bravo: { h: "ma_tai_san_bravo", get: (d) => d._maBravo },
+      thanhphan: { h: "thanh_phan", get: (d) => d._thanhPhan },
+      mau: { h: "model", get: (d) => d._modelTen },
+      loai: { h: "loai_thiet_bi", get: (d) => d._loaiTbTen },
+      pn: { h: "p_n", get: (d) => d.p_n },
+      nsx: { h: "nha_san_xuat", get: (d) => d.nha_san_xuat },
+      ncc: { h: "nha_cung_cap", get: (d) => d.nha_cung_cap },
+      tt: { h: "trang_thai", get: (d) => d.trang_thai },
+      ht: { h: "he_thong", get: (d) => htMaById.get(d._htId) ?? "" },
+      dv: { h: "don_vi", get: (d) => d.don_vi },
+      vt: { h: "vi_tri", get: (d) => d._viTriTen || d.vi_tri },
+      noiql: { h: "noi_quan_ly", get: (d) => d._noiQuanLy },
+      phanloai: { h: "phan_loai", get: (d) => d._phanLoai },
+      namsx: { h: "nam_san_xuat", get: (d) => num(d._namSanXuat) },
+      namkt: { h: "nam_dua_vao_khai_thac", get: (d) => num(d._namKhaiThac) },
+      tuoitho: { h: "ty_le_tuoi_tho", get: (d) => num(d._tyLeTuoiTho) },
+      ngaymua: { h: "ngay_mua", get: (d) => d.ngay_mua },
+      baohanh: { h: "han_bao_hanh", get: (d) => d.han_bao_hanh },
+      ghichu: { h: "ghi_chu", get: (d) => d.ghi_chu ?? "" },
+    }),
+    [tbName, htMaById],
+  );
 
   // Trường xuất khi KHÔNG có cài đặt cột (đầy đủ để đối chiếu).
-  const FULL_EXPORT_KEYS = useMemo(() => [
-    "tb", "ht", "dv", "tt", "mau", "loai", "serial", "pn", "bravo", "nsx", "ncc",
-    "vt", "namsx", "namkt", "tuoitho", "ngaymua", "baohanh", "phanloai", "noiql", "thanhphan", "ghichu",
-  ], []);
+  const FULL_EXPORT_KEYS = useMemo(
+    () => [
+      "tb",
+      "ht",
+      "dv",
+      "tt",
+      "mau",
+      "loai",
+      "serial",
+      "pn",
+      "bravo",
+      "nsx",
+      "ncc",
+      "vt",
+      "namsx",
+      "namkt",
+      "tuoitho",
+      "ngaymua",
+      "baohanh",
+      "phanloai",
+      "noiql",
+      "thanhphan",
+      "ghichu",
+    ],
+    [],
+  );
 
   /** Xuất theo cài đặt cột đang bật (đúng thứ tự). ma_thiet_bi luôn đứng đầu. */
-  const exportRows = useCallback(async (source: DbDevice[], visibleColumns?: StdColumn<DbDevice>[]) => {
-    if (!source.length) { toast.error("Không có tài sản nào để xuất"); return; }
-    // Lấy danh sách khoá cột theo cài đặt hiển thị; nếu không có thì dùng bộ đầy đủ.
-    const keys = (visibleColumns?.length ? visibleColumns.map((c) => c.key) : FULL_EXPORT_KEYS)
-      .filter((k) => EXPORT_MAP[k]);
-    const fields = [
-      { h: "ma_thiet_bi", get: (d: DbDevice) => d.ma_thiet_bi },
-      ...keys.map((k) => EXPORT_MAP[k]),
-    ];
-    const headers = fields.map((f) => f.h);
-    const rows = source.map((d) => fields.map((f) => f.get(d)));
-    setExporting(true);
-    try {
-      const { exportDeviceTemplateXlsx } = await import("@/lib/mirats/export-template");
-      await exportDeviceTemplateXlsx({
-        headers,
-        rows,
-        fileName: `danh-muc-thiet-bi-${new Date().toISOString().slice(0, 10)}.xlsx`,
-      });
-      toast.success(`Đã xuất ${rows.length} tài sản · ${headers.length} cột (theo cài đặt cột đang hiển thị). File có sheet ① Hướng dẫn, ② Nhập liệu (dropdown) và ③ Model.`);
-    } catch (e) {
-      toast.error("Không xuất được file: " + (e instanceof Error ? e.message : String(e)));
-    } finally {
-      setExporting(false);
-    }
-  }, [EXPORT_MAP, FULL_EXPORT_KEYS]);
+  const exportRows = useCallback(
+    async (source: DbDevice[], visibleColumns?: StdColumn<DbDevice>[]) => {
+      if (!source.length) {
+        toast.error("Không có tài sản nào để xuất");
+        return;
+      }
+      // Lấy danh sách khoá cột theo cài đặt hiển thị; nếu không có thì dùng bộ đầy đủ.
+      const keys = (
+        visibleColumns?.length ? visibleColumns.map((c) => c.key) : FULL_EXPORT_KEYS
+      ).filter((k) => EXPORT_MAP[k]);
+      const fields = [
+        { h: "ma_thiet_bi", get: (d: DbDevice) => d.ma_thiet_bi },
+        ...keys.map((k) => EXPORT_MAP[k]),
+      ];
+      const headers = fields.map((f) => f.h);
+      const rows = source.map((d) => fields.map((f) => f.get(d)));
+      setExporting(true);
+      try {
+        const { exportDeviceTemplateXlsx } = await import("@/lib/mirats/export-template");
+        await exportDeviceTemplateXlsx({
+          headers,
+          rows,
+          fileName: `danh-muc-thiet-bi-${new Date().toISOString().slice(0, 10)}.xlsx`,
+        });
+        toast.success(
+          `Đã xuất ${rows.length} tài sản · ${headers.length} cột (theo cài đặt cột đang hiển thị). File có sheet ① Hướng dẫn, ② Nhập liệu (dropdown) và ③ Model.`,
+        );
+      } catch (e) {
+        toast.error("Không xuất được file: " + (e instanceof Error ? e.message : String(e)));
+      } finally {
+        setExporting(false);
+      }
+    },
+    [EXPORT_MAP, FULL_EXPORT_KEYS],
+  );
 
   if (isLoading) {
     return (
@@ -749,21 +1089,55 @@ function DanhMucThietBiPage() {
     );
   }
   if (error) {
-    return <div className="p-8 text-center text-sm text-destructive">Không tải được dữ liệu tài sản.</div>;
+    return (
+      <div className="p-8 text-center text-sm text-destructive">
+        Không tải được dữ liệu tài sản.
+      </div>
+    );
   }
 
   // ---- KPI Stats & Click-to-filter ----
   const kpiStats = useMemo(() => {
     const total = devices.length;
-    const inService = devices.filter(d => d.trang_thai === "Đang sử dụng").length;
-    const warranty = devices.filter(d => d.han_bao_hanh && new Date(d.han_bao_hanh) > new Date()).length;
-    const lowLife = devices.filter(d => d._tyLeTuoiTho !== null && d._tyLeTuoiTho < 20).length;
-    
+    const inService = devices.filter((d) => d.trang_thai === "Đang sử dụng").length;
+    const warranty = devices.filter(
+      (d) => d.han_bao_hanh && new Date(d.han_bao_hanh) > new Date(),
+    ).length;
+    const lowLife = devices.filter((d) => d._tyLeTuoiTho !== null && d._tyLeTuoiTho < 20).length;
+
     return [
-      { id: "total", label: "Tổng tài sản", value: total, icon: LayoutGrid, color: "text-blue-600", bg: "bg-blue-50" },
-      { id: "active", label: "Đang khai thác", value: inService, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" },
-      { id: "warranty", label: "Còn bảo hành", value: warranty, icon: ShieldCheck, color: "text-indigo-600", bg: "bg-indigo-50" },
-      { id: "alert", label: "Sắp hết tuổi thọ", value: lowLife, icon: AlertTriangle, color: "text-amber-600", bg: "bg-amber-50" },
+      {
+        id: "total",
+        label: "Tổng tài sản",
+        value: total,
+        icon: LayoutGrid,
+        color: "text-blue-600",
+        bg: "bg-blue-50",
+      },
+      {
+        id: "active",
+        label: "Đang khai thác",
+        value: inService,
+        icon: CheckCircle2,
+        color: "text-emerald-600",
+        bg: "bg-emerald-50",
+      },
+      {
+        id: "warranty",
+        label: "Còn bảo hành",
+        value: warranty,
+        icon: ShieldCheck,
+        color: "text-indigo-600",
+        bg: "bg-indigo-50",
+      },
+      {
+        id: "alert",
+        label: "Sắp hết tuổi thọ",
+        value: lowLife,
+        icon: AlertTriangle,
+        color: "text-amber-600",
+        bg: "bg-amber-50",
+      },
     ];
   }, [devices]);
 
@@ -772,7 +1146,7 @@ function DanhMucThietBiPage() {
       {/* KPI Header */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {kpiStats.map((kpi) => (
-          <div 
+          <div
             key={kpi.id}
             className={cn(
               "group relative overflow-hidden rounded-xl border bg-card p-4 transition-all hover:shadow-md",
@@ -780,13 +1154,17 @@ function DanhMucThietBiPage() {
               kpi.id === "total" && "before:bg-blue-500",
               kpi.id === "active" && "before:bg-emerald-500",
               kpi.id === "warranty" && "before:bg-indigo-500",
-              kpi.id === "alert" && "before:bg-amber-500"
+              kpi.id === "alert" && "before:bg-amber-500",
             )}
           >
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{kpi.label}</p>
-                <h3 className="mt-1 text-2xl font-bold tracking-tight">{kpi.value.toLocaleString("vi-VN")}</h3>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {kpi.label}
+                </p>
+                <h3 className="mt-1 text-2xl font-bold tracking-tight">
+                  {kpi.value.toLocaleString("vi-VN")}
+                </h3>
               </div>
               <div className={cn("rounded-lg p-2.5", kpi.bg)}>
                 <kpi.icon className={cn("h-5 w-5", kpi.color)} />
@@ -809,28 +1187,34 @@ function DanhMucThietBiPage() {
         actions={
           canManage ? (
             <div className="flex items-center gap-2">
-              <div className={cn(
-                "flex items-center gap-2 rounded-md border px-2.5 py-1",
-                editMode ? "border-primary/40 bg-primary/5" : "border-border bg-muted/30",
-              )}>
-                <Settings2 className={cn("h-3.5 w-3.5", editMode ? "text-primary" : "text-muted-foreground")} />
+              <div
+                className={cn(
+                  "flex items-center gap-2 rounded-md border px-2.5 py-1",
+                  editMode ? "border-primary/40 bg-primary/5" : "border-border bg-muted/30",
+                )}
+              >
+                <Settings2
+                  className={cn("h-3.5 w-3.5", editMode ? "text-primary" : "text-muted-foreground")}
+                />
                 <Label htmlFor="edit-mode" className="cursor-pointer text-xs font-medium">
                   Chế độ chỉnh sửa
                 </Label>
                 <Switch id="edit-mode" checked={editMode} onCheckedChange={setEditMode} />
               </div>
               {editOn && (
-                <Button size="sm" variant={ACTION_PATTERNS.PRIMARY} className="h-9 gap-1.5" onClick={openCreate}>
+                <Button
+                  size="sm"
+                  variant={ACTION_PATTERNS.PRIMARY}
+                  className="h-9 gap-1.5"
+                  onClick={openCreate}
+                >
                   <Plus className="h-4 w-4" /> Thêm tài sản
                 </Button>
               )}
-
             </div>
           ) : null
         }
       />
-
-
 
       <Card>
         <CardContent className="p-3">
@@ -846,24 +1230,35 @@ function DanhMucThietBiPage() {
               />
             </div>
             <Select value={filterLoai} onValueChange={setFilterLoai}>
-              <SelectTrigger className="h-9 w-[190px]"><SelectValue placeholder="Chủng loại" /></SelectTrigger>
+              <SelectTrigger className="h-9 w-[190px]">
+                <SelectValue placeholder="Chủng loại" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tất cả loại</SelectItem>
-                {loaiOptions.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                {loaiOptions.map((l) => (
+                  <SelectItem key={l} value={l}>
+                    {l}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Select value={filterTt} onValueChange={setFilterTt}>
-              <SelectTrigger className="h-9 w-[180px]"><SelectValue placeholder="Trạng thái" /></SelectTrigger>
+              <SelectTrigger className="h-9 w-[180px]">
+                <SelectValue placeholder="Trạng thái" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Tất cả trạng thái</SelectItem>
-                {ttOptions.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                {ttOptions.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {t}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
-            <Select 
-              value={sp.compatibleSystem || "all"} 
+            <Select
+              value={sp.compatibleSystem || "all"}
               onValueChange={(v) => patchSearch({ compatibleSystem: v === "all" ? undefined : v })}
             >
-
               <SelectTrigger className="h-9 w-[220px]">
                 <ShieldCheck className="mr-2 h-4 w-4 text-emerald-600" />
                 <SelectValue placeholder="Vật tư tương thích hệ thống" />
@@ -871,7 +1266,9 @@ function DanhMucThietBiPage() {
               <SelectContent>
                 <SelectItem value="all">Tất cả (không lọc tương thích)</SelectItem>
                 {(taxo?.htList ?? []).map((h) => (
-                  <SelectItem key={h.id} value={h.id}>{htName(h.id, h.ten)}</SelectItem>
+                  <SelectItem key={h.id} value={h.id}>
+                    {htName(h.id, h.ten)}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -884,7 +1281,8 @@ function DanhMucThietBiPage() {
                   Nhãn tài sản
                   {tagSelected.length > 0 && (
                     <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px]">
-                      {tagMode === "any" ? "bất kỳ" : tagMode === "all" ? "đủ" : "trừ"} · {tagSelected.length}
+                      {tagMode === "any" ? "bất kỳ" : tagMode === "all" ? "đủ" : "trừ"} ·{" "}
+                      {tagSelected.length}
                     </Badge>
                   )}
                 </Button>
@@ -893,7 +1291,9 @@ function DanhMucThietBiPage() {
                 <div className="flex items-center justify-between gap-2 border-b px-3 py-2">
                   <span className="text-xs font-semibold">Chế độ</span>
                   <Select value={tagMode} onValueChange={(v) => setTagMode(v as CheDoLoc)}>
-                    <SelectTrigger className="h-7 w-[150px] text-xs"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="h-7 w-[150px] text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="any">Có bất kỳ (any)</SelectItem>
                       <SelectItem value="all">Có tất cả (all)</SelectItem>
@@ -907,27 +1307,43 @@ function DanhMucThietBiPage() {
                       const id = t.id;
                       const checked = tagSelected.includes(id);
                       return (
-                        <label key={id} className="flex cursor-pointer items-center gap-2 rounded px-1.5 py-1 hover:bg-muted/50">
+                        <label
+                          key={id}
+                          className="flex cursor-pointer items-center gap-2 rounded px-1.5 py-1 hover:bg-muted/50"
+                        >
                           <Checkbox
                             checked={checked}
                             onCheckedChange={(c) => {
-                              setTagSelected((prev) => c ? [...prev, id] : prev.filter((x) => x !== id));
+                              setTagSelected((prev) =>
+                                c ? [...prev, id] : prev.filter((x) => x !== id),
+                              );
                             }}
                           />
                           <span className="text-xs">{t.ten}</span>
-                          <span className="ml-auto font-mono text-[10px] text-muted-foreground">{t.ma}</span>
+                          <span className="ml-auto font-mono text-[10px] text-muted-foreground">
+                            {t.ma}
+                          </span>
                         </label>
                       );
                     })}
                   </div>
                   {!(dacTinhList ?? []).length && (
-                    <div className="p-4 text-center text-xs text-muted-foreground">Chưa có nhãn tài sản nào trong danh mục.</div>
+                    <div className="p-4 text-center text-xs text-muted-foreground">
+                      Chưa có nhãn tài sản nào trong danh mục.
+                    </div>
                   )}
                 </div>
                 {tagSelected.length > 0 && (
                   <div className="flex items-center justify-between border-t px-3 py-2">
-                    <span className="text-[11px] text-muted-foreground">Đã chọn {tagSelected.length}</span>
-                    <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => setTagSelected([])}>
+                    <span className="text-[11px] text-muted-foreground">
+                      Đã chọn {tagSelected.length}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs"
+                      onClick={() => setTagSelected([])}
+                    >
                       Bỏ chọn tất cả
                     </Button>
                   </div>
@@ -935,7 +1351,12 @@ function DanhMucThietBiPage() {
               </PopoverContent>
             </Popover>
             {hasActiveFilter && (
-              <Button variant="ghost" size="sm" className="h-9 gap-1.5 text-muted-foreground" onClick={clearFilters}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-9 gap-1.5 text-muted-foreground"
+                onClick={clearFilters}
+              >
                 <X className="h-3.5 w-3.5" /> Xoá lọc
               </Button>
             )}
@@ -944,7 +1365,9 @@ function DanhMucThietBiPage() {
             <div className="mb-2 flex items-start gap-1.5 rounded border border-dashed bg-muted/30 px-2 py-1.5 text-[11px] text-muted-foreground">
               <Info className="mt-0.5 h-3 w-3 shrink-0" />
               <span>
-                Nhãn tài sản là đa trị: khi <b>gom nhóm theo nhãn tài sản</b>, một tài sản có thể vào nhiều nhóm (nhân dòng) — hãy dùng <b>đếm distinct</b> theo mã tài sản; đếm theo tag có thể lớn hơn tổng tài sản.
+                Nhãn tài sản là đa trị: khi <b>gom nhóm theo nhãn tài sản</b>, một tài sản có thể
+                vào nhiều nhóm (nhân dòng) — hãy dùng <b>đếm distinct</b> theo mã tài sản; đếm theo
+                tag có thể lớn hơn tổng tài sản.
               </span>
             </div>
           )}
@@ -964,48 +1387,71 @@ function DanhMucThietBiPage() {
             toolbarLeft={
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <Switch id="only-standalone" checked={onlyStandalone} onCheckedChange={setOnlyStandalone} />
-                  <Label htmlFor="only-standalone" className="cursor-pointer text-sm">Chỉ tài sản độc lập</Label>
+                  <Switch
+                    id="only-standalone"
+                    checked={onlyStandalone}
+                    onCheckedChange={setOnlyStandalone}
+                  />
+                  <Label htmlFor="only-standalone" className="cursor-pointer text-sm">
+                    Chỉ tài sản độc lập
+                  </Label>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Switch id="show-retired" checked={showRetired} onCheckedChange={setShowRetired} />
-                  <Label htmlFor="show-retired" className="cursor-pointer text-sm">Kể cả đã nghỉ khai thác</Label>
+                  <Switch
+                    id="show-retired"
+                    checked={showRetired}
+                    onCheckedChange={setShowRetired}
+                  />
+                  <Label htmlFor="show-retired" className="cursor-pointer text-sm">
+                    Kể cả đã nghỉ khai thác
+                  </Label>
                 </div>
               </div>
             }
             toolbarRight={({ filteredRows, visibleColumns }) => (
               <div className="flex items-center gap-2">
                 <Button
-                  variant={ACTION_PATTERNS.UTILITY} size="sm" className="h-8 gap-1.5"
+                  variant={ACTION_PATTERNS.UTILITY}
+                  size="sm"
+                  className="h-8 gap-1.5"
                   onClick={() => setHistoryOpen(true)}
                   title="Xem lịch sử gán / chuyển / gỡ tài sản khỏi hệ thống"
                 >
                   <History className="h-3.5 w-3.5" /> Lịch sử
                 </Button>
                 <Button
-                  variant={ACTION_PATTERNS.UTILITY} size="sm" className="h-8 gap-1.5"
+                  variant={ACTION_PATTERNS.UTILITY}
+                  size="sm"
+                  className="h-8 gap-1.5"
                   disabled={exporting || filteredRows.length === 0}
                   onClick={() => exportRows(filteredRows, visibleColumns)}
                   title="Xuất các tài sản đang hiển thị theo bộ lọc & cài đặt cột hiện tại"
                 >
-                  {exporting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+                  {exporting ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Download className="h-3.5 w-3.5" />
+                  )}
                   Xuất .xlsx
                 </Button>
               </div>
-
             )}
             bulkActions={({ selectedRows, visibleColumns, clear }) => (
               <div className="flex flex-wrap items-center gap-2">
                 {canManage && (
                   <>
                     <Button
-                      size="sm" variant={ACTION_PATTERNS.BULK_ACTION} className="h-8 gap-1.5"
+                      size="sm"
+                      variant={ACTION_PATTERNS.BULK_ACTION}
+                      className="h-8 gap-1.5"
                       onClick={() => setAssignTargets(selectedRows)}
                     >
                       <PackagePlus className="h-3.5 w-3.5" /> Gán vào hệ thống
                     </Button>
                     <Button
-                      size="sm" variant={ACTION_PATTERNS.BULK_ACTION} className="h-8 gap-1.5 text-amber-600"
+                      size="sm"
+                      variant={ACTION_PATTERNS.BULK_ACTION}
+                      className="h-8 gap-1.5 text-amber-600"
                       disabled={!selectedRows.some((d) => d._htId)}
                       onClick={() => setRemoveTargets(selectedRows)}
                     >
@@ -1013,9 +1459,13 @@ function DanhMucThietBiPage() {
                     </Button>
                     {editOn && (
                       <Button
-                        size="sm" variant={ACTION_PATTERNS.BULK_ACTION}
+                        size="sm"
+                        variant={ACTION_PATTERNS.BULK_ACTION}
                         className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                        onClick={() => { setDeleteTargets(selectedRows); setDeleteKind("retire"); }}
+                        onClick={() => {
+                          setDeleteTargets(selectedRows);
+                          setDeleteKind("retire");
+                        }}
                       >
                         <Trash2 className="h-3.5 w-3.5" /> Xoá / Ngừng khai thác
                       </Button>
@@ -1023,13 +1473,17 @@ function DanhMucThietBiPage() {
                   </>
                 )}
                 <Button
-                  size="sm" variant={ACTION_PATTERNS.BULK_ACTION} className="h-8 gap-1.5"
+                  size="sm"
+                  variant={ACTION_PATTERNS.BULK_ACTION}
+                  className="h-8 gap-1.5"
                   disabled={exporting}
-                  onClick={async () => { await exportRows(selectedRows, visibleColumns); clear(); }}
+                  onClick={async () => {
+                    await exportRows(selectedRows, visibleColumns);
+                    clear();
+                  }}
                 >
                   <Download className="h-3.5 w-3.5" /> Xuất {selectedRows.length} dòng
                 </Button>
-
               </div>
             )}
           />
@@ -1038,7 +1492,12 @@ function DanhMucThietBiPage() {
 
       {/* Ngăn chi tiết tài sản (bấm vào một dòng) — luôn lấy bản ghi mới nhất */}
       <ThietBiDetailDrawer
-        device={detailDevice ? (taxo?.devices ?? []).find((d) => d.ma_thiet_bi === detailDevice.ma_thiet_bi) ?? detailDevice : null}
+        device={
+          detailDevice
+            ? ((taxo?.devices ?? []).find((d) => d.ma_thiet_bi === detailDevice.ma_thiet_bi) ??
+              detailDevice)
+            : null
+        }
         open={detailOpen}
         onOpenChange={setDetailOpen}
         canManage={canManage}
@@ -1047,13 +1506,18 @@ function DanhMucThietBiPage() {
         systemNameById={systemNameById}
         onAssign={(d) => setAssignTargets([d])}
         onRemove={(d) => setRemoveTargets([d])}
-        onEdit={(d) => { setDetailOpen(false); openEdit(d); }}
+        onEdit={(d) => {
+          setDetailOpen(false);
+          openEdit(d);
+        }}
       />
 
       {/* Dialog Thêm mới / Sửa nhanh tài sản — CRUD ngay trong Danh mục. */}
       <ThietBiFormDialog
         open={formMode !== null}
-        onOpenChange={(o) => { if (!o) setFormMode(null); }}
+        onOpenChange={(o) => {
+          if (!o) setFormMode(null);
+        }}
         mode={formMode ?? "create"}
         device={formDevice}
       />
@@ -1089,8 +1553,11 @@ function DanhMucThietBiPage() {
                 const inSys = (removeTargets ?? []).filter((d) => d._htId);
                 return (
                   <>
-                    Gỡ <b>{inSys.length}</b> tài sản khỏi hệ thống hiện tại. Tài sản sẽ trở thành <b>độc lập</b> (vẫn giữ phân loại).
-                    {canManage && hasRole("admin") ? " Thay đổi áp dụng ngay và có thể hoàn tác." : " Thay đổi sẽ chờ admin duyệt."}
+                    Gỡ <b>{inSys.length}</b> tài sản khỏi hệ thống hiện tại. Tài sản sẽ trở thành{" "}
+                    <b>độc lập</b> (vẫn giữ phân loại).
+                    {canManage && hasRole("admin")
+                      ? " Thay đổi áp dụng ngay và có thể hoàn tác."
+                      : " Thay đổi sẽ chờ admin duyệt."}
                   </>
                 );
               })()}
@@ -1111,49 +1578,70 @@ function DanhMucThietBiPage() {
       </AlertDialog>
 
       {/* Xoá / Ngừng khai thác tài sản — chỉ mở khi bật Chế độ chỉnh sửa */}
-      <AlertDialog open={!!deleteTargets} onOpenChange={(o) => { if (!o) closeDelete(); }}>
+      <AlertDialog
+        open={!!deleteTargets}
+        onOpenChange={(o) => {
+          if (!o) closeDelete();
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Xoá / Ngừng khai thác tài sản?</AlertDialogTitle>
             <AlertDialogDescription>
-              Đang thao tác trên <b>{deleteTargets?.length ?? 0}</b> tài sản. Chọn cách xử lý phù hợp bên dưới.
+              Đang thao tác trên <b>{deleteTargets?.length ?? 0}</b> tài sản. Chọn cách xử lý phù
+              hợp bên dưới.
             </AlertDialogDescription>
           </AlertDialogHeader>
 
           <div className="space-y-3">
             <div className="grid gap-2">
-              <label className={cn(
-                "flex cursor-pointer gap-2 rounded-md border p-3 text-sm",
-                deleteKind === "retire" ? "border-primary/50 bg-primary/5" : "border-border",
-              )}>
+              <label
+                className={cn(
+                  "flex cursor-pointer gap-2 rounded-md border p-3 text-sm",
+                  deleteKind === "retire" ? "border-primary/50 bg-primary/5" : "border-border",
+                )}
+              >
                 <input
-                  type="radio" className="mt-0.5 h-4 w-4 accent-primary"
-                  checked={deleteKind === "retire"} onChange={() => setDeleteKind("retire")}
+                  type="radio"
+                  className="mt-0.5 h-4 w-4 accent-primary"
+                  checked={deleteKind === "retire"}
+                  onChange={() => setDeleteKind("retire")}
                 />
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5 font-medium">
                     <PackageX className="h-4 w-4 text-amber-600" /> Ngừng khai thác (khuyến nghị)
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Chuyển tài sản sang trạng thái ngừng/thanh lý. Toàn bộ lịch sử (sự cố, bảo dưỡng,
-                    hỏng hóc, bàn giao, kiểm kê) <b>được giữ nguyên</b> để tra cứu.
+                    Chuyển tài sản sang trạng thái ngừng/thanh lý. Toàn bộ lịch sử (sự cố, bảo
+                    dưỡng, hỏng hóc, bàn giao, kiểm kê) <b>được giữ nguyên</b> để tra cứu.
                   </p>
                 </div>
               </label>
 
-              <label className={cn(
-                "flex gap-2 rounded-md border p-3 text-sm",
-                !isAdmin ? "cursor-not-allowed opacity-50" : "cursor-pointer",
-                deleteKind === "purge" ? "border-destructive/50 bg-destructive/5" : "border-border",
-              )}>
+              <label
+                className={cn(
+                  "flex gap-2 rounded-md border p-3 text-sm",
+                  !isAdmin ? "cursor-not-allowed opacity-50" : "cursor-pointer",
+                  deleteKind === "purge"
+                    ? "border-destructive/50 bg-destructive/5"
+                    : "border-border",
+                )}
+              >
                 <input
-                  type="radio" className="mt-0.5 h-4 w-4 accent-destructive"
+                  type="radio"
+                  className="mt-0.5 h-4 w-4 accent-destructive"
                   disabled={!isAdmin}
-                  checked={deleteKind === "purge"} onChange={() => setDeleteKind("purge")}
+                  checked={deleteKind === "purge"}
+                  onChange={() => setDeleteKind("purge")}
                 />
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5 font-medium text-destructive">
-                    <Trash2 className="h-4 w-4" /> Xoá vĩnh viễn {!isAdmin && <span className="text-[10px] font-normal text-muted-foreground">(chỉ admin)</span>}
+                    <Trash2 className="h-4 w-4" /> Xoá vĩnh viễn{" "}
+                    {!isAdmin && (
+                      <span className="text-[10px] font-normal text-muted-foreground">
+                        (chỉ admin)
+                      </span>
+                    )}
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">
                     Chỉ dành cho bản ghi <b>nhập nhầm</b>. Hệ thống sẽ tự bỏ qua các tài sản đã có
@@ -1167,16 +1655,26 @@ function DanhMucThietBiPage() {
               <>
                 <div className="flex items-center gap-2 rounded-md border bg-muted/20 px-3 py-2">
                   <div className="flex-1 space-y-0.5">
-                    <Label htmlFor="thanh-ly-delete" className="text-xs font-medium cursor-pointer">Thanh lý / loại biên</Label>
-                    <p className="text-[10px] text-muted-foreground">Tài sản sẽ bị xóa khỏi danh sách đang dùng.</p>
+                    <Label htmlFor="thanh-ly-delete" className="text-xs font-medium cursor-pointer">
+                      Thanh lý / loại biên
+                    </Label>
+                    <p className="text-[10px] text-muted-foreground">
+                      Tài sản sẽ bị xóa khỏi danh sách đang dùng.
+                    </p>
                   </div>
-                  <Switch id="thanh-ly-delete" checked={deleteThanhLy} onCheckedChange={setDeleteThanhLy} />
+                  <Switch
+                    id="thanh-ly-delete"
+                    checked={deleteThanhLy}
+                    onCheckedChange={setDeleteThanhLy}
+                  />
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="ly-do-xoa">Lý do</Label>
                   <Textarea
-                    id="ly-do-xoa" rows={2}
-                    value={deleteReason} onChange={(e) => setDeleteReason(e.target.value)}
+                    id="ly-do-xoa"
+                    rows={2}
+                    value={deleteReason}
+                    onChange={(e) => setDeleteReason(e.target.value)}
                     placeholder="VD: hết niên hạn, hư hỏng không sửa được…"
                   />
                 </div>
@@ -1188,7 +1686,11 @@ function DanhMucThietBiPage() {
             <AlertDialogCancel disabled={deleteBusy}>Huỷ</AlertDialogCancel>
             <AlertDialogAction
               disabled={deleteBusy || !deleteTargets?.length}
-              className={deleteKind === "purge" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""}
+              className={
+                deleteKind === "purge"
+                  ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  : ""
+              }
               onClick={(e) => {
                 e.preventDefault();
                 const mas = (deleteTargets ?? []).map((d) => d.ma_thiet_bi);

@@ -15,7 +15,7 @@ export type ViewPreset = {
   label?: string; // Tương thích ngược
   moTa?: string;
   columns?: string[]; // Ưu tiên trường này
-  cot?: string[];     // Tương thích ngược
+  cot?: string[]; // Tương thích ngược
   visibleKeys?: string[]; // Tương thích ngược
   orderKeys?: string[];
   sapXep?: { key: string; dir: "asc" | "desc" };

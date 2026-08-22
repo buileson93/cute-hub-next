@@ -14,7 +14,6 @@ export type ExportCol<T> = {
   exportValue?: (row: T) => unknown;
 };
 
-
 export type ExportScope = "selected" | "filtered" | "page";
 
 export const SCOPE_LABEL: Record<ExportScope, string> = {
@@ -34,13 +33,11 @@ export function exportableCols<T>(cols: readonly ExportCol<T>[]): ExportCol<T>[]
   return cols.filter((c) => typeof (c.exportValue ?? c.value) === "function");
 }
 
-export function buildCsv<T>(
-  rows: readonly T[],
-  cols: readonly ExportCol<T>[],
-  sep = ";",
-): string {
+export function buildCsv<T>(rows: readonly T[], cols: readonly ExportCol<T>[], sep = ";"): string {
   const use = exportableCols(cols);
-  const header = use.map((c) => csvCell(c.exportHeader || c.header || c.label || "", sep)).join(sep);
+  const header = use
+    .map((c) => csvCell(c.exportHeader || c.header || c.label || "", sep))
+    .join(sep);
   const body = rows
     .map((r) => use.map((c) => csvCell((c.exportValue ?? c.value)!(r), sep)).join(sep))
     .join("\r\n");
@@ -48,13 +45,15 @@ export function buildCsv<T>(
 }
 
 export function slugTen(s: string): string {
-  return s
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/gi, "d")
-    .replace(/[^a-zA-Z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .toLowerCase() || "bang";
+  return (
+    s
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/gi, "d")
+      .replace(/[^a-zA-Z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .toLowerCase() || "bang"
+  );
 }
 
 export function taiFileCsv(tenFile: string, noiDung: string) {

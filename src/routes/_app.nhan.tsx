@@ -27,14 +27,23 @@ export const Route = createFileRoute("/_app/nhan")({
   head: () => ({
     meta: [
       { title: "In nhãn QR tài sản — MIRATS" },
-      { name: "description", content: "Lọc tài sản theo đơn vị/hệ thống/trạng thái và in lưới nhãn QR theo khổ giấy chuẩn." },
+      {
+        name: "description",
+        content:
+          "Lọc tài sản theo đơn vị/hệ thống/trạng thái và in lưới nhãn QR theo khổ giấy chuẩn.",
+      },
     ],
   }),
   component: NhanQrPage,
 });
 
 function noAccent(s: string): string {
-  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D").toLowerCase();
+  return s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase();
 }
 
 // ---------- Preset khổ tem ----------
@@ -57,11 +66,61 @@ interface PresetDef {
 }
 
 const PRESETS: PresetDef[] = [
-  { id: "a4-30", ten: "A4 · 30 nhãn (3×10)", moTa: "70×30 mm", wMm: 70, hMm: 30, cols: 3, pageSize: "A4 portrait", qrPx: 68, pageMargin: "10mm" },
-  { id: "a4-24", ten: "A4 · 24 nhãn (3×8)", moTa: "70×36 mm", wMm: 70, hMm: 36, cols: 3, pageSize: "A4 portrait", qrPx: 80, pageMargin: "10mm" },
-  { id: "a4-40", ten: "A4 · 40 nhãn (4×10)", moTa: "48×25 mm", wMm: 48, hMm: 25, cols: 4, pageSize: "A4 portrait", qrPx: 56, pageMargin: "10mm" },
-  { id: "thermal-40x20", ten: "Tem nhiệt 40×20", moTa: "1 nhãn / trang", wMm: 40, hMm: 20, cols: 1, pageSize: "40mm 20mm", qrPx: 48, pageMargin: "1mm" },
-  { id: "thermal-60x40", ten: "Tem nhiệt 60×40", moTa: "1 nhãn / trang", wMm: 60, hMm: 40, cols: 1, pageSize: "60mm 40mm", qrPx: 88, pageMargin: "2mm" },
+  {
+    id: "a4-30",
+    ten: "A4 · 30 nhãn (3×10)",
+    moTa: "70×30 mm",
+    wMm: 70,
+    hMm: 30,
+    cols: 3,
+    pageSize: "A4 portrait",
+    qrPx: 68,
+    pageMargin: "10mm",
+  },
+  {
+    id: "a4-24",
+    ten: "A4 · 24 nhãn (3×8)",
+    moTa: "70×36 mm",
+    wMm: 70,
+    hMm: 36,
+    cols: 3,
+    pageSize: "A4 portrait",
+    qrPx: 80,
+    pageMargin: "10mm",
+  },
+  {
+    id: "a4-40",
+    ten: "A4 · 40 nhãn (4×10)",
+    moTa: "48×25 mm",
+    wMm: 48,
+    hMm: 25,
+    cols: 4,
+    pageSize: "A4 portrait",
+    qrPx: 56,
+    pageMargin: "10mm",
+  },
+  {
+    id: "thermal-40x20",
+    ten: "Tem nhiệt 40×20",
+    moTa: "1 nhãn / trang",
+    wMm: 40,
+    hMm: 20,
+    cols: 1,
+    pageSize: "40mm 20mm",
+    qrPx: 48,
+    pageMargin: "1mm",
+  },
+  {
+    id: "thermal-60x40",
+    ten: "Tem nhiệt 60×40",
+    moTa: "1 nhãn / trang",
+    wMm: 60,
+    hMm: 40,
+    cols: 1,
+    pageSize: "60mm 40mm",
+    qrPx: 88,
+    pageMargin: "2mm",
+  },
 ];
 
 function NhanQrPage() {
@@ -117,7 +176,8 @@ function NhanQrPage() {
       if (trangThai !== "__all__" && t.trang_thai !== trangThai) return false;
       if (loaiTB !== "__all__" && t.loai !== loaiTB) return false;
       if (viTriMa !== "__all__" && t.vi_tri !== viTriMa) return false;
-      if (key && !noAccent(`${t.ma_thiet_bi} ${t.ten} ${t.serial ?? ""}`).includes(key)) return false;
+      if (key && !noAccent(`${t.ma_thiet_bi} ${t.ten} ${t.serial ?? ""}`).includes(key))
+        return false;
       return true;
     });
   }, [thietBi, q, donViMa, heThongMa, nhomHT, trangThai, loaiTB, viTriMa]);
@@ -130,12 +190,36 @@ function NhanQrPage() {
   );
 
   const activeFilters: { key: string; label: string; clear: () => void }[] = [
-    donViMa !== "__all__" && { key: "dv", label: `Đơn vị: ${donViTen(donViMa)}`, clear: () => setDonViMa("__all__") },
-    heThongMa !== "__all__" && { key: "ht", label: `Hệ thống: ${heThongTen(heThongMa)}`, clear: () => setHeThongMa("__all__") },
-    nhomHT !== "__all__" && { key: "nht", label: `Nhóm HT: ${nhomHT}`, clear: () => setNhomHT("__all__") },
-    trangThai !== "__all__" && { key: "tt", label: `Trạng thái: ${trangThai}`, clear: () => setTrangThai("__all__") },
-    loaiTB !== "__all__" && { key: "lo", label: `Loại: ${loaiTB}`, clear: () => setLoaiTB("__all__") },
-    viTriMa !== "__all__" && { key: "vt", label: `Vị trí: ${viTriTen(viTriMa)}`, clear: () => setViTriMa("__all__") },
+    donViMa !== "__all__" && {
+      key: "dv",
+      label: `Đơn vị: ${donViTen(donViMa)}`,
+      clear: () => setDonViMa("__all__"),
+    },
+    heThongMa !== "__all__" && {
+      key: "ht",
+      label: `Hệ thống: ${heThongTen(heThongMa)}`,
+      clear: () => setHeThongMa("__all__"),
+    },
+    nhomHT !== "__all__" && {
+      key: "nht",
+      label: `Nhóm HT: ${nhomHT}`,
+      clear: () => setNhomHT("__all__"),
+    },
+    trangThai !== "__all__" && {
+      key: "tt",
+      label: `Trạng thái: ${trangThai}`,
+      clear: () => setTrangThai("__all__"),
+    },
+    loaiTB !== "__all__" && {
+      key: "lo",
+      label: `Loại: ${loaiTB}`,
+      clear: () => setLoaiTB("__all__"),
+    },
+    viTriMa !== "__all__" && {
+      key: "vt",
+      label: `Vị trí: ${viTriTen(viTriMa)}`,
+      clear: () => setViTriMa("__all__"),
+    },
   ].filter(Boolean) as { key: string; label: string; clear: () => void }[];
 
   const resetFilters = () => {
@@ -209,7 +293,13 @@ function NhanQrPage() {
         <PageHeader
           icon={QrCode}
           title="In nhãn QR tài sản"
-          help={<>Lọc tài sản → chọn nhãn → chọn khổ tem → bấm <b>In nhãn</b>. QR chỉ chứa link dạng <code className="mx-1 rounded bg-secondary px-1 text-[11px]">/q/&lt;mã&gt;</code> (không rò rỉ tên/đơn vị/model).</>}
+          help={
+            <>
+              Lọc tài sản → chọn nhãn → chọn khổ tem → bấm <b>In nhãn</b>. QR chỉ chứa link dạng{" "}
+              <code className="mx-1 rounded bg-secondary px-1 text-[11px]">/q/&lt;mã&gt;</code>{" "}
+              (không rò rỉ tên/đơn vị/model).
+            </>
+          }
         />
 
         {/* Bộ lọc */}
@@ -223,30 +313,64 @@ function NhanQrPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <FilterSelect label="Đơn vị" value={donViMa} onChange={setDonViMa}
-              options={opts.donVi.map((ma) => ({ value: ma, label: donViTen(ma), hint: ma }))} />
-            <FilterSelect label="Nhóm hệ thống" value={nhomHT} onChange={setNhomHT}
-              options={opts.nhomHT.map((v) => ({ value: v, label: v }))} />
-            <FilterSelect label="Hệ thống" value={heThongMa} onChange={setHeThongMa}
-              options={opts.heThong.map((ma) => ({ value: ma, label: heThongTen(ma), hint: ma }))} />
-            <FilterSelect label="Trạng thái" value={trangThai} onChange={setTrangThai}
-              options={opts.trangThai.map((v) => ({ value: v, label: v }))} />
-            <FilterSelect label="Loại tài sản" value={loaiTB} onChange={setLoaiTB}
-              options={opts.loai.map((v) => ({ value: v, label: v }))} />
-            <FilterSelect label="Vị trí" value={viTriMa} onChange={setViTriMa}
-              options={opts.viTri.map((ma) => ({ value: ma, label: viTriTen(ma), hint: ma }))} />
+            <FilterSelect
+              label="Đơn vị"
+              value={donViMa}
+              onChange={setDonViMa}
+              options={opts.donVi.map((ma) => ({ value: ma, label: donViTen(ma), hint: ma }))}
+            />
+            <FilterSelect
+              label="Nhóm hệ thống"
+              value={nhomHT}
+              onChange={setNhomHT}
+              options={opts.nhomHT.map((v) => ({ value: v, label: v }))}
+            />
+            <FilterSelect
+              label="Hệ thống"
+              value={heThongMa}
+              onChange={setHeThongMa}
+              options={opts.heThong.map((ma) => ({ value: ma, label: heThongTen(ma), hint: ma }))}
+            />
+            <FilterSelect
+              label="Trạng thái"
+              value={trangThai}
+              onChange={setTrangThai}
+              options={opts.trangThai.map((v) => ({ value: v, label: v }))}
+            />
+            <FilterSelect
+              label="Loại tài sản"
+              value={loaiTB}
+              onChange={setLoaiTB}
+              options={opts.loai.map((v) => ({ value: v, label: v }))}
+            />
+            <FilterSelect
+              label="Vị trí"
+              value={viTriMa}
+              onChange={setViTriMa}
+              options={opts.viTri.map((ma) => ({ value: ma, label: viTriTen(ma), hint: ma }))}
+            />
             {activeFilters.length > 0 && (
               <div className="md:col-span-2 lg:col-span-3 xl:col-span-4 flex flex-wrap items-center gap-1.5">
                 <span className="text-xs text-muted-foreground">Đang lọc:</span>
                 {activeFilters.map((f) => (
                   <Badge key={f.key} variant="secondary" className="gap-1">
                     {f.label}
-                    <button type="button" onClick={f.clear} aria-label="Bỏ lọc" className="hover:text-destructive">
+                    <button
+                      type="button"
+                      onClick={f.clear}
+                      aria-label="Bỏ lọc"
+                      className="hover:text-destructive"
+                    >
                       <X className="h-3 w-3" />
                     </button>
                   </Badge>
                 ))}
-                <Button variant="ghost" size="sm" onClick={resetFilters} className="ml-auto h-7 px-2 text-xs">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={resetFilters}
+                  className="ml-auto h-7 px-2 text-xs"
+                >
                   Đặt lại
                 </Button>
               </div>
@@ -307,7 +431,8 @@ function NhanQrPage() {
                 <>
                   {filtered.length > shown.length && (
                     <p className="text-[11px] text-muted-foreground">
-                      Hiển thị {shown.length}/{filtered.length}. Thu hẹp bộ lọc để thấy đủ hoặc dùng “Chọn tất cả”.
+                      Hiển thị {shown.length}/{filtered.length}. Thu hẹp bộ lọc để thấy đủ hoặc dùng
+                      “Chọn tất cả”.
                     </p>
                   )}
                   <ScrollArea className="h-[52vh] rounded-md border">
@@ -322,10 +447,16 @@ function NhanQrPage() {
                                 on && "bg-primary/5",
                               )}
                             >
-                              <Checkbox checked={on} onCheckedChange={() => toggle(t.ma_thiet_bi)} className="mt-0.5" />
+                              <Checkbox
+                                checked={on}
+                                onCheckedChange={() => toggle(t.ma_thiet_bi)}
+                                className="mt-0.5"
+                              />
                               <div className="min-w-0 flex-1">
                                 <div className="truncate text-sm font-medium">{t.ten}</div>
-                                <div className="truncate font-mono text-[11px] text-muted-foreground">{t.ma_thiet_bi}</div>
+                                <div className="truncate font-mono text-[11px] text-muted-foreground">
+                                  {t.ma_thiet_bi}
+                                </div>
                               </div>
                             </label>
                           </li>
@@ -348,7 +479,11 @@ function NhanQrPage() {
             <CardHeader className="space-y-3 pb-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <CardTitle className="text-sm">Xem trước nhãn ({selectedDevices.length})</CardTitle>
-                <Button size="sm" onClick={() => window.print()} disabled={selectedDevices.length === 0}>
+                <Button
+                  size="sm"
+                  onClick={() => window.print()}
+                  disabled={selectedDevices.length === 0}
+                >
                   <Printer className="mr-1.5 h-4 w-4" /> In nhãn
                 </Button>
               </div>
@@ -356,7 +491,9 @@ function NhanQrPage() {
                 <div className="min-w-[220px] flex-1">
                   <Label className="mb-1 block text-xs text-muted-foreground">Khổ tem</Label>
                   <Select value={presetId} onValueChange={(v) => setPresetId(v as PresetId)}>
-                    <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="h-9">
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                       {PRESETS.map((p) => (
                         <SelectItem key={p.id} value={p.id}>
@@ -421,7 +558,10 @@ function NhanQrPage() {
 }
 
 function FilterSelect({
-  label, value, onChange, options,
+  label,
+  value,
+  onChange,
+  options,
 }: {
   label: string;
   value: string;
@@ -432,7 +572,9 @@ function FilterSelect({
     <div>
       <Label className="mb-1 block text-xs text-muted-foreground">{label}</Label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="h-9"><SelectValue placeholder={`Tất cả ${label.toLowerCase()}`} /></SelectTrigger>
+        <SelectTrigger className="h-9">
+          <SelectValue placeholder={`Tất cả ${label.toLowerCase()}`} />
+        </SelectTrigger>
         <SelectContent>
           <SelectItem value="__all__">Tất cả</SelectItem>
           {options.map((o) => (
@@ -450,7 +592,11 @@ function FilterSelect({
 }
 
 function LabelCard({
-  ma, ten, url, qrPx, showName,
+  ma,
+  ten,
+  url,
+  qrPx,
+  showName,
 }: {
   ma: string;
   ten: string;
@@ -468,8 +614,12 @@ function LabelCard({
         {showName && (
           <div className="line-clamp-2 text-[11px] font-semibold leading-tight">{tenRutGon}</div>
         )}
-        <div className={cn("truncate font-mono text-[11px] text-slate-800", showName && "mt-0.5")}>{ma}</div>
-        <div className="mt-0.5 text-[8px] font-medium tracking-wide text-slate-400">MIRATS · VATM</div>
+        <div className={cn("truncate font-mono text-[11px] text-slate-800", showName && "mt-0.5")}>
+          {ma}
+        </div>
+        <div className="mt-0.5 text-[8px] font-medium tracking-wide text-slate-400">
+          MIRATS · VATM
+        </div>
       </div>
     </div>
   );

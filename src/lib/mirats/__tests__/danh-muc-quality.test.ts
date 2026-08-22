@@ -56,7 +56,7 @@ describe("findNearDuplicates", () => {
   it("phát hiện exact-normalized", () => {
     const hits = findNearDuplicates(list, "Đài Kiểm Soát Phù Cát");
     expect(hits[0].reason).toBe("exact-normalized");
-    const ids = hits.map(h => h.id);
+    const ids = hits.map((h) => h.id);
     expect(ids).toContain("1");
     expect(ids).toContain("2");
   });
@@ -64,7 +64,7 @@ describe("findNearDuplicates", () => {
   it("phát hiện contains", () => {
     const hits = findNearDuplicates(list, "Đài Kiểm Soát Phù Cát Mở Rộng");
     // "dai kiem soat phu cat" nằm trong target → contains
-    expect(hits.some(h => h.reason === "contains")).toBe(true);
+    expect(hits.some((h) => h.reason === "contains")).toBe(true);
   });
 
   it("phát hiện levenshtein dưới ngưỡng distance ≤ 3", () => {
@@ -86,7 +86,7 @@ describe("findNearDuplicates", () => {
   it("không bắt VHF 118 với VHF 119 (dist=1 nhưng số khác)", () => {
     const hits = findNearDuplicates(list, "VHF 118.8");
     // Chỉ match chính nó (exact); không match 119.1
-    expect(hits.some(h => h.id === "5")).toBe(false);
+    expect(hits.some((h) => h.id === "5")).toBe(false);
   });
 
   it("bỏ qua active=false trừ khi includeInactive", () => {
@@ -102,7 +102,7 @@ describe("findNearDuplicates", () => {
       { id: "m2", ten: "R100", nha_san_xuat_id: "B" },
     ];
     const hits = findNearDuplicates(models, "R100", { scopeNhaSanXuatId: "A" });
-    expect(hits.map(h => h.id)).toEqual(["m1"]);
+    expect(hits.map((h) => h.id)).toEqual(["m1"]);
   });
 
   it("limit top N", () => {
@@ -136,7 +136,7 @@ describe("validateRequired", () => {
   it("thiếu trường → missing", () => {
     const res = validateRequired({ ma: "HT1", ten: "" }, schema);
     expect(res.ok).toBe(false);
-    expect(res.missing.map(m => m.field).sort()).toEqual([
+    expect(res.missing.map((m) => m.field).sort()).toEqual([
       "don_vi_id",
       "nhom_he_thong_id",
       "ten",
@@ -149,7 +149,7 @@ describe("validateRequired", () => {
       schema,
     );
     expect(res.ok).toBe(false);
-    expect(res.missing.map(m => m.field).sort()).toEqual(["don_vi_id", "nhom_he_thong_id"]);
+    expect(res.missing.map((m) => m.field).sort()).toEqual(["don_vi_id", "nhom_he_thong_id"]);
   });
 
   it("chuỗi toàn khoảng trắng bị coi là rỗng", () => {

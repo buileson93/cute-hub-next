@@ -6,8 +6,15 @@ import { ChungChiPanel } from "@/components/mirats/ChungChiPanel";
 import { DeviceDetailTabProps } from "./types";
 import { useSession } from "@/hooks/use-session";
 
-export default function TabHoSoPhapLy({ 
-  tb, ma, sysGpSo, sysName, sysGpHan, roles, canEdit, initialDocId
+export default function TabHoSoPhapLy({
+  tb,
+  ma,
+  sysGpSo,
+  sysName,
+  sysGpHan,
+  roles,
+  canEdit,
+  initialDocId,
 }: DeviceDetailTabProps & { roles?: any[] }) {
   const hasGp = Boolean(sysGpSo);
   const gpLabel = "Giấy phép khai thác";
@@ -19,7 +26,7 @@ export default function TabHoSoPhapLy({
       {/* Giấy phép khai thác */}
       <section>
         <h3 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60 flex items-center gap-2 px-1">
-          <ShieldCheck className="h-3.5 w-3.5 text-primary" /> 
+          <ShieldCheck className="h-3.5 w-3.5 text-primary" />
           Giấy phép & Chứng chỉ
         </h3>
         <div className="grid gap-4 md:grid-cols-2">
@@ -32,10 +39,18 @@ export default function TabHoSoPhapLy({
                 </div>
                 <div className="text-xs text-muted-foreground">
                   Hệ thống: <span className="font-medium text-foreground">{sysName}</span>
-                  {sysGpHan && <span> · Hạn: <span className="font-medium text-foreground">{sysGpHan}</span></span>}
+                  {sysGpHan && (
+                    <span>
+                      {" "}
+                      · Hạn: <span className="font-medium text-foreground">{sysGpHan}</span>
+                    </span>
+                  )}
                 </div>
               </div>
-              <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 shrink-0">
+              <Badge
+                variant="outline"
+                className="bg-emerald-50 text-emerald-700 border-emerald-200 shrink-0"
+              >
                 {gpLabel}
               </Badge>
             </div>
@@ -44,9 +59,13 @@ export default function TabHoSoPhapLy({
               Hệ thống chưa có giấy phép khai thác được ghi nhận.
             </div>
           )}
-          
+
           {/* Kiểm định / Hiệu chuẩn */}
-          <ChungChiPanel thietBiId={tb.id} cheDo={(tb as any).che_do_kd_hc} roles={effectiveRoles} />
+          <ChungChiPanel
+            thietBiId={tb.id}
+            cheDo={(tb as any).che_do_kd_hc}
+            roles={effectiveRoles}
+          />
         </div>
       </section>
 

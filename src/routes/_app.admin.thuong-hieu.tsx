@@ -78,12 +78,15 @@ function ThuongHieuContent() {
     setSaving(key);
     try {
       const dataUri = await fileToDataUri(file);
-      const { error } = await supabase
-        .from("app_cai_dat")
-        .upsert(
-          { khoa: key, gia_tri: dataUri, updated_by: user?.id ?? null, updated_at: new Date().toISOString() },
-          { onConflict: "khoa" },
-        );
+      const { error } = await supabase.from("app_cai_dat").upsert(
+        {
+          khoa: key,
+          gia_tri: dataUri,
+          updated_by: user?.id ?? null,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "khoa" },
+      );
       if (error) throw error;
       await qc.invalidateQueries({ queryKey: ["app-branding"] });
       toast.success("Đã cập nhật logo. Áp dụng ngay trên toàn hệ thống.");
@@ -116,9 +119,6 @@ function ThuongHieuContent() {
         help={<>Áp dụng cho thanh bên và trang đăng nhập.</>}
       />
 
-
-
-
       {isLoading ? (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="h-4 w-4 animate-spin" /> Đang tải…
@@ -126,15 +126,21 @@ function ThuongHieuContent() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {slots.map((s) => (
-            <LogoSlot key={s.key} slot={s} saving={saving === s.key} onUpload={upload} onReset={reset} />
+            <LogoSlot
+              key={s.key}
+              slot={s}
+              saving={saving === s.key}
+              onUpload={upload}
+              onReset={reset}
+            />
           ))}
         </div>
       )}
 
       <div className="flex items-start gap-2 rounded-md border bg-muted/40 p-3 text-xs text-muted-foreground">
         <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
-        Chỉ tài khoản quản trị mới thay đổi được logo. Logo lưu trực tiếp trong cơ sở dữ liệu và hiển thị đồng bộ ở
-        mọi tài sản ngay sau khi lưu (không cần đăng xuất).
+        Chỉ tài khoản quản trị mới thay đổi được logo. Logo lưu trực tiếp trong cơ sở dữ liệu và
+        hiển thị đồng bộ ở mọi tài sản ngay sau khi lưu (không cần đăng xuất).
       </div>
     </div>
   );
@@ -173,7 +179,11 @@ function LogoSlot({
       <CardContent className="space-y-3">
         <div className={cn("flex h-28 items-center justify-center rounded-md border p-4", slot.bg)}>
           {slot.preview ? (
-            <img src={slot.preview} alt={slot.title} className="max-h-full max-w-full object-contain" />
+            <img
+              src={slot.preview}
+              alt={slot.title}
+              className="max-h-full max-w-full object-contain"
+            />
           ) : (
             <span className="text-xs text-muted-foreground">Chưa có logo</span>
           )}
@@ -190,12 +200,27 @@ function LogoSlot({
           }}
         />
         <div className="flex items-center gap-2">
-          <Button size="sm" onClick={() => inputRef.current?.click()} disabled={saving} className="gap-1.5">
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageUp className="h-4 w-4" />}
+          <Button
+            size="sm"
+            onClick={() => inputRef.current?.click()}
+            disabled={saving}
+            className="gap-1.5"
+          >
+            {saving ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <ImageUp className="h-4 w-4" />
+            )}
             Tải logo lên
           </Button>
           {slot.hasCustom && (
-            <Button size="sm" variant="outline" onClick={() => onReset(slot.key)} disabled={saving} className="gap-1.5">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => onReset(slot.key)}
+              disabled={saving}
+              className="gap-1.5"
+            >
               <RotateCcw className="h-4 w-4" /> Mặc định
             </Button>
           )}

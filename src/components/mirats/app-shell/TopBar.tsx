@@ -12,7 +12,9 @@ import { useRealtimeStatus } from "@/hooks/use-realtime-status";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { cn } from "@/lib/utils";
 
-const PowerSearch = lazy(() => import("../search/PowerSearch").then(m => ({ default: m.PowerSearch })));
+const PowerSearch = lazy(() =>
+  import("../search/PowerSearch").then((m) => ({ default: m.PowerSearch })),
+);
 
 export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
   const [isMac, setIsMac] = useState(false);
@@ -34,7 +36,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
 
     window.addEventListener("mirats:open-command-palette", handleOpen);
     window.addEventListener("mirats:toggle-command-palette", handleToggle);
-    
+
     return () => {
       window.removeEventListener("mirats:open-command-palette", handleOpen);
       window.removeEventListener("mirats:toggle-command-palette", handleToggle);
@@ -45,7 +47,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
     <div className="flex h-full items-center justify-between gap-4 w-full">
       <div className="flex items-center gap-2 flex-1 min-w-0">
         {renderMobileMenu}
-        
+
         <div className="relative w-full sm:max-w-sm group" data-tour="search">
           <button
             id="powersearch-trigger"
@@ -56,9 +58,11 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
           >
             <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden pointer-events-none">
               <Search className="h-4 w-4 text-[#0074e2] shrink-0 transition-transform group-hover/search:scale-110" />
-              <span className="truncate text-left min-w-0 font-medium">Tìm tài sản, hệ thống, biên bản...</span>
+              <span className="truncate text-left min-w-0 font-medium">
+                Tìm tài sản, hệ thống, biên bản...
+              </span>
             </div>
-            
+
             <div className="hidden sm:flex items-center gap-1.5 rounded-md border border-[#0074e2]/20 bg-background/50 backdrop-blur-sm px-1.5 py-0.5 font-mono text-[9px] font-bold text-[#0074e2]/60 shrink-0 self-center ml-2">
               <CommandIcon className="h-2.5 w-2.5" />
               <span>K</span>
@@ -71,7 +75,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
         <RealtimeStatusIndicator />
         <CommandPaletteButton />
         <QrScanButton />
-        
+
         <div className="hidden md:block">
           <RecentPinnedRailButton />
         </div>
@@ -94,9 +98,17 @@ function RealtimeStatusIndicator() {
   const { status } = useRealtimeStatus();
 
   const config = {
-    connecting: { icon: Loader2, color: "text-muted-foreground animate-spin", label: "Đang kết nối realtime..." },
+    connecting: {
+      icon: Loader2,
+      color: "text-muted-foreground animate-spin",
+      label: "Đang kết nối realtime...",
+    },
     connected: { icon: Wifi, color: "text-emerald-500", label: "Realtime trực tuyến" },
-    disconnected: { icon: WifiOff, color: "text-orange-500", label: "Realtime ngoại tuyến (đang dùng fallback)" },
+    disconnected: {
+      icon: WifiOff,
+      color: "text-orange-500",
+      label: "Realtime ngoại tuyến (đang dùng fallback)",
+    },
     error: { icon: Activity, color: "text-destructive", label: "Lỗi kết nối Realtime" },
   }[status];
 

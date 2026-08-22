@@ -28,8 +28,12 @@ export function CustomFieldsView({ entity, attrs }: Props) {
       <div className="text-sm font-medium text-muted-foreground">Trường tuỳ biến</div>
       <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 text-sm">
         {rows.flatMap((r) => [
-          <dt key={`${r.key}-l`} className="text-muted-foreground">{r.nhan}</dt>,
-          <dd key={`${r.key}-v`} className="font-medium">{r.giaTri}</dd>,
+          <dt key={`${r.key}-l`} className="text-muted-foreground">
+            {r.nhan}
+          </dt>,
+          <dd key={`${r.key}-v`} className="font-medium">
+            {r.giaTri}
+          </dd>,
         ])}
       </dl>
     </div>

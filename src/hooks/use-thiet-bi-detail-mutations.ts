@@ -16,7 +16,19 @@ export function useThietBiDetailMutations() {
   };
 
   const renameEntity = useMutation({
-    mutationFn: async ({ kind, id, ten, draft, userRoles }: { kind: any, id: string, ten: string, draft?: boolean, userRoles: string[] }) => {
+    mutationFn: async ({
+      kind,
+      id,
+      ten,
+      draft,
+      userRoles,
+    }: {
+      kind: any;
+      id: string;
+      ten: string;
+      draft?: boolean;
+      userRoles: string[];
+    }) => {
       if (draft) {
         const { renameEntity: renameCore } = await import("@/lib/mirats/rename-entity");
         return renameCore({ kind, id, ten, draft: true });
@@ -26,14 +38,25 @@ export function useThietBiDetailMutations() {
     },
     onSuccess: (res) => {
       invalidate();
-      if (res && (res as any).mode === "proposed") toast.success("Đã tạo đề xuất đổi tên (chờ phê duyệt)");
+      if (res && (res as any).mode === "proposed")
+        toast.success("Đã tạo đề xuất đổi tên (chờ phê duyệt)");
       else toast.success("Đã đổi tên thành công");
     },
-    onError: (e: any) => toast.error(e.message)
+    onError: (e: any) => toast.error(e.message),
   });
 
   const saveCell = useMutation({
-    mutationFn: async ({ ma, col, value, userRoles }: { ma: string, col: string, value: any, userRoles: string[] }) => {
+    mutationFn: async ({
+      ma,
+      col,
+      value,
+      userRoles,
+    }: {
+      ma: string;
+      col: string;
+      value: any;
+      userRoles: string[];
+    }) => {
       const { saveEntityFieldSecurely } = await import("@/lib/mirats/ui/save-entity-securely");
       return saveEntityFieldSecurely({ kind: "tb", id: ma, field: col, value, userRoles });
     },
@@ -42,7 +65,7 @@ export function useThietBiDetailMutations() {
       if (res && res.mode === "proposed") toast.success("Đã tạo đề xuất cập nhật (chờ phê duyệt)");
       else toast.success("Đã lưu thành công");
     },
-    onError: (e: any) => toast.error(e.message)
+    onError: (e: any) => toast.error(e.message),
   });
 
   const deleteDevice = useMutation({
@@ -57,12 +80,12 @@ export function useThietBiDetailMutations() {
         toast.success("Đã xoá thành công");
       }
     },
-    onError: (e: any) => toast.error(e.message)
+    onError: (e: any) => toast.error(e.message),
   });
 
   return {
     renameEntity,
     saveCell,
-    deleteDevice
+    deleteDevice,
   };
 }

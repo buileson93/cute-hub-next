@@ -25,9 +25,7 @@ describe("bulk-actions — previewBulk", () => {
   });
 
   it("chuyển trạng thái sự cố: bỏ qua chuyển sai vòng đời", () => {
-    const rows: RowLike[] = [
-      { id: "x", trang_thai: "Đóng" },
-    ];
+    const rows: RowLike[] = [{ id: "x", trang_thai: "Đóng" }];
     const kq = previewBulk("su_co", rows, {
       kieu: "chuyen_trang_thai",
       giaTri: "Mới",
@@ -154,10 +152,7 @@ describe("bulk-actions — buildUndoPlan", () => {
       expect(p.args.p_nguon).toBe("ui_bulk_undo");
     }
     // Tổng số id trong plan = số dòng snapshot (audit đủ N dòng)
-    const totalIds = plan.reduce(
-      (s, p) => s + (p.args.p_ids as string[]).length,
-      0,
-    );
+    const totalIds = plan.reduce((s, p) => s + (p.args.p_ids as string[]).length, 0);
     expect(totalIds).toBe(snapshot.length);
 
     // Mỗi id được khôi phục ĐÚNG giá trị cũ của nó (không san bằng).

@@ -68,7 +68,6 @@ export function useKetNoiData() {
   return { ...q, ketNoi: q.data ?? [] };
 }
 
-
 /** Danh sách tài sản (uuid) cho ô chọn endpoint — RLS giới hạn theo quyền xem. */
 export function useDevicePickList() {
   const q = useQuery({

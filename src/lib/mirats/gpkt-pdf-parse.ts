@@ -41,7 +41,10 @@ export function linesFromItems(items: RawPdfItem[]): string {
     const parts = (rows.get(y) ?? []).sort((a, b) => a.x - b.x).map((p) => p.s);
     const merged: string[] = [];
     for (let i = 0; i < parts.length; i++) {
-      if (i === 0) { merged.push(parts[i]); continue; }
+      if (i === 0) {
+        merged.push(parts[i]);
+        continue;
+      }
       const prev = merged[merged.length - 1];
       const cur = parts[i];
       if (
@@ -60,13 +63,10 @@ export function linesFromItems(items: RawPdfItem[]): string {
   const joined: string[] = [];
   for (const line of lines) {
     const prev = joined[joined.length - 1];
-    const isHeading = /^\s*(?:\d{1,2}\.|Điều\s|CỘNG\s|CỤC\s|Nơi nhận|KT\.|Số\s*:|Căn\s)/i.test(line);
-    if (
-      prev &&
-      !isHeading &&
-      !/[.!?:;)"”\d]\s*$/.test(prev) &&
-      /^[a-zà-ỹ(]/i.test(line)
-    ) {
+    const isHeading = /^\s*(?:\d{1,2}\.|Điều\s|CỘNG\s|CỤC\s|Nơi nhận|KT\.|Số\s*:|Căn\s)/i.test(
+      line,
+    );
+    if (prev && !isHeading && !/[.!?:;)"”\d]\s*$/.test(prev) && /^[a-zà-ỹ(]/i.test(line)) {
       joined[joined.length - 1] = prev + " " + line;
     } else {
       joined.push(line);
@@ -81,12 +81,11 @@ export function linesFromItems(items: RawPdfItem[]): string {
  */
 export function normalizeWgs84(text: string): string {
   if (!text) return text;
-  const re = /(\d{1,3})\s*[°º]\s*(\d{1,2})\s*['\u2032]\s*(\d{1,2}(?:[.,]\d+)?)?\s*["\u2033]?\s*([NSEWnsew])\b/g;
+  const re =
+    /(\d{1,3})\s*[°º]\s*(\d{1,2})\s*['\u2032]\s*(\d{1,2}(?:[.,]\d+)?)?\s*["\u2033]?\s*([NSEWnsew])\b/g;
   return text.replace(re, (_m, d: string, m: string, s: string | undefined, hemi: string) => {
     const dec =
-      parseInt(d, 10) +
-      parseInt(m, 10) / 60 +
-      (s ? parseFloat(s.replace(",", ".")) : 0) / 3600;
+      parseInt(d, 10) + parseInt(m, 10) / 60 + (s ? parseFloat(s.replace(",", ".")) : 0) / 3600;
     const sign = /[SWsw]/.test(hemi) ? -1 : 1;
     const H = hemi.toUpperCase();
     return `${d}°${m}'${s ?? "0"}"${H} (${(sign * dec).toFixed(6)}°)`;

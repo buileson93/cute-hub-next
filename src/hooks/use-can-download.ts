@@ -3,7 +3,12 @@
 import { useSession, type AppRole } from "@/hooks/use-session";
 
 const DOWNLOAD_ROLES: AppRole[] = [
-  "admin", "phong_kt", "phu_trach_dv", "ktv", "quan_ly_du_an", "to_truong",
+  "admin",
+  "phong_kt",
+  "phu_trach_dv",
+  "ktv",
+  "quan_ly_du_an",
+  "to_truong",
 ];
 
 export function useCanDownloadAttachments(): boolean {

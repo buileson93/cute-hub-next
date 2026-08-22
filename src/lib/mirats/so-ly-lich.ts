@@ -14,11 +14,7 @@
 //     dưới cùng file.
 // ============================================================================
 
-import {
-  THIET_BI_PHYS_GROUPS,
-  HE_THONG_PHYS_GROUPS,
-  type PhysGroup,
-} from "./editable-columns";
+import { THIET_BI_PHYS_GROUPS, HE_THONG_PHYS_GROUPS, type PhysGroup } from "./editable-columns";
 import type { ChangeEvent } from "./change-log";
 import type { ChangeTimelineEvent } from "./record-timeline";
 

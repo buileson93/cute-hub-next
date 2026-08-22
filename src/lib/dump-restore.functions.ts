@@ -110,7 +110,6 @@ export const canRestoreDump = createServerFn({ method: "GET" })
     return { allowed: !!data };
   });
 
-
 /** Danh sách bảng hợp lệ để đối chiếu với nội dung gói dump. */
 export const restoreDumpTables = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -151,6 +150,11 @@ export const restoreDumpChunk = createServerFn({ method: "POST" })
         "warning",
       );
     }
-    return result as { ok: boolean; table?: string; rows?: number; skipped?: boolean; reason?: string };
+    return result as {
+      ok: boolean;
+      table?: string;
+      rows?: number;
+      skipped?: boolean;
+      reason?: string;
+    };
   });
-

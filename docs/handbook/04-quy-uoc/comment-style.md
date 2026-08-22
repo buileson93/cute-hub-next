@@ -66,6 +66,7 @@ COMMENT ON FUNCTION public.<name>(<args>) IS
 ## Audit thiếu comment
 
 Script `scripts/docs-audit.mjs` (sẽ viết) quét:
+
 - `rg -n "^export (function|const|class)" src/lib/mirats src/hooks src/lib/*.functions.ts` và so với dòng trên (kiểm `*/`).
 - SQL: `SELECT * FROM pg_class WHERE relnamespace='public'::regnamespace AND obj_description(oid,'pg_class') IS NULL`.
 

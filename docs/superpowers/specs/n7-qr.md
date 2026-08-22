@@ -36,14 +36,14 @@ Không dùng query string chứa thông tin (không `?ten=...&don_vi=...`).
 
 ### 2.3 Ma trận nội dung
 
-| Trường | Trên QR? | Lý do |
-|---|---|---|
-| `ma_thiet_bi` | ✅ | Đã in trên vỏ; là khoá tra cứu. |
-| `id` (UUID) | ❌ | Không cần thiết; dễ enum. |
-| `ten_thiet_bi` | ❌ | Xem sau khi auth. |
-| `don_vi` / `he_thong` | ❌ | Xem sau khi auth. |
-| Serial, model | ❌ | Nhạy cảm cấu hình. |
-| Token 1-lần | ❌ | QR là nhãn dán tĩnh, không thể xoay token. |
+| Trường                | Trên QR? | Lý do                                      |
+| --------------------- | -------- | ------------------------------------------ |
+| `ma_thiet_bi`         | ✅       | Đã in trên vỏ; là khoá tra cứu.            |
+| `id` (UUID)           | ❌       | Không cần thiết; dễ enum.                  |
+| `ten_thiet_bi`        | ❌       | Xem sau khi auth.                          |
+| `don_vi` / `he_thong` | ❌       | Xem sau khi auth.                          |
+| Serial, model         | ❌       | Nhạy cảm cấu hình.                         |
+| Token 1-lần           | ❌       | QR là nhãn dán tĩnh, không thể xoay token. |
 
 ### 2.4 API thuần
 
@@ -55,20 +55,23 @@ export interface QrPayload {
 }
 
 /** Dựng URL đầy đủ cho tem in — reuse `buildLabelUrl` để không drift. */
-export function buildAssetQrPayload(
-  input: { origin: string; maThietBi: string }
-): { url: string; path: string; ma: string };
+export function buildAssetQrPayload(input: { origin: string; maThietBi: string }): {
+  url: string;
+  path: string;
+  ma: string;
+};
 
 /** Parse một URL / chuỗi quét ra hành động điều hướng chuẩn. */
 export type QrTarget =
-  | { kind: 'asset'; maThietBi: string; path: `/q/${string}` }
-  | { kind: 'legacy_id'; id: string; path: `/qr/thiet-bi/${string}` }
-  | { kind: 'unknown'; raw: string };
+  | { kind: "asset"; maThietBi: string; path: `/q/${string}` }
+  | { kind: "legacy_id"; id: string; path: `/qr/thiet-bi/${string}` }
+  | { kind: "unknown"; raw: string };
 
 export function parseQr(raw: string): QrTarget;
 ```
 
 Ràng buộc `parseQr`:
+
 - Chấp nhận URL đầy đủ hoặc chỉ path.
 - Nhận diện `/q/<ma>`, `/qr/thiet-bi/<id>` (legacy — dùng UUID), và trả `unknown` cho phần còn lại.
 - Không tự động fetch — chỉ trả về `QrTarget`; điều hướng do UI làm.
@@ -185,6 +188,7 @@ Không đổi `nav-contract.ts` (không thêm nav) — nút in nhãn đã nằm 
 4. **Regression**: `nhan-qr.test.ts` (đang có) + toàn bộ suite phải xanh — `qr.ts` chỉ **compose** trên `buildLabelUrl/Path`, không đổi API cũ.
 
 Test route (component-level, không bắt buộc BƯỚC 2 nhưng nên có):
+
 - Người chưa đăng nhập → redirect `/auth`.
 - Người đăng nhập, tài sản không thấy do RLS → hiển thị "Không có quyền xem".
 - Nút "Báo sự cố" điều hướng đúng `/su-co/moi?thietBi=<ma>&from=qr`.

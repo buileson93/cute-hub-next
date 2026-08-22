@@ -60,7 +60,10 @@ export async function timKiemToanCuc(
 
 const DEBOUNCE_MS = 150;
 
-export function useTimKiemToanCuc(rawQ: string, opts: { loai?: string | null; gioiHan?: number } = {}) {
+export function useTimKiemToanCuc(
+  rawQ: string,
+  opts: { loai?: string | null; gioiHan?: number } = {},
+) {
   const term = rawQ.trim();
   const [debounced, setDebounced] = useState("");
   useEffect(() => {

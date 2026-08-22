@@ -13,11 +13,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2026-12-26T22:00",
     "thoi_gian_gian_doan": 180,
-    "nguoi_xu_ly": [
-      "NV001",
-      "NV002",
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV001", "NV002", "NV007"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -36,10 +32,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2026-12-20T07:30",
     "thoi_gian_gian_doan": 30,
-    "nguoi_xu_ly": [
-      "NV009",
-      "NV005"
-    ],
+    "nguoi_xu_ly": ["NV009", "NV005"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -58,11 +51,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2026-12-18T03:00",
     "thoi_gian_gian_doan": 720,
-    "nguoi_xu_ly": [
-      "NV008",
-      "NV011",
-      "NV003"
-    ],
+    "nguoi_xu_ly": ["NV008", "NV011", "NV003"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -81,11 +70,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV009",
-      "NV010",
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV009", "NV010", "NV007"],
     "trang_thai": "Đang xử lý",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -104,9 +89,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2026-11-06T17:15",
     "thoi_gian_gian_doan": 15,
-    "nguoi_xu_ly": [
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV007"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -125,9 +108,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2026-11-06T15:00",
     "thoi_gian_gian_doan": 60,
-    "nguoi_xu_ly": [
-      "NV006"
-    ],
+    "nguoi_xu_ly": ["NV006"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -146,10 +127,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV007",
-      "NV006"
-    ],
+    "nguoi_xu_ly": ["NV007", "NV006"],
     "trang_thai": "Đang xử lý",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -168,11 +146,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2026-10-10T21:00",
     "thoi_gian_gian_doan": 720,
-    "nguoi_xu_ly": [
-      "NV004",
-      "NV005",
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV004", "NV005", "NV007"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -191,10 +165,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV003",
-      "NV001"
-    ],
+    "nguoi_xu_ly": ["NV003", "NV001"],
     "trang_thai": "Mới",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -213,9 +184,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2026-09-16T14:00",
     "thoi_gian_gian_doan": 120,
-    "nguoi_xu_ly": [
-      "NV011"
-    ],
+    "nguoi_xu_ly": ["NV011"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -234,10 +203,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2026-09-05T10:00",
     "thoi_gian_gian_doan": 120,
-    "nguoi_xu_ly": [
-      "NV006",
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV006", "NV007"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -256,9 +222,7 @@
     "bien_phap_xu_ly": "Siết lại kết nối, thay cáp tín hiệu",
     "thoi_diem_khac_phuc": "2026-08-15T13:00",
     "thoi_gian_gian_doan": 240,
-    "nguoi_xu_ly": [
-      "NV008"
-    ],
+    "nguoi_xu_ly": ["NV008"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -277,11 +241,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV002",
-      "NV005",
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV002", "NV005", "NV007"],
     "trang_thai": "Đang xử lý",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -300,11 +260,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2026-08-03T09:00",
     "thoi_gian_gian_doan": 1440,
-    "nguoi_xu_ly": [
-      "NV005",
-      "NV004",
-      "NV008"
-    ],
+    "nguoi_xu_ly": ["NV005", "NV004", "NV008"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -323,10 +279,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2026-08-01T14:00",
     "thoi_gian_gian_doan": 480,
-    "nguoi_xu_ly": [
-      "NV006",
-      "NV003"
-    ],
+    "nguoi_xu_ly": ["NV006", "NV003"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -345,9 +298,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2026-07-20T21:00",
     "thoi_gian_gian_doan": 120,
-    "nguoi_xu_ly": [
-      "NV011"
-    ],
+    "nguoi_xu_ly": ["NV011"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -366,9 +317,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2026-07-20T14:00",
     "thoi_gian_gian_doan": 180,
-    "nguoi_xu_ly": [
-      "NV005"
-    ],
+    "nguoi_xu_ly": ["NV005"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -387,10 +336,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2026-07-19T23:00",
     "thoi_gian_gian_doan": 720,
-    "nguoi_xu_ly": [
-      "NV001",
-      "NV005"
-    ],
+    "nguoi_xu_ly": ["NV001", "NV005"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -409,9 +355,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2026-07-15T14:00",
     "thoi_gian_gian_doan": 180,
-    "nguoi_xu_ly": [
-      "NV008"
-    ],
+    "nguoi_xu_ly": ["NV008"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -430,11 +374,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2026-07-13T18:30",
     "thoi_gian_gian_doan": 30,
-    "nguoi_xu_ly": [
-      "NV012",
-      "NV004",
-      "NV003"
-    ],
+    "nguoi_xu_ly": ["NV012", "NV004", "NV003"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -453,10 +393,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2026-07-01T21:30",
     "thoi_gian_gian_doan": 90,
-    "nguoi_xu_ly": [
-      "NV009",
-      "NV004"
-    ],
+    "nguoi_xu_ly": ["NV009", "NV004"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -475,9 +412,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2026-06-25T18:30",
     "thoi_gian_gian_doan": 90,
-    "nguoi_xu_ly": [
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV007"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -496,10 +431,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2026-06-22T16:00",
     "thoi_gian_gian_doan": 1440,
-    "nguoi_xu_ly": [
-      "NV009",
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV009", "NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -518,11 +450,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2026-05-03T17:30",
     "thoi_gian_gian_doan": 30,
-    "nguoi_xu_ly": [
-      "NV008",
-      "NV009",
-      "NV001"
-    ],
+    "nguoi_xu_ly": ["NV008", "NV009", "NV001"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -541,9 +469,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2026-04-28T00:00",
     "thoi_gian_gian_doan": 240,
-    "nguoi_xu_ly": [
-      "NV003"
-    ],
+    "nguoi_xu_ly": ["NV003"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -562,11 +488,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2026-04-19T10:30",
     "thoi_gian_gian_doan": 90,
-    "nguoi_xu_ly": [
-      "NV007",
-      "NV009",
-      "NV003"
-    ],
+    "nguoi_xu_ly": ["NV007", "NV009", "NV003"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -585,9 +507,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2026-04-12T22:00",
     "thoi_gian_gian_doan": 180,
-    "nguoi_xu_ly": [
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV007"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -606,11 +526,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2026-04-05T09:00",
     "thoi_gian_gian_doan": 60,
-    "nguoi_xu_ly": [
-      "NV011",
-      "NV012",
-      "NV010"
-    ],
+    "nguoi_xu_ly": ["NV011", "NV012", "NV010"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -629,10 +545,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2026-03-11T12:00",
     "thoi_gian_gian_doan": 180,
-    "nguoi_xu_ly": [
-      "NV008",
-      "NV001"
-    ],
+    "nguoi_xu_ly": ["NV008", "NV001"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -651,9 +564,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2026-03-06T11:00",
     "thoi_gian_gian_doan": 180,
-    "nguoi_xu_ly": [
-      "NV005"
-    ],
+    "nguoi_xu_ly": ["NV005"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -672,9 +583,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2026-03-02T11:00",
     "thoi_gian_gian_doan": 1440,
-    "nguoi_xu_ly": [
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV007"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -693,10 +602,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2026-02-24T22:00",
     "thoi_gian_gian_doan": 480,
-    "nguoi_xu_ly": [
-      "NV010",
-      "NV009"
-    ],
+    "nguoi_xu_ly": ["NV010", "NV009"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -715,10 +621,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2026-02-21T18:30",
     "thoi_gian_gian_doan": 90,
-    "nguoi_xu_ly": [
-      "NV011",
-      "NV004"
-    ],
+    "nguoi_xu_ly": ["NV011", "NV004"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -737,10 +640,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2026-02-17T17:00",
     "thoi_gian_gian_doan": 120,
-    "nguoi_xu_ly": [
-      "NV011",
-      "NV009"
-    ],
+    "nguoi_xu_ly": ["NV011", "NV009"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -759,10 +659,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV003",
-      "NV009"
-    ],
+    "nguoi_xu_ly": ["NV003", "NV009"],
     "trang_thai": "Mới",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -781,11 +678,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV006",
-      "NV012",
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV006", "NV012", "NV002"],
     "trang_thai": "Mới",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -804,10 +697,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2026-01-12T15:00",
     "thoi_gian_gian_doan": 180,
-    "nguoi_xu_ly": [
-      "NV005",
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV005", "NV007"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -826,10 +716,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2026-01-11T15:45",
     "thoi_gian_gian_doan": 45,
-    "nguoi_xu_ly": [
-      "NV003",
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV003", "NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -848,9 +735,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2026-01-07T11:00",
     "thoi_gian_gian_doan": 120,
-    "nguoi_xu_ly": [
-      "NV008"
-    ],
+    "nguoi_xu_ly": ["NV008"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -869,9 +754,7 @@
     "bien_phap_xu_ly": "Siết lại kết nối, thay cáp tín hiệu",
     "thoi_diem_khac_phuc": "2026-01-03T11:00",
     "thoi_gian_gian_doan": 1440,
-    "nguoi_xu_ly": [
-      "NV009"
-    ],
+    "nguoi_xu_ly": ["NV009"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -890,10 +773,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2025-12-27T21:30",
     "thoi_gian_gian_doan": 90,
-    "nguoi_xu_ly": [
-      "NV009",
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV009", "NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -912,10 +792,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2025-12-08T21:00",
     "thoi_gian_gian_doan": 180,
-    "nguoi_xu_ly": [
-      "NV001",
-      "NV006"
-    ],
+    "nguoi_xu_ly": ["NV001", "NV006"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -934,9 +811,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2025-12-02T21:00",
     "thoi_gian_gian_doan": 720,
-    "nguoi_xu_ly": [
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -955,11 +830,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2025-11-24T16:30",
     "thoi_gian_gian_doan": 30,
-    "nguoi_xu_ly": [
-      "NV002",
-      "NV007",
-      "NV012"
-    ],
+    "nguoi_xu_ly": ["NV002", "NV007", "NV012"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -978,9 +849,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2025-11-20T06:45",
     "thoi_gian_gian_doan": 45,
-    "nguoi_xu_ly": [
-      "NV012"
-    ],
+    "nguoi_xu_ly": ["NV012"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -999,9 +868,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2025-10-15T20:00",
     "thoi_gian_gian_doan": 180,
-    "nguoi_xu_ly": [
-      "NV001"
-    ],
+    "nguoi_xu_ly": ["NV001"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1020,11 +887,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2025-10-08T00:00",
     "thoi_gian_gian_doan": 720,
-    "nguoi_xu_ly": [
-      "NV001",
-      "NV012",
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV001", "NV012", "NV007"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1043,9 +906,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2025-09-14T17:30",
     "thoi_gian_gian_doan": 90,
-    "nguoi_xu_ly": [
-      "NV003"
-    ],
+    "nguoi_xu_ly": ["NV003"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1064,10 +925,7 @@
     "bien_phap_xu_ly": "Siết lại kết nối, thay cáp tín hiệu",
     "thoi_diem_khac_phuc": "2025-09-14T10:45",
     "thoi_gian_gian_doan": 45,
-    "nguoi_xu_ly": [
-      "NV010",
-      "NV004"
-    ],
+    "nguoi_xu_ly": ["NV010", "NV004"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1086,10 +944,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV011",
-      "NV009"
-    ],
+    "nguoi_xu_ly": ["NV011", "NV009"],
     "trang_thai": "Đang xử lý",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1108,9 +963,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2025-07-14T07:30",
     "thoi_gian_gian_doan": 30,
-    "nguoi_xu_ly": [
-      "NV006"
-    ],
+    "nguoi_xu_ly": ["NV006"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1129,10 +982,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV007",
-      "NV008"
-    ],
+    "nguoi_xu_ly": ["NV007", "NV008"],
     "trang_thai": "Đang xử lý",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1151,11 +1001,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2025-07-06T09:00",
     "thoi_gian_gian_doan": 180,
-    "nguoi_xu_ly": [
-      "NV005",
-      "NV002",
-      "NV012"
-    ],
+    "nguoi_xu_ly": ["NV005", "NV002", "NV012"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1174,9 +1020,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2025-07-02T20:15",
     "thoi_gian_gian_doan": 15,
-    "nguoi_xu_ly": [
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1195,11 +1039,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2025-07-02T18:00",
     "thoi_gian_gian_doan": 720,
-    "nguoi_xu_ly": [
-      "NV008",
-      "NV004",
-      "NV003"
-    ],
+    "nguoi_xu_ly": ["NV008", "NV004", "NV003"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1218,10 +1058,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2025-06-22T06:30",
     "thoi_gian_gian_doan": 30,
-    "nguoi_xu_ly": [
-      "NV005",
-      "NV001"
-    ],
+    "nguoi_xu_ly": ["NV005", "NV001"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1240,10 +1077,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2025-06-18T22:00",
     "thoi_gian_gian_doan": 480,
-    "nguoi_xu_ly": [
-      "NV003",
-      "NV012"
-    ],
+    "nguoi_xu_ly": ["NV003", "NV012"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1262,11 +1096,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2025-06-18T23:00",
     "thoi_gian_gian_doan": 720,
-    "nguoi_xu_ly": [
-      "NV006",
-      "NV005",
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV006", "NV005", "NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1285,11 +1115,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2025-05-22T20:15",
     "thoi_gian_gian_doan": 15,
-    "nguoi_xu_ly": [
-      "NV007",
-      "NV012",
-      "NV009"
-    ],
+    "nguoi_xu_ly": ["NV007", "NV012", "NV009"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1308,10 +1134,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV011",
-      "NV010"
-    ],
+    "nguoi_xu_ly": ["NV011", "NV010"],
     "trang_thai": "Mới",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1330,10 +1153,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2025-04-27T15:30",
     "thoi_gian_gian_doan": 90,
-    "nguoi_xu_ly": [
-      "NV006",
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV006", "NV002"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1352,11 +1172,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2025-04-24T02:00",
     "thoi_gian_gian_doan": 360,
-    "nguoi_xu_ly": [
-      "NV010",
-      "NV002",
-      "NV005"
-    ],
+    "nguoi_xu_ly": ["NV010", "NV002", "NV005"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1375,10 +1191,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2025-04-05T11:00",
     "thoi_gian_gian_doan": 60,
-    "nguoi_xu_ly": [
-      "NV011",
-      "NV006"
-    ],
+    "nguoi_xu_ly": ["NV011", "NV006"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1397,11 +1210,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2025-04-03T03:00",
     "thoi_gian_gian_doan": 480,
-    "nguoi_xu_ly": [
-      "NV008",
-      "NV004",
-      "NV010"
-    ],
+    "nguoi_xu_ly": ["NV008", "NV004", "NV010"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1420,9 +1229,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2025-03-28T19:00",
     "thoi_gian_gian_doan": 240,
-    "nguoi_xu_ly": [
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1441,9 +1248,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2025-03-26T20:15",
     "thoi_gian_gian_doan": 15,
-    "nguoi_xu_ly": [
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1462,9 +1267,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2025-03-24T12:30",
     "thoi_gian_gian_doan": 30,
-    "nguoi_xu_ly": [
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1483,11 +1286,7 @@
     "bien_phap_xu_ly": "Siết lại kết nối, thay cáp tín hiệu",
     "thoi_diem_khac_phuc": "2025-03-23T19:00",
     "thoi_gian_gian_doan": 480,
-    "nguoi_xu_ly": [
-      "NV008",
-      "NV003",
-      "NV012"
-    ],
+    "nguoi_xu_ly": ["NV008", "NV003", "NV012"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1506,10 +1305,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2025-03-21T03:00",
     "thoi_gian_gian_doan": 720,
-    "nguoi_xu_ly": [
-      "NV007",
-      "NV011"
-    ],
+    "nguoi_xu_ly": ["NV007", "NV011"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1528,11 +1324,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV006",
-      "NV002",
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV006", "NV002", "NV007"],
     "trang_thai": "Đang xử lý",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1551,9 +1343,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2025-03-14T01:00",
     "thoi_gian_gian_doan": 360,
-    "nguoi_xu_ly": [
-      "NV004"
-    ],
+    "nguoi_xu_ly": ["NV004"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1572,11 +1362,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV007",
-      "NV010",
-      "NV004"
-    ],
+    "nguoi_xu_ly": ["NV007", "NV010", "NV004"],
     "trang_thai": "Đang xử lý",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1595,11 +1381,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV011",
-      "NV007",
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV011", "NV007", "NV002"],
     "trang_thai": "Mới",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1618,10 +1400,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV004",
-      "NV005"
-    ],
+    "nguoi_xu_ly": ["NV004", "NV005"],
     "trang_thai": "Mới",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1640,9 +1419,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2025-02-04T09:00",
     "thoi_gian_gian_doan": 180,
-    "nguoi_xu_ly": [
-      "NV003"
-    ],
+    "nguoi_xu_ly": ["NV003"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1661,10 +1438,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2025-01-19T09:30",
     "thoi_gian_gian_doan": 30,
-    "nguoi_xu_ly": [
-      "NV003",
-      "NV012"
-    ],
+    "nguoi_xu_ly": ["NV003", "NV012"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1683,10 +1457,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV012",
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV012", "NV007"],
     "trang_thai": "Đang xử lý",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1705,10 +1476,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2025-01-12T08:30",
     "thoi_gian_gian_doan": 90,
-    "nguoi_xu_ly": [
-      "NV012",
-      "NV010"
-    ],
+    "nguoi_xu_ly": ["NV012", "NV010"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1727,11 +1495,7 @@
     "bien_phap_xu_ly": "Siết lại kết nối, thay cáp tín hiệu",
     "thoi_diem_khac_phuc": "2025-01-04T14:00",
     "thoi_gian_gian_doan": 240,
-    "nguoi_xu_ly": [
-      "NV009",
-      "NV003",
-      "NV012"
-    ],
+    "nguoi_xu_ly": ["NV009", "NV003", "NV012"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1750,9 +1514,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2025-01-02T06:15",
     "thoi_gian_gian_doan": 15,
-    "nguoi_xu_ly": [
-      "NV010"
-    ],
+    "nguoi_xu_ly": ["NV010"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1771,9 +1533,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2024-12-27T07:15",
     "thoi_gian_gian_doan": 15,
-    "nguoi_xu_ly": [
-      "NV005"
-    ],
+    "nguoi_xu_ly": ["NV005"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1792,10 +1552,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2024-12-23T06:30",
     "thoi_gian_gian_doan": 30,
-    "nguoi_xu_ly": [
-      "NV011",
-      "NV001"
-    ],
+    "nguoi_xu_ly": ["NV011", "NV001"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1814,9 +1571,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV002"],
     "trang_thai": "Mới",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1835,9 +1590,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2024-11-15T00:00",
     "thoi_gian_gian_doan": 720,
-    "nguoi_xu_ly": [
-      "NV008"
-    ],
+    "nguoi_xu_ly": ["NV008"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1856,11 +1609,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2024-11-08T11:45",
     "thoi_gian_gian_doan": 45,
-    "nguoi_xu_ly": [
-      "NV004",
-      "NV006",
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV004", "NV006", "NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1879,10 +1628,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2024-10-13T08:00",
     "thoi_gian_gian_doan": 1440,
-    "nguoi_xu_ly": [
-      "NV010",
-      "NV005"
-    ],
+    "nguoi_xu_ly": ["NV010", "NV005"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1901,10 +1647,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2024-10-02T21:00",
     "thoi_gian_gian_doan": 60,
-    "nguoi_xu_ly": [
-      "NV003",
-      "NV004"
-    ],
+    "nguoi_xu_ly": ["NV003", "NV004"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1923,11 +1666,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2024-09-17T10:00",
     "thoi_gian_gian_doan": 180,
-    "nguoi_xu_ly": [
-      "NV006",
-      "NV003",
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV006", "NV003", "NV007"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1946,10 +1685,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2024-09-05T18:45",
     "thoi_gian_gian_doan": 45,
-    "nguoi_xu_ly": [
-      "NV006",
-      "NV010"
-    ],
+    "nguoi_xu_ly": ["NV006", "NV010"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1968,9 +1704,7 @@
     "bien_phap_xu_ly": "Siết lại kết nối, thay cáp tín hiệu",
     "thoi_diem_khac_phuc": "2024-08-28T14:30",
     "thoi_gian_gian_doan": 90,
-    "nguoi_xu_ly": [
-      "NV001"
-    ],
+    "nguoi_xu_ly": ["NV001"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -1989,9 +1723,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV002"],
     "trang_thai": "Đang xử lý",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2010,11 +1742,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2024-08-14T04:00",
     "thoi_gian_gian_doan": 480,
-    "nguoi_xu_ly": [
-      "NV006",
-      "NV005",
-      "NV011"
-    ],
+    "nguoi_xu_ly": ["NV006", "NV005", "NV011"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2033,10 +1761,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2024-08-01T15:00",
     "thoi_gian_gian_doan": 180,
-    "nguoi_xu_ly": [
-      "NV004",
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV004", "NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2055,10 +1780,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2024-07-22T10:00",
     "thoi_gian_gian_doan": 240,
-    "nguoi_xu_ly": [
-      "NV001",
-      "NV011"
-    ],
+    "nguoi_xu_ly": ["NV001", "NV011"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2077,10 +1799,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2024-07-21T06:30",
     "thoi_gian_gian_doan": 30,
-    "nguoi_xu_ly": [
-      "NV007",
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV007", "NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2099,10 +1818,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2024-07-15T04:00",
     "thoi_gian_gian_doan": 720,
-    "nguoi_xu_ly": [
-      "NV003",
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV003", "NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2121,10 +1837,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2024-07-07T08:00",
     "thoi_gian_gian_doan": 120,
-    "nguoi_xu_ly": [
-      "NV004",
-      "NV003"
-    ],
+    "nguoi_xu_ly": ["NV004", "NV003"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2143,9 +1856,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV012"
-    ],
+    "nguoi_xu_ly": ["NV012"],
     "trang_thai": "Mới",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2164,11 +1875,7 @@
     "bien_phap_xu_ly": "Siết lại kết nối, thay cáp tín hiệu",
     "thoi_diem_khac_phuc": "2024-06-27T02:00",
     "thoi_gian_gian_doan": 480,
-    "nguoi_xu_ly": [
-      "NV001",
-      "NV010",
-      "NV003"
-    ],
+    "nguoi_xu_ly": ["NV001", "NV010", "NV003"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2187,10 +1894,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2024-05-28T22:00",
     "thoi_gian_gian_doan": 240,
-    "nguoi_xu_ly": [
-      "NV004",
-      "NV005"
-    ],
+    "nguoi_xu_ly": ["NV004", "NV005"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2209,10 +1913,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2024-05-28T14:00",
     "thoi_gian_gian_doan": 120,
-    "nguoi_xu_ly": [
-      "NV004",
-      "NV001"
-    ],
+    "nguoi_xu_ly": ["NV004", "NV001"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2231,9 +1932,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2024-05-27T05:00",
     "thoi_gian_gian_doan": 720,
-    "nguoi_xu_ly": [
-      "NV011"
-    ],
+    "nguoi_xu_ly": ["NV011"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2252,9 +1951,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2024-05-21T11:00",
     "thoi_gian_gian_doan": 60,
-    "nguoi_xu_ly": [
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV007"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2273,11 +1970,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2024-05-14T15:00",
     "thoi_gian_gian_doan": 480,
-    "nguoi_xu_ly": [
-      "NV001",
-      "NV012",
-      "NV009"
-    ],
+    "nguoi_xu_ly": ["NV001", "NV012", "NV009"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2296,11 +1989,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2024-04-22T18:00",
     "thoi_gian_gian_doan": 1440,
-    "nguoi_xu_ly": [
-      "NV011",
-      "NV007",
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV011", "NV007", "NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2319,9 +2008,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2024-04-20T09:00",
     "thoi_gian_gian_doan": 1440,
-    "nguoi_xu_ly": [
-      "NV001"
-    ],
+    "nguoi_xu_ly": ["NV001"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2340,10 +2027,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV004",
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV004", "NV002"],
     "trang_thai": "Mới",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2362,10 +2046,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2024-04-01T12:15",
     "thoi_gian_gian_doan": 15,
-    "nguoi_xu_ly": [
-      "NV010",
-      "NV008"
-    ],
+    "nguoi_xu_ly": ["NV010", "NV008"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2384,9 +2065,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2024-03-25T12:00",
     "thoi_gian_gian_doan": 120,
-    "nguoi_xu_ly": [
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV007"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2405,9 +2084,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2024-03-19T13:00",
     "thoi_gian_gian_doan": 180,
-    "nguoi_xu_ly": [
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV007"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2426,10 +2103,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2024-03-17T18:30",
     "thoi_gian_gian_doan": 30,
-    "nguoi_xu_ly": [
-      "NV004",
-      "NV006"
-    ],
+    "nguoi_xu_ly": ["NV004", "NV006"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2448,11 +2122,7 @@
     "bien_phap_xu_ly": "Siết lại kết nối, thay cáp tín hiệu",
     "thoi_diem_khac_phuc": "2024-03-12T13:45",
     "thoi_gian_gian_doan": 45,
-    "nguoi_xu_ly": [
-      "NV004",
-      "NV008",
-      "NV006"
-    ],
+    "nguoi_xu_ly": ["NV004", "NV008", "NV006"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2471,9 +2141,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2024-03-03T09:30",
     "thoi_gian_gian_doan": 90,
-    "nguoi_xu_ly": [
-      "NV005"
-    ],
+    "nguoi_xu_ly": ["NV005"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2492,10 +2160,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2024-02-24T11:00",
     "thoi_gian_gian_doan": 240,
-    "nguoi_xu_ly": [
-      "NV001",
-      "NV009"
-    ],
+    "nguoi_xu_ly": ["NV001", "NV009"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2514,9 +2179,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2024-02-18T09:15",
     "thoi_gian_gian_doan": 15,
-    "nguoi_xu_ly": [
-      "NV012"
-    ],
+    "nguoi_xu_ly": ["NV012"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2535,10 +2198,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2024-02-16T06:00",
     "thoi_gian_gian_doan": 720,
-    "nguoi_xu_ly": [
-      "NV009",
-      "NV006"
-    ],
+    "nguoi_xu_ly": ["NV009", "NV006"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2557,11 +2217,7 @@
     "bien_phap_xu_ly": "Siết lại kết nối, thay cáp tín hiệu",
     "thoi_diem_khac_phuc": "2024-02-07T21:30",
     "thoi_gian_gian_doan": 90,
-    "nguoi_xu_ly": [
-      "NV002",
-      "NV006",
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV002", "NV006", "NV007"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2580,10 +2236,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2024-02-05T00:00",
     "thoi_gian_gian_doan": 240,
-    "nguoi_xu_ly": [
-      "NV011",
-      "NV008"
-    ],
+    "nguoi_xu_ly": ["NV011", "NV008"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2602,10 +2255,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2024-02-04T14:00",
     "thoi_gian_gian_doan": 120,
-    "nguoi_xu_ly": [
-      "NV007",
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV007", "NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2624,11 +2274,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2024-02-02T20:45",
     "thoi_gian_gian_doan": 45,
-    "nguoi_xu_ly": [
-      "NV011",
-      "NV009",
-      "NV005"
-    ],
+    "nguoi_xu_ly": ["NV011", "NV009", "NV005"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2647,10 +2293,7 @@
     "bien_phap_xu_ly": "Siết lại kết nối, thay cáp tín hiệu",
     "thoi_diem_khac_phuc": "2024-02-01T10:30",
     "thoi_gian_gian_doan": 90,
-    "nguoi_xu_ly": [
-      "NV007",
-      "NV004"
-    ],
+    "nguoi_xu_ly": ["NV007", "NV004"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2669,10 +2312,7 @@
     "bien_phap_xu_ly": "Siết lại kết nối, thay cáp tín hiệu",
     "thoi_diem_khac_phuc": "2024-01-02T14:00",
     "thoi_gian_gian_doan": 240,
-    "nguoi_xu_ly": [
-      "NV002",
-      "NV009"
-    ],
+    "nguoi_xu_ly": ["NV002", "NV009"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2691,9 +2331,7 @@
     "bien_phap_xu_ly": "Siết lại kết nối, thay cáp tín hiệu",
     "thoi_diem_khac_phuc": "2023-12-21T16:30",
     "thoi_gian_gian_doan": 90,
-    "nguoi_xu_ly": [
-      "NV008"
-    ],
+    "nguoi_xu_ly": ["NV008"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2712,11 +2350,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2023-12-20T20:00",
     "thoi_gian_gian_doan": 240,
-    "nguoi_xu_ly": [
-      "NV011",
-      "NV004",
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV011", "NV004", "NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2735,9 +2369,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV012"
-    ],
+    "nguoi_xu_ly": ["NV012"],
     "trang_thai": "Đang xử lý",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2756,9 +2388,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2023-11-18T19:00",
     "thoi_gian_gian_doan": 360,
-    "nguoi_xu_ly": [
-      "NV012"
-    ],
+    "nguoi_xu_ly": ["NV012"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2777,11 +2407,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2023-11-18T10:00",
     "thoi_gian_gian_doan": 240,
-    "nguoi_xu_ly": [
-      "NV009",
-      "NV011",
-      "NV004"
-    ],
+    "nguoi_xu_ly": ["NV009", "NV011", "NV004"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2800,9 +2426,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV001"
-    ],
+    "nguoi_xu_ly": ["NV001"],
     "trang_thai": "Đang xử lý",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2821,11 +2445,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV012",
-      "NV009",
-      "NV003"
-    ],
+    "nguoi_xu_ly": ["NV012", "NV009", "NV003"],
     "trang_thai": "Đang xử lý",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2844,10 +2464,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2023-10-23T15:00",
     "thoi_gian_gian_doan": 1440,
-    "nguoi_xu_ly": [
-      "NV003",
-      "NV005"
-    ],
+    "nguoi_xu_ly": ["NV003", "NV005"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2866,9 +2483,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2023-10-17T13:00",
     "thoi_gian_gian_doan": 180,
-    "nguoi_xu_ly": [
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2887,9 +2502,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2023-09-19T12:00",
     "thoi_gian_gian_doan": 240,
-    "nguoi_xu_ly": [
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2908,10 +2521,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2023-09-17T10:00",
     "thoi_gian_gian_doan": 120,
-    "nguoi_xu_ly": [
-      "NV004",
-      "NV006"
-    ],
+    "nguoi_xu_ly": ["NV004", "NV006"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2930,11 +2540,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2023-09-14T05:00",
     "thoi_gian_gian_doan": 720,
-    "nguoi_xu_ly": [
-      "NV005",
-      "NV001",
-      "NV008"
-    ],
+    "nguoi_xu_ly": ["NV005", "NV001", "NV008"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2953,9 +2559,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2023-09-08T12:00",
     "thoi_gian_gian_doan": 180,
-    "nguoi_xu_ly": [
-      "NV011"
-    ],
+    "nguoi_xu_ly": ["NV011"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2974,9 +2578,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2023-09-05T13:00",
     "thoi_gian_gian_doan": 360,
-    "nguoi_xu_ly": [
-      "NV006"
-    ],
+    "nguoi_xu_ly": ["NV006"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -2995,9 +2597,7 @@
     "bien_phap_xu_ly": "Siết lại kết nối, thay cáp tín hiệu",
     "thoi_diem_khac_phuc": "2023-09-03T11:15",
     "thoi_gian_gian_doan": 15,
-    "nguoi_xu_ly": [
-      "NV008"
-    ],
+    "nguoi_xu_ly": ["NV008"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3016,9 +2616,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2023-08-27T10:00",
     "thoi_gian_gian_doan": 60,
-    "nguoi_xu_ly": [
-      "NV005"
-    ],
+    "nguoi_xu_ly": ["NV005"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3037,10 +2635,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2023-08-13T14:15",
     "thoi_gian_gian_doan": 15,
-    "nguoi_xu_ly": [
-      "NV001",
-      "NV003"
-    ],
+    "nguoi_xu_ly": ["NV001", "NV003"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3059,9 +2654,7 @@
     "bien_phap_xu_ly": "Siết lại kết nối, thay cáp tín hiệu",
     "thoi_diem_khac_phuc": "2023-08-10T07:00",
     "thoi_gian_gian_doan": 60,
-    "nguoi_xu_ly": [
-      "NV006"
-    ],
+    "nguoi_xu_ly": ["NV006"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3080,10 +2673,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2023-08-05T20:45",
     "thoi_gian_gian_doan": 45,
-    "nguoi_xu_ly": [
-      "NV007",
-      "NV003"
-    ],
+    "nguoi_xu_ly": ["NV007", "NV003"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3102,10 +2692,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2023-08-05T14:30",
     "thoi_gian_gian_doan": 30,
-    "nguoi_xu_ly": [
-      "NV002",
-      "NV005"
-    ],
+    "nguoi_xu_ly": ["NV002", "NV005"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3124,9 +2711,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2023-07-18T20:00",
     "thoi_gian_gian_doan": 360,
-    "nguoi_xu_ly": [
-      "NV004"
-    ],
+    "nguoi_xu_ly": ["NV004"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3145,9 +2730,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2023-06-18T14:00",
     "thoi_gian_gian_doan": 120,
-    "nguoi_xu_ly": [
-      "NV006"
-    ],
+    "nguoi_xu_ly": ["NV006"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3166,9 +2749,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2023-06-08T10:00",
     "thoi_gian_gian_doan": 1440,
-    "nguoi_xu_ly": [
-      "NV008"
-    ],
+    "nguoi_xu_ly": ["NV008"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3187,9 +2768,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV012"
-    ],
+    "nguoi_xu_ly": ["NV012"],
     "trang_thai": "Đang xử lý",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3208,9 +2787,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2023-06-06T21:00",
     "thoi_gian_gian_doan": 120,
-    "nguoi_xu_ly": [
-      "NV011"
-    ],
+    "nguoi_xu_ly": ["NV011"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3229,10 +2806,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2023-05-25T21:00",
     "thoi_gian_gian_doan": 360,
-    "nguoi_xu_ly": [
-      "NV009",
-      "NV004"
-    ],
+    "nguoi_xu_ly": ["NV009", "NV004"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3251,10 +2825,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV010",
-      "NV009"
-    ],
+    "nguoi_xu_ly": ["NV010", "NV009"],
     "trang_thai": "Đang xử lý",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3273,10 +2844,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2023-05-13T11:30",
     "thoi_gian_gian_doan": 30,
-    "nguoi_xu_ly": [
-      "NV001",
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV001", "NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3295,11 +2863,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2023-05-12T06:45",
     "thoi_gian_gian_doan": 45,
-    "nguoi_xu_ly": [
-      "NV002",
-      "NV009",
-      "NV001"
-    ],
+    "nguoi_xu_ly": ["NV002", "NV009", "NV001"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3318,11 +2882,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2023-05-11T23:00",
     "thoi_gian_gian_doan": 240,
-    "nguoi_xu_ly": [
-      "NV003",
-      "NV009",
-      "NV011"
-    ],
+    "nguoi_xu_ly": ["NV003", "NV009", "NV011"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3341,10 +2901,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2023-05-08T20:00",
     "thoi_gian_gian_doan": 60,
-    "nguoi_xu_ly": [
-      "NV009",
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV009", "NV007"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3363,9 +2920,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2023-05-03T08:00",
     "thoi_gian_gian_doan": 1440,
-    "nguoi_xu_ly": [
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV007"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3384,10 +2939,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2023-04-29T01:00",
     "thoi_gian_gian_doan": 480,
-    "nguoi_xu_ly": [
-      "NV011",
-      "NV006"
-    ],
+    "nguoi_xu_ly": ["NV011", "NV006"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3406,10 +2958,7 @@
     "bien_phap_xu_ly": null,
     "thoi_diem_khac_phuc": null,
     "thoi_gian_gian_doan": null,
-    "nguoi_xu_ly": [
-      "NV007",
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV007", "NV002"],
     "trang_thai": "Mới",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3428,10 +2977,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2023-04-14T08:00",
     "thoi_gian_gian_doan": 720,
-    "nguoi_xu_ly": [
-      "NV003",
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV003", "NV007"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3450,9 +2996,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2023-04-10T13:00",
     "thoi_gian_gian_doan": 120,
-    "nguoi_xu_ly": [
-      "NV008"
-    ],
+    "nguoi_xu_ly": ["NV008"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3471,11 +3015,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2023-04-02T14:30",
     "thoi_gian_gian_doan": 90,
-    "nguoi_xu_ly": [
-      "NV006",
-      "NV008",
-      "NV012"
-    ],
+    "nguoi_xu_ly": ["NV006", "NV008", "NV012"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3494,11 +3034,7 @@
     "bien_phap_xu_ly": "Siết lại kết nối, thay cáp tín hiệu",
     "thoi_diem_khac_phuc": "2023-04-02T06:00",
     "thoi_gian_gian_doan": 720,
-    "nguoi_xu_ly": [
-      "NV004",
-      "NV012",
-      "NV009"
-    ],
+    "nguoi_xu_ly": ["NV004", "NV012", "NV009"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3517,9 +3053,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2023-03-26T08:00",
     "thoi_gian_gian_doan": 720,
-    "nguoi_xu_ly": [
-      "NV006"
-    ],
+    "nguoi_xu_ly": ["NV006"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3538,10 +3072,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2023-03-18T07:00",
     "thoi_gian_gian_doan": 1440,
-    "nguoi_xu_ly": [
-      "NV003",
-      "NV009"
-    ],
+    "nguoi_xu_ly": ["NV003", "NV009"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3560,9 +3091,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2023-02-27T15:00",
     "thoi_gian_gian_doan": 240,
-    "nguoi_xu_ly": [
-      "NV003"
-    ],
+    "nguoi_xu_ly": ["NV003"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3581,11 +3110,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2023-02-26T07:30",
     "thoi_gian_gian_doan": 30,
-    "nguoi_xu_ly": [
-      "NV007",
-      "NV003",
-      "NV005"
-    ],
+    "nguoi_xu_ly": ["NV007", "NV003", "NV005"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3604,10 +3129,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2023-02-25T12:30",
     "thoi_gian_gian_doan": 30,
-    "nguoi_xu_ly": [
-      "NV010",
-      "NV001"
-    ],
+    "nguoi_xu_ly": ["NV010", "NV001"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3626,11 +3148,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2023-02-21T08:45",
     "thoi_gian_gian_doan": 45,
-    "nguoi_xu_ly": [
-      "NV007",
-      "NV012",
-      "NV011"
-    ],
+    "nguoi_xu_ly": ["NV007", "NV012", "NV011"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3649,10 +3167,7 @@
     "bien_phap_xu_ly": "Siết lại kết nối, thay cáp tín hiệu",
     "thoi_diem_khac_phuc": "2023-02-20T16:00",
     "thoi_gian_gian_doan": 180,
-    "nguoi_xu_ly": [
-      "NV011",
-      "NV007"
-    ],
+    "nguoi_xu_ly": ["NV011", "NV007"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3671,10 +3186,7 @@
     "bien_phap_xu_ly": "Nâng cấp firmware lên bản mới nhất, hiệu chỉnh lại thông số",
     "thoi_diem_khac_phuc": "2023-02-20T10:00",
     "thoi_gian_gian_doan": 60,
-    "nguoi_xu_ly": [
-      "NV005",
-      "NV001"
-    ],
+    "nguoi_xu_ly": ["NV005", "NV001"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3693,9 +3205,7 @@
     "bien_phap_xu_ly": "Siết lại kết nối, thay cáp tín hiệu",
     "thoi_diem_khac_phuc": "2023-02-10T07:00",
     "thoi_gian_gian_doan": 1440,
-    "nguoi_xu_ly": [
-      "NV003"
-    ],
+    "nguoi_xu_ly": ["NV003"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3714,11 +3224,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2023-02-06T17:30",
     "thoi_gian_gian_doan": 30,
-    "nguoi_xu_ly": [
-      "NV002",
-      "NV001",
-      "NV005"
-    ],
+    "nguoi_xu_ly": ["NV002", "NV001", "NV005"],
     "trang_thai": "Đóng",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3737,10 +3243,7 @@
     "bien_phap_xu_ly": "Siết lại kết nối, thay cáp tín hiệu",
     "thoi_diem_khac_phuc": "2023-02-07T16:00",
     "thoi_gian_gian_doan": 1440,
-    "nguoi_xu_ly": [
-      "NV003",
-      "NV010"
-    ],
+    "nguoi_xu_ly": ["NV003", "NV010"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3759,9 +3262,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2023-02-05T21:00",
     "thoi_gian_gian_doan": 240,
-    "nguoi_xu_ly": [
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3780,11 +3281,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2023-02-05T18:00",
     "thoi_gian_gian_doan": 240,
-    "nguoi_xu_ly": [
-      "NV010",
-      "NV006",
-      "NV011"
-    ],
+    "nguoi_xu_ly": ["NV010", "NV006", "NV011"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3803,9 +3300,7 @@
     "bien_phap_xu_ly": "Thay ổ cứng, khôi phục dữ liệu từ backup",
     "thoi_diem_khac_phuc": "2023-01-21T08:00",
     "thoi_gian_gian_doan": 120,
-    "nguoi_xu_ly": [
-      "NV003"
-    ],
+    "nguoi_xu_ly": ["NV003"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3824,11 +3319,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2023-01-18T18:00",
     "thoi_gian_gian_doan": 480,
-    "nguoi_xu_ly": [
-      "NV012",
-      "NV002",
-      "NV010"
-    ],
+    "nguoi_xu_ly": ["NV012", "NV002", "NV010"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3847,9 +3338,7 @@
     "bien_phap_xu_ly": "Vệ sinh bảng mạch, sấy khô, kiểm tra cách điện",
     "thoi_diem_khac_phuc": "2023-01-15T15:45",
     "thoi_gian_gian_doan": 45,
-    "nguoi_xu_ly": [
-      "NV010"
-    ],
+    "nguoi_xu_ly": ["NV010"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3868,11 +3357,7 @@
     "bien_phap_xu_ly": "Thay tụ điện, hiệu chuẩn nguồn",
     "thoi_diem_khac_phuc": "2023-01-15T12:15",
     "thoi_gian_gian_doan": 15,
-    "nguoi_xu_ly": [
-      "NV010",
-      "NV001",
-      "NV012"
-    ],
+    "nguoi_xu_ly": ["NV010", "NV001", "NV012"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null
@@ -3891,11 +3376,7 @@
     "bien_phap_xu_ly": "Thay thế bo mạch nguồn, kiểm tra tản nhiệt",
     "thoi_diem_khac_phuc": "2023-01-10T17:00",
     "thoi_gian_gian_doan": 360,
-    "nguoi_xu_ly": [
-      "NV004",
-      "NV001",
-      "NV002"
-    ],
+    "nguoi_xu_ly": ["NV004", "NV001", "NV002"],
     "trang_thai": "Đã khắc phục",
     "lien_ket_hong_hoc": null,
     "file_dinh_kem": null

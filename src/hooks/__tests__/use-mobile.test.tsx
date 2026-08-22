@@ -5,10 +5,10 @@ import { useIsMobile, useBreakpoint } from "../use-mobile";
 import { MOBILE_BREAKPOINT_PX, TABLET_BREAKPOINT_PX } from "@/lib/mirats/ui/responsive-scope";
 
 // Manual mock for matchMedia since setup.ts might not be loaded properly in this environment
-if (typeof window !== 'undefined') {
-  Object.defineProperty(window, 'matchMedia', {
+if (typeof window !== "undefined") {
+  Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation(query => ({
+    value: vi.fn().mockImplementation((query) => ({
       matches: false,
       media: query,
       onchange: null,

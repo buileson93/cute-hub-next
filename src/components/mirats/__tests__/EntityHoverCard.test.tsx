@@ -26,8 +26,8 @@ describe("InfoGrid — highlight khác biệt so với field thường", () => {
 
   it("field thường KHÔNG có data-highlight", () => {
     const { container } = render(<InfoGrid fields={fields} />);
-    const normal = Array.from(container.querySelectorAll("dd")).find(
-      (el) => el.textContent?.includes("AWOS-3"),
+    const normal = Array.from(container.querySelectorAll("dd")).find((el) =>
+      el.textContent?.includes("AWOS-3"),
     ) as HTMLElement;
     expect(normal.getAttribute("data-highlight")).toBeNull();
     expect(normal.className).not.toMatch(/bg-accent/);

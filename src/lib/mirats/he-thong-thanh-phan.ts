@@ -10,7 +10,6 @@ import { supabase } from "@/integrations/backend/client";
 import { fetchAllRows } from "./paginate";
 import { logThanhPhanInsertFailure } from "./thanh-phan-log.functions";
 
-
 export type TrangThaiViTri = "hoat_dong" | "ngung";
 
 /**
@@ -55,8 +54,7 @@ export function rankChonDevices<T extends { loai_thiet_bi_id: string | null; dan
   return list
     .map((r) => ({ ...r, khopLoai: !loaiYeuCau || r.loai_thiet_bi_id === loaiYeuCau }))
     .sort(
-      (a, b) =>
-        Number(a.dangLap) - Number(b.dangLap) || Number(b.khopLoai) - Number(a.khopLoai),
+      (a, b) => Number(a.dangLap) - Number(b.dangLap) || Number(b.khopLoai) - Number(a.khopLoai),
     );
 }
 
@@ -120,7 +118,9 @@ export function useViTriChucNang(heThongId: string) {
     queryFn: async (): Promise<ViTriChucNang[]> => {
       const { data, error } = await supabase
         .from("he_thong_thanh_phan")
-        .select("id, he_thong_id, ma_thanh_phan, ten, loai_thiet_bi_yeu_cau, thanh_phan_cha, bat_buoc, thu_tu, mo_ta, trang_thai, hieu_luc_tu, hieu_luc_den, vi_tri_id, trang_thai_id")
+        .select(
+          "id, he_thong_id, ma_thanh_phan, ten, loai_thiet_bi_yeu_cau, thanh_phan_cha, bat_buoc, thu_tu, mo_ta, trang_thai, hieu_luc_tu, hieu_luc_den, vi_tri_id, trang_thai_id",
+        )
         .eq("he_thong_id", heThongId)
         .is("deleted_at" as never, null)
         .order("thu_tu", { ascending: true, nullsFirst: false })
@@ -139,18 +139,31 @@ export function useThietBiDangLap(heThongId: string) {
     queryFn: async (): Promise<Map<string, ThietBiDangLap>> => {
       const { data, error } = await supabase
         .from("gan_chuc_nang")
-        .select("id, thanh_phan_id, thiet_bi_id, tu_ngay, ly_do, he_thong_thanh_phan!inner(he_thong_id), thiet_bi:thiet_bi_id(ma_thiet_bi, ten_thiet_bi, ma_serial)")
+        .select(
+          "id, thanh_phan_id, thiet_bi_id, tu_ngay, ly_do, he_thong_thanh_phan!inner(he_thong_id), thiet_bi:thiet_bi_id(ma_thiet_bi, ten_thiet_bi, ma_serial)",
+        )
         .is("den_ngay", null)
         .eq("he_thong_thanh_phan.he_thong_id", heThongId);
       if (error) throw error;
       const m = new Map<string, ThietBiDangLap>();
       for (const r of (data ?? []) as unknown as Array<{
-        id: string; thanh_phan_id: string; thiet_bi_id: string; tu_ngay: string; ly_do: string;
-        thiet_bi: { ma_thiet_bi: string; ten_thiet_bi: string | null; ma_serial: string | null } | null;
+        id: string;
+        thanh_phan_id: string;
+        thiet_bi_id: string;
+        tu_ngay: string;
+        ly_do: string;
+        thiet_bi: {
+          ma_thiet_bi: string;
+          ten_thiet_bi: string | null;
+          ma_serial: string | null;
+        } | null;
       }>) {
         m.set(r.thanh_phan_id, {
-          gan_id: r.id, thanh_phan_id: r.thanh_phan_id, thiet_bi_id: r.thiet_bi_id,
-          tu_ngay: r.tu_ngay, ly_do: r.ly_do,
+          gan_id: r.id,
+          thanh_phan_id: r.thanh_phan_id,
+          thiet_bi_id: r.thiet_bi_id,
+          tu_ngay: r.tu_ngay,
+          ly_do: r.ly_do,
           ma_thiet_bi: r.thiet_bi?.ma_thiet_bi ?? "",
           ten_thiet_bi: r.thiet_bi?.ten_thiet_bi ?? null,
           ma_serial: r.thiet_bi?.ma_serial ?? null,
@@ -173,23 +186,35 @@ export function useThietBiRanh() {
       const [busyRows, tbRows] = await Promise.all([
         fetchAllRows<{
           thiet_bi_id: string;
-          he_thong_thanh_phan: { ten: string | null; dm_he_thong: { ten: string | null } | null } | null;
+          he_thong_thanh_phan: {
+            ten: string | null;
+            dm_he_thong: { ten: string | null } | null;
+          } | null;
         }>((from, to) =>
           supabase
             .from("gan_chuc_nang")
-            .select("thiet_bi_id, he_thong_thanh_phan:thanh_phan_id(ten, dm_he_thong:he_thong_id(ten))")
+            .select(
+              "thiet_bi_id, he_thong_thanh_phan:thanh_phan_id(ten, dm_he_thong:he_thong_id(ten))",
+            )
             .is("den_ngay", null)
             .range(from, to),
         ),
         fetchAllRows<{
-          id: string; ma_thiet_bi: string; ten_thiet_bi: string | null; ma_serial: string | null;
-          loai_thiet_bi_id: string | null; don_vi_quan_ly_id: string | null; he_thong_id: string | null;
+          id: string;
+          ma_thiet_bi: string;
+          ten_thiet_bi: string | null;
+          ma_serial: string | null;
+          loai_thiet_bi_id: string | null;
+          don_vi_quan_ly_id: string | null;
+          he_thong_id: string | null;
           dm_trang_thai_thiet_bi: { ma: string; ten: string } | null;
         }>((from, to) =>
           supabase
-        .from("thiet_bi")
-        .select("id, ma_thiet_bi, ten_thiet_bi, ma_serial, loai_thiet_bi_id, don_vi_quan_ly_id, he_thong_id, vai_tro, dm_trang_thai_thiet_bi:trang_thai_id(ma, ten)")
-        .order("ma_thiet_bi")
+            .from("thiet_bi")
+            .select(
+              "id, ma_thiet_bi, ten_thiet_bi, ma_serial, loai_thiet_bi_id, don_vi_quan_ly_id, he_thong_id, vai_tro, dm_trang_thai_thiet_bi:trang_thai_id(ma, ten)",
+            )
+            .order("ma_thiet_bi")
 
             .range(from, to),
         ),
@@ -205,9 +230,14 @@ export function useThietBiRanh() {
       return tbRows
         .filter((r) => r.dm_trang_thai_thiet_bi?.ma !== "THANH_LY")
         .map((r) => ({
-          id: r.id, ma_thiet_bi: r.ma_thiet_bi, ten_thiet_bi: r.ten_thiet_bi, ma_serial: r.ma_serial,
-          loai_thiet_bi_id: r.loai_thiet_bi_id, don_vi_quan_ly_id: r.don_vi_quan_ly_id,
-          he_thong_id: r.he_thong_id, vai_tro: (r as any).vai_tro,
+          id: r.id,
+          ma_thiet_bi: r.ma_thiet_bi,
+          ten_thiet_bi: r.ten_thiet_bi,
+          ma_serial: r.ma_serial,
+          loai_thiet_bi_id: r.loai_thiet_bi_id,
+          don_vi_quan_ly_id: r.don_vi_quan_ly_id,
+          he_thong_id: r.he_thong_id,
+          vai_tro: (r as any).vai_tro,
 
           trang_thai_ma: r.dm_trang_thai_thiet_bi?.ma ?? null,
           trang_thai_ten: r.dm_trang_thai_thiet_bi?.ten ?? null,
@@ -217,7 +247,6 @@ export function useThietBiRanh() {
     },
   });
 }
-
 
 /** Tài sản có thể CHỌN để lắp/thay: TẤT CẢ tài sản chưa thanh lý (kể cả
  *  đang lắp ở nơi khác). Kèm cờ `dangLap` + vị trí hiện tại để giao diện gợi ý. */
@@ -232,23 +261,35 @@ export function useThietBiChon() {
       const [busyRows, tbRows] = await Promise.all([
         fetchAllRows<{
           thiet_bi_id: string;
-          he_thong_thanh_phan: { ten: string | null; dm_he_thong: { ten: string | null } | null } | null;
+          he_thong_thanh_phan: {
+            ten: string | null;
+            dm_he_thong: { ten: string | null } | null;
+          } | null;
         }>((from, to) =>
           supabase
             .from("gan_chuc_nang")
-            .select("thiet_bi_id, he_thong_thanh_phan:thanh_phan_id(ten, dm_he_thong:he_thong_id(ten))")
+            .select(
+              "thiet_bi_id, he_thong_thanh_phan:thanh_phan_id(ten, dm_he_thong:he_thong_id(ten))",
+            )
             .is("den_ngay", null)
             .range(from, to),
         ),
         fetchAllRows<{
-          id: string; ma_thiet_bi: string; ten_thiet_bi: string | null; ma_serial: string | null;
-          loai_thiet_bi_id: string | null; don_vi_quan_ly_id: string | null; he_thong_id: string | null;
+          id: string;
+          ma_thiet_bi: string;
+          ten_thiet_bi: string | null;
+          ma_serial: string | null;
+          loai_thiet_bi_id: string | null;
+          don_vi_quan_ly_id: string | null;
+          he_thong_id: string | null;
           dm_trang_thai_thiet_bi: { ma: string; ten: string } | null;
         }>((from, to) =>
           supabase
-        .from("thiet_bi")
-        .select("id, ma_thiet_bi, ten_thiet_bi, ma_serial, loai_thiet_bi_id, don_vi_quan_ly_id, he_thong_id, vai_tro, dm_trang_thai_thiet_bi:trang_thai_id(ma, ten)")
-        .order("ma_thiet_bi")
+            .from("thiet_bi")
+            .select(
+              "id, ma_thiet_bi, ten_thiet_bi, ma_serial, loai_thiet_bi_id, don_vi_quan_ly_id, he_thong_id, vai_tro, dm_trang_thai_thiet_bi:trang_thai_id(ma, ten)",
+            )
+            .order("ma_thiet_bi")
 
             .range(from, to),
         ),
@@ -264,9 +305,14 @@ export function useThietBiChon() {
       return tbRows
         .filter((r) => r.dm_trang_thai_thiet_bi?.ma !== "THANH_LY")
         .map((r) => ({
-          id: r.id, ma_thiet_bi: r.ma_thiet_bi, ten_thiet_bi: r.ten_thiet_bi, ma_serial: r.ma_serial,
-          loai_thiet_bi_id: r.loai_thiet_bi_id, don_vi_quan_ly_id: r.don_vi_quan_ly_id,
-          he_thong_id: r.he_thong_id, vai_tro: (r as any).vai_tro,
+          id: r.id,
+          ma_thiet_bi: r.ma_thiet_bi,
+          ten_thiet_bi: r.ten_thiet_bi,
+          ma_serial: r.ma_serial,
+          loai_thiet_bi_id: r.loai_thiet_bi_id,
+          don_vi_quan_ly_id: r.don_vi_quan_ly_id,
+          he_thong_id: r.he_thong_id,
+          vai_tro: (r as any).vai_tro,
 
           trang_thai_ma: r.dm_trang_thai_thiet_bi?.ma ?? null,
           trang_thai_ten: r.dm_trang_thai_thiet_bi?.ten ?? null,
@@ -278,10 +324,14 @@ export function useThietBiChon() {
   });
 }
 
-
 /** Vị trí chức năng kèm tài sản đang lắp (nếu có), dùng cho cây tổng. */
 export interface ViTriChucNangTree extends ViTriChucNang {
-  device: { thiet_bi_id: string; ma_thiet_bi: string; ten_thiet_bi: string | null; ma_serial: string | null } | null;
+  device: {
+    thiet_bi_id: string;
+    ma_thiet_bi: string;
+    ten_thiet_bi: string | null;
+    ma_serial: string | null;
+  } | null;
 }
 
 /**
@@ -293,7 +343,7 @@ export function useAllViTriChucNang() {
   return useQuery({
     queryKey: ["vi-tri-chuc-nang-all"] as const,
     queryFn: async (): Promise<Map<string, ViTriChucNangTree[]>> => {
-      const fetchAll = async <T,>(build: (from: number, to: number) => any): Promise<T[]> => {
+      const fetchAll = async <T>(build: (from: number, to: number) => any): Promise<T[]> => {
         const pageSize = 1000;
         let from = 0;
         const out: T[] = [];
@@ -311,19 +361,28 @@ export function useAllViTriChucNang() {
         fetchAll<ViTriChucNang>((from, to) =>
           supabase
             .from("he_thong_thanh_phan")
-            .select("id, he_thong_id, ma_thanh_phan, ten, loai_thiet_bi_yeu_cau, thanh_phan_cha, bat_buoc, thu_tu, mo_ta, trang_thai, hieu_luc_tu, hieu_luc_den, vi_tri_id, trang_thai_id")
+            .select(
+              "id, he_thong_id, ma_thanh_phan, ten, loai_thiet_bi_yeu_cau, thanh_phan_cha, bat_buoc, thu_tu, mo_ta, trang_thai, hieu_luc_tu, hieu_luc_den, vi_tri_id, trang_thai_id",
+            )
             .is("deleted_at" as never, null)
             .order("thu_tu", { ascending: true, nullsFirst: false })
             .order("ma_thanh_phan", { ascending: true })
             .range(from, to),
         ),
         fetchAll<{
-          thanh_phan_id: string; thiet_bi_id: string;
-          thiet_bi: { ma_thiet_bi: string; ten_thiet_bi: string | null; ma_serial: string | null } | null;
+          thanh_phan_id: string;
+          thiet_bi_id: string;
+          thiet_bi: {
+            ma_thiet_bi: string;
+            ten_thiet_bi: string | null;
+            ma_serial: string | null;
+          } | null;
         }>((from, to) =>
           supabase
             .from("gan_chuc_nang")
-            .select("thanh_phan_id, thiet_bi_id, thiet_bi:thiet_bi_id(ma_thiet_bi, ten_thiet_bi, ma_serial)")
+            .select(
+              "thanh_phan_id, thiet_bi_id, thiet_bi:thiet_bi_id(ma_thiet_bi, ten_thiet_bi, ma_serial)",
+            )
             .is("den_ngay", null)
             .range(from, to),
         ),
@@ -381,7 +440,9 @@ function useInvalidate(heThongId: string) {
 export function useLuuViTri(heThongId: string) {
   const invalidate = useInvalidate(heThongId);
   return useMutation({
-    mutationFn: async (input: Partial<ViTriChucNang> & { he_thong_id: string; ma_thanh_phan: string; ten: string }) => {
+    mutationFn: async (
+      input: Partial<ViTriChucNang> & { he_thong_id: string; ma_thanh_phan: string; ten: string },
+    ) => {
       if (input.id) {
         const { id, ...rest } = input;
         const { error } = await supabase.from("he_thong_thanh_phan").update(rest).eq("id", id);
@@ -411,7 +472,6 @@ export function useLuuViTri(heThongId: string) {
         throw error;
       }
       return data.id as string;
-
     },
     onSuccess: invalidate,
   });
@@ -421,7 +481,10 @@ export function useNgungViTri(heThongId: string) {
   const invalidate = useInvalidate(heThongId);
   return useMutation({
     mutationFn: async (viTriId: string) => {
-      const { error } = await supabase.from("he_thong_thanh_phan").update({ trang_thai: "ngung" }).eq("id", viTriId);
+      const { error } = await supabase
+        .from("he_thong_thanh_phan")
+        .update({ trang_thai: "ngung" })
+        .eq("id", viTriId);
       if (error) throw error;
     },
     onSuccess: invalidate,
@@ -437,9 +500,14 @@ export function useXoaViTri(heThongId: string) {
   return useMutation({
     mutationFn: async (viTriId: string) => {
       const { count, error: cErr } = await supabase
-        .from("gan_chuc_nang").select("id", { count: "exact", head: true }).eq("thanh_phan_id", viTriId);
+        .from("gan_chuc_nang")
+        .select("id", { count: "exact", head: true })
+        .eq("thanh_phan_id", viTriId);
       if (cErr) throw cErr;
-      if ((count ?? 0) > 0) throw new Error("Thành phần đã có lịch sử lắp/tháo tài sản — không xoá được. Hãy dùng 'Ngừng'.");
+      if ((count ?? 0) > 0)
+        throw new Error(
+          "Thành phần đã có lịch sử lắp/tháo tài sản — không xoá được. Hãy dùng 'Ngừng'.",
+        );
       const { error } = await supabase.from("he_thong_thanh_phan").delete().eq("id", viTriId);
       if (error) throw error;
     },
@@ -458,10 +526,22 @@ export function useDemLichSuThanhPhan(viTriId: string | null) {
     enabled: !!viTriId,
     queryFn: async () => {
       const [g, s, b, h] = await Promise.all([
-        supabase.from("gan_chuc_nang").select("id", { count: "exact", head: true }).eq("thanh_phan_id", viTriId!),
-        supabase.from("su_co").select("id", { count: "exact", head: true }).eq("thanh_phan_id", viTriId!),
-        supabase.from("bao_tri").select("id", { count: "exact", head: true }).eq("thanh_phan_id", viTriId!),
-        supabase.from("hong_hoc").select("id", { count: "exact", head: true }).eq("thanh_phan_id", viTriId!),
+        supabase
+          .from("gan_chuc_nang")
+          .select("id", { count: "exact", head: true })
+          .eq("thanh_phan_id", viTriId!),
+        supabase
+          .from("su_co")
+          .select("id", { count: "exact", head: true })
+          .eq("thanh_phan_id", viTriId!),
+        supabase
+          .from("bao_tri")
+          .select("id", { count: "exact", head: true })
+          .eq("thanh_phan_id", viTriId!),
+        supabase
+          .from("hong_hoc")
+          .select("id", { count: "exact", head: true })
+          .eq("thanh_phan_id", viTriId!),
       ]);
       return {
         gan: g.count ?? 0,
@@ -474,7 +554,13 @@ export function useDemLichSuThanhPhan(viTriId: string | null) {
 }
 
 export interface XoaCuongBucKetQua {
-  affected: { gan_chuc_nang: number; gan_chuc_nang_detached: number; su_co: number; bao_tri: number; hong_hoc: number };
+  affected: {
+    gan_chuc_nang: number;
+    gan_chuc_nang_detached: number;
+    su_co: number;
+    bao_tri: number;
+    hong_hoc: number;
+  };
 }
 
 /** Xoá cưỡng bức (soft-delete) qua RPC — kiểm quyền, đóng gan_chuc_nang đang hoạt động,
@@ -495,13 +581,46 @@ export function useXoaViTriForce(heThongId: string) {
 }
 
 export interface XemTruocXoaTP {
-  thanh_phan: { id: string; ma_thanh_phan: string; ten: string; he_thong_id: string; trang_thai: string; deleted_at: string | null };
+  thanh_phan: {
+    id: string;
+    ma_thanh_phan: string;
+    ten: string;
+    he_thong_id: string;
+    trang_thai: string;
+    deleted_at: string | null;
+  };
   counts: { gan: number; su_co: number; bao_tri: number; hong_hoc: number };
   samples: {
-    gan: Array<{ id: string; thiet_bi_id: string; ma_thiet_bi: string | null; ma_serial: string | null; tu_ngay: string | null; den_ngay: string | null; ly_do: string | null }>;
-    su_co: Array<{ id: string; ma_su_co: string | null; tieu_de: string | null; trang_thai: string | null; thoi_diem_phat_hien: string | null }>;
-    bao_tri: Array<{ id: string; ma_bao_tri: string | null; tieu_de: string | null; trang_thai: string | null; ngay_thuc_hien: string | null }>;
-    hong_hoc: Array<{ id: string; ma_hong_hoc: string | null; mo_ta: string | null; trang_thai: string | null; ngay_phat_hien: string | null }>;
+    gan: Array<{
+      id: string;
+      thiet_bi_id: string;
+      ma_thiet_bi: string | null;
+      ma_serial: string | null;
+      tu_ngay: string | null;
+      den_ngay: string | null;
+      ly_do: string | null;
+    }>;
+    su_co: Array<{
+      id: string;
+      ma_su_co: string | null;
+      tieu_de: string | null;
+      trang_thai: string | null;
+      thoi_diem_phat_hien: string | null;
+    }>;
+    bao_tri: Array<{
+      id: string;
+      ma_bao_tri: string | null;
+      tieu_de: string | null;
+      trang_thai: string | null;
+      ngay_thuc_hien: string | null;
+    }>;
+    hong_hoc: Array<{
+      id: string;
+      ma_hong_hoc: string | null;
+      mo_ta: string | null;
+      trang_thai: string | null;
+      ngay_phat_hien: string | null;
+    }>;
   };
 }
 
@@ -511,7 +630,9 @@ export function useXemTruocXoaThanhPhan(viTriId: string | null) {
     queryKey: ["xem-truoc-xoa-thanh-phan", viTriId],
     enabled: !!viTriId,
     queryFn: async (): Promise<XemTruocXoaTP> => {
-      const { data, error } = await (supabase.rpc as any)("xem_truoc_xoa_thanh_phan", { v_id: viTriId });
+      const { data, error } = await (supabase.rpc as any)("xem_truoc_xoa_thanh_phan", {
+        v_id: viTriId,
+      });
       if (error) throw error;
       return data as XemTruocXoaTP;
     },
@@ -532,8 +653,13 @@ export function useKhoiPhucThanhPhan(heThongId: string) {
 
 /** Danh sách thành phần đã xoá mềm còn trong thời hạn khôi phục 30 ngày. */
 export interface ThanhPhanDaXoa {
-  id: string; ma_thanh_phan: string; ten: string; he_thong_id: string;
-  deleted_at: string; deleted_by: string | null; deleted_reason: string | null;
+  id: string;
+  ma_thanh_phan: string;
+  ten: string;
+  he_thong_id: string;
+  deleted_at: string;
+  deleted_by: string | null;
+  deleted_reason: string | null;
 }
 export function useThanhPhanDaXoa(heThongId: string) {
   return useQuery({
@@ -543,7 +669,9 @@ export function useThanhPhanDaXoa(heThongId: string) {
       const cutoff = new Date(Date.now() - 30 * 24 * 3600_000).toISOString();
       const { data, error } = await supabase
         .from("he_thong_thanh_phan")
-        .select("id, ma_thanh_phan, ten, he_thong_id, deleted_at, deleted_by, deleted_reason" as never)
+        .select(
+          "id, ma_thanh_phan, ten, he_thong_id, deleted_at, deleted_by, deleted_reason" as never,
+        )
         .eq("he_thong_id", heThongId)
         .not("deleted_at" as never, "is", null)
         .gte("deleted_at" as never, cutoff)
@@ -553,7 +681,6 @@ export function useThanhPhanDaXoa(heThongId: string) {
     },
   });
 }
-
 
 /**
  * Đổi vị trí hai thành phần trong cùng hệ thống (nhấn Lên / Xuống).
@@ -567,9 +694,13 @@ export function useDoiThuTuViTri(heThongId: string) {
     mutationFn: async (orderedIds: string[]) => {
       await Promise.all(
         orderedIds.map((id, i) =>
-          supabase.from("he_thong_thanh_phan").update({ thu_tu: i } as never).eq("id", id).then(({ error }) => {
-            if (error) throw error;
-          }),
+          supabase
+            .from("he_thong_thanh_phan")
+            .update({ thu_tu: i } as never)
+            .eq("id", id)
+            .then(({ error }) => {
+              if (error) throw error;
+            }),
         ),
       );
     },
@@ -606,9 +737,14 @@ async function ghiLogLapThao(
 ) {
   try {
     await supabase.rpc("log_app_event", {
-      _action: action, _entity: "gan_chuc_nang", _entity_id: entityId ?? "", _detail: detail as never,
+      _action: action,
+      _entity: "gan_chuc_nang",
+      _entity_id: entityId ?? "",
+      _detail: detail as never,
     });
-  } catch { /* bỏ qua */ }
+  } catch {
+    /* bỏ qua */
+  }
 }
 
 /** Lắp tài sản: RPC `lap_tai_san_vao_thanh_phan` — tự đóng bản ghi active
@@ -617,10 +753,23 @@ async function ghiLogLapThao(
 export function useLapThietBi(heThongId: string) {
   const invalidate = useInvalidate(heThongId);
   return useMutation({
-    mutationFn: async (p: { thanhPhanId: string; thietBiId: string; lyDo?: string; ghiChu?: string }): Promise<string> => {
+    mutationFn: async (p: {
+      thanhPhanId: string;
+      thietBiId: string;
+      lyDo?: string;
+      ghiChu?: string;
+    }): Promise<string> => {
       const [tbSnap, tpSnap] = await Promise.all([
-        supabase.from("thiet_bi").select("ma_thiet_bi, vi_tri_id").eq("id", p.thietBiId).maybeSingle(),
-        supabase.from("he_thong_thanh_phan").select("ma_thanh_phan, vi_tri_id").eq("id", p.thanhPhanId).maybeSingle(),
+        supabase
+          .from("thiet_bi")
+          .select("ma_thiet_bi, vi_tri_id")
+          .eq("id", p.thietBiId)
+          .maybeSingle(),
+        supabase
+          .from("he_thong_thanh_phan")
+          .select("ma_thanh_phan, vi_tri_id")
+          .eq("id", p.thanhPhanId)
+          .maybeSingle(),
       ]);
       const { data, error } = await supabase.rpc("lap_tai_san_vao_thanh_phan", {
         p_thanh_phan_id: p.thanhPhanId,
@@ -631,12 +780,21 @@ export function useLapThietBi(heThongId: string) {
       if (error) throw error;
       const ganId = String(data ?? "");
       if (ganId) {
-        await ghiLogLapThao("lap_tai_san", {
-          gan_id: ganId, thanh_phan_id: p.thanhPhanId, thiet_bi_id: p.thietBiId,
-          ma_thiet_bi: tbSnap.data?.ma_thiet_bi ?? null, ma_thanh_phan: tpSnap.data?.ma_thanh_phan ?? null,
-          vi_tri_tu_id: tbSnap.data?.vi_tri_id ?? null, vi_tri_den_id: tpSnap.data?.vi_tri_id ?? null,
-          ly_do: p.lyDo ?? "lắp mới", ghi_chu: p.ghiChu ?? null,
-        }, ganId);
+        await ghiLogLapThao(
+          "lap_tai_san",
+          {
+            gan_id: ganId,
+            thanh_phan_id: p.thanhPhanId,
+            thiet_bi_id: p.thietBiId,
+            ma_thiet_bi: tbSnap.data?.ma_thiet_bi ?? null,
+            ma_thanh_phan: tpSnap.data?.ma_thanh_phan ?? null,
+            vi_tri_tu_id: tbSnap.data?.vi_tri_id ?? null,
+            vi_tri_den_id: tpSnap.data?.vi_tri_id ?? null,
+            ly_do: p.lyDo ?? "lắp mới",
+            ghi_chu: p.ghiChu ?? null,
+          },
+          ganId,
+        );
       }
       return ganId;
     },
@@ -650,31 +808,53 @@ export function useLapThietBi(heThongId: string) {
 export function useThaoThietBi(heThongId: string) {
   const invalidate = useInvalidate(heThongId);
   return useMutation({
-    mutationFn: async (p: { thanhPhanId: string; lyDo?: string; ghiChu?: string; newViTriId?: string | null }) => {
+    mutationFn: async (p: {
+      thanhPhanId: string;
+      lyDo?: string;
+      ghiChu?: string;
+      newViTriId?: string | null;
+    }) => {
       const { data: ganRow, error: ganErr } = await supabase
         .from("gan_chuc_nang")
-        .select("id, thiet_bi_id, thiet_bi:thiet_bi_id(ma_thiet_bi, vi_tri_id), he_thong_thanh_phan:thanh_phan_id(ma_thanh_phan, vi_tri_id)")
-        .eq("thanh_phan_id", p.thanhPhanId).is("den_ngay", null).maybeSingle();
+        .select(
+          "id, thiet_bi_id, thiet_bi:thiet_bi_id(ma_thiet_bi, vi_tri_id), he_thong_thanh_phan:thanh_phan_id(ma_thanh_phan, vi_tri_id)",
+        )
+        .eq("thanh_phan_id", p.thanhPhanId)
+        .is("den_ngay", null)
+        .maybeSingle();
       if (ganErr) throw ganErr;
       if (!ganRow) throw new Error("Không tìm thấy bản ghi lắp đang hoạt động để tháo");
       const gan = ganRow as unknown as {
-        id: string; thiet_bi_id: string;
+        id: string;
+        thiet_bi_id: string;
         thiet_bi: { ma_thiet_bi: string; vi_tri_id: string | null } | null;
         he_thong_thanh_phan: { ma_thanh_phan: string; vi_tri_id: string | null } | null;
       };
-      const newVt = p.newViTriId ?? gan.thiet_bi?.vi_tri_id ?? gan.he_thong_thanh_phan?.vi_tri_id ?? null;
+      const newVt =
+        p.newViTriId ?? gan.thiet_bi?.vi_tri_id ?? gan.he_thong_thanh_phan?.vi_tri_id ?? null;
       if (!newVt) throw new Error("Không xác định được vị trí đích khi tháo — cần chọn thủ công");
       const { error } = await supabase.rpc("thao_tai_san_khoi_thanh_phan", {
-        p_gan_id: gan.id, p_new_vi_tri_id: newVt,
-        p_ly_do: p.lyDo ?? "tháo", p_ghi_chu: p.ghiChu ?? undefined,
+        p_gan_id: gan.id,
+        p_new_vi_tri_id: newVt,
+        p_ly_do: p.lyDo ?? "tháo",
+        p_ghi_chu: p.ghiChu ?? undefined,
       });
       if (error) throw error;
-      await ghiLogLapThao("thao_tai_san", {
-        gan_id: gan.id, thanh_phan_id: p.thanhPhanId, thiet_bi_id: gan.thiet_bi_id,
-        ma_thiet_bi: gan.thiet_bi?.ma_thiet_bi ?? null, ma_thanh_phan: gan.he_thong_thanh_phan?.ma_thanh_phan ?? null,
-        vi_tri_tu_id: gan.he_thong_thanh_phan?.vi_tri_id ?? null, vi_tri_den_id: newVt,
-        ly_do: p.lyDo ?? "tháo", ghi_chu: p.ghiChu ?? null,
-      }, gan.id);
+      await ghiLogLapThao(
+        "thao_tai_san",
+        {
+          gan_id: gan.id,
+          thanh_phan_id: p.thanhPhanId,
+          thiet_bi_id: gan.thiet_bi_id,
+          ma_thiet_bi: gan.thiet_bi?.ma_thiet_bi ?? null,
+          ma_thanh_phan: gan.he_thong_thanh_phan?.ma_thanh_phan ?? null,
+          vi_tri_tu_id: gan.he_thong_thanh_phan?.vi_tri_id ?? null,
+          vi_tri_den_id: newVt,
+          ly_do: p.lyDo ?? "tháo",
+          ghi_chu: p.ghiChu ?? null,
+        },
+        gan.id,
+      );
     },
     onSuccess: invalidate,
   });
@@ -686,21 +866,38 @@ export function useThaoTaiSan(heThongId: string) {
   const invalidate = useInvalidate(heThongId);
   return useMutation({
     mutationFn: async (p: {
-      ganId: string; newViTriId: string; lyDo?: string; ghiChu?: string;
-      thanhPhanId?: string; thietBiId?: string; viTriTuId?: string | null;
-      maThietBi?: string | null; maThanhPhan?: string | null;
+      ganId: string;
+      newViTriId: string;
+      lyDo?: string;
+      ghiChu?: string;
+      thanhPhanId?: string;
+      thietBiId?: string;
+      viTriTuId?: string | null;
+      maThietBi?: string | null;
+      maThanhPhan?: string | null;
     }) => {
       const { error } = await supabase.rpc("thao_tai_san_khoi_thanh_phan", {
-        p_gan_id: p.ganId, p_new_vi_tri_id: p.newViTriId,
-        p_ly_do: p.lyDo ?? "tháo", p_ghi_chu: p.ghiChu ?? undefined,
+        p_gan_id: p.ganId,
+        p_new_vi_tri_id: p.newViTriId,
+        p_ly_do: p.lyDo ?? "tháo",
+        p_ghi_chu: p.ghiChu ?? undefined,
       });
       if (error) throw error;
-      await ghiLogLapThao("thao_tai_san", {
-        gan_id: p.ganId, thanh_phan_id: p.thanhPhanId ?? null, thiet_bi_id: p.thietBiId ?? null,
-        ma_thiet_bi: p.maThietBi ?? null, ma_thanh_phan: p.maThanhPhan ?? null,
-        vi_tri_tu_id: p.viTriTuId ?? null, vi_tri_den_id: p.newViTriId,
-        ly_do: p.lyDo ?? "tháo", ghi_chu: p.ghiChu ?? null,
-      }, p.ganId);
+      await ghiLogLapThao(
+        "thao_tai_san",
+        {
+          gan_id: p.ganId,
+          thanh_phan_id: p.thanhPhanId ?? null,
+          thiet_bi_id: p.thietBiId ?? null,
+          ma_thiet_bi: p.maThietBi ?? null,
+          ma_thanh_phan: p.maThanhPhan ?? null,
+          vi_tri_tu_id: p.viTriTuId ?? null,
+          vi_tri_den_id: p.newViTriId,
+          ly_do: p.lyDo ?? "tháo",
+          ghi_chu: p.ghiChu ?? null,
+        },
+        p.ganId,
+      );
     },
     onSuccess: invalidate,
   });
@@ -732,19 +929,23 @@ export function useThayTheThietBi(heThongId: string) {
       });
       if (error) throw error;
       const newGanId = (data as string | null) ?? null;
-      await ghiLogLapThao("thay_the_tai_san", {
-        gan_id_moi: newGanId,
-        thanh_phan_id: p.thanhPhanId,
-        ma_thanh_phan: p.maThanhPhan ?? null,
-        thiet_bi_cu_id: p.thietBiCuId ?? null,
-        ma_thiet_bi_cu: p.maThietBiCu ?? null,
-        thiet_bi_moi_id: p.thietBiMoiId,
-        ma_thiet_bi_moi: p.maThietBiMoi ?? null,
-        vi_tri_tu_id: p.viTriTuId ?? null,
-        vi_tri_den_tai_san_cu_id: p.viTriTaiSanCuId ?? null,
-        hong_hoc_id: p.hongHocId ?? null,
-        ghi_chu: p.ghiChu ?? null,
-      }, newGanId);
+      await ghiLogLapThao(
+        "thay_the_tai_san",
+        {
+          gan_id_moi: newGanId,
+          thanh_phan_id: p.thanhPhanId,
+          ma_thanh_phan: p.maThanhPhan ?? null,
+          thiet_bi_cu_id: p.thietBiCuId ?? null,
+          ma_thiet_bi_cu: p.maThietBiCu ?? null,
+          thiet_bi_moi_id: p.thietBiMoiId,
+          ma_thiet_bi_moi: p.maThietBiMoi ?? null,
+          vi_tri_tu_id: p.viTriTuId ?? null,
+          vi_tri_den_tai_san_cu_id: p.viTriTaiSanCuId ?? null,
+          hong_hoc_id: p.hongHocId ?? null,
+          ghi_chu: p.ghiChu ?? null,
+        },
+        newGanId,
+      );
       return newGanId;
     },
     onSuccess: invalidate,
@@ -756,7 +957,9 @@ export function useDieuChuyen(heThongId: string) {
   return useMutation({
     mutationFn: async (p: { thietBiId: string; thanhPhanDich: string; ghiChu?: string }) => {
       const { error } = await supabase.rpc("dieu_chuyen", {
-        p_thiet_bi_id: p.thietBiId, p_thanh_phan_dich: p.thanhPhanDich, p_ghi_chu: p.ghiChu ?? undefined,
+        p_thiet_bi_id: p.thietBiId,
+        p_thanh_phan_dich: p.thanhPhanDich,
+        p_ghi_chu: p.ghiChu ?? undefined,
       });
       if (error) throw error;
     },
@@ -785,7 +988,9 @@ export function useLyLichViTri(thanhPhanId: string | null) {
     queryFn: async (): Promise<LyLichViTriRow[]> => {
       const { data, error } = await supabase
         .from("v_ly_lich_vi_tri_chuc_nang")
-        .select("gan_id, thiet_bi_id, ma_thiet_bi, ten_thiet_bi, ma_serial, tu_ngay, den_ngay, ly_do, hong_hoc_id")
+        .select(
+          "gan_id, thiet_bi_id, ma_thiet_bi, ten_thiet_bi, ma_serial, tu_ngay, den_ngay, ly_do, hong_hoc_id",
+        )
         .eq("thanh_phan_id", thanhPhanId!)
         .order("tu_ngay", { ascending: false });
       if (error) throw error;
@@ -842,7 +1047,9 @@ export function useLyLichThanhPhan(thanhPhanId: string | null) {
     queryFn: async (): Promise<LyLichEventRow[]> => {
       const { data, error } = await supabase
         .from("v_ly_lich_thanh_phan")
-        .select("thoi_diem, loai_su_kien, tieu_de, mo_ta, nguon, nguon_id, thiet_bi_id, ma_thiet_bi")
+        .select(
+          "thoi_diem, loai_su_kien, tieu_de, mo_ta, nguon, nguon_id, thiet_bi_id, ma_thiet_bi",
+        )
         .eq("thanh_phan_id", thanhPhanId!)
         .order("thoi_diem", { ascending: false, nullsFirst: false });
       if (error) throw error;
@@ -859,7 +1066,9 @@ export function useLyLichHeThong(heThongId: string | null) {
     queryFn: async (): Promise<LyLichEventRow[]> => {
       const { data, error } = await supabase
         .from("v_ly_lich_he_thong")
-        .select("thoi_diem, loai_su_kien, tieu_de, mo_ta, nguon, nguon_id, thiet_bi_id, thanh_phan_id")
+        .select(
+          "thoi_diem, loai_su_kien, tieu_de, mo_ta, nguon, nguon_id, thiet_bi_id, thanh_phan_id",
+        )
         .eq("he_thong_id", heThongId!)
         .order("thoi_diem", { ascending: false, nullsFirst: false });
       if (error) throw error;
@@ -891,9 +1100,6 @@ export function useSuaNgayLap() {
     },
   });
 }
-
-
-
 
 // ---------------------------------------------------------------------------
 // VAI TRÒ HIỆN TẠI của một tài sản cụ thể: tài sản này đang được lắp vào
@@ -930,9 +1136,14 @@ export function useVaiTroThietBi(thietBiId: string | null) {
         .order("tu_ngay", { ascending: true });
       if (error) throw error;
       const rows = (data ?? []) as unknown as Array<{
-        id: string; thanh_phan_id: string; tu_ngay: string; ly_do: string;
+        id: string;
+        thanh_phan_id: string;
+        tu_ngay: string;
+        ly_do: string;
         he_thong_thanh_phan: {
-          ma_thanh_phan: string; ten: string; he_thong_id: string;
+          ma_thanh_phan: string;
+          ten: string;
+          he_thong_id: string;
           dm_he_thong: { ten: string } | null;
         } | null;
       }>;
@@ -1026,11 +1237,12 @@ export function isDescendantOf<T extends { id: string; thanh_phan_cha: string | 
 // (dùng để tô màu / hiện badge trong cây/bảng thành phần).
 // ---------------------------------------------------------------------------
 export interface MultiRoleInfo {
-  count: number;                     // tổng vai trò hiện hành của tài sản
+  count: number; // tổng vai trò hiện hành của tài sản
   thiet_bi_id: string;
   ma_thiet_bi: string;
   ma_serial: string | null;
-  roles: Array<{                    // danh sách vai trò để popover
+  roles: Array<{
+    // danh sách vai trò để popover
     thanh_phan_id: string;
     ma_thanh_phan: string;
     ten_thanh_phan: string;
@@ -1131,7 +1343,9 @@ export function useThanhPhanKpi(thanhPhanId: string | null) {
     queryKey: ["thanh-phan-kpi", thanhPhanId],
     enabled: Boolean(thanhPhanId),
     queryFn: async (): Promise<ThanhPhanKpi> => {
-      const { data, error } = await (supabase.rpc as any)("thanh_phan_kpi", { _tp_id: thanhPhanId });
+      const { data, error } = await (supabase.rpc as any)("thanh_phan_kpi", {
+        _tp_id: thanhPhanId,
+      });
       if (error) throw error;
       return (data ?? {}) as ThanhPhanKpi;
     },
@@ -1156,7 +1370,9 @@ export function useThanhPhanTaiSanHistory(thanhPhanId: string | null) {
     queryKey: ["thanh-phan-tai-san-history", thanhPhanId],
     enabled: Boolean(thanhPhanId),
     queryFn: async (): Promise<ThanhPhanTaiSanHistoryRow[]> => {
-      const { data, error } = await (supabase.rpc as any)("thanh_phan_tai_san_history", { _tp_id: thanhPhanId });
+      const { data, error } = await (supabase.rpc as any)("thanh_phan_tai_san_history", {
+        _tp_id: thanhPhanId,
+      });
       if (error) throw error;
       return (data ?? []) as ThanhPhanTaiSanHistoryRow[];
     },

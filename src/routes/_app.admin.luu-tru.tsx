@@ -1,6 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { HardDrive, Cloud, Loader2, Save, ShieldAlert, ArrowRight, Eye, EyeOff, PlugZap, History, RefreshCw, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
+import {
+  HardDrive,
+  Cloud,
+  Loader2,
+  Save,
+  ShieldAlert,
+  ArrowRight,
+  Eye,
+  EyeOff,
+  PlugZap,
+  History,
+  RefreshCw,
+  CheckCircle2,
+  XCircle,
+  AlertTriangle,
+} from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Input } from "@/components/ui/input";
@@ -22,23 +37,51 @@ import { toast } from "sonner";
 import { FullDumpButton } from "@/components/mirats/FullDumpButton";
 import { DumpZipRestore } from "@/components/mirats/DumpZipRestore";
 import { r2Ping } from "@/lib/mirats/r2.functions";
-import { runStorageHealthCheck, listStorageHealthChecks } from "@/lib/mirats/health-check.functions";
-import { validateR2Config, hasBlockingIssue, type R2ValidationIssue } from "@/lib/mirats/r2-validate";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
-  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  runStorageHealthCheck,
+  listStorageHealthChecks,
+} from "@/lib/mirats/health-check.functions";
+import {
+  validateR2Config,
+  hasBlockingIssue,
+  type R2ValidationIssue,
+} from "@/lib/mirats/r2-validate";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
-  useStorageConfig, useSaveStorageConfig, toMode, fromMode, MODE_LABEL,
-  DEFAULT_STORAGE_CONFIG, type StorageMode,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  useStorageConfig,
+  useSaveStorageConfig,
+  toMode,
+  fromMode,
+  MODE_LABEL,
+  DEFAULT_STORAGE_CONFIG,
+  type StorageMode,
 } from "@/lib/mirats/storage-config";
 
 export const Route = createFileRoute("/_app/admin/luu-tru")({
   head: () => ({
     meta: [
       { title: "Lưu trữ tệp — Quản trị MIRATS" },
-      { name: "description", content: "Cấu hình backend lưu trữ (Lovable Cloud & Cloudflare R2) chạy song song." },
+      {
+        name: "description",
+        content: "Cấu hình backend lưu trữ (Lovable Cloud & Cloudflare R2) chạy song song.",
+      },
     ],
   }),
   component: Page,
@@ -58,7 +101,10 @@ function Content() {
   const [autoFallback, setAutoFallback] = useState(DEFAULT_STORAGE_CONFIG.autoFallback);
 
   useEffect(() => {
-    if (data) { setMode(toMode(data)); setAutoFallback(data.autoFallback); }
+    if (data) {
+      setMode(toMode(data));
+      setAutoFallback(data.autoFallback);
+    }
   }, [data]);
 
   const currentMode = data ? toMode(data) : null;
@@ -95,16 +141,15 @@ function Content() {
       <PageHeader
         title="Lưu trữ tệp"
         subtitle="Bật/tắt kho lưu trữ: chỉ Lovable Cloud, chỉ Cloudflare R2, hoặc ghi song song cả hai."
-        breadcrumbs={[
-          { label: "Quản trị", to: "/admin/forms" },
-          { label: "Lưu trữ" }
-        ]}
+        breadcrumbs={[{ label: "Quản trị", to: "/admin/forms" }, { label: "Lưu trữ" }]}
         icon={HardDrive}
       />
 
       <div className="flex flex-1 overflow-hidden">
         <StartPanel className="p-4 space-y-2">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-2 mb-2">Danh mục</div>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-2 mb-2">
+            Danh mục
+          </div>
           <Button variant="ghost" size="sm" className="w-full justify-start gap-2 bg-accent/50">
             <PlugZap className="h-4 w-4" /> Cấu hình chung
           </Button>
@@ -136,12 +181,20 @@ function Content() {
                   <div className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm">
                     <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
                     <div className="space-y-1">
-                      <p className="font-medium text-destructive">Cloudflare R2 đang lỗi — tệp mới có thể không ghi được.</p>
+                      <p className="font-medium text-destructive">
+                        Cloudflare R2 đang lỗi — tệp mới có thể không ghi được.
+                      </p>
                       <p className="text-xs text-muted-foreground">{health.data.message}</p>
                       <p className="text-xs text-muted-foreground">
-                        Chuyển sang <strong>Chỉ dùng Lovable Cloud</strong> bên dưới để hệ thống tiếp tục hoạt động bình thường.
+                        Chuyển sang <strong>Chỉ dùng Lovable Cloud</strong> bên dưới để hệ thống
+                        tiếp tục hoạt động bình thường.
                       </p>
-                      <Button size="sm" variant="outline" className="mt-1" onClick={() => setMode("cloud")}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="mt-1"
+                        onClick={() => setMode("cloud")}
+                      >
                         Chọn “Chỉ dùng Lovable Cloud”
                       </Button>
                     </div>
@@ -155,27 +208,35 @@ function Content() {
                   <CardHeader>
                     <CardTitle className="astryx-heading-3">Chế độ lưu trữ</CardTitle>
                     <CardDescription className="astryx-text-muted">
-                      Chọn kho lưu trữ đang bật. Chế độ “chỉ một kho” sẽ ghi và đọc hoàn toàn ở kho đó.
+                      Chọn kho lưu trữ đang bật. Chế độ “chỉ một kho” sẽ ghi và đọc hoàn toàn ở kho
+                      đó.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <RadioGroup value={mode} onValueChange={(v) => setMode(v as StorageMode)} className="grid gap-3 md:grid-cols-3">
+                    <RadioGroup
+                      value={mode}
+                      onValueChange={(v) => setMode(v as StorageMode)}
+                      className="grid gap-3 md:grid-cols-3"
+                    >
                       <BackendOption
-                        value="cloud" checked={mode === "cloud"}
+                        value="cloud"
+                        checked={mode === "cloud"}
                         icon={<Cloud className="h-5 w-5" />}
                         title={MODE_LABEL.cloud}
                         desc="Supabase Storage tích hợp sẵn, không cần cấu hình thêm."
                         active={currentMode === "cloud"}
                       />
                       <BackendOption
-                        value="r2" checked={mode === "r2"}
+                        value="r2"
+                        checked={mode === "r2"}
                         icon={<HardDrive className="h-5 w-5" />}
                         title={MODE_LABEL.r2}
                         desc="Kho object riêng, presigned URL, chi phí thấp."
                         active={currentMode === "r2"}
                       />
                       <BackendOption
-                        value="dual" checked={mode === "dual"}
+                        value="dual"
+                        checked={mode === "dual"}
                         icon={<RefreshCw className="h-5 w-5" />}
                         title={MODE_LABEL.dual}
                         desc="Mỗi tệp mới ghi sang cả hai kho — dùng khi chuyển đổi."
@@ -189,23 +250,41 @@ function Content() {
                   <CardHeader>
                     <CardTitle className="astryx-heading-3">Dự phòng tự động</CardTitle>
                     <CardDescription className="astryx-text-muted">
-                      Nếu kho đang bật báo lỗi, hệ thống ghi tạm tệp sang kho còn lại và hiện cảnh báo.
+                      Nếu kho đang bật báo lỗi, hệ thống ghi tạm tệp sang kho còn lại và hiện cảnh
+                      báo.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="flex items-center justify-between gap-4">
                     <div className="space-y-1">
-                      <Label htmlFor="autoFallback" className="text-[13px] font-medium uppercase tracking-wider text-muted-foreground">Bật dự phòng</Label>
+                      <Label
+                        htmlFor="autoFallback"
+                        className="text-[13px] font-medium uppercase tracking-wider text-muted-foreground"
+                      >
+                        Bật dự phòng
+                      </Label>
                       <p className="text-xs text-muted-foreground">
                         Khi tắt: kho đang chọn lỗi thì thao tác tải lên sẽ báo lỗi ngay.
                       </p>
                     </div>
-                    <Switch id="autoFallback" checked={autoFallback} onCheckedChange={setAutoFallback} />
+                    <Switch
+                      id="autoFallback"
+                      checked={autoFallback}
+                      onCheckedChange={setAutoFallback}
+                    />
                   </CardContent>
                 </Card>
 
                 <div className="flex items-center gap-2">
-                  <Button onClick={onSave} disabled={!dirty || save.isPending} className="gap-1.5 h-8">
-                    {save.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+                  <Button
+                    onClick={onSave}
+                    disabled={!dirty || save.isPending}
+                    className="gap-1.5 h-8"
+                  >
+                    {save.isPending ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Save className="h-3.5 w-3.5" />
+                    )}
                     Lưu cấu hình
                   </Button>
                   {dirty && (
@@ -217,7 +296,9 @@ function Content() {
                         </Badge>
                       )}
                       {data?.autoFallback !== autoFallback && (
-                        <Badge variant="outline" className="text-[9px] py-0">DỰ PHÒNG: {autoFallback ? "BẬT" : "TẮT"}</Badge>
+                        <Badge variant="outline" className="text-[9px] py-0">
+                          DỰ PHÒNG: {autoFallback ? "BẬT" : "TẮT"}
+                        </Badge>
                       )}
                     </div>
                   )}
@@ -234,14 +315,19 @@ function Content() {
                     </div>
                   </CardHeader>
                   <CardContent className="text-[11px] text-amber-700/80 leading-relaxed">
-                    <p>Cấu hình này chỉ ảnh hưởng các luồng upload đã tích hợp <code>dualUpload()</code>. Các luồng cũ vẫn ghi trực tiếp về Supabase Storage.</p>
+                    <p>
+                      Cấu hình này chỉ ảnh hưởng các luồng upload đã tích hợp{" "}
+                      <code>dualUpload()</code>. Các luồng cũ vẫn ghi trực tiếp về Supabase Storage.
+                    </p>
                   </CardContent>
                 </Card>
 
                 <Card className="astryx-surface">
                   <CardHeader>
                     <CardTitle className="astryx-heading-3">Sao lưu & Phục hồi</CardTitle>
-                    <CardDescription className="astryx-text-muted">Quản trị toàn bộ dữ liệu CSDL và tệp đính kèm.</CardDescription>
+                    <CardDescription className="astryx-text-muted">
+                      Quản trị toàn bộ dữ liệu CSDL và tệp đính kèm.
+                    </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="space-y-3">
@@ -264,8 +350,20 @@ function Content() {
 }
 
 function BackendOption({
-  value, checked, icon, title, desc, active,
-}: { value: string; checked: boolean; icon: React.ReactNode; title: string; desc: string; active?: boolean }) {
+  value,
+  checked,
+  icon,
+  title,
+  desc,
+  active,
+}: {
+  value: string;
+  checked: boolean;
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+  active?: boolean;
+}) {
   return (
     <label
       htmlFor={`bk-${value}`}
@@ -278,7 +376,11 @@ function BackendOption({
         <div className="flex items-center gap-2">
           <span className="text-muted-foreground">{icon}</span>
           <span className="text-sm font-medium">{title}</span>
-          {active && <Badge variant="secondary" className="text-[10px]">Đang dùng</Badge>}
+          {active && (
+            <Badge variant="secondary" className="text-[10px]">
+              Đang dùng
+            </Badge>
+          )}
         </div>
         <p className="text-xs text-muted-foreground">{desc}</p>
       </div>
@@ -299,12 +401,22 @@ function R2ParamsCard() {
   });
 
   const [form, setForm] = useState({
-    enabled: false, endpoint: "", accountId: "", bucketName: "",
-    keyPrefix: "", publicBaseUrl: "", accessKeyId: "", secretAccessKey: "",
+    enabled: false,
+    endpoint: "",
+    accountId: "",
+    bucketName: "",
+    keyPrefix: "",
+    publicBaseUrl: "",
+    accessKeyId: "",
+    secretAccessKey: "",
   });
   const [showSecret, setShowSecret] = useState(false);
   const [testing, setTesting] = useState(false);
-  const [testResult, setTestResult] = useState<{ ok: boolean; message: string; steps?: { ten: string; ok: boolean; message: string }[] } | null>(null);
+  const [testResult, setTestResult] = useState<{
+    ok: boolean;
+    message: string;
+    steps?: { ten: string; ok: boolean; message: string }[];
+  } | null>(null);
   const [confirmIssues, setConfirmIssues] = useState<R2ValidationIssue[] | null>(null);
 
   const liveIssues = validateR2Config({ ...form, hasStoredSecret: !!cfg?.hasSecret });
@@ -334,7 +446,10 @@ function R2ParamsCard() {
   });
 
   function onSaveClick() {
-    if (liveIssues.length > 0) { setConfirmIssues(liveIssues); return; }
+    if (liveIssues.length > 0) {
+      setConfirmIssues(liveIssues);
+      return;
+    }
     mSave.mutate(false);
   }
 
@@ -365,7 +480,8 @@ function R2ParamsCard() {
           <div>
             <CardTitle className="text-base">Tham số Cloudflare R2</CardTitle>
             <CardDescription>
-              Nhập thông tin kết nối R2 tại đây. Khi để trống, hệ thống dùng biến môi trường của máy chủ.
+              Nhập thông tin kết nối R2 tại đây. Khi để trống, hệ thống dùng biến môi trường của máy
+              chủ.
             </CardDescription>
           </div>
           {cfg && (
@@ -384,72 +500,121 @@ function R2ParamsCard() {
           <>
             <div className="flex items-center justify-between gap-4 rounded-md border p-3">
               <div className="space-y-1">
-                <Label htmlFor="r2Enabled" className="text-sm font-medium">Kích hoạt R2</Label>
-                <p className="text-xs text-muted-foreground">Tắt sẽ bỏ qua mọi thao tác ghi/đọc trên R2.</p>
+                <Label htmlFor="r2Enabled" className="text-sm font-medium">
+                  Kích hoạt R2
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Tắt sẽ bỏ qua mọi thao tác ghi/đọc trên R2.
+                </p>
               </div>
-              <Switch id="r2Enabled" checked={form.enabled} onCheckedChange={(v) => set("enabled", v)} />
+              <Switch
+                id="r2Enabled"
+                checked={form.enabled}
+                onCheckedChange={(v) => set("enabled", v)}
+              />
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               <Field
-                id="r2Endpoint" label="Endpoint (S3 API)" value={form.endpoint}
+                id="r2Endpoint"
+                label="Endpoint (S3 API)"
+                value={form.endpoint}
                 onChange={(v) => set("endpoint", v)}
                 placeholder="https://<account_id>.r2.cloudflarestorage.com"
                 hint="Lấy trong Cloudflare → R2 → Settings → S3 API."
               />
               <Field
-                id="r2Account" label="Account ID" value={form.accountId}
-                onChange={(v) => set("accountId", v)} placeholder="32 ký tự hex"
+                id="r2Account"
+                label="Account ID"
+                value={form.accountId}
+                onChange={(v) => set("accountId", v)}
+                placeholder="32 ký tự hex"
                 hint="Tuỳ chọn — dùng để hiển thị/đối chiếu."
               />
               <Field
-                id="r2Bucket" label="Tên bucket" value={form.bucketName}
-                onChange={(v) => set("bucketName", v)} placeholder="mirats-files"
+                id="r2Bucket"
+                label="Tên bucket"
+                value={form.bucketName}
+                onChange={(v) => set("bucketName", v)}
+                placeholder="mirats-files"
                 hint="Bucket lưu tệp của hệ thống."
               />
               <Field
-                id="r2Prefix" label="Tiền tố thư mục (prefix)" value={form.keyPrefix}
-                onChange={(v) => set("keyPrefix", v)} placeholder="mirats/"
+                id="r2Prefix"
+                label="Tiền tố thư mục (prefix)"
+                value={form.keyPrefix}
+                onChange={(v) => set("keyPrefix", v)}
+                placeholder="mirats/"
                 hint="Tuỳ chọn — dùng khi chia sẻ bucket với ứng dụng khác."
               />
               <Field
-                id="r2AccessKey" label="Access Key ID" value={form.accessKeyId}
-                onChange={(v) => set("accessKeyId", v)} placeholder="R2 API Token — Access Key ID"
+                id="r2AccessKey"
+                label="Access Key ID"
+                value={form.accessKeyId}
+                onChange={(v) => set("accessKeyId", v)}
+                placeholder="R2 API Token — Access Key ID"
               />
               <div className="space-y-1.5">
-                <Label htmlFor="r2Secret" className="text-sm">Secret Access Key</Label>
+                <Label htmlFor="r2Secret" className="text-sm">
+                  Secret Access Key
+                </Label>
                 <div className="flex gap-2">
                   <Input
                     id="r2Secret"
                     type={showSecret ? "text" : "password"}
                     value={form.secretAccessKey}
                     onChange={(e) => set("secretAccessKey", e.target.value)}
-                    placeholder={cfg?.hasSecret ? `Đang lưu: ${cfg.secretMasked} — để trống nếu giữ nguyên` : "R2 API Token — Secret Access Key"}
+                    placeholder={
+                      cfg?.hasSecret
+                        ? `Đang lưu: ${cfg.secretMasked} — để trống nếu giữ nguyên`
+                        : "R2 API Token — Secret Access Key"
+                    }
                   />
-                  <Button type="button" variant="outline" size="icon" onClick={() => setShowSecret((s) => !s)} aria-label="Hiện/ẩn khoá bí mật">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setShowSecret((s) => !s)}
+                    aria-label="Hiện/ẩn khoá bí mật"
+                  >
                     {showSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">Khoá bí mật không bao giờ được trả về trình duyệt; để trống để giữ giá trị cũ.</p>
+                <p className="text-xs text-muted-foreground">
+                  Khoá bí mật không bao giờ được trả về trình duyệt; để trống để giữ giá trị cũ.
+                </p>
               </div>
               <Field
-                id="r2PublicBase" label="URL công khai (tuỳ chọn)" value={form.publicBaseUrl}
-                onChange={(v) => set("publicBaseUrl", v)} placeholder="https://files.example.com"
+                id="r2PublicBase"
+                label="URL công khai (tuỳ chọn)"
+                value={form.publicBaseUrl}
+                onChange={(v) => set("publicBaseUrl", v)}
+                placeholder="https://files.example.com"
                 hint="Domain public/custom domain của bucket; bỏ trống sẽ dùng presigned URL."
               />
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
               <Button onClick={onSaveClick} disabled={mSave.isPending} className="gap-1.5">
-                {mSave.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                {mSave.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}
                 Lưu tham số R2
               </Button>
               <Button variant="outline" onClick={onTest} disabled={testing} className="gap-1.5">
-                {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlugZap className="h-4 w-4" />}
+                {testing ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <PlugZap className="h-4 w-4" />
+                )}
                 Kiểm tra kết nối
               </Button>
               {testResult && (
-                <span className={`text-xs font-medium ${testResult.ok ? "text-success" : "text-destructive"}`}>
+                <span
+                  className={`text-xs font-medium ${testResult.ok ? "text-success" : "text-destructive"}`}
+                >
                   [{testResult.ok ? "OK" : "LỖI"}] {testResult.message}
                 </span>
               )}
@@ -459,9 +624,14 @@ function R2ParamsCard() {
               <ul className="space-y-1 rounded-md border bg-muted/30 p-3 text-xs">
                 {testResult.steps.map((st) => (
                   <li key={st.ten} className="flex items-start gap-2">
-                    {st.ok ? <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success" />
-                           : <XCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-destructive" />}
-                    <span><strong>{st.ten}:</strong> {st.message}</span>
+                    {st.ok ? (
+                      <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success" />
+                    ) : (
+                      <XCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-destructive" />
+                    )}
+                    <span>
+                      <strong>{st.ten}:</strong> {st.message}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -471,8 +641,12 @@ function R2ParamsCard() {
               <ul className="space-y-1 rounded-md border border-amber-500/40 bg-amber-500/5 p-3 text-xs">
                 {liveIssues.map((i, idx) => (
                   <li key={idx} className="flex items-start gap-2">
-                    <AlertTriangle className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${i.level === "error" ? "text-destructive" : "text-amber-500"}`} />
-                    <span className={i.level === "error" ? "text-destructive" : ""}>{i.message}</span>
+                    <AlertTriangle
+                      className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${i.level === "error" ? "text-destructive" : "text-amber-500"}`}
+                    />
+                    <span className={i.level === "error" ? "text-destructive" : ""}>
+                      {i.message}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -482,11 +656,16 @@ function R2ParamsCard() {
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>
-                    {confirmIssues && hasBlockingIssue(confirmIssues) ? "Cấu hình R2 có lỗi" : "Cấu hình R2 có cảnh báo"}
+                    {confirmIssues && hasBlockingIssue(confirmIssues)
+                      ? "Cấu hình R2 có lỗi"
+                      : "Cấu hình R2 có cảnh báo"}
                   </AlertDialogTitle>
                   <AlertDialogDescription asChild>
                     <div className="space-y-2 text-left">
-                      <p>Kiểm tra lại trước khi lưu — lưu cấu hình sai có thể khiến tệp mới không ghi được:</p>
+                      <p>
+                        Kiểm tra lại trước khi lưu — lưu cấu hình sai có thể khiến tệp mới không ghi
+                        được:
+                      </p>
                       <ul className="list-disc space-y-1 pl-5">
                         {confirmIssues?.map((i, idx) => (
                           <li key={idx} className={i.level === "error" ? "text-destructive" : ""}>
@@ -500,7 +679,11 @@ function R2ParamsCard() {
                 <AlertDialogFooter>
                   <AlertDialogCancel>Quay lại sửa</AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={() => { const force = !!confirmIssues && hasBlockingIssue(confirmIssues); setConfirmIssues(null); mSave.mutate(force); }}
+                    onClick={() => {
+                      const force = !!confirmIssues && hasBlockingIssue(confirmIssues);
+                      setConfirmIssues(null);
+                      mSave.mutate(force);
+                    }}
                   >
                     Vẫn lưu
                   </AlertDialogAction>
@@ -515,12 +698,31 @@ function R2ParamsCard() {
 }
 
 function Field({
-  id, label, value, onChange, placeholder, hint,
-}: { id: string; label: string; value: string; onChange: (v: string) => void; placeholder?: string; hint?: string }) {
+  id,
+  label,
+  value,
+  onChange,
+  placeholder,
+  hint,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  hint?: string;
+}) {
   return (
     <div className="space-y-1.5">
-      <Label htmlFor={id} className="text-sm">{label}</Label>
-      <Input id={id} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
+      <Label htmlFor={id} className="text-sm">
+        {label}
+      </Label>
+      <Input
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+      />
       {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
     </div>
   );
@@ -544,7 +746,13 @@ function HealthHistoryCard() {
     onSuccess: async (r) => {
       const bad = r.results.filter((x) => !x.ok);
       if (bad.length === 0) toast.success("Cả hai kho lưu trữ đều hoạt động bình thường.");
-      else bad.forEach((x) => toast.error(`${x.backend === "cloud" ? "Lovable Cloud" : "Cloudflare R2"}: ${x.message}`, { duration: 12000 }));
+      else
+        bad.forEach((x) =>
+          toast.error(
+            `${x.backend === "cloud" ? "Lovable Cloud" : "Cloudflare R2"}: ${x.message}`,
+            { duration: 12000 },
+          ),
+        );
       await qc.invalidateQueries({ queryKey: ["storage-health-log"] });
     },
     onError: (e: any) => toast.error("Không chạy được kiểm tra: " + e.message),
@@ -559,20 +767,39 @@ function HealthHistoryCard() {
               <History className="h-4 w-4" /> Lịch sử kiểm tra sức khoẻ kho lưu trữ
             </CardTitle>
             <CardDescription>
-              Thời điểm, kho được kiểm tra, kết quả, thời gian phản hồi và lỗi chi tiết của cả Lovable Cloud lẫn Cloudflare R2.
+              Thời điểm, kho được kiểm tra, kết quả, thời gian phản hồi và lỗi chi tiết của cả
+              Lovable Cloud lẫn Cloudflare R2.
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroup value={filter} onValueChange={(v) => setFilter(v as any)} className="flex items-center gap-3">
+            <RadioGroup
+              value={filter}
+              onValueChange={(v) => setFilter(v as any)}
+              className="flex items-center gap-3"
+            >
               {(["all", "cloud", "r2"] as const).map((v) => (
-                <label key={v} htmlFor={`flt-${v}`} className="flex cursor-pointer items-center gap-1.5 text-xs">
+                <label
+                  key={v}
+                  htmlFor={`flt-${v}`}
+                  className="flex cursor-pointer items-center gap-1.5 text-xs"
+                >
                   <RadioGroupItem id={`flt-${v}`} value={v} />
                   {v === "all" ? "Tất cả" : v === "cloud" ? "Lovable Cloud" : "Cloudflare R2"}
                 </label>
               ))}
             </RadioGroup>
-            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => mRun.mutate()} disabled={mRun.isPending}>
-              {mRun.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-1.5"
+              onClick={() => mRun.mutate()}
+              disabled={mRun.isPending}
+            >
+              {mRun.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
               Kiểm tra ngay
             </Button>
           </div>
@@ -584,7 +811,9 @@ function HealthHistoryCard() {
             <Loader2 className="h-4 w-4 animate-spin" /> Đang tải lịch sử…
           </div>
         ) : !rows?.length ? (
-          <p className="text-sm text-muted-foreground">Chưa có lần kiểm tra nào. Bấm “Kiểm tra ngay” để ghi bản ghi đầu tiên.</p>
+          <p className="text-sm text-muted-foreground">
+            Chưa có lần kiểm tra nào. Bấm “Kiểm tra ngay” để ghi bản ghi đầu tiên.
+          </p>
         ) : (
           <div className="overflow-x-auto">
             <Table>
@@ -605,15 +834,23 @@ function HealthHistoryCard() {
                     </TableCell>
                     <TableCell className="text-xs">
                       <Badge variant="outline" className="gap-1">
-                        {r.backend === "cloud" ? <Cloud className="h-3 w-3" /> : <HardDrive className="h-3 w-3" />}
+                        {r.backend === "cloud" ? (
+                          <Cloud className="h-3 w-3" />
+                        ) : (
+                          <HardDrive className="h-3 w-3" />
+                        )}
                         {r.backend === "cloud" ? "Lovable Cloud" : "Cloudflare R2"}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-xs">
                       {r.ok ? (
-                        <span className="flex items-center gap-1 text-emerald-600"><CheckCircle2 className="h-3.5 w-3.5" /> Đạt</span>
+                        <span className="flex items-center gap-1 text-emerald-600">
+                          <CheckCircle2 className="h-3.5 w-3.5" /> Đạt
+                        </span>
                       ) : (
-                        <span className="flex items-center gap-1 text-destructive"><XCircle className="h-3.5 w-3.5" /> Lỗi</span>
+                        <span className="flex items-center gap-1 text-destructive">
+                          <XCircle className="h-3.5 w-3.5" /> Lỗi
+                        </span>
                       )}
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
@@ -621,8 +858,14 @@ function HealthHistoryCard() {
                     </TableCell>
                     <TableCell className="text-xs">
                       <div className="space-y-1">
-                        {r.error_code && <Badge variant="destructive" className="text-[10px]">{r.error_code}</Badge>}
-                        <p className={r.ok ? "text-muted-foreground" : "text-destructive"}>{r.message}</p>
+                        {r.error_code && (
+                          <Badge variant="destructive" className="text-[10px]">
+                            {r.error_code}
+                          </Badge>
+                        )}
+                        <p className={r.ok ? "text-muted-foreground" : "text-destructive"}>
+                          {r.message}
+                        </p>
                         {r.detail != null && (
                           <>
                             <button
@@ -630,7 +873,9 @@ function HealthHistoryCard() {
                               className="text-[11px] underline text-muted-foreground"
                               onClick={() => setOpenDetail(openDetail === r.id ? null : r.id)}
                             >
-                              {openDetail === r.id ? "Ẩn chi tiết kỹ thuật" : "Xem chi tiết kỹ thuật"}
+                              {openDetail === r.id
+                                ? "Ẩn chi tiết kỹ thuật"
+                                : "Xem chi tiết kỹ thuật"}
                             </button>
                             {openDetail === r.id && (
                               <pre className="max-w-[520px] overflow-x-auto rounded bg-muted p-2 text-[11px]">

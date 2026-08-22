@@ -19,19 +19,36 @@ describe("validateR2Config", () => {
   });
 
   it("chặn endpoint không phải https / có đường dẫn", () => {
-    expect(hasBlockingIssue(validateR2Config({ ...base, endpoint: "http://x.r2.cloudflarestorage.com" }))).toBe(true);
-    expect(hasBlockingIssue(validateR2Config({ ...base, endpoint: base.endpoint + "/mirats-files" }))).toBe(true);
+    expect(
+      hasBlockingIssue(
+        validateR2Config({ ...base, endpoint: "http://x.r2.cloudflarestorage.com" }),
+      ),
+    ).toBe(true);
+    expect(
+      hasBlockingIssue(validateR2Config({ ...base, endpoint: base.endpoint + "/mirats-files" })),
+    ).toBe(true);
     expect(hasBlockingIssue(validateR2Config({ ...base, endpoint: "khong-phai-url" }))).toBe(true);
   });
 
   it("chặn tên bucket sai định dạng và thiếu khoá", () => {
     expect(hasBlockingIssue(validateR2Config({ ...base, bucketName: "Bucket_Sai" }))).toBe(true);
-    expect(hasBlockingIssue(validateR2Config({ ...base, secretAccessKey: "", hasStoredSecret: false }))).toBe(true);
-    expect(hasBlockingIssue(validateR2Config({ ...base, secretAccessKey: "", hasStoredSecret: true }))).toBe(false);
+    expect(
+      hasBlockingIssue(validateR2Config({ ...base, secretAccessKey: "", hasStoredSecret: false })),
+    ).toBe(true);
+    expect(
+      hasBlockingIssue(validateR2Config({ ...base, secretAccessKey: "", hasStoredSecret: true })),
+    ).toBe(false);
   });
 
   it("khi R2 tắt thì thiếu tham số chỉ là cảnh báo", () => {
-    const issues = validateR2Config({ ...base, enabled: false, endpoint: "", bucketName: "", accessKeyId: "", secretAccessKey: "" });
+    const issues = validateR2Config({
+      ...base,
+      enabled: false,
+      endpoint: "",
+      bucketName: "",
+      accessKeyId: "",
+      secretAccessKey: "",
+    });
     expect(hasBlockingIssue(issues)).toBe(false);
     expect(issues.length).toBeGreaterThan(0);
   });
@@ -44,12 +61,17 @@ describe("validateR2Config", () => {
 
 describe("describeRpcError", () => {
   it("nhận diện hàm không tồn tại và nêu đủ mã lỗi, tên hàm, payload", () => {
-    const info = describeRpcError("ghi_su_co_atomic", { p_payload: { ma_nhom_bc: "X" } }, {
-      code: "PGRST202",
-      message: "Could not find the function public.ghi_su_co_atomic(p_payload) in the schema cache",
-      hint: "Perhaps you meant ghi_kiem_ke",
-      details: null,
-    });
+    const info = describeRpcError(
+      "ghi_su_co_atomic",
+      { p_payload: { ma_nhom_bc: "X" } },
+      {
+        code: "PGRST202",
+        message:
+          "Could not find the function public.ghi_su_co_atomic(p_payload) in the schema cache",
+        hint: "Perhaps you meant ghi_kiem_ke",
+        details: null,
+      },
+    );
     expect(info.missingFunction).toBe(true);
     expect(info.code).toBe("PGRST202");
     expect(info.text).toContain("ghi_su_co_atomic");
@@ -58,7 +80,11 @@ describe("describeRpcError", () => {
   });
 
   it("che giá trị nhạy cảm trong payload", () => {
-    const info = describeRpcError("f", { secret_access_key: "abcdef123456" }, { code: "42501", message: "denied" });
+    const info = describeRpcError(
+      "f",
+      { secret_access_key: "abcdef123456" },
+      { code: "42501", message: "denied" },
+    );
     expect(info.text).not.toContain("abcdef123456");
     expect(info.missingFunction).toBe(false);
   });

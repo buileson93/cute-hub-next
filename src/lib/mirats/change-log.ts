@@ -47,8 +47,16 @@ export function fieldLabel(key: string): string {
 
 // ---- Cột bỏ qua (nhiễu / kỹ thuật / khoá ngoại uuid có cột chữ tương ứng) ----
 const IGNORE = new Set([
-  "id", "created_at", "updated_at", "created_by", "updated_by",
-  "tsv", "search_text", "search_vec", "search", "qr_code",
+  "id",
+  "created_at",
+  "updated_at",
+  "created_by",
+  "updated_by",
+  "tsv",
+  "search_text",
+  "search_vec",
+  "search",
+  "qr_code",
 ]);
 const isIgnored = (key: string) =>
   IGNORE.has(key) || /_id$/.test(key) || /^search/.test(key) || /_tsv$/.test(key);
@@ -92,11 +100,13 @@ export function computeChanges(
       const na = (n.thuoc_tinh || {}) as Record<string, any>;
       const attrKeys = new Set([...Object.keys(oa), ...Object.keys(na)]);
       for (const ak of attrKeys) {
-        if (!eq(oa[ak], na[ak])) changes.push({ key: ak, label: fieldLabel(ak), from: oa[ak], to: na[ak] });
+        if (!eq(oa[ak], na[ak]))
+          changes.push({ key: ak, label: fieldLabel(ak), from: oa[ak], to: na[ak] });
       }
       continue;
     }
-    if (!eq(o[key], n[key])) changes.push({ key, label: fieldLabel(key), from: o[key], to: n[key] });
+    if (!eq(o[key], n[key]))
+      changes.push({ key, label: fieldLabel(key), from: o[key], to: n[key] });
   }
   return changes.sort((a, b) => a.label.localeCompare(b.label, "vi"));
 }
@@ -126,7 +136,11 @@ export function useChangeLog(entity: string, entityId: string | null | undefined
         .limit(200);
       if (error) throw error;
       const rows = (data || []) as Array<{
-        id: string; action: string; detail: any; created_at: string; user_id: string | null;
+        id: string;
+        action: string;
+        detail: any;
+        created_at: string;
+        user_id: string | null;
       }>;
 
       // Tra tên người sửa
@@ -137,7 +151,11 @@ export function useChangeLog(entity: string, entityId: string | null | undefined
           .from("profiles")
           .select("id, ho_ten, email")
           .in("id", userIds);
-        for (const p of (profs || []) as Array<{ id: string; ho_ten: string | null; email: string }>) {
+        for (const p of (profs || []) as Array<{
+          id: string;
+          ho_ten: string | null;
+          email: string;
+        }>) {
           nameMap.set(p.id, p.ho_ten || p.email);
         }
       }

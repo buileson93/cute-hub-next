@@ -47,12 +47,23 @@ export function useMenuBadges() {
     queryFn: async (): Promise<MenuBadges> => {
       const { data, error } = await supabase.from("v_menu_badges").select("*").maybeSingle();
       if (error) throw error;
-      return (data ?? { su_co_mo: 0, bao_tri_mo: 0, hong_hoc_mo: 0, bao_tri_hom_nay: 0 }) as MenuBadges;
+      return (data ?? {
+        su_co_mo: 0,
+        bao_tri_mo: 0,
+        hong_hoc_mo: 0,
+        bao_tri_hom_nay: 0,
+      }) as MenuBadges;
     },
   });
 }
 
-export interface NsxStats { nha_san_xuat_id: string; ma: string | null; ten: string; so_model: number; so_thiet_bi: number }
+export interface NsxStats {
+  nha_san_xuat_id: string;
+  ma: string | null;
+  ten: string;
+  so_model: number;
+  so_thiet_bi: number;
+}
 
 /** Thống kê per Nhà sản xuất (view v_nsx_stats). */
 export function useNsxStats() {

@@ -37,9 +37,7 @@ type Loc = "all" | "unread" | "read";
 
 function ThongBaoPage() {
   const { user } = useSession();
-  const { items, unread, loading, markRead, markAllRead } = useNotifications(
-    user?.id ?? null,
-  );
+  const { items, unread, loading, markRead, markAllRead } = useNotifications(user?.id ?? null);
   const [loc, setLoc] = useState<Loc>("all");
 
   const filtered = items.filter((n) =>
@@ -51,13 +49,8 @@ function ThongBaoPage() {
       <PageHeader
         icon={Bell}
         title="Thông báo"
-        actions={
-          unread > 0 ? (
-            <Badge variant="secondary">{unread} chưa đọc</Badge>
-          ) : null
-        }
+        actions={unread > 0 ? <Badge variant="secondary">{unread} chưa đọc</Badge> : null}
       />
-
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-3">
@@ -87,9 +80,7 @@ function ThongBaoPage() {
         </CardHeader>
         <CardContent className="p-0">
           {loading ? (
-            <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-              Đang tải…
-            </div>
+            <div className="px-4 py-10 text-center text-sm text-muted-foreground">Đang tải…</div>
           ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center gap-2 px-4 py-12 text-center text-sm text-muted-foreground">
               <Inbox className="h-8 w-8 opacity-50" />
@@ -130,9 +121,7 @@ function ThongBaoPage() {
                       </Badge>
                     </div>
                     {n.noi_dung && (
-                      <div className="mt-0.5 text-xs text-muted-foreground">
-                        {n.noi_dung}
-                      </div>
+                      <div className="mt-0.5 text-xs text-muted-foreground">{n.noi_dung}</div>
                     )}
                     <div className="mt-1 text-[11px] text-muted-foreground/70">
                       {formatDT(n.created_at)}

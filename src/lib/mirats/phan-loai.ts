@@ -86,18 +86,38 @@ export interface HeThongCatalog {
 // Danh mục đầy đủ hệ thống theo phân loại (nguồn: quy định phân nhóm HTTB BĐHĐB).
 export const HE_THONG_CATALOG: HeThongCatalog[] = [
   // ---------------------- Nhóm 1 — Chiến lược trọng yếu ----------------------
-  { ma: "VHF", ten: "Tài sản thu phát sóng cực ngắn không-địa (VHF A/G)", pl: "N1", lv: "thong-tin" },
+  {
+    ma: "VHF",
+    ten: "Tài sản thu phát sóng cực ngắn không-địa (VHF A/G)",
+    pl: "N1",
+    lv: "thong-tin",
+  },
   { ma: "HF", ten: "Tài sản thu phát sóng ngắn không-địa (HF A/G)", pl: "N1", lv: "thong-tin" },
   { ma: "VCCS", ten: "Hệ thống chuyển mạch thoại (VCCS)", pl: "N1", lv: "thong-tin" },
-  { ma: "AMHS", ten: "Hệ thống xử lý điện văn dịch vụ không lưu (AMHS)", pl: "N1", lv: "thong-tin" },
-  { ma: "DATIS", ten: "Hệ thống thông báo tự động khu vực sân bay (ATIS/D-ATIS)", pl: "N1", lv: "thong-tin" },
+  {
+    ma: "AMHS",
+    ten: "Hệ thống xử lý điện văn dịch vụ không lưu (AMHS)",
+    pl: "N1",
+    lv: "thong-tin",
+  },
+  {
+    ma: "DATIS",
+    ten: "Hệ thống thông báo tự động khu vực sân bay (ATIS/D-ATIS)",
+    pl: "N1",
+    lv: "thong-tin",
+  },
 
   { ma: "VOR", ten: "Hệ thống dẫn đường đa hướng sóng cực ngắn (VOR)", pl: "N1", lv: "dan-duong" },
   { ma: "DME", ten: "Hệ thống đo cự ly bằng vô tuyến (DME)", pl: "N1", lv: "dan-duong" },
 
   { ma: "PSR", ten: "Hệ thống ra đa giám sát sơ cấp (PSR, SMR)", pl: "N1", lv: "giam-sat" },
   { ma: "SSR", ten: "Hệ thống ra đa giám sát thứ cấp (SSR)", pl: "N1", lv: "giam-sat" },
-  { ma: "ADSB", ten: "Hệ thống giám sát tự động phụ thuộc dạng quảng bá (ADS-B)", pl: "N1", lv: "giam-sat" },
+  {
+    ma: "ADSB",
+    ten: "Hệ thống giám sát tự động phụ thuộc dạng quảng bá (ADS-B)",
+    pl: "N1",
+    lv: "giam-sat",
+  },
   { ma: "MLAT", ten: "Hệ thống giám sát đa điểm (MLAT/WAM)", pl: "N1", lv: "giam-sat" },
   { ma: "ATS", ten: "Giám sát ATS (ra đa/đa điểm)", pl: "N1", lv: "giam-sat" },
 
@@ -112,32 +132,87 @@ export const HE_THONG_CATALOG: HeThongCatalog[] = [
   { ma: "AWOS", ten: "Hệ thống quan trắc thời tiết tự động (AWOS)", pl: "N1", lv: "khi-tuong" },
   { ma: "WSHEAR", ten: "Hệ thống đo đạc, cảnh báo hiện tượng gió đứt", pl: "N1", lv: "khi-tuong" },
   { ma: "WXRADAR", ten: "Hệ thống radar thời tiết", pl: "N1", lv: "khi-tuong" },
-  { ma: "WAFS", ten: "Hệ thống thu sản phẩm dự báo thời tiết toàn cầu (WAFS)", pl: "N1", lv: "khi-tuong" },
-  { ma: "CSDLKT", ten: "Hệ thống cơ sở dữ liệu khí tượng hàng không (CSDL KTHK)", pl: "N1", lv: "khi-tuong" },
-  { ma: "OPMET", ten: "Hệ thống thu thập, xử lý và trao đổi dữ liệu OPMET", pl: "N1", lv: "khi-tuong" },
+  {
+    ma: "WAFS",
+    ten: "Hệ thống thu sản phẩm dự báo thời tiết toàn cầu (WAFS)",
+    pl: "N1",
+    lv: "khi-tuong",
+  },
+  {
+    ma: "CSDLKT",
+    ten: "Hệ thống cơ sở dữ liệu khí tượng hàng không (CSDL KTHK)",
+    pl: "N1",
+    lv: "khi-tuong",
+  },
+  {
+    ma: "OPMET",
+    ten: "Hệ thống thu thập, xử lý và trao đổi dữ liệu OPMET",
+    pl: "N1",
+    lv: "khi-tuong",
+  },
   { ma: "MET", ten: "Các tài sản đo đạc quan trắc thông dụng", pl: "N1", lv: "khi-tuong" },
 
   // ---------------------- Nhóm 2 — Hạ tầng thiết yếu ----------------------
   { ma: "ATN", ten: "Mạng viễn thông hàng không (ATN)", pl: "N2", lv: "thong-tin" },
-  { ma: "VIBA", ten: "Hệ thống thông tin vô tuyến chuyển tiếp (VIBA) / VSAT", pl: "N2", lv: "thong-tin" },
-  { ma: "VSAT", ten: "Hệ thống thông tin vệ tinh mặt đất cỡ nhỏ (VSAT)", pl: "N2", lv: "thong-tin" },
+  {
+    ma: "VIBA",
+    ten: "Hệ thống thông tin vô tuyến chuyển tiếp (VIBA) / VSAT",
+    pl: "N2",
+    lv: "thong-tin",
+  },
+  {
+    ma: "VSAT",
+    ten: "Hệ thống thông tin vệ tinh mặt đất cỡ nhỏ (VSAT)",
+    pl: "N2",
+    lv: "thong-tin",
+  },
   { ma: "MUX", ten: "Hệ thống thông tin quang / ghép kênh", pl: "N2", lv: "thong-tin" },
   { ma: "ATSDS", ten: "Tài sản trực thoại không lưu (ATS D/S)", pl: "N2", lv: "thong-tin" },
   { ma: "PBX", ten: "Hệ thống tổng đài điện thoại & bảo đảm mặt đất", pl: "N2", lv: "thong-tin" },
-  { ma: "VHFFM", ten: "Thu phát VHF FM liên lạc mặt đất hiệp đồng bay (VHF FM G/G)", pl: "N2", lv: "thong-tin" },
+  {
+    ma: "VHFFM",
+    ten: "Thu phát VHF FM liên lạc mặt đất hiệp đồng bay (VHF FM G/G)",
+    pl: "N2",
+    lv: "thong-tin",
+  },
 
   { ma: "NDB", ten: "Hệ thống dẫn đường vô hướng (NDB)", pl: "N2", lv: "dan-duong" },
 
-  { ma: "AIS", ten: "Hệ thống tự động hóa dịch vụ thông báo tin tức hàng không (AIS)", pl: "N2", lv: "tin-tuc" },
+  {
+    ma: "AIS",
+    ten: "Hệ thống tự động hóa dịch vụ thông báo tin tức hàng không (AIS)",
+    pl: "N2",
+    lv: "tin-tuc",
+  },
   { ma: "NOTAM", ten: "Hệ thống NOTAM bán tự động", pl: "N2", lv: "tin-tuc" },
-  { ma: "ETOD", ten: "Hệ thống CSDL địa hình và vật chướng ngại điện tử (eTOD)", pl: "N2", lv: "tin-tuc" },
+  {
+    ma: "ETOD",
+    ten: "Hệ thống CSDL địa hình và vật chướng ngại điện tử (eTOD)",
+    pl: "N2",
+    lv: "tin-tuc",
+  },
   { ma: "IFPD", ten: "Hệ thống thiết kế phương thức bay (IFPD)", pl: "N2", lv: "tin-tuc" },
 
-  { ma: "GTS", ten: "Hệ thống thu thập, xử lý số liệu khí tượng cơ bản (GTS)", pl: "N2", lv: "khi-tuong" },
+  {
+    ma: "GTS",
+    ten: "Hệ thống thu thập, xử lý số liệu khí tượng cơ bản (GTS)",
+    pl: "N2",
+    lv: "khi-tuong",
+  },
   { ma: "SATCLOUD", ten: "Hệ thống thu ảnh mây vệ tinh khí tượng", pl: "N2", lv: "khi-tuong" },
-  { ma: "XLSLKT", ten: "Hệ thống thu, xử lý số liệu khí tượng (XLSL KT)", pl: "N2", lv: "khi-tuong" },
+  {
+    ma: "XLSLKT",
+    ten: "Hệ thống thu, xử lý số liệu khí tượng (XLSL KT)",
+    pl: "N2",
+    lv: "khi-tuong",
+  },
 
-  { ma: "PWR", ten: "Cấp nguồn UPS / AC-DC / Máy phát / Điều hòa TT / PMS / BMS", pl: "N2", lv: "me" },
+  {
+    ma: "PWR",
+    ten: "Cấp nguồn UPS / AC-DC / Máy phát / Điều hòa TT / PMS / BMS",
+    pl: "N2",
+    lv: "me",
+  },
 
   { ma: "SIM", ten: "Hệ thống huấn luyện giả định cho KSVKL (SIM)", pl: "N2", lv: "khac" },
   { ma: "CLK", ten: "Hệ thống đồng hồ thời gian chuẩn", pl: "N2", lv: "khac" },
@@ -148,12 +223,27 @@ export const HE_THONG_CATALOG: HeThongCatalog[] = [
   // ---------------------- Nhóm 3 — Hỗ trợ ----------------------
   { ma: "LIFT", ten: "Hệ thống thang máy", pl: "N3", lv: "ho-tro" },
   { ma: "PCCC", ten: "Tài sản phòng cháy và chữa cháy (PCCC)", pl: "N3", lv: "ho-tro" },
-  { ma: "LIGHTNING", ten: "Tài sản chống sét đánh thẳng; cắt lọc sét đường nguồn", pl: "N3", lv: "ho-tro" },
+  {
+    ma: "LIGHTNING",
+    ten: "Tài sản chống sét đánh thẳng; cắt lọc sét đường nguồn",
+    pl: "N3",
+    lv: "ho-tro",
+  },
   { ma: "CAM", ten: "Tài sản camera giám sát", pl: "N3", lv: "ho-tro" },
   { ma: "ACCESS", ten: "Tài sản cổng, cửa từ, soi chiếu", pl: "N3", lv: "ho-tro" },
   { ma: "IDS", ten: "Hệ thống phòng chống xâm nhập", pl: "N3", lv: "ho-tro" },
-  { ma: "LOCALAC", ten: "Điều hòa cục bộ đảm bảo môi trường tài sản BĐHĐB", pl: "N3", lv: "ho-tro" },
-  { ma: "UPS3", ten: "Cấp nguồn không gián đoạn (UPS) cho hệ thống Nhóm 3", pl: "N3", lv: "ho-tro" },
+  {
+    ma: "LOCALAC",
+    ten: "Điều hòa cục bộ đảm bảo môi trường tài sản BĐHĐB",
+    pl: "N3",
+    lv: "ho-tro",
+  },
+  {
+    ma: "UPS3",
+    ten: "Cấp nguồn không gián đoạn (UPS) cho hệ thống Nhóm 3",
+    pl: "N3",
+    lv: "ho-tro",
+  },
   { ma: "OFF", ten: "Tài sản văn phòng", pl: "N3", lv: "ho-tro" },
 ];
 

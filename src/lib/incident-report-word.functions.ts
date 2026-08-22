@@ -4,7 +4,11 @@ import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 
 const inputSchema = z.object({ ma_nhom_bc: z.string().min(1) });
 
-interface KipTrucVien { ho_ten: string; chuc_vu: string; nang_dinh: string }
+interface KipTrucVien {
+  ho_ten: string;
+  chuc_vu: string;
+  nang_dinh: string;
+}
 interface BaoCaoBanDau {
   kinh_gui: string;
   he_thong_dich_vu: string;
@@ -40,7 +44,9 @@ export const exportBaoCaoBanDauToWord = createServerFn({ method: "POST" })
     const bc = (first.bao_cao_ban_dau ?? {}) as Partial<BaoCaoBanDau>;
 
     // Tên đầy đủ các tài sản bị ảnh hưởng
-    const maList = Array.from(new Set(rows.map((r: any) => r.thiet_bi).filter(Boolean))) as string[];
+    const maList = Array.from(
+      new Set(rows.map((r: any) => r.thiet_bi).filter(Boolean)),
+    ) as string[];
     const tenMap = new Map<string, string>();
     if (maList.length) {
       const { data: tbs } = await supabase
@@ -51,8 +57,17 @@ export const exportBaoCaoBanDauToWord = createServerFn({ method: "POST" })
     }
 
     const {
-      Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-      AlignmentType, WidthType, BorderStyle, HeadingLevel,
+      Document,
+      Packer,
+      Paragraph,
+      TextRun,
+      Table,
+      TableRow,
+      TableCell,
+      AlignmentType,
+      WidthType,
+      BorderStyle,
+      HeadingLevel,
     } = await import("docx");
 
     const border = { style: BorderStyle.SINGLE, size: 4, color: "999999" };
@@ -94,9 +109,7 @@ export const exportBaoCaoBanDauToWord = createServerFn({ method: "POST" })
         ...kip.map(
           (k, i) =>
             new TableRow({
-              children: [
-                String(i + 1), k.ho_ten ?? "", k.chuc_vu ?? "", k.nang_dinh ?? "",
-              ].map(
+              children: [String(i + 1), k.ho_ten ?? "", k.chuc_vu ?? "", k.nang_dinh ?? ""].map(
                 (c) =>
                   new TableCell({
                     borders: cellBorders,
@@ -140,7 +153,9 @@ export const exportBaoCaoBanDauToWord = createServerFn({ method: "POST" })
                     (m) =>
                       new Paragraph({
                         bullet: { level: 0 },
-                        children: [new TextRun(`${m}${tenMap.get(m) ? " — " + tenMap.get(m) : ""}`)],
+                        children: [
+                          new TextRun(`${m}${tenMap.get(m) ? " — " + tenMap.get(m) : ""}`),
+                        ],
                       }),
                   ),
                 ]
@@ -149,18 +164,21 @@ export const exportBaoCaoBanDauToWord = createServerFn({ method: "POST" })
             P("Tóm tắt sự việc xảy ra:", { bold: true }),
             ...(bc.tom_tat ?? "").split("\n").map((line) => P(line)),
 
-            labelValue("Thời gian, địa điểm xảy ra sự cố:", `${bc.thoi_gian_bat_dau ?? ""}${bc.dia_diem ? " · " + bc.dia_diem : ""}`),
+            labelValue(
+              "Thời gian, địa điểm xảy ra sự cố:",
+              `${bc.thoi_gian_bat_dau ?? ""}${bc.dia_diem ? " · " + bc.dia_diem : ""}`,
+            ),
 
             P("Thành phần kíp trực:", { bold: true }),
             kipTable,
             new Paragraph({ spacing: { after: 120 }, children: [] }),
 
-
-
-
             labelValue("Tình hình hiện tại:", bc.tinh_hinh_hien_tai ?? ""),
             labelValue("Kết quả hoặc phương án khắc phục:", bc.ket_qua_khac_phuc ?? ""),
-            labelValue("Đánh giá phân loại sự cố (Mức A/B/C/D/E):", phanLoai ? `Sự cố loại ${phanLoai}` : "…"),
+            labelValue(
+              "Đánh giá phân loại sự cố (Mức A/B/C/D/E):",
+              phanLoai ? `Sự cố loại ${phanLoai}` : "…",
+            ),
           ],
         },
       ],

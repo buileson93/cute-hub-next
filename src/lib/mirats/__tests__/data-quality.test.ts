@@ -32,20 +32,27 @@ function signals(partial: Partial<ItemSignals>): ItemSignals {
 describe("classifyItem", () => {
   it("thiếu trường bắt buộc → missing/error (ưu tiên cao nhất)", () => {
     const c = classifyItem(
-      signals({ missingRequired: ["ma_thiet_bi"], match: match({ kind: "serial_model_mfr", decision: "needs_review" }) }),
+      signals({
+        missingRequired: ["ma_thiet_bi"],
+        match: match({ kind: "serial_model_mfr", decision: "needs_review" }),
+      }),
     );
     expect(c.category).toBe("missing");
     expect(c.severity).toBe("error");
   });
 
   it("serial khớp duy nhất → serial_dup/auto_safe", () => {
-    const c = classifyItem(signals({ match: match({ kind: "serial_model_mfr", decision: "resolved", confidence: 1 }) }));
+    const c = classifyItem(
+      signals({ match: match({ kind: "serial_model_mfr", decision: "resolved", confidence: 1 }) }),
+    );
     expect(c.category).toBe("serial_dup");
     expect(c.severity).toBe("auto_safe");
   });
 
   it("serial khớp nhiều bản ghi → serial_dup/needs_review", () => {
-    const c = classifyItem(signals({ match: match({ kind: "serial_model_mfr", decision: "needs_review" }) }));
+    const c = classifyItem(
+      signals({ match: match({ kind: "serial_model_mfr", decision: "needs_review" }) }),
+    );
     expect(c.category).toBe("serial_dup");
     expect(c.severity).toBe("needs_review");
   });
@@ -58,19 +65,30 @@ describe("classifyItem", () => {
   });
 
   it("tên gần giống (không guard) → possible_dup/needs_review", () => {
-    const c = classifyItem(signals({ match: match({ decision: "needs_review", kind: "near_name", reason: "Tên gần giống" }) }));
+    const c = classifyItem(
+      signals({
+        match: match({ decision: "needs_review", kind: "near_name", reason: "Tên gần giống" }),
+      }),
+    );
     expect(c.category).toBe("possible_dup");
     expect(c.severity).toBe("needs_review");
   });
 
   it("danh mục guard gần trùng → near_catalog/needs_review", () => {
-    const c = classifyItem(signals({ isCatalogGuard: true, match: match({ decision: "needs_review", kind: "near_name" }) }));
+    const c = classifyItem(
+      signals({
+        isCatalogGuard: true,
+        match: match({ decision: "needs_review", kind: "near_name" }),
+      }),
+    );
     expect(c.category).toBe("near_catalog");
     expect(c.severity).toBe("needs_review");
   });
 
   it("khớp ID chắc chắn → unprocessed/auto_safe (cập nhật)", () => {
-    const c = classifyItem(signals({ match: match({ decision: "resolved", kind: "exact_id", confidence: 1 }) }));
+    const c = classifyItem(
+      signals({ match: match({ decision: "resolved", kind: "exact_id", confidence: 1 }) }),
+    );
     expect(c.category).toBe("unprocessed");
     expect(c.severity).toBe("auto_safe");
     expect(c.reason).toContain("cập nhật");
@@ -90,13 +108,18 @@ describe("classifyItem", () => {
 
   it("serial ưu tiên hơn FK conflict khi cùng xuất hiện", () => {
     const c = classifyItem(
-      signals({ unresolvedRefs: ["he_thong"], match: match({ kind: "serial_model_mfr", decision: "needs_review" }) }),
+      signals({
+        unresolvedRefs: ["he_thong"],
+        match: match({ kind: "serial_model_mfr", decision: "needs_review" }),
+      }),
     );
     expect(c.category).toBe("serial_dup");
   });
 
   it("low_confidence needs_review (không guard) → possible_dup", () => {
-    const c = classifyItem(signals({ match: match({ decision: "needs_review", kind: "low_confidence" }) }));
+    const c = classifyItem(
+      signals({ match: match({ decision: "needs_review", kind: "low_confidence" }) }),
+    );
     expect(c.category).toBe("possible_dup");
   });
 });

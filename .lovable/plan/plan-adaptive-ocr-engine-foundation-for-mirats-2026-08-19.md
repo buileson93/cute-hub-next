@@ -5,19 +5,23 @@ Implement a flexible, multi-provider OCR architecture that selects the best engi
 ## Architecture Components
 
 ### 1. Capability & Profiling (`capabilities.ts`, `device-profiler.ts`)
+
 - Detect browser features: WebGPU, WASM SIMD, WASM Threads, OffscreenCanvas, etc.
 - Run light micro-benchmarks to assess actual processing speed.
 - Cache profiles in IndexedDB (via `idb`) to avoid redundant checks.
 
 ### 2. Provider System (`provider.ts`, `provider-registry.ts`)
+
 - Define `OcrProvider` interface for unified interaction.
 - Registry for managing multiple providers (built-in and lazy-loaded).
 
 ### 3. Core Providers
+
 - **pdf-text-provider.ts**: Extract native text layers using `pdfjs-dist` (Efficiency first).
 - **tesseract-provider.ts**: Reliable fallback using `tesseract.js` in a Worker (Broad compatibility).
 
 ### 4. Adaptive Logic (`adaptive-selector.ts`)
+
 - Select quality profiles (`eco`, `balanced`, `quality`) based on device tier.
 - Orchestrate fallback logic (e.g., fallback to Tesseract if WebGPU fails or confidence is too low).
 - User override support for manual quality selection.

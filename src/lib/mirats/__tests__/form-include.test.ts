@@ -61,7 +61,14 @@ function baseGraph(): VersionNode[] {
     node({ id: "v1", code: "PL01" }),
     node({ id: "v2", code: "PL02" }),
     node({ id: "v3", code: "PL03", includes: [{ child: "v1" }] }),
-    node({ id: "v4", code: "PL04", includes: [{ child: "v2", position: 0 }, { child: "v3", position: 1 }] }),
+    node({
+      id: "v4",
+      code: "PL04",
+      includes: [
+        { child: "v2", position: 0 },
+        { child: "v3", position: 1 },
+      ],
+    }),
   ];
 }
 
@@ -99,7 +106,14 @@ describe("compileVersion — include cơ bản", () => {
     const g = [
       node({ id: "v1", code: "PL01" }),
       node({ id: "v2", code: "PL02" }),
-      node({ id: "v4", code: "PL04", includes: [{ child: "v1", position: 5 }, { child: "v2", position: 1 }] }),
+      node({
+        id: "v4",
+        code: "PL04",
+        includes: [
+          { child: "v1", position: 5 },
+          { child: "v2", position: 1 },
+        ],
+      }),
     ];
     const out = compileVersion("v4", g);
     // PL02 (position 1) trước PL01 (position 5)
@@ -143,7 +157,14 @@ describe("compileVersion — từ chối trùng lặp (duplicate)", () => {
     const g = [
       node({ id: "v1", code: "PL01" }),
       node({ id: "v3", code: "PL03", includes: [{ child: "v1" }] }),
-      node({ id: "v4", code: "PL04", includes: [{ child: "v1", position: 0 }, { child: "v3", position: 1 }] }),
+      node({
+        id: "v4",
+        code: "PL04",
+        includes: [
+          { child: "v1", position: 0 },
+          { child: "v3", position: 1 },
+        ],
+      }),
     ];
     expect(() => compileVersion("v4", g)).toThrow(IncludeDuplicateError);
   });
@@ -152,7 +173,15 @@ describe("compileVersion — từ chối trùng lặp (duplicate)", () => {
     const g = [
       node({ id: "v1", code: "PL01", sections: [section("DUP")] }),
       node({ id: "v2", code: "PL02", sections: [section("DUP")] }),
-      node({ id: "v4", code: "PL04", sections: [], includes: [{ child: "v1", position: 0 }, { child: "v2", position: 1 }] }),
+      node({
+        id: "v4",
+        code: "PL04",
+        sections: [],
+        includes: [
+          { child: "v1", position: 0 },
+          { child: "v2", position: 1 },
+        ],
+      }),
     ];
     expect(() => compileVersion("v4", g)).toThrow(IncludeDuplicateError);
   });
@@ -182,11 +211,17 @@ describe("validateIncludeGraph", () => {
     const g = [
       node({ id: "v1", code: "PL01" }),
       node({ id: "v3", code: "PL03", includes: [{ child: "v1" }] }),
-      node({ id: "v4", code: "PL04", includes: [{ child: "v1", position: 0 }, { child: "v3", position: 1 }] }),
+      node({
+        id: "v4",
+        code: "PL04",
+        includes: [
+          { child: "v1", position: 0 },
+          { child: "v3", position: 1 },
+        ],
+      }),
     ];
     const r = validateIncludeGraph("v4", g);
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.kind).toBe("duplicate");
   });
 });
-

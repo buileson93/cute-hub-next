@@ -3,7 +3,13 @@ import { resolveDeviceIdentity, type LiveDeviceInfo } from "@/lib/mirats/record-
 
 describe("resolveDeviceIdentity", () => {
   const live: Record<string, LiveDeviceInfo> = {
-    "id-1": { ma_thiet_bi: "TB-001", ten: "Máy tính A", he_thong: "HT Radar", don_vi: "Đơn vị 1", vi_tri: "Phòng 101" },
+    "id-1": {
+      ma_thiet_bi: "TB-001",
+      ten: "Máy tính A",
+      he_thong: "HT Radar",
+      don_vi: "Đơn vị 1",
+      vi_tri: "Phòng 101",
+    },
   };
   const getLive = (id: string) => live[id];
 

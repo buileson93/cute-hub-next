@@ -6,24 +6,35 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
-  Loader2, FileText, Upload, AlertTriangle, CheckCircle2, X,
-  Sparkles, Copy,
+  Loader2,
+  FileText,
+  Upload,
+  AlertTriangle,
+  CheckCircle2,
+  X,
+  Sparkles,
+  Copy,
 } from "lucide-react";
 import { supabase } from "@/integrations/backend/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { extractPdfText } from "@/lib/mirats/gpkt-pdf-text";
+import { parseGpktText, validateFields, type FieldMetaMap } from "@/lib/mirats/gpkt-regex-parser";
 import {
-  parseGpktText, validateFields,
-  type FieldMetaMap,
-} from "@/lib/mirats/gpkt-regex-parser";
-import {
-  parseGpktPdf, checkGpktDuplicate, saveGpktRecord,
-  type GpktParsedFields, type GpktDuplicate,
+  parseGpktPdf,
+  checkGpktDuplicate,
+  saveGpktRecord,
+  type GpktParsedFields,
+  type GpktDuplicate,
 } from "@/lib/mirats/gpkt-import.functions";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -40,8 +51,8 @@ interface BulkRow {
   meta?: FieldMetaMap;
   filled?: number;
   needsCheck?: number;
-  dbDup?: GpktDuplicate | null;   // trùng số GP trong DB
-  overwrite?: boolean;             // ghi đè bản DB trùng
+  dbDup?: GpktDuplicate | null; // trùng số GP trong DB
+  overwrite?: boolean; // ghi đè bản DB trùng
   selected: boolean;
   error?: string;
 }
@@ -70,7 +81,12 @@ export function GpktBulkImportDialog({ open, onOpenChange }: Props) {
   const [busy, setBusy] = useState(false);
   const [dragOver, setDragOver] = useState(false);
 
-  useEffect(() => { if (!open) { setRows([]); setBusy(false); } }, [open]);
+  useEffect(() => {
+    if (!open) {
+      setRows([]);
+      setBusy(false);
+    }
+  }, [open]);
 
   // Duplicate số GP trong cùng batch
   const batchDupIds = useMemo(() => {
@@ -83,7 +99,9 @@ export function GpktBulkImportDialog({ open, onOpenChange }: Props) {
       seen.set(gp, arr);
     }
     const dups = new Set<string>();
-    seen.forEach((ids) => { if (ids.length > 1) ids.forEach((i) => dups.add(i)); });
+    seen.forEach((ids) => {
+      if (ids.length > 1) ids.forEach((i) => dups.add(i));
+    });
     return dups;
   }, [rows]);
 
@@ -96,7 +114,8 @@ export function GpktBulkImportDialog({ open, onOpenChange }: Props) {
       if (txt && txt.length > 200) {
         const r = parseGpktText(txt);
         if (r.fields.gp_so && r.filledCount >= 8) {
-          fields = r.fields; filled = r.filledCount;
+          fields = r.fields;
+          filled = r.filledCount;
         }
       }
       if (!fields) {
@@ -116,24 +135,43 @@ export function GpktBulkImportDialog({ open, onOpenChange }: Props) {
         try {
           const rs = await checkGpktDuplicate({ data: { gp_so: fields.gp_so, he_thong_id: null } });
           dbDup = rs.find((d) => d.match === "gp_so") ?? null;
-        } catch { /* ignore */ }
+        } catch {
+          /* ignore */
+        }
       }
       return {
-        ...row, status: "ready", method, fields, meta, filled, needsCheck,
-        dbDup, overwrite: false,
+        ...row,
+        status: "ready",
+        method,
+        fields,
+        meta,
+        filled,
+        needsCheck,
+        dbDup,
+        overwrite: false,
         selected: !!fields.gp_so && needsCheck <= 3,
       };
     } catch (e) {
-      return { ...row, status: "failed", error: e instanceof Error ? e.message : String(e), selected: false };
+      return {
+        ...row,
+        status: "failed",
+        error: e instanceof Error ? e.message : String(e),
+        selected: false,
+      };
     }
   }
 
   async function onFiles(files: FileList | File[]) {
     const list = Array.from(files).filter((f) => /pdf$/i.test(f.type) || /\.pdf$/i.test(f.name));
-    if (!list.length) { toast.error("Không có tệp PDF hợp lệ"); return; }
+    if (!list.length) {
+      toast.error("Không có tệp PDF hợp lệ");
+      return;
+    }
     const newRows: BulkRow[] = list.map((f) => ({
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      file: f, status: "parsing", selected: false,
+      file: f,
+      status: "parsing",
+      selected: false,
     }));
     setRows((prev) => [...prev, ...newRows]);
     setBusy(true);
@@ -170,7 +208,10 @@ export function GpktBulkImportDialog({ open, onOpenChange }: Props) {
     try {
       await saveGpktRecord({
         data: {
-          fields: row.fields, he_thong_id: null, file_gpkt: fileUrl, overwrite_id: overwriteId,
+          fields: row.fields,
+          he_thong_id: null,
+          file_gpkt: fileUrl,
+          overwrite_id: overwriteId,
         },
       });
       return { ok: true };
@@ -181,20 +222,34 @@ export function GpktBulkImportDialog({ open, onOpenChange }: Props) {
 
   async function saveSelected() {
     setBusy(true);
-    let ok = 0, fail = 0, skipped = 0;
+    let ok = 0,
+      fail = 0,
+      skipped = 0;
     for (const r of rows) {
-      if (!r.selected || r.status === "saved") { if (!r.selected) skipped++; continue; }
+      if (!r.selected || r.status === "saved") {
+        if (!r.selected) skipped++;
+        continue;
+      }
       if (batchDupIds.has(r.id) && !r.overwrite) {
         // giữ nguyên: cảnh báo dedup trong batch — bỏ qua trừ khi ghi đè
       }
       setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, status: "saving" } : x)));
       const res = await saveOne(r);
-      if (res.ok) { ok++; setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, status: "saved" } : x))); }
-      else { fail++; setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, status: "failed", error: res.msg } : x))); }
+      if (res.ok) {
+        ok++;
+        setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, status: "saved" } : x)));
+      } else {
+        fail++;
+        setRows((prev) =>
+          prev.map((x) => (x.id === r.id ? { ...x, status: "failed", error: res.msg } : x)),
+        );
+      }
     }
     setBusy(false);
     qc.invalidateQueries({ queryKey: ["licenses_data"] });
-    toast[fail ? "warning" : "success"](`Lưu xong: ${ok} thành công, ${fail} lỗi, ${skipped} bỏ qua`);
+    toast[fail ? "warning" : "success"](
+      `Lưu xong: ${ok} thành công, ${fail} lỗi, ${skipped} bỏ qua`,
+    );
   }
 
   const totalReady = rows.filter((r) => r.status === "ready").length;
@@ -210,17 +265,21 @@ export function GpktBulkImportDialog({ open, onOpenChange }: Props) {
             Nhập giấy phép hàng loạt
           </DialogTitle>
           <DialogDescription>
-            Kéo/thả nhiều PDF (tối đa 20 tệp mỗi lần). Hệ thống bóc tách nhanh
-            bằng regex, gộp cảnh báo trùng theo số GP trong batch và trong CSDL.
+            Kéo/thả nhiều PDF (tối đa 20 tệp mỗi lần). Hệ thống bóc tách nhanh bằng regex, gộp cảnh
+            báo trùng theo số GP trong batch và trong CSDL.
           </DialogDescription>
         </DialogHeader>
 
         {/* Dropzone */}
         <div
-          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragOver(true);
+          }}
           onDragLeave={() => setDragOver(false)}
           onDrop={(e) => {
-            e.preventDefault(); setDragOver(false);
+            e.preventDefault();
+            setDragOver(false);
             if (e.dataTransfer?.files?.length) onFiles(e.dataTransfer.files);
           }}
           className={`rounded-md border-2 border-dashed p-6 text-center transition ${
@@ -235,9 +294,17 @@ export function GpktBulkImportDialog({ open, onOpenChange }: Props) {
             multiple
             accept="application/pdf,.pdf"
             className="hidden"
-            onChange={(e) => { if (e.target.files) onFiles(e.target.files); e.target.value = ""; }}
+            onChange={(e) => {
+              if (e.target.files) onFiles(e.target.files);
+              e.target.value = "";
+            }}
           />
-          <Button variant="outline" size="sm" className="mt-3" onClick={() => document.getElementById("gpkt-bulk-input")?.click()}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-3"
+            onClick={() => document.getElementById("gpkt-bulk-input")?.click()}
+          >
             Chọn tệp…
           </Button>
         </div>
@@ -258,10 +325,17 @@ export function GpktBulkImportDialog({ open, onOpenChange }: Props) {
               {rows.map((r) => {
                 const inBatchDup = batchDupIds.has(r.id);
                 return (
-                  <div key={r.id} className="grid grid-cols-[24px_1fr_140px_90px_90px_140px_60px] gap-2 items-center px-3 py-2 text-xs">
+                  <div
+                    key={r.id}
+                    className="grid grid-cols-[24px_1fr_140px_90px_90px_140px_60px] gap-2 items-center px-3 py-2 text-xs"
+                  >
                     <Checkbox
                       checked={r.selected}
-                      onCheckedChange={(v) => setRows((prev) => prev.map((x) => x.id === r.id ? { ...x, selected: !!v } : x))}
+                      onCheckedChange={(v) =>
+                        setRows((prev) =>
+                          prev.map((x) => (x.id === r.id ? { ...x, selected: !!v } : x)),
+                        )
+                      }
                       disabled={r.status !== "ready"}
                     />
                     <div className="min-w-0">
@@ -270,45 +344,99 @@ export function GpktBulkImportDialog({ open, onOpenChange }: Props) {
                         <span className="truncate font-medium">{r.file.name}</span>
                       </div>
                       <div className="text-muted-foreground truncate">
-                        {r.fields?.gp_so ? <b className="text-foreground">{r.fields.gp_so}</b> : <em>—</em>}
-                        {r.fields?.ten_he_thong_theo_gp ? ` · ${r.fields.ten_he_thong_theo_gp}` : ""}
+                        {r.fields?.gp_so ? (
+                          <b className="text-foreground">{r.fields.gp_so}</b>
+                        ) : (
+                          <em>—</em>
+                        )}
+                        {r.fields?.ten_he_thong_theo_gp
+                          ? ` · ${r.fields.ten_he_thong_theo_gp}`
+                          : ""}
                       </div>
                       {r.error && <div className="text-red-600 mt-0.5">{r.error}</div>}
                     </div>
                     <div>
-                      {r.status === "parsing" && <Badge variant="outline"><Loader2 className="h-3 w-3 mr-1 animate-spin" />bóc tách…</Badge>}
-                      {r.status === "saving" && <Badge variant="outline"><Loader2 className="h-3 w-3 mr-1 animate-spin" />đang lưu…</Badge>}
-                      {r.status === "saved" && <Badge className="bg-emerald-600"><CheckCircle2 className="h-3 w-3 mr-1" />đã lưu</Badge>}
-                      {r.status === "failed" && <Badge variant="destructive"><X className="h-3 w-3 mr-1" />lỗi</Badge>}
-                      {r.status === "ready" && r.method === "regex" && <Badge variant="outline" className="border-emerald-500 text-emerald-700">regex</Badge>}
-                      {r.status === "ready" && r.method === "ai" && <Badge variant="outline" className="border-primary text-primary">AI</Badge>}
+                      {r.status === "parsing" && (
+                        <Badge variant="outline">
+                          <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                          bóc tách…
+                        </Badge>
+                      )}
+                      {r.status === "saving" && (
+                        <Badge variant="outline">
+                          <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                          đang lưu…
+                        </Badge>
+                      )}
+                      {r.status === "saved" && (
+                        <Badge className="bg-emerald-600">
+                          <CheckCircle2 className="h-3 w-3 mr-1" />
+                          đã lưu
+                        </Badge>
+                      )}
+                      {r.status === "failed" && (
+                        <Badge variant="destructive">
+                          <X className="h-3 w-3 mr-1" />
+                          lỗi
+                        </Badge>
+                      )}
+                      {r.status === "ready" && r.method === "regex" && (
+                        <Badge variant="outline" className="border-emerald-500 text-emerald-700">
+                          regex
+                        </Badge>
+                      )}
+                      {r.status === "ready" && r.method === "ai" && (
+                        <Badge variant="outline" className="border-primary text-primary">
+                          AI
+                        </Badge>
+                      )}
                     </div>
                     <div>{r.filled != null && <span>{r.filled}/17</span>}</div>
                     <div>
                       {r.needsCheck != null && (
-                        <span className={r.needsCheck > 0 ? "text-amber-600 font-medium" : "text-emerald-600"}>
+                        <span
+                          className={
+                            r.needsCheck > 0 ? "text-amber-600 font-medium" : "text-emerald-600"
+                          }
+                        >
                           {r.needsCheck}
                         </span>
                       )}
                     </div>
                     <div className="space-y-1">
                       {inBatchDup && (
-                        <div className="text-red-600 flex items-center gap-1"><Copy className="h-3 w-3" />trùng trong batch</div>
+                        <div className="text-red-600 flex items-center gap-1">
+                          <Copy className="h-3 w-3" />
+                          trùng trong batch
+                        </div>
                       )}
                       {r.dbDup && (
                         <label className="flex items-center gap-1 cursor-pointer">
                           <Checkbox
                             checked={!!r.overwrite}
-                            onCheckedChange={(v) => setRows((prev) => prev.map((x) => x.id === r.id ? { ...x, overwrite: !!v } : x))}
+                            onCheckedChange={(v) =>
+                              setRows((prev) =>
+                                prev.map((x) => (x.id === r.id ? { ...x, overwrite: !!v } : x)),
+                              )
+                            }
                           />
-                          <span className="text-amber-600" title={`Đã có GP ${r.dbDup.gp_so} trong CSDL`}>ghi đè DB</span>
+                          <span
+                            className="text-amber-600"
+                            title={`Đã có GP ${r.dbDup.gp_so} trong CSDL`}
+                          >
+                            ghi đè DB
+                          </span>
                         </label>
                       )}
                       {!inBatchDup && !r.dbDup && r.status === "ready" && (
                         <span className="text-muted-foreground">—</span>
                       )}
                     </div>
-                    <Button size="sm" variant="ghost" onClick={() => setRows((prev) => prev.filter((x) => x.id !== r.id))}>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setRows((prev) => prev.filter((x) => x.id !== r.id))}
+                    >
                       <X className="h-3.5 w-3.5" />
                     </Button>
                   </div>
@@ -322,8 +450,8 @@ export function GpktBulkImportDialog({ open, onOpenChange }: Props) {
           <div className="rounded-md border border-red-300 bg-red-50 dark:border-red-500/40 dark:bg-red-500/10 p-2.5 text-xs text-red-900 dark:text-red-100 flex items-start gap-2">
             <AlertTriangle className="h-4 w-4 mt-0.5" />
             <div>
-              Có {batchDupIds.size} tệp trùng số GP trong batch. Bỏ chọn các bản trùng
-              hoặc chỉ giữ lại 1 bản trước khi lưu.
+              Có {batchDupIds.size} tệp trùng số GP trong batch. Bỏ chọn các bản trùng hoặc chỉ giữ
+              lại 1 bản trước khi lưu.
             </div>
           </div>
         )}
@@ -338,11 +466,10 @@ export function GpktBulkImportDialog({ open, onOpenChange }: Props) {
               </>
             )}
           </div>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Đóng</Button>
-          <Button
-            disabled={busy || totalSelected === 0}
-            onClick={saveSelected}
-          >
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Đóng
+          </Button>
+          <Button disabled={busy || totalSelected === 0} onClick={saveSelected}>
             {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Lưu {totalSelected} bản
           </Button>

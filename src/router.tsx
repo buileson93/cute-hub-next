@@ -82,14 +82,29 @@ export const getRouter = () => {
   // Danh mục (dm_*, taxonomy) ít thay đổi → cache lâu để tránh refetch không cần thiết.
   // Realtime đã có `useGlobalRealtime` invalidate khi CSDL đổi, nên tăng staleTime an toàn.
   const DM_STALE = 5 * 60_000; // 5 phút
-  const DM_GC = 30 * 60_000;   // 30 phút
+  const DM_GC = 30 * 60_000; // 30 phút
   for (const key of [
-    "dm_don_vi", "dm_he_thong", "dm_loai_giay_phep",
-    "dm_loai_lien_ket", "dm_loai_thiet_bi", "dm_model", "dm_nha_cung_cap",
-    "dm_nha_san_xuat", "dm_nhom_he_thong", "dm_noi_cap", "dm_phan_loai",
-    "dm_to_chuc", "dm_trang_thai_thiet_bi", "dm_vi_tri",
-    "dm_danh_gia_nien_han", "taxonomy", "branding", "app_cai_dat",
-    "role_permission", "field_set", "form_template",
+    "dm_don_vi",
+    "dm_he_thong",
+    "dm_loai_giay_phep",
+    "dm_loai_lien_ket",
+    "dm_loai_thiet_bi",
+    "dm_model",
+    "dm_nha_cung_cap",
+    "dm_nha_san_xuat",
+    "dm_nhom_he_thong",
+    "dm_noi_cap",
+    "dm_phan_loai",
+    "dm_to_chuc",
+    "dm_trang_thai_thiet_bi",
+    "dm_vi_tri",
+    "dm_danh_gia_nien_han",
+    "taxonomy",
+    "branding",
+    "app_cai_dat",
+    "role_permission",
+    "field_set",
+    "form_template",
   ] as const) {
     queryClient.setQueryDefaults([key], { staleTime: DM_STALE, gcTime: DM_GC });
   }
@@ -98,8 +113,6 @@ export const getRouter = () => {
   for (const key of ["permissions", "user_scope", "profiles", "nav-badges"] as const) {
     queryClient.setQueryDefaults([key], { staleTime: 60_000, gcTime: 10 * 60_000 });
   }
-
-
 
   const router = createRouter({
     routeTree,

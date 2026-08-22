@@ -9,7 +9,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
 import { storage } from "@/lib/storage";
-import { CHU_KY_BUCKET, dataUrlToBlob, buildChuKyPath, isValidSignatureDataUrl } from "@/lib/mirats/chu-ky";
+import {
+  CHU_KY_BUCKET,
+  dataUrlToBlob,
+  buildChuKyPath,
+  isValidSignatureDataUrl,
+} from "@/lib/mirats/chu-ky";
 
 // ---------- Đo đạc / telemetry ----------
 export interface DoDacRow {
@@ -128,7 +133,9 @@ export function useMaintenancePolicies() {
     queryFn: async (): Promise<ChinhSachRow[]> => {
       const { data, error } = await supabase
         .from("bao_tri_chinh_sach")
-        .select("id,loai_thiet_bi_id,ten,mo_ta,chu_ky_ngay,chu_ky_gio_chay,canh_bao_truoc_ngay,active")
+        .select(
+          "id,loai_thiet_bi_id,ten,mo_ta,chu_ky_ngay,chu_ky_gio_chay,canh_bao_truoc_ngay,active",
+        )
         .order("ten", { ascending: true });
       if (error) throw error;
       return (data ?? []) as ChinhSachRow[];
@@ -151,7 +158,10 @@ export function useSaveMaintenancePolicy() {
         active: input.active ?? true,
       };
       if (input.id) {
-        const { error } = await supabase.from("bao_tri_chinh_sach").update(payload).eq("id", input.id);
+        const { error } = await supabase
+          .from("bao_tri_chinh_sach")
+          .update(payload)
+          .eq("id", input.id);
         if (error) throw error;
       } else {
         const { error } = await supabase
@@ -344,5 +354,3 @@ export function useCapPhatVoiChuKy() {
     },
   });
 }
-
-

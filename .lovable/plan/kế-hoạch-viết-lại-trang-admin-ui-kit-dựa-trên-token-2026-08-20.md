@@ -5,22 +5,26 @@ Hệ thống UI Kit hiện tại đang được viết tay (hardcoded), dẫn đ
 ## Thay đổi kỹ thuật
 
 ### 1. Tự động hóa nội dung (Dynamic Generation)
+
 - Thay vì viết tay các ví dụ, sử dụng vòng lặp `map` qua các registry:
-    - **Typography**: Lặp qua các khóa của `TYPO` trong `src/lib/mirats/ui/typography.ts`.
-    - **Status**: Lặp qua `STATUS_REGISTRY` từ `src/lib/mirats/ui/status-registry.ts` và `TYPO_STATUS` từ `src/lib/mirats/ui/status-tokens.ts`.
-    - **Actions**: Lặp qua các variants của `Button` được định nghĩa trong `src/components/ui/button.tsx` và `ACTION_PATTERNS` trong `src/lib/mirats/ui/action-patterns.ts`.
+  - **Typography**: Lặp qua các khóa của `TYPO` trong `src/lib/mirats/ui/typography.ts`.
+  - **Status**: Lặp qua `STATUS_REGISTRY` từ `src/lib/mirats/ui/status-registry.ts` và `TYPO_STATUS` từ `src/lib/mirats/ui/status-tokens.ts`.
+  - **Actions**: Lặp qua các variants của `Button` được định nghĩa trong `src/components/ui/button.tsx` và `ACTION_PATTERNS` trong `src/lib/mirats/ui/action-patterns.ts`.
 - Đảm bảo khi thêm một token mới vào thư viện, nó sẽ tự động xuất hiện trên UI Kit.
 
 ### 2. Dọn dẹp và chuẩn hóa (Cleaning & Standardization)
+
 - Loại bỏ toàn bộ các class viết cứng (ví dụ: `text-[11px]`, `border-[#0074e2]`, `text-green-600`).
 - Thay thế bằng các class từ `TYPO` hoặc `UI_DENSITY`.
 - Sửa lỗi thông tin font chữ: Chỉnh từ "Figtree" thành "Geist" (font thực tế đang dùng).
 
 ### 3. Bổ sung các hệ thống còn thiếu
+
 - Thêm tab **Bảng và Số**: Trình bày các biến thể mật độ bảng (Table Density) và định dạng số (Tabular numbers).
 - Thêm tab **Nền và Mật độ**: Trình bày hệ thống màu nền semantic và các mức mật độ `compact`, `comfortable`, `spacious`.
 
 ### 4. Kiểm thử (Testing)
+
 - Tạo file test `src/routes/__tests__/ui-kit.test.tsx`.
 - Kiểm tra số lượng ví dụ render ra phải khớp với số lượng token trong registry.
 

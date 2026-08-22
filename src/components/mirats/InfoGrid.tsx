@@ -63,10 +63,10 @@ function InfoRow({ field }: { field: InfoGridProps["fields"][number] }) {
       >
         <div className="truncate flex-1">{field.giaTri}</div>
         {typeof field.soNgay === "number" && (
-          <StatusBadge 
-            domain="expiry" 
-            code={getExpiryCode(field.soNgay)} 
-            label={getExpiryLabel(field.soNgay, true)} 
+          <StatusBadge
+            domain="expiry"
+            code={getExpiryCode(field.soNgay)}
+            label={getExpiryLabel(field.soNgay, true)}
           />
         )}
       </dd>

@@ -22,7 +22,9 @@ function fmt(v: unknown): string {
   if (Array.isArray(v)) {
     if (v.length === 0) return "—";
     // section_repeat được xử lý ở nhánh riêng; ở đây chỉ format array giá trị đơn.
-    return v.map((x) => (typeof x === "object" && x != null ? JSON.stringify(x) : String(x))).join(", ");
+    return v
+      .map((x) => (typeof x === "object" && x != null ? JSON.stringify(x) : String(x)))
+      .join(", ");
   }
   if (typeof v === "boolean") return v ? "Có" : "Không";
   if (typeof v === "object") return JSON.stringify(v);
@@ -113,16 +115,24 @@ export async function renderSubmissionPdf(input: PdfInput): Promise<Uint8Array> 
       for (const w of words) {
         const test = line ? line + " " + w : w;
         const width = f.widthOfTextAtSize(test, size);
-        if (width > maxWidth && line) { lines.push(line); line = w; }
-        else line = test;
+        if (width > maxWidth && line) {
+          lines.push(line);
+          line = w;
+        } else line = test;
       }
       if (line) lines.push(line);
       if (para === "") lines.push("");
     }
     for (const ln of lines) {
-      if (y < margin + size + 2) { page = doc.addPage([pageW, pageH]); y = pageH - margin; }
+      if (y < margin + size + 2) {
+        page = doc.addPage([pageW, pageH]);
+        y = pageH - margin;
+      }
       page.drawText(ln, {
-        x: margin + indent, y: y - size, size, font: f,
+        x: margin + indent,
+        y: y - size,
+        size,
+        font: f,
         color: rgb(color[0], color[1], color[2]),
       });
       y -= size + 4;
@@ -130,10 +140,15 @@ export async function renderSubmissionPdf(input: PdfInput): Promise<Uint8Array> 
   };
 
   const hr = () => {
-    if (y < margin + 8) { page = doc.addPage([pageW, pageH]); y = pageH - margin; }
+    if (y < margin + 8) {
+      page = doc.addPage([pageW, pageH]);
+      y = pageH - margin;
+    }
     page.drawLine({
-      start: { x: margin, y: y - 4 }, end: { x: pageW - margin, y: y - 4 },
-      thickness: 0.5, color: rgb(0.7, 0.7, 0.75),
+      start: { x: margin, y: y - 4 },
+      end: { x: pageW - margin, y: y - 4 },
+      thickness: 0.5,
+      color: rgb(0.7, 0.7, 0.75),
     });
     y -= 10;
   };
@@ -152,7 +167,12 @@ export async function renderSubmissionPdf(input: PdfInput): Promise<Uint8Array> 
     ["Đơn vị", input.submission.don_vi_ten || "—"],
     ["Kỳ báo cáo", input.submission.ky_bao_cao || "—"],
     ["Trạng thái", input.submission.status],
-    ["Nộp lúc", input.submission.submitted_at ? new Date(input.submission.submitted_at).toLocaleString("vi-VN") : "—"],
+    [
+      "Nộp lúc",
+      input.submission.submitted_at
+        ? new Date(input.submission.submitted_at).toLocaleString("vi-VN")
+        : "—",
+    ],
   ];
   for (const [k, v] of meta) drawText(`${k}: ${v}`, { size: 10 });
   hr();
@@ -163,9 +183,18 @@ export async function renderSubmissionPdf(input: PdfInput): Promise<Uint8Array> 
   const dataObj = input.submission.data ?? {};
 
   for (const f of input.fields) {
-    if (f.kind === "heading") { drawText(f.label, { size: 11, bold: true }); continue; }
-    if (f.kind === "divider") { hr(); continue; }
-    if (f.kind === "note") { drawText(f.help_text ?? f.label, { size: 9, color: [0.45, 0.45, 0.5] }); continue; }
+    if (f.kind === "heading") {
+      drawText(f.label, { size: 11, bold: true });
+      continue;
+    }
+    if (f.kind === "divider") {
+      hr();
+      continue;
+    }
+    if (f.kind === "note") {
+      drawText(f.help_text ?? f.label, { size: 9, color: [0.45, 0.45, 0.5] });
+      continue;
+    }
 
     const v = dataObj[f.key];
     const label = f.label + (f.unit ? ` (${f.unit})` : "");
@@ -215,7 +244,10 @@ export async function renderSubmissionPdf(input: PdfInput): Promise<Uint8Array> 
   hr();
   drawText("CHỮ KÝ SỐ (Ed25519)", { size: 11, bold: true });
   if (input.submission.content_hash) {
-    drawText(`Hash nội dung: ${input.submission.content_hash}`, { size: 8, color: [0.35, 0.35, 0.4] });
+    drawText(`Hash nội dung: ${input.submission.content_hash}`, {
+      size: 8,
+      color: [0.35, 0.35, 0.4],
+    });
   }
   y -= 4;
   if (input.signatures.length === 0) {
@@ -224,18 +256,31 @@ export async function renderSubmissionPdf(input: PdfInput): Promise<Uint8Array> 
     for (const s of input.signatures) {
       drawText(`— ${s.signer_name || "(không rõ)"} · ${s.signer_role}`, { size: 10, bold: true });
       drawText(`  Ký lúc: ${new Date(s.signed_at).toLocaleString("vi-VN")}`, { size: 9 });
-      drawText(`  Hash: ${shortHash(s.content_hash)}   Key: ${s.key_id.slice(0, 8)}`, { size: 8, color: [0.4, 0.4, 0.45] });
+      drawText(`  Hash: ${shortHash(s.content_hash)}   Key: ${s.key_id.slice(0, 8)}`, {
+        size: 8,
+        color: [0.4, 0.4, 0.45],
+      });
     }
   }
   y -= 6;
-  drawText(`Xác thực tại: ${input.verifyBaseUrl}/${input.submission.id}`, { size: 9, color: [0.11, 0.32, 0.88] });
+  drawText(`Xác thực tại: ${input.verifyBaseUrl}/${input.submission.id}`, {
+    size: 9,
+    color: [0.11, 0.32, 0.88],
+  });
 
   // ---- Footer ----
   const pages = doc.getPages();
   pages.forEach((p, i) => {
-    p.drawText(`Trang ${i + 1}/${pages.length} · VATM MIRATS · ${new Date().toLocaleString("vi-VN")}`, {
-      x: margin, y: 16, size: 7, font, color: rgb(0.5, 0.5, 0.55),
-    });
+    p.drawText(
+      `Trang ${i + 1}/${pages.length} · VATM MIRATS · ${new Date().toLocaleString("vi-VN")}`,
+      {
+        x: margin,
+        y: 16,
+        size: 7,
+        font,
+        color: rgb(0.5, 0.5, 0.55),
+      },
+    );
   });
 
   return await doc.save();

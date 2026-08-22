@@ -8,9 +8,7 @@ afterEach(() => cleanup());
 describe("InfoHint", () => {
   it("nút có aria-label 'Hướng dẫn' và không chiếm layout khi idle (không render tooltip content)", () => {
     render(<InfoHint>Nội dung tooltip</InfoHint>);
-    expect(
-      screen.getByRole("button", { name: "Hướng dẫn" }),
-    ).not.toBeNull();
+    expect(screen.getByRole("button", { name: "Hướng dẫn" })).not.toBeNull();
     // Nội dung tooltip chưa xuất hiện khi chưa hover/focus
     expect(screen.queryByText("Nội dung tooltip")).toBeNull();
   });

@@ -2,9 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useRef, useEffect } from "react";
 import {
-  useR2ListMyFiles, useR2Upload, useR2Download, useR2Delete, useR2AbortResumable,
+  useR2ListMyFiles,
+  useR2Upload,
+  useR2Download,
+  useR2Delete,
+  useR2AbortResumable,
   useR2InspectResumable,
-  listResumableSessions, cleanupExpiredSessions, fileFingerprint, type ResumableSession,
+  listResumableSessions,
+  cleanupExpiredSessions,
+  fileFingerprint,
+  type ResumableSession,
 } from "@/lib/mirats/r2-client";
 import { supabase } from "@/integrations/backend/client";
 import { Button } from "@/components/ui/button";
@@ -12,15 +19,42 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
-import { Download, Trash2, UploadCloud, RefreshCw, FileText, Image as ImageIcon, Film, File, Search, X, RotateCw, PlayCircle, XCircle, StopCircle, Trash, Clock, ShieldCheck } from "lucide-react";
+import {
+  Download,
+  Trash2,
+  UploadCloud,
+  RefreshCw,
+  FileText,
+  Image as ImageIcon,
+  Film,
+  File,
+  Search,
+  X,
+  RotateCw,
+  PlayCircle,
+  XCircle,
+  StopCircle,
+  Trash,
+  Clock,
+  ShieldCheck,
+} from "lucide-react";
 
 export const Route = createFileRoute("/_app/tep-tin")({
   head: () => ({
     meta: [
       { title: "Tệp của tôi | VATM" },
-      { name: "description", content: "Danh sách tệp tin đã upload lên kho R2, tải về qua presigned URL an toàn." },
+      {
+        name: "description",
+        content: "Danh sách tệp tin đã upload lên kho R2, tải về qua presigned URL an toàn.",
+      },
       { property: "og:title", content: "Tệp của tôi | VATM" },
       { property: "og:description", content: "Quản lý tệp upload cá nhân trên VATM." },
     ],
@@ -39,9 +73,9 @@ function iconFor(cat?: string | null) {
 function fmtBytes(n?: number | null) {
   if (!n && n !== 0) return "—";
   if (n < 1024) return `${n} B`;
-  if (n < 1024*1024) return `${(n/1024).toFixed(1)} KB`;
-  if (n < 1024*1024*1024) return `${(n/(1024*1024)).toFixed(1)} MB`;
-  return `${(n/(1024*1024*1024)).toFixed(2)} GB`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
 function FilesPage() {
@@ -54,7 +88,14 @@ function FilesPage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const resumeInputRef = useRef<HTMLInputElement>(null);
   const resumeTargetRef = useRef<ResumableSession | null>(null);
-  const [progress, setProgress] = useState<{ name: string; percent: number; loaded: number; total: number; startedAt: number; startedBytes: number } | null>(null);
+  const [progress, setProgress] = useState<{
+    name: string;
+    percent: number;
+    loaded: number;
+    total: number;
+    startedAt: number;
+    startedBytes: number;
+  } | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const [nowTick, setNowTick] = useState(0);
   const [search, setSearch] = useState("");
@@ -63,13 +104,19 @@ function FilesPage() {
   const [failed, setFailed] = useState<{ id: string; file: File; error: string }[]>([]);
   const [sessions, setSessions] = useState<ResumableSession[]>([]);
   const [mismatchFor, setMismatchFor] = useState<string | null>(null);
-  const [cleanupStats, setCleanupStats] = useState<{ removed: number; kept: number; oldestAgeMs: number | null }>({ removed: 0, kept: 0, oldestAgeMs: null });
+  const [cleanupStats, setCleanupStats] = useState<{
+    removed: number;
+    kept: number;
+    oldestAgeMs: number | null;
+  }>({ removed: 0, kept: 0, oldestAgeMs: null });
   const refreshSessions = () => {
     const stats = cleanupExpiredSessions();
     setCleanupStats(stats);
     setSessions(listResumableSessions());
   };
-  useEffect(() => { refreshSessions(); }, []);
+  useEffect(() => {
+    refreshSessions();
+  }, []);
   // Dọn định kỳ mỗi 5 phút để phản ánh trạng thái quá hạn.
   useEffect(() => {
     const id = window.setInterval(refreshSessions, 5 * 60 * 1000);
@@ -90,7 +137,9 @@ function FilesPage() {
   }, [progress]);
   // Đồng bộ giữa các tab.
   useEffect(() => {
-    const onStorage = (e: StorageEvent) => { if (e.key === "r2:resumable-sessions:v1") refreshSessions(); };
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "r2:resumable-sessions:v1") refreshSessions();
+    };
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
   }, []);
@@ -125,12 +174,18 @@ function FilesPage() {
       if (!userId) return;
       ch = supabase
         .channel(`r2-file-${userId}`)
-        .on("postgres_changes", { event: "*", schema: "public", table: "r2_file", filter: `user_id=eq.${userId}` }, () => {
-          q.refetch();
-        })
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "r2_file", filter: `user_id=eq.${userId}` },
+          () => {
+            q.refetch();
+          },
+        )
         .subscribe();
     });
-    return () => { if (ch) supabase.removeChannel(ch); };
+    return () => {
+      if (ch) supabase.removeChannel(ch);
+    };
   }, []);
 
   const filtered = (q.data ?? []).filter((f: any) => {
@@ -156,11 +211,19 @@ function FilesPage() {
       let seededBase = false;
       await upload(f, {
         signal: controller.signal,
-        onProgress: (p) => setProgress((prev) => {
-          const base = !seededBase ? p.loaded : (prev?.startedBytes ?? 0);
-          if (!seededBase) seededBase = true;
-          return { name: f.name, percent: p.percent, loaded: p.loaded, total: p.total, startedAt: prev?.startedAt ?? startedAt, startedBytes: base };
-        }),
+        onProgress: (p) =>
+          setProgress((prev) => {
+            const base = !seededBase ? p.loaded : (prev?.startedBytes ?? 0);
+            if (!seededBase) seededBase = true;
+            return {
+              name: f.name,
+              percent: p.percent,
+              loaded: p.loaded,
+              total: p.total,
+              startedAt: prev?.startedAt ?? startedAt,
+              startedBytes: base,
+            };
+          }),
       });
       toast.success(`Đã upload: ${f.name}`);
       // xoá khỏi failed nếu retry thành công
@@ -173,7 +236,14 @@ function FilesPage() {
       setFailed((prev) => {
         const id = `${f.name}-${f.size}-${f.lastModified}-${Date.now()}`;
         // giữ duy nhất 1 entry cho mỗi file
-        const cleaned = prev.filter((x) => !(x.file.name === f.name && x.file.size === f.size && x.file.lastModified === f.lastModified));
+        const cleaned = prev.filter(
+          (x) =>
+            !(
+              x.file.name === f.name &&
+              x.file.size === f.size &&
+              x.file.lastModified === f.lastModified
+            ),
+        );
         return [...cleaned, { id, file: f, error: msg }];
       });
       refreshSessions();
@@ -198,9 +268,13 @@ function FilesPage() {
       try {
         const info = await inspectResumable(s);
         if (info.valid && info.partCount > 0) {
-          toast.message(`Tận dụng ${info.partCount} part đã có trên R2 (~${fmtBytes(info.totalBytes)}), chỉ upload phần còn thiếu.`);
+          toast.message(
+            `Tận dụng ${info.partCount} part đã có trên R2 (~${fmtBytes(info.totalBytes)}), chỉ upload phần còn thiếu.`,
+          );
         }
-      } catch { /* không chặn retry */ }
+      } catch {
+        /* không chặn retry */
+      }
     }
     await uploadOne(item.file);
   };
@@ -217,7 +291,9 @@ function FilesPage() {
     if (fileFingerprint(f) !== target.fingerprint) {
       // Giữ target để user bấm "Tải lại" chọn đúng file mà không mất phiên.
       setMismatchFor(target.fingerprint);
-      toast.error(`File "${f.name}" không khớp phiên "${target.fileName}". Bấm "Tải lại" để chọn đúng file.`);
+      toast.error(
+        `File "${f.name}" không khớp phiên "${target.fileName}". Bấm "Tải lại" để chọn đúng file.`,
+      );
       return;
     }
     resumeTargetRef.current = null;
@@ -259,7 +335,8 @@ function FilesPage() {
     if (s == null || !isFinite(s)) return "—";
     const sec = Math.max(0, Math.round(s));
     if (sec < 60) return `${sec}s`;
-    const m = Math.floor(sec / 60), r = sec % 60;
+    const m = Math.floor(sec / 60),
+      r = sec % 60;
     if (m < 60) return `${m}m ${r}s`;
     const h = Math.floor(m / 60);
     return `${h}h ${m % 60}m`;
@@ -275,13 +352,20 @@ function FilesPage() {
     try {
       const { url } = await download(key);
       window.open(url, "_blank", "noopener");
-    } catch (e: any) { toast.error(e.message); }
+    } catch (e: any) {
+      toast.error(e.message);
+    }
   };
 
   const handleDelete = async (key: string) => {
     if (!confirm("Xoá file này khỏi R2?")) return;
-    try { await del(key); toast.success("Đã xoá"); q.refetch(); }
-    catch (e: any) { toast.error(e.message); }
+    try {
+      await del(key);
+      toast.success("Đã xoá");
+      q.refetch();
+    } catch (e: any) {
+      toast.error(e.message);
+    }
   };
 
   return (
@@ -289,12 +373,26 @@ function FilesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Tệp của tôi</h1>
-          <p className="text-sm text-muted-foreground">Upload / tải xuống qua presigned URL an toàn (ảnh 5', PDF 15').</p>
+          <p className="text-sm text-muted-foreground">
+            Upload / tải xuống qua presigned URL an toàn (ảnh 5', PDF 15').
+          </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => q.refetch()}><RefreshCw className="h-4 w-4 mr-1"/>Làm mới</Button>
-          <Button size="sm" onClick={() => inputRef.current?.click()}><UploadCloud className="h-4 w-4 mr-1"/>Upload</Button>
-          <Input ref={inputRef} type="file" multiple className="hidden" onChange={(e) => handleFiles(e.target.files)} />
+          <Button variant="outline" size="sm" onClick={() => q.refetch()}>
+            <RefreshCw className="h-4 w-4 mr-1" />
+            Làm mới
+          </Button>
+          <Button size="sm" onClick={() => inputRef.current?.click()}>
+            <UploadCloud className="h-4 w-4 mr-1" />
+            Upload
+          </Button>
+          <Input
+            ref={inputRef}
+            type="file"
+            multiple
+            className="hidden"
+            onChange={(e) => handleFiles(e.target.files)}
+          />
         </div>
       </div>
 
@@ -309,8 +407,14 @@ function FilesPage() {
                 {eta && eta.speed > 0 ? ` · ${fmtBytes(Math.round(eta.speed))}/s` : ""}
               </span>
               <span className="tabular-nums">{progress.percent}%</span>
-              <Button size="sm" variant="ghost" onClick={stopCurrentUpload} title="Dừng upload (giữ phiên để tiếp tục sau)">
-                <StopCircle className="h-4 w-4 mr-1 text-destructive" />Dừng
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={stopCurrentUpload}
+                title="Dừng upload (giữ phiên để tiếp tục sau)"
+              >
+                <StopCircle className="h-4 w-4 mr-1 text-destructive" />
+                Dừng
               </Button>
             </div>
             <Progress value={progress.percent} />
@@ -327,22 +431,31 @@ function FilesPage() {
             <CardTitle className="text-base flex items-center justify-between gap-2">
               <span>Có thể tiếp tục ({sessions.length})</span>
               <span className="text-xs font-normal text-muted-foreground flex items-center gap-3">
-                <span className="flex items-center gap-1"><ShieldCheck className="h-3 w-3" />TTL 24h · phiên cũ nhất: {fmtAge(cleanupStats.oldestAgeMs)}</span>
-                {cleanupStats.removed > 0 && <span>Đã dọn {cleanupStats.removed} phiên quá hạn</span>}
+                <span className="flex items-center gap-1">
+                  <ShieldCheck className="h-3 w-3" />
+                  TTL 24h · phiên cũ nhất: {fmtAge(cleanupStats.oldestAgeMs)}
+                </span>
+                {cleanupStats.removed > 0 && (
+                  <span>Đã dọn {cleanupStats.removed} phiên quá hạn</span>
+                )}
                 <Button size="sm" variant="ghost" onClick={refreshSessions} title="Dọn ngay">
-                  <Trash className="h-3 w-3 mr-1" />Dọn
+                  <Trash className="h-3 w-3 mr-1" />
+                  Dọn
                 </Button>
               </span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <p className="text-xs text-muted-foreground">
-              Các phiên upload nhiều phần đang dở dang. Chọn lại đúng file để tiếp tục phần còn thiếu (không upload lại từ đầu).
+              Các phiên upload nhiều phần đang dở dang. Chọn lại đúng file để tiếp tục phần còn
+              thiếu (không upload lại từ đầu).
             </p>
             {sessions.map((s) => (
               <div key={s.fingerprint} className="rounded-md border p-2 space-y-1.5">
                 <div className="flex items-center gap-3">
-                  <div className="text-muted-foreground"><UploadCloud className="h-4 w-4" /></div>
+                  <div className="text-muted-foreground">
+                    <UploadCloud className="h-4 w-4" />
+                  </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium truncate">{s.fileName}</div>
                     <div className="text-xs text-muted-foreground truncate">
@@ -351,7 +464,8 @@ function FilesPage() {
                   </div>
                   <span className="text-xs tabular-nums w-10 text-right">{s.percent ?? 0}%</span>
                   <Button size="sm" variant="secondary" onClick={() => askResume(s)}>
-                    <PlayCircle className="h-4 w-4 mr-1" />Tiếp tục
+                    <PlayCircle className="h-4 w-4 mr-1" />
+                    Tiếp tục
                   </Button>
                   <Button
                     size="sm"
@@ -359,25 +473,43 @@ function FilesPage() {
                     onClick={() => reloadResume(s)}
                     title="Chọn lại file nếu vừa chọn nhầm"
                   >
-                    <RotateCw className="h-4 w-4 mr-1" />Tải lại
+                    <RotateCw className="h-4 w-4 mr-1" />
+                    Tải lại
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={() => cancelResumable(s)} title="Huỷ phiên: abort trên R2 và xoá khỏi localStorage">
-                    <XCircle className="h-4 w-4 mr-1 text-destructive" />Huỷ phiên
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => cancelResumable(s)}
+                    title="Huỷ phiên: abort trên R2 và xoá khỏi localStorage"
+                  >
+                    <XCircle className="h-4 w-4 mr-1 text-destructive" />
+                    Huỷ phiên
                   </Button>
                 </div>
                 <Progress value={s.percent ?? 0} className="h-1.5" />
                 <div className="text-[11px] text-muted-foreground">
                   Bắt đầu: {new Date(s.createdAt).toLocaleString("vi-VN")}
-                  {s.updatedAt ? ` · cập nhật ${new Date(s.updatedAt).toLocaleTimeString("vi-VN")}` : ""}
+                  {s.updatedAt
+                    ? ` · cập nhật ${new Date(s.updatedAt).toLocaleTimeString("vi-VN")}`
+                    : ""}
                 </div>
                 {mismatchFor === s.fingerprint && (
                   <div className="text-xs text-destructive">
-                    File vừa chọn không khớp phiên. Bấm <strong>Tải lại</strong> để chọn đúng "{s.fileName}" ({fmtBytes(s.fileSize)}).
+                    File vừa chọn không khớp phiên. Bấm <strong>Tải lại</strong> để chọn đúng "
+                    {s.fileName}" ({fmtBytes(s.fileSize)}).
                   </div>
                 )}
               </div>
             ))}
-            <input ref={resumeInputRef} type="file" className="hidden" onChange={(e) => { handleResumeSelect(e.target.files); e.currentTarget.value = ""; }} />
+            <input
+              ref={resumeInputRef}
+              type="file"
+              className="hidden"
+              onChange={(e) => {
+                handleResumeSelect(e.target.files);
+                e.currentTarget.value = "";
+              }}
+            />
           </CardContent>
         </Card>
       )}
@@ -385,23 +517,46 @@ function FilesPage() {
       {failed.length > 0 && (
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base text-destructive">Upload lỗi ({failed.length})</CardTitle>
+            <CardTitle className="text-base text-destructive">
+              Upload lỗi ({failed.length})
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             {failed.map((it) => (
-              <div key={it.id} className="flex items-center gap-3 rounded-md border border-destructive/40 bg-destructive/5 p-2">
-                <div className="text-destructive"><XCircle className="h-4 w-4" /></div>
+              <div
+                key={it.id}
+                className="flex items-center gap-3 rounded-md border border-destructive/40 bg-destructive/5 p-2"
+              >
+                <div className="text-destructive">
+                  <XCircle className="h-4 w-4" />
+                </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium truncate">{it.file.name}</div>
                   <div className="text-xs text-muted-foreground truncate">{it.error}</div>
                 </div>
-                <Button size="sm" variant="secondary" onClick={() => uploadOne(it.file)} title="Tiếp tục từ điểm dừng (skip part đã upload)">
-                  <PlayCircle className="h-4 w-4 mr-1" />Tiếp tục
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => uploadOne(it.file)}
+                  title="Tiếp tục từ điểm dừng (skip part đã upload)"
+                >
+                  <PlayCircle className="h-4 w-4 mr-1" />
+                  Tiếp tục
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => retryFromScratch(it)} title="Kiểm tra part đã có trên R2 rồi upload phần còn thiếu — tránh trùng">
-                  <RotateCw className="h-4 w-4 mr-1" />Thử lại từ đầu
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => retryFromScratch(it)}
+                  title="Kiểm tra part đã có trên R2 rồi upload phần còn thiếu — tránh trùng"
+                >
+                  <RotateCw className="h-4 w-4 mr-1" />
+                  Thử lại từ đầu
                 </Button>
-                <Button size="sm" variant="ghost" onClick={() => setFailed((p) => p.filter((x) => x.id !== it.id))}>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setFailed((p) => p.filter((x) => x.id !== it.id))}
+                >
                   <X className="h-4 w-4" />
                 </Button>
               </div>
@@ -422,7 +577,9 @@ function FilesPage() {
             />
           </div>
           <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="md:w-44"><SelectValue placeholder="Loại" /></SelectTrigger>
+            <SelectTrigger className="md:w-44">
+              <SelectValue placeholder="Loại" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tất cả loại</SelectItem>
               <SelectItem value="image">Hình ảnh</SelectItem>
@@ -433,7 +590,9 @@ function FilesPage() {
             </SelectContent>
           </Select>
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="md:w-44"><SelectValue placeholder="Trạng thái" /></SelectTrigger>
+            <SelectTrigger className="md:w-44">
+              <SelectValue placeholder="Trạng thái" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tất cả trạng thái</SelectItem>
               <SelectItem value="ready">Đã xong</SelectItem>
@@ -442,8 +601,17 @@ function FilesPage() {
             </SelectContent>
           </Select>
           {hasFilter && (
-            <Button variant="ghost" size="sm" onClick={() => { setSearch(""); setCategory("all"); setStatus("all"); }}>
-              <X className="h-4 w-4 mr-1" />Xoá lọc
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setSearch("");
+                setCategory("all");
+                setStatus("all");
+              }}
+            >
+              <X className="h-4 w-4 mr-1" />
+              Xoá lọc
             </Button>
           )}
         </CardContent>
@@ -452,31 +620,60 @@ function FilesPage() {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base">
-            Danh sách ({filtered.length}{hasFilter && q.data ? ` / ${q.data.length}` : ""})
+            Danh sách ({filtered.length}
+            {hasFilter && q.data ? ` / ${q.data.length}` : ""})
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {q.isLoading ? <div className="text-sm text-muted-foreground">Đang tải…</div> :
-            !q.data?.length ? <div className="text-sm text-muted-foreground py-8 text-center">Chưa có tệp nào.</div> :
-            !filtered.length ? <div className="text-sm text-muted-foreground py-8 text-center">Không có tệp nào khớp bộ lọc.</div> :
+          {q.isLoading ? (
+            <div className="text-sm text-muted-foreground">Đang tải…</div>
+          ) : !q.data?.length ? (
+            <div className="text-sm text-muted-foreground py-8 text-center">Chưa có tệp nào.</div>
+          ) : !filtered.length ? (
+            <div className="text-sm text-muted-foreground py-8 text-center">
+              Không có tệp nào khớp bộ lọc.
+            </div>
+          ) : (
             <div className="divide-y">
               {filtered.map((f: any) => (
                 <div key={f.id} className="py-2 flex items-center gap-3">
                   <div className="text-muted-foreground">{iconFor(f.category)}</div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">{f.original_name || f.key.split("/").pop()}</div>
+                    <div className="text-sm font-medium truncate">
+                      {f.original_name || f.key.split("/").pop()}
+                    </div>
                     <div className="text-xs text-muted-foreground truncate">{f.key}</div>
                   </div>
-                  <div className="text-xs text-muted-foreground w-20 text-right">{fmtBytes(f.size)}</div>
-                  <Badge variant={f.status === "ready" ? "default" : f.status === "temp" ? "secondary" : "destructive"} className="capitalize">
+                  <div className="text-xs text-muted-foreground w-20 text-right">
+                    {fmtBytes(f.size)}
+                  </div>
+                  <Badge
+                    variant={
+                      f.status === "ready"
+                        ? "default"
+                        : f.status === "temp"
+                          ? "secondary"
+                          : "destructive"
+                    }
+                    className="capitalize"
+                  >
                     {f.status === "ready" ? "Đã xong" : f.status === "temp" ? "Đang xử lý" : "Lỗi"}
                   </Badge>
-                  <Button size="icon" variant="ghost" onClick={() => handleDownload(f.key)} disabled={f.status !== "ready"}><Download className="h-4 w-4"/></Button>
-                  <Button size="icon" variant="ghost" onClick={() => handleDelete(f.key)}><Trash2 className="h-4 w-4 text-destructive"/></Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => handleDownload(f.key)}
+                    disabled={f.status !== "ready"}
+                  >
+                    <Download className="h-4 w-4" />
+                  </Button>
+                  <Button size="icon" variant="ghost" onClick={() => handleDelete(f.key)}>
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
                 </div>
               ))}
             </div>
-          }
+          )}
         </CardContent>
       </Card>
     </div>

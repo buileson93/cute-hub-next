@@ -3,8 +3,25 @@ import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/backend/client";
 import {
-  Upload, Download, FileSpreadsheet, Loader2, CheckCircle2, AlertTriangle, Plus, RefreshCw, ArrowRightLeft,
-  FileUp, Columns3, ClipboardCheck, ChevronRight, ChevronLeft, X, Wand2, Table2, ShieldCheck, Monitor
+  Upload,
+  Download,
+  FileSpreadsheet,
+  Loader2,
+  CheckCircle2,
+  AlertTriangle,
+  Plus,
+  RefreshCw,
+  ArrowRightLeft,
+  FileUp,
+  Columns3,
+  ClipboardCheck,
+  ChevronRight,
+  ChevronLeft,
+  X,
+  Wand2,
+  Table2,
+  ShieldCheck,
+  Monitor,
 } from "lucide-react";
 import { DesktopOnly } from "@/components/mirats/DesktopOnly";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,13 +31,31 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { toast } from "sonner";
 import { runBulkImport } from "@/lib/mirats/import-export.functions";
 import {
-  ENTITIES, CATALOG_TABLES, findEntity, csvHeaders, toCsv, parseCsv, catalogEntity, noAccent,
+  ENTITIES,
+  CATALOG_TABLES,
+  findEntity,
+  csvHeaders,
+  toCsv,
+  parseCsv,
+  catalogEntity,
+  noAccent,
 } from "@/lib/mirats/import-config";
 import { PrepareCatalogs } from "@/components/mirats/PrepareCatalogs";
 import { PageHeader } from "@/components/mirats/PageHeader";
@@ -34,23 +69,46 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { exportAllInOneXlsx } from "@/lib/mirats/allinone-template";
 
-
 export const Route = createFileRoute("/_app/admin/nhap-lieu")({
   head: () => ({
     meta: [
       { title: "Nhập/Xuất hàng loạt — MIRATS" },
-      { name: "description", content: "Nhập và xuất dữ liệu tài sản, hệ thống, danh mục, giấy phép hàng loạt bằng CSV." },
+      {
+        name: "description",
+        content: "Nhập và xuất dữ liệu tài sản, hệ thống, danh mục, giấy phép hàng loạt bằng CSV.",
+      },
     ],
   }),
   component: NhapLieuPage,
 });
 
-type PreviewRow = { index: number; action: "create" | "update" | "error"; key: string; messages: string[]; warnings?: string[]; refCreations: string[] };
-type RefCreatedGroup = { table: string; label: string; items: Array<{ id: string; ma: string | null; ten: string }> };
+type PreviewRow = {
+  index: number;
+  action: "create" | "update" | "error";
+  key: string;
+  messages: string[];
+  warnings?: string[];
+  refCreations: string[];
+};
+type RefCreatedGroup = {
+  table: string;
+  label: string;
+  items: Array<{ id: string; ma: string | null; ten: string }>;
+};
 type RefReusedGroup = { table: string; label: string; count: number };
 type PreviewResult = {
   committed: boolean;
-  summary: { total: number; create: number; update: number; error: number; refCreate: number; refReused?: number; created?: number; updated?: number; writeErrors?: number };
+  summary: {
+    total: number;
+    create: number;
+    update: number;
+    error: number;
+    refCreate: number;
+    refReused?: number;
+    created?: number;
+    updated?: number;
+    writeErrors?: number;
+  };
   preview?: PreviewRow[];
   errors?: Array<{ key: string; message: string }>;
   refCreatedByTable?: RefCreatedGroup[];
@@ -66,22 +124,24 @@ function download(name: string, content: string) {
   const blob = new Blob([content], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = name; a.click();
+  a.href = url;
+  a.download = name;
+  a.click();
   URL.revokeObjectURL(url);
 }
 
 function NhapLieuPage() {
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
   if (isMobile) {
     return (
       <div className="p-4">
-        <PageHeader 
-          icon={Monitor} 
-          title="Nhập/Xuất hàng loạt" 
+        <PageHeader
+          icon={Monitor}
+          title="Nhập/Xuất hàng loạt"
           description="Công cụ quản trị dữ liệu chuyên sâu."
         />
-        <DesktopOnly 
+        <DesktopOnly
           featureName="Nhập/Xuất hàng loạt"
           reason="Việc nhập dữ liệu từ file CSV/Excel và đối chiếu cột (mapping) cần không gian màn hình lớn và độ chính xác của con trỏ chuột để tránh sai sót dữ liệu hệ thống. Vui lòng thực hiện trên máy tính."
         >
@@ -116,19 +176,26 @@ function NhapLieuPage() {
   // Vị trí cha mặc định cho các vị trí tự tạo khi nhập tài sản (tránh nằm rời).
   const [viTriParentId, setViTriParentId] = useState<string>("");
 
-
   // Mặc định chọn: khóa tự nhiên + các trường bắt buộc.
   useEffect(() => {
     setDefaults({}); // đổi loại dữ liệu → xóa giá trị mặc định cũ
-    if (!ent) { setPicked(new Set()); return; }
+    if (!ent) {
+      setPicked(new Set());
+      return;
+    }
     const def = new Set<string>([ent.keyHeader]);
-    ent.fields.forEach((f) => { if (f.required) def.add(f.key); });
+    ent.fields.forEach((f) => {
+      if (f.required) def.add(f.key);
+    });
     setPicked(def);
   }, [ent]);
 
   // Tự đoán ánh xạ cột mỗi khi đổi file CSV hoặc đổi đối tượng (khớp theo key/label, bỏ dấu).
   useEffect(() => {
-    if (!ent || !parsed) { setMapping({}); return; }
+    if (!ent || !parsed) {
+      setMapping({});
+      return;
+    }
     // Chỉ mục trường theo tên đã chuẩn hoá để tra nhanh.
     const byNorm = new Map<string, string>();
     for (const f of ent.fields) {
@@ -139,7 +206,10 @@ function NhapLieuPage() {
     for (const h of parsed.headers) {
       const n = noAccent(h);
       // Cột x_* (thuộc tính mở rộng tài sản) giữ nguyên tên.
-      if (ent.table === "thiet_bi" && h.startsWith("x_")) { next[h] = h; continue; }
+      if (ent.table === "thiet_bi" && h.startsWith("x_")) {
+        next[h] = h;
+        continue;
+      }
       next[h] = byNorm.get(n) ?? "";
     }
     setMapping(next);
@@ -150,7 +220,12 @@ function NhapLieuPage() {
   const mappedFieldKeys = useMemo(() => new Set(Object.values(mapping).filter(Boolean)), [mapping]);
   // Trường có giá trị mặc định thực sự (đã điền).
   const activeDefaults = useMemo(
-    () => Object.fromEntries(Object.entries(defaults).filter(([k, v]) => !mappedFieldKeys.has(k) && (v ?? "").trim() !== "")),
+    () =>
+      Object.fromEntries(
+        Object.entries(defaults).filter(
+          ([k, v]) => !mappedFieldKeys.has(k) && (v ?? "").trim() !== "",
+        ),
+      ),
     [defaults, mappedFieldKeys],
   );
 
@@ -194,13 +269,19 @@ function NhapLieuPage() {
   // - Không ánh xạ cột khóa (mã) → mã sẽ được TỰ SINH khi tạo mới (insert).
   // - Có ánh xạ cột khóa → dòng nào trùng mã sẽ CẬP NHẬT, còn lại tạo mới.
   const mappedKeys = useMemo(() => new Set(Object.values(mapping).filter(Boolean)), [mapping]);
-  const keyLabel = useMemo(() => ent?.fields.find((f) => f.key === ent.keyHeader)?.label ?? ent?.keyHeader ?? "", [ent]);
+  const keyLabel = useMemo(
+    () => ent?.fields.find((f) => f.key === ent.keyHeader)?.label ?? ent?.keyHeader ?? "",
+    [ent],
+  );
   const missingKey = useMemo(() => !!ent && !mappedKeys.has(ent.keyHeader), [ent, mappedKeys]);
   // Trường bắt buộc (không phải khóa) chưa ánh xạ VÀ chưa khai mặc định → cảnh báo mềm.
   const missingCreateFields = useMemo(() => {
     if (!ent) return [] as string[];
     return ent.fields
-      .filter((f) => f.required && f.key !== ent.keyHeader && !mappedKeys.has(f.key) && !activeDefaults[f.key])
+      .filter(
+        (f) =>
+          f.required && f.key !== ent.keyHeader && !mappedKeys.has(f.key) && !activeDefaults[f.key],
+      )
       .map((f) => f.label);
   }, [ent, mappedKeys, activeDefaults]);
   // Không chặn cứng bước nào — mọi thiếu sót đều là cảnh báo mềm.
@@ -214,20 +295,37 @@ function NhapLieuPage() {
 
     // 1) File rỗng / không có cột.
     if (headers.length === 0 || parsed.rows.length === 0) {
-      out.push({ level: "error", text: "File không có dữ liệu (thiếu dòng tiêu đề hoặc không có dòng nào)." });
+      out.push({
+        level: "error",
+        text: "File không có dữ liệu (thiếu dòng tiêu đề hoặc không có dòng nào).",
+      });
       return out;
     }
     // 2) Cột trùng tên → dữ liệu đè lên nhau khi đọc.
     const hCount = new Map<string, number>();
     headers.forEach((h) => hCount.set(h, (hCount.get(h) ?? 0) + 1));
     const dupHeaders = [...hCount.entries()].filter(([h, n]) => h && n > 1).map(([h]) => h);
-    if (dupHeaders.length) out.push({ level: "error", text: `Cột trùng tên: ${dupHeaders.join(", ")} — dữ liệu các cột trùng sẽ đè lên nhau. Hãy đổi tên cho khác nhau trong file.` });
+    if (dupHeaders.length)
+      out.push({
+        level: "error",
+        text: `Cột trùng tên: ${dupHeaders.join(", ")} — dữ liệu các cột trùng sẽ đè lên nhau. Hãy đổi tên cho khác nhau trong file.`,
+      });
     // 3) Cột không có tiêu đề.
     const blank = headers.filter((h) => !h || h.trim() === "").length;
-    if (blank) out.push({ level: "warn", text: `Có ${blank} cột không có tiêu đề — sẽ bị bỏ qua khi nhập.` });
+    if (blank)
+      out.push({
+        level: "warn",
+        text: `Có ${blank} cột không có tiêu đề — sẽ bị bỏ qua khi nhập.`,
+      });
     // 4) Cột chưa ánh xạ (dữ liệu sẽ không được nhập).
-    const unmapped = headers.filter((h) => h && !mapping[h] && !(ent.table === "thiet_bi" && h.startsWith("x_")));
-    if (unmapped.length) out.push({ level: "info", text: `Cột chưa dùng (dữ liệu sẽ KHÔNG được nhập): ${unmapped.join(", ")}. Nếu cần, chọn trường CSDL tương ứng bên dưới.` });
+    const unmapped = headers.filter(
+      (h) => h && !mapping[h] && !(ent.table === "thiet_bi" && h.startsWith("x_")),
+    );
+    if (unmapped.length)
+      out.push({
+        level: "info",
+        text: `Cột chưa dùng (dữ liệu sẽ KHÔNG được nhập): ${unmapped.join(", ")}. Nếu cần, chọn trường CSDL tương ứng bên dưới.`,
+      });
 
     // 5) Trùng mã trong file (khi đã ánh xạ cột khóa).
     if (!missingKey) {
@@ -237,50 +335,87 @@ function NhapLieuPage() {
         if (k) seen.set(k, (seen.get(k) ?? 0) + 1);
       }
       const dupKeys = [...seen.entries()].filter(([, n]) => n > 1).map(([k]) => k);
-      if (dupKeys.length) out.push({ level: "warn", text: `${dupKeys.length} mã bị lặp trong file (vd: ${dupKeys.slice(0, 3).join(", ")}…) — các dòng cùng mã sẽ ghi đè lên nhau.` });
+      if (dupKeys.length)
+        out.push({
+          level: "warn",
+          text: `${dupKeys.length} mã bị lặp trong file (vd: ${dupKeys.slice(0, 3).join(", ")}…) — các dòng cùng mã sẽ ghi đè lên nhau.`,
+        });
     }
 
     // 6) Ô bắt buộc bỏ trống (với trường đã ánh xạ hoặc có mặc định).
-    const reqFields = ent.fields.filter((f) => f.required && f.key !== ent.keyHeader && (mappedKeys.has(f.key) || activeDefaults[f.key]));
+    const reqFields = ent.fields.filter(
+      (f) =>
+        f.required && f.key !== ent.keyHeader && (mappedKeys.has(f.key) || activeDefaults[f.key]),
+    );
     // 7) Giá trị số / ngày sai định dạng (server sẽ cố làm sạch, nhưng cảnh báo trước).
-    const numFields = ent.fields.filter((f) => (f.kind === "int" || f.kind === "num") && (mappedKeys.has(f.key) || activeDefaults[f.key]));
-    const dateFields = ent.fields.filter((f) => f.kind === "date" && (mappedKeys.has(f.key) || activeDefaults[f.key]));
-    let emptyReq = 0; const emptyEx = new Set<string>();
-    let badNum = 0; const badNumEx: string[] = [];
-    let badDate = 0; const badDateEx: string[] = [];
+    const numFields = ent.fields.filter(
+      (f) =>
+        (f.kind === "int" || f.kind === "num") && (mappedKeys.has(f.key) || activeDefaults[f.key]),
+    );
+    const dateFields = ent.fields.filter(
+      (f) => f.kind === "date" && (mappedKeys.has(f.key) || activeDefaults[f.key]),
+    );
+    let emptyReq = 0;
+    const emptyEx = new Set<string>();
+    let badNum = 0;
+    const badNumEx: string[] = [];
+    let badDate = 0;
+    const badDateEx: string[] = [];
     remappedRows.forEach((r, i) => {
       for (const f of reqFields) {
-        if ((r[f.key] ?? "").trim() === "") { emptyReq++; if (emptyEx.size < 3) emptyEx.add(f.label); }
+        if ((r[f.key] ?? "").trim() === "") {
+          emptyReq++;
+          if (emptyEx.size < 3) emptyEx.add(f.label);
+        }
       }
       for (const f of numFields) {
         const v = (r[f.key] ?? "").trim();
         if (!v) continue;
-        const cleaned = f.kind === "int" ? v.replace(/[^\d-]/g, "") : v.replace(/[^\d.,-]/g, "").replace(",", ".");
-        if (cleaned === "" || !Number.isFinite(Number(cleaned))) { badNum++; if (badNumEx.length < 3) badNumEx.push(`dòng ${i + 1}: ${f.label}="${v}"`); }
+        const cleaned =
+          f.kind === "int"
+            ? v.replace(/[^\d-]/g, "")
+            : v.replace(/[^\d.,-]/g, "").replace(",", ".");
+        if (cleaned === "" || !Number.isFinite(Number(cleaned))) {
+          badNum++;
+          if (badNumEx.length < 3) badNumEx.push(`dòng ${i + 1}: ${f.label}="${v}"`);
+        }
       }
       for (const f of dateFields) {
         const v = (r[f.key] ?? "").trim();
         if (!v) continue;
         const ok = /^\d{1,2}[/-]\d{1,2}[/-]\d{4}$/.test(v) || !Number.isNaN(Date.parse(v));
-        if (!ok) { badDate++; if (badDateEx.length < 3) badDateEx.push(`dòng ${i + 1}: ${f.label}="${v}"`); }
+        if (!ok) {
+          badDate++;
+          if (badDateEx.length < 3) badDateEx.push(`dòng ${i + 1}: ${f.label}="${v}"`);
+        }
       }
     });
-    if (emptyReq) out.push({ level: "warn", text: `${emptyReq} ô bắt buộc đang bỏ trống (vd: ${[...emptyEx].join(", ")}) — dòng mã mới sẽ báo lỗi khi ghi.` });
-    if (badNum) out.push({ level: "warn", text: `${badNum} ô số sai định dạng (${badNumEx.join("; ")}) — sẽ cố làm sạch, nếu không được sẽ bỏ trống.` });
-    if (badDate) out.push({ level: "warn", text: `${badDate} ô ngày sai định dạng (${badDateEx.join("; ")}) — dùng dạng dd/mm/yyyy hoặc yyyy-mm-dd.` });
+    if (emptyReq)
+      out.push({
+        level: "warn",
+        text: `${emptyReq} ô bắt buộc đang bỏ trống (vd: ${[...emptyEx].join(", ")}) — dòng mã mới sẽ báo lỗi khi ghi.`,
+      });
+    if (badNum)
+      out.push({
+        level: "warn",
+        text: `${badNum} ô số sai định dạng (${badNumEx.join("; ")}) — sẽ cố làm sạch, nếu không được sẽ bỏ trống.`,
+      });
+    if (badDate)
+      out.push({
+        level: "warn",
+        text: `${badDate} ô ngày sai định dạng (${badDateEx.join("; ")}) — dùng dạng dd/mm/yyyy hoặc yyyy-mm-dd.`,
+      });
 
     return out;
   }, [ent, parsed, mapping, mappedKeys, activeDefaults, missingKey, remappedRows]);
 
   const hasFileErrors = useMemo(() => fileIssues.some((x) => x.level === "error"), [fileIssues]);
 
-
-
-
   function togglePick(key: string) {
     setPicked((prev) => {
       const next = new Set(prev);
-      if (next.has(key)) next.delete(key); else next.add(key);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
       next.add(ent!.keyHeader); // khóa luôn có
       return next;
     });
@@ -288,9 +423,14 @@ function NhapLieuPage() {
 
   function resetPick(all: boolean) {
     if (!ent) return;
-    if (all) { setPicked(new Set(ent.fields.map((f) => f.key))); return; }
+    if (all) {
+      setPicked(new Set(ent.fields.map((f) => f.key)));
+      return;
+    }
     const def = new Set<string>([ent.keyHeader]);
-    ent.fields.forEach((f) => { if (f.required) def.add(f.key); });
+    ent.fields.forEach((f) => {
+      if (f.required) def.add(f.key);
+    });
     setPicked(def);
   }
 
@@ -300,7 +440,9 @@ function NhapLieuPage() {
     const all = csvHeaders(ent);
     const headers = onlyPicked ? all.filter((h) => picked.has(h) || h === ent.keyHeader) : all;
     const example: Record<string, string> = {};
-    ent.fields.forEach((f) => { if (headers.includes(f.key)) example[f.key] = f.required ? `(bắt buộc)` : ""; });
+    ent.fields.forEach((f) => {
+      if (headers.includes(f.key)) example[f.key] = f.required ? `(bắt buộc)` : "";
+    });
     const suffix = onlyPicked ? `_${headers.length}truong` : "_daydu";
     download(`mau_${ent.table}${suffix}.csv`, toCsv(headers, [example]));
   }
@@ -312,7 +454,9 @@ function NhapLieuPage() {
       toast.success(
         compact
           ? "Đã tải mẫu all-in-one RÚT GỌN (chỉ cột bắt buộc + hay dùng)"
-          : withData ? "Đã tải file kèm dữ liệu hiện có" : "Đã tải mẫu all-in-one trống",
+          : withData
+            ? "Đã tải file kèm dữ liệu hiện có"
+            : "Đã tải mẫu all-in-one trống",
       );
     } catch (e) {
       toast.error((e as Error).message);
@@ -322,20 +466,20 @@ function NhapLieuPage() {
   }
 
   async function exportData() {
-
     if (!ent) return;
     setBusy(true);
     try {
       const table = ent.table;
       // 1) Nạp bảng tham chiếu để giải ID → mã (để nhập lại không mất liên kết).
-      const refTables = Array.from(new Set(
-        ent.fields.filter((f) => f.kind === "ref" && f.ref).map((f) => f.ref!.table),
-      ));
+      const refTables = Array.from(
+        new Set(ent.fields.filter((f) => f.kind === "ref" && f.ref).map((f) => f.ref!.table)),
+      );
       const refMap: Record<string, Map<string, string>> = {};
       for (const rt of refTables) {
         const { data } = await (supabase as any).from(rt).select("id, ma").limit(20000);
         const m = new Map<string, string>();
-        for (const r of data ?? []) if ((r as any).id) m.set(String((r as any).id), String((r as any).ma ?? ""));
+        for (const r of data ?? [])
+          if ((r as any).id) m.set(String((r as any).id), String((r as any).ma ?? ""));
         refMap[rt] = m;
       }
       // 2) Nạp dữ liệu thật.
@@ -347,7 +491,8 @@ function NhapLieuPage() {
       if (table === "thiet_bi") {
         for (const r of dataRows) {
           const tt = r.thuoc_tinh as Record<string, unknown> | null;
-          if (tt && typeof tt === "object") for (const k of Object.keys(tt)) if (k.startsWith("x_")) extraCols.add(k);
+          if (tt && typeof tt === "object")
+            for (const k of Object.keys(tt)) if (k.startsWith("x_")) extraCols.add(k);
         }
       }
       const headers = [...csvHeaders(ent), ...Array.from(extraCols)];
@@ -380,7 +525,11 @@ function NhapLieuPage() {
       return;
     }
     const reader = new FileReader();
-    reader.onload = () => { setCsvText(String(reader.result ?? "")); setFileName(file.name); setResult(null); };
+    reader.onload = () => {
+      setCsvText(String(reader.result ?? ""));
+      setFileName(file.name);
+      setResult(null);
+    };
     reader.onerror = () => toast.error("Không đọc được file");
     reader.readAsText(file, "utf-8");
   }
@@ -392,11 +541,18 @@ function NhapLieuPage() {
   }
 
   function clearFile() {
-    setCsvText(""); setFileName(""); setResult(null); setMapping({}); setStep(1);
+    setCsvText("");
+    setFileName("");
+    setResult(null);
+    setMapping({});
+    setStep(1);
   }
 
   async function run(commit: boolean) {
-    if (!parsed || parsed.rows.length === 0) { toast.error("Chưa có dữ liệu CSV"); return; }
+    if (!parsed || parsed.rows.length === 0) {
+      toast.error("Chưa có dữ liệu CSV");
+      return;
+    }
     if (missingRequired.length) {
       toast.error(`Chưa ánh xạ cột bắt buộc: ${missingRequired.join(", ")}`);
       return;
@@ -405,15 +561,22 @@ function NhapLieuPage() {
     try {
       const res = (await runImport({
         data: {
-          entity, catTable: isCat ? catTable : undefined, rows: remappedRows, commit,
+          entity,
+          catTable: isCat ? catTable : undefined,
+          rows: remappedRows,
+          commit,
           viTriParentId: entity === "thiet_bi" && viTriParentId ? viTriParentId : undefined,
         },
       })) as PreviewResult;
       setResult(res);
       if (commit) {
-        toast.success(`Đã ghi: ${res.summary.created ?? 0} mới, ${res.summary.updated ?? 0} cập nhật`);
+        toast.success(
+          `Đã ghi: ${res.summary.created ?? 0} mới, ${res.summary.updated ?? 0} cập nhật`,
+        );
       } else {
-        toast.success(`Xem trước: ${res.summary.create} tạo mới · ${res.summary.update} cập nhật · ${res.summary.error} lỗi`);
+        toast.success(
+          `Xem trước: ${res.summary.create} tạo mới · ${res.summary.update} cập nhật · ${res.summary.error} lỗi`,
+        );
       }
     } catch (e) {
       toast.error((e as Error).message);
@@ -421,7 +584,6 @@ function NhapLieuPage() {
       setBusy(false);
     }
   }
-
 
   const canCommit = result && !result.committed && result.summary.error < result.summary.total;
 
@@ -435,11 +597,23 @@ function NhapLieuPage() {
   ];
 
   function goStep(target: 1 | 2 | 3) {
-    if (target === 2 && !hasData) { toast.error("Hãy tải file CSV trước"); return; }
+    if (target === 2 && !hasData) {
+      toast.error("Hãy tải file CSV trước");
+      return;
+    }
     if (target === 3) {
-      if (!hasData) { toast.error("Hãy tải file CSV trước"); return; }
-      if (hasFileErrors) { toast.error("File có lỗi nghiêm trọng — hãy sửa theo phần rà soát ở ô ánh xạ cột."); return; }
-      if (missingRequired.length) { toast.error(`Chưa ánh xạ cột bắt buộc: ${missingRequired.join(", ")}`); return; }
+      if (!hasData) {
+        toast.error("Hãy tải file CSV trước");
+        return;
+      }
+      if (hasFileErrors) {
+        toast.error("File có lỗi nghiêm trọng — hãy sửa theo phần rà soát ở ô ánh xạ cột.");
+        return;
+      }
+      if (missingRequired.length) {
+        toast.error(`Chưa ánh xạ cột bắt buộc: ${missingRequired.join(", ")}`);
+        return;
+      }
     }
     setStep(target);
   }
@@ -451,7 +625,12 @@ function NhapLieuPage() {
         <PageHeader
           title="Nhập / Xuất hàng loạt"
           subtitle="CSV → ánh xạ → xem trước → ghi"
-          help={<>Trùng <b>mã</b>: cập nhật. Chưa có: tạo mới. Ô trống: giữ nguyên. Thứ tự: Danh mục → Model → Hệ thống → Tài sản.</>}
+          help={
+            <>
+              Trùng <b>mã</b>: cập nhật. Chưa có: tạo mới. Ô trống: giữ nguyên. Thứ tự: Danh mục →
+              Model → Hệ thống → Tài sản.
+            </>
+          }
         />
 
         <div className="inline-flex rounded-lg border bg-muted/40 p-1">
@@ -476,7 +655,6 @@ function NhapLieuPage() {
           >
             <Download className="h-4 w-4" /> Xuất & Mẫu
           </button>
-
         </div>
       </div>
 
@@ -495,22 +673,38 @@ function NhapLieuPage() {
                     type="button"
                     onClick={() => goStep(s.n)}
                     className={`flex w-full items-center gap-2.5 rounded-lg border px-3 py-2.5 text-left transition-colors ${
-                      active ? "border-primary bg-primary/5 shadow-[0_0_10px_rgba(0,116,226,0.1)]" : done ? "border-success/40 bg-success/5" : "border-border bg-muted/20 hover:bg-muted/40"
+                      active
+                        ? "border-primary bg-primary/5 shadow-[0_0_10px_rgba(0,116,226,0.1)]"
+                        : done
+                          ? "border-success/40 bg-success/5"
+                          : "border-border bg-muted/20 hover:bg-muted/40"
                     }`}
                   >
-                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold shadow-sm ${
-                      active ? "bg-primary text-primary-foreground" : done ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground"
-                    }`}>
+                    <div
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold shadow-sm ${
+                        active
+                          ? "bg-primary text-primary-foreground"
+                          : done
+                            ? "bg-success text-success-foreground"
+                            : "bg-muted text-muted-foreground"
+                      }`}
+                    >
                       {done ? <CheckCircle2 className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
                     </div>
                     <div className="min-w-0">
-                      <div className={`truncate text-sm font-medium ${active ? "text-foreground" : done ? "text-success" : "text-muted-foreground"}`}>
+                      <div
+                        className={`truncate text-sm font-medium ${active ? "text-foreground" : done ? "text-success" : "text-muted-foreground"}`}
+                      >
                         {s.n}. {s.label}
                       </div>
-                      <div className="hidden truncate text-[11px] text-muted-foreground sm:block">{s.desc}</div>
+                      <div className="hidden truncate text-[11px] text-muted-foreground sm:block">
+                        {s.desc}
+                      </div>
                     </div>
                   </button>
-                  {i < STEPS.length - 1 && <ChevronRight className="hidden h-4 w-4 shrink-0 text-muted-foreground/50 sm:block" />}
+                  {i < STEPS.length - 1 && (
+                    <ChevronRight className="hidden h-4 w-4 shrink-0 text-muted-foreground/50 sm:block" />
+                  )}
                 </div>
               );
             })}
@@ -523,11 +717,10 @@ function NhapLieuPage() {
                 <CardTitle className="flex items-center gap-2 text-base">
                   <FileSpreadsheet className="h-4 w-4 text-primary" /> Chọn loại dữ liệu & tải file
                   <InfoHint>
-                    Thứ tự: Danh mục → Model → Hệ thống → Tài sản.
-                    Khoá <b>mã</b>: trùng thì cập nhật, mới thì tạo. Serial không được trùng.
-                    Cột số tự bỏ chữ (vd "08 bộ" → 8). Nên sao lưu trước khi ghi lượng lớn.
+                    Thứ tự: Danh mục → Model → Hệ thống → Tài sản. Khoá <b>mã</b>: trùng thì cập
+                    nhật, mới thì tạo. Serial không được trùng. Cột số tự bỏ chữ (vd "08 bộ" → 8).
+                    Nên sao lưu trước khi ghi lượng lớn.
                   </InfoHint>
-
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -537,50 +730,98 @@ function NhapLieuPage() {
                       Đối tượng
                       {ent?.note && <InfoHint>{ent.note}</InfoHint>}
                     </Label>
-                    <Select value={entity} onValueChange={(v) => { setEntity(v); setResult(null); }}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                    <Select
+                      value={entity}
+                      onValueChange={(v) => {
+                        setEntity(v);
+                        setResult(null);
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent>
-                        {ENTITY_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+                        {ENTITY_OPTIONS.map((o) => (
+                          <SelectItem key={o.value} value={o.value}>
+                            {o.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
                   {isCat && (
                     <div className="space-y-1.5">
                       <Label>Bảng danh mục</Label>
-                      <Select value={catTable} onValueChange={(v) => { setCatTable(v); setResult(null); }}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                      <Select
+                        value={catTable}
+                        onValueChange={(v) => {
+                          setCatTable(v);
+                          setResult(null);
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent>
-                          {CATALOG_TABLES.map((c) => <SelectItem key={c.table} value={c.table}>{c.label}</SelectItem>)}
+                          {CATALOG_TABLES.map((c) => (
+                            <SelectItem key={c.table} value={c.table}>
+                              {c.label}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
                   )}
                 </div>
 
-
                 <label
                   htmlFor="csv-upload"
-                  onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
-                  onDragLeave={(e) => { e.preventDefault(); setDragActive(false); }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragActive(true);
+                  }}
+                  onDragLeave={(e) => {
+                    e.preventDefault();
+                    setDragActive(false);
+                  }}
                   onDrop={(e) => {
-                    e.preventDefault(); setDragActive(false);
+                    e.preventDefault();
+                    setDragActive(false);
                     const file = e.dataTransfer.files?.[0];
                     if (file) readFile(file);
                   }}
                   className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed px-4 py-10 text-center transition-colors ${
-                    dragActive ? "border-primary bg-primary/10" : "border-muted-foreground/25 bg-muted/20 hover:border-primary/50 hover:bg-muted/40"
+                    dragActive
+                      ? "border-primary bg-primary/10"
+                      : "border-muted-foreground/25 bg-muted/20 hover:border-primary/50 hover:bg-muted/40"
                   }`}
                 >
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-full ${dragActive ? "bg-primary/20" : "bg-muted"}`}>
-                    <Upload className={`h-6 w-6 ${dragActive ? "text-primary" : "text-muted-foreground"}`} />
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-full ${dragActive ? "bg-primary/20" : "bg-muted"}`}
+                  >
+                    <Upload
+                      className={`h-6 w-6 ${dragActive ? "text-primary" : "text-muted-foreground"}`}
+                    />
                   </div>
                   <div className="text-sm font-medium">
-                    {fileName ? <span className="text-primary">{fileName}</span> : "Kéo & thả file CSV vào đây"}
+                    {fileName ? (
+                      <span className="text-primary">{fileName}</span>
+                    ) : (
+                      "Kéo & thả file CSV vào đây"
+                    )}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {fileName ? "Bấm để chọn file khác" : "hoặc bấm để chọn file — chỉ hỗ trợ .csv, ngày dd/mm/yyyy"}
+                    {fileName
+                      ? "Bấm để chọn file khác"
+                      : "hoặc bấm để chọn file — chỉ hỗ trợ .csv, ngày dd/mm/yyyy"}
                   </div>
-                  <input id="csv-upload" type="file" accept=".csv,text/csv" onChange={onFile} className="sr-only" />
+                  <input
+                    id="csv-upload"
+                    type="file"
+                    accept=".csv,text/csv"
+                    onChange={onFile}
+                    className="sr-only"
+                  />
                 </label>
 
                 {parsed && (
@@ -605,7 +846,6 @@ function NhapLieuPage() {
                     onPickViTriParent={setViTriParentId}
                   />
                 )}
-
               </CardContent>
             </Card>
           )}
@@ -616,22 +856,35 @@ function NhapLieuPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <ArrowRightLeft className="h-4 w-4 text-primary" /> Ánh xạ cột (khớp file với CSDL)
-                    <InfoHint>Mỗi cột trong file được khớp với một trường CSDL. Hệ thống đã tự đoán — chỉnh lại nếu cần, chọn <b>“— Bỏ qua —”</b> để không nhập cột đó.</InfoHint>
+                    <ArrowRightLeft className="h-4 w-4 text-primary" /> Ánh xạ cột (khớp file với
+                    CSDL)
+                    <InfoHint>
+                      Mỗi cột trong file được khớp với một trường CSDL. Hệ thống đã tự đoán — chỉnh
+                      lại nếu cần, chọn <b>“— Bỏ qua —”</b> để không nhập cột đó.
+                    </InfoHint>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {missingKey ? (
                     <div className="flex items-start gap-2 rounded-md border border-primary/30 bg-primary/5 p-2 text-xs text-primary font-medium">
                       <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                      <span>Chưa ánh xạ cột khoá <b>{keyLabel}</b> — mã sẽ tự sinh (tất cả là tạo mới).</span>
-                      <InfoHint>Nếu file có sẵn mã và bạn muốn cập nhật bản ghi cũ thì hãy ánh xạ cột khoá.</InfoHint>
+                      <span>
+                        Chưa ánh xạ cột khoá <b>{keyLabel}</b> — mã sẽ tự sinh (tất cả là tạo mới).
+                      </span>
+                      <InfoHint>
+                        Nếu file có sẵn mã và bạn muốn cập nhật bản ghi cũ thì hãy ánh xạ cột khoá.
+                      </InfoHint>
                     </div>
                   ) : missingCreateFields.length > 0 ? (
                     <div className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/5 p-2 text-xs text-warning font-medium">
                       <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                      <span>Thiếu trường bắt buộc: <b>{missingCreateFields.join(", ")}</b>.</span>
-                      <InfoHint>Dòng có sẵn mã sẽ được cập nhật (cột thiếu giữ nguyên); dòng mã mới sẽ báo lỗi khi ghi.</InfoHint>
+                      <span>
+                        Thiếu trường bắt buộc: <b>{missingCreateFields.join(", ")}</b>.
+                      </span>
+                      <InfoHint>
+                        Dòng có sẵn mã sẽ được cập nhật (cột thiếu giữ nguyên); dòng mã mới sẽ báo
+                        lỗi khi ghi.
+                      </InfoHint>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2 rounded-md border border-emerald-500/40 bg-emerald-500/5 p-2 text-xs text-emerald-700 dark:text-emerald-400">
@@ -652,10 +905,13 @@ function NhapLieuPage() {
                             iss.level === "error"
                               ? "text-red-700 dark:text-red-400"
                               : iss.level === "warn"
-                              ? "text-amber-700 dark:text-amber-400"
-                              : "text-muted-foreground";
+                                ? "text-amber-700 dark:text-amber-400"
+                                : "text-muted-foreground";
                           return (
-                            <li key={idx} className={`flex items-start gap-1.5 text-[11px] ${tone}`}>
+                            <li
+                              key={idx}
+                              className={`flex items-start gap-1.5 text-[11px] ${tone}`}
+                            >
                               <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
                               <span>{iss.text}</span>
                             </li>
@@ -677,33 +933,51 @@ function NhapLieuPage() {
                         {parsed.headers.map((h) => {
                           const sample = parsed.rows[0]?.[h] ?? "";
                           const usedElsewhere = new Set(
-                            Object.entries(mapping).filter(([c]) => c !== h).map(([, v]) => v).filter(Boolean),
+                            Object.entries(mapping)
+                              .filter(([c]) => c !== h)
+                              .map(([, v]) => v)
+                              .filter(Boolean),
                           );
                           const mapped = !!mapping[h];
                           return (
                             <TableRow key={h}>
                               <TableCell className="font-mono text-xs">
-                                <span className={`mr-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle ${mapped ? "bg-emerald-500" : "bg-muted-foreground/30"}`} />
+                                <span
+                                  className={`mr-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle ${mapped ? "bg-emerald-500" : "bg-muted-foreground/30"}`}
+                                />
                                 {h}
                               </TableCell>
-                              <TableCell className="max-w-[220px] truncate text-xs text-muted-foreground">{sample || "—"}</TableCell>
+                              <TableCell className="max-w-[220px] truncate text-xs text-muted-foreground">
+                                {sample || "—"}
+                              </TableCell>
                               <TableCell>
                                 <Select
                                   value={mapping[h] || "__ignore__"}
                                   onValueChange={(v) => {
-                                    setMapping((prev) => ({ ...prev, [h]: v === "__ignore__" ? "" : v }));
+                                    setMapping((prev) => ({
+                                      ...prev,
+                                      [h]: v === "__ignore__" ? "" : v,
+                                    }));
                                     setResult(null);
                                   }}
                                 >
-                                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                                  <SelectTrigger className="h-8 text-xs">
+                                    <SelectValue />
+                                  </SelectTrigger>
                                   <SelectContent>
                                     <SelectItem value="__ignore__">— Bỏ qua —</SelectItem>
                                     {ent.table === "thiet_bi" && h.startsWith("x_") && (
                                       <SelectItem value={h}>Thuộc tính mở rộng: {h}</SelectItem>
                                     )}
                                     {ent.fields.map((f) => (
-                                      <SelectItem key={f.key} value={f.key} disabled={usedElsewhere.has(f.key)}>
-                                        {f.label}{f.required ? " *" : ""}{f.key === ent.keyHeader ? " (khóa)" : ""}
+                                      <SelectItem
+                                        key={f.key}
+                                        value={f.key}
+                                        disabled={usedElsewhere.has(f.key)}
+                                      >
+                                        {f.label}
+                                        {f.required ? " *" : ""}
+                                        {f.key === ent.keyHeader ? " (khóa)" : ""}
                                       </SelectItem>
                                     ))}
                                   </SelectContent>
@@ -723,7 +997,11 @@ function NhapLieuPage() {
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2 text-base">
                     <Wand2 className="h-4 w-4 text-primary" /> Điền sẵn trường file thiếu
-                    <InfoHint>File thiếu thông tin nhưng bạn biết trước? Điền một lần vào đây — áp cho <b>mọi dòng bỏ trống</b>. Vd file không có cột <i>Phân loại</i> nhưng đều là <b>Nhóm 3</b> thì gõ “Nhóm 3”. Ô đã có trong file thì <b>giữ nguyên</b>.</InfoHint>
+                    <InfoHint>
+                      File thiếu thông tin nhưng bạn biết trước? Điền một lần vào đây — áp cho{" "}
+                      <b>mọi dòng bỏ trống</b>. Vd file không có cột <i>Phân loại</i> nhưng đều là{" "}
+                      <b>Nhóm 3</b> thì gõ “Nhóm 3”. Ô đã có trong file thì <b>giữ nguyên</b>.
+                    </InfoHint>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -736,7 +1014,11 @@ function NhapLieuPage() {
                           <Label className="text-xs">
                             {f.label}
                             {f.required && <span className="ml-1 text-amber-600">*</span>}
-                            {f.kind === "ref" && <span className="ml-1 text-[10px] text-muted-foreground">(danh mục)</span>}
+                            {f.kind === "ref" && (
+                              <span className="ml-1 text-[10px] text-muted-foreground">
+                                (danh mục)
+                              </span>
+                            )}
                           </Label>
                           <Input
                             value={defaults[f.key] ?? ""}
@@ -754,19 +1036,29 @@ function NhapLieuPage() {
                   {Object.keys(activeDefaults).length > 0 && (
                     <p className="mt-3 flex items-start gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/5 p-2 text-[11px] text-emerald-700 dark:text-emerald-400">
                       <CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0" />
-                      <span>Đang áp mặc định cho: <b>{Object.keys(activeDefaults).map((k) => ent.fields.find((f) => f.key === k)?.label ?? k).join(", ")}</b>. Giá trị danh mục chưa có sẽ được tạo mới tự động.</span>
+                      <span>
+                        Đang áp mặc định cho:{" "}
+                        <b>
+                          {Object.keys(activeDefaults)
+                            .map((k) => ent.fields.find((f) => f.key === k)?.label ?? k)
+                            .join(", ")}
+                        </b>
+                        . Giá trị danh mục chưa có sẽ được tạo mới tự động.
+                      </span>
                     </p>
                   )}
                 </CardContent>
               </Card>
-
 
               {previewCols.length > 0 && (
                 <Card>
                   <CardHeader className="pb-2">
                     <CardTitle className="flex items-center gap-2 text-base">
                       <Table2 className="h-4 w-4 text-primary" /> Xem trước dữ liệu (sau ánh xạ)
-                      <InfoHint>Hiển thị {Math.min(remappedRows.length, 20)}/{remappedRows.length} dòng đầu với đúng các cột đã ánh xạ. Ô trống = giữ nguyên khi cập nhật.</InfoHint>
+                      <InfoHint>
+                        Hiển thị {Math.min(remappedRows.length, 20)}/{remappedRows.length} dòng đầu
+                        với đúng các cột đã ánh xạ. Ô trống = giữ nguyên khi cập nhật.
+                      </InfoHint>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -778,7 +1070,9 @@ function NhapLieuPage() {
                             {previewCols.map((c) => (
                               <TableHead key={c.key} className="whitespace-nowrap text-xs">
                                 {c.label}
-                                {c.key === ent.keyHeader && <span className="ml-1 text-primary">(khóa)</span>}
+                                {c.key === ent.keyHeader && (
+                                  <span className="ml-1 text-primary">(khóa)</span>
+                                )}
                               </TableHead>
                             ))}
                           </TableRow>
@@ -786,10 +1080,16 @@ function NhapLieuPage() {
                         <TableBody>
                           {remappedRows.slice(0, 20).map((row, i) => (
                             <TableRow key={i}>
-                              <TableCell className="text-xs tabular-nums text-muted-foreground">{i + 1}</TableCell>
+                              <TableCell className="text-xs tabular-nums text-muted-foreground">
+                                {i + 1}
+                              </TableCell>
                               {previewCols.map((c) => (
                                 <TableCell key={c.key} className="max-w-[220px] truncate text-xs">
-                                  {row[c.key] ? row[c.key] : <span className="text-muted-foreground/50">—</span>}
+                                  {row[c.key] ? (
+                                    row[c.key]
+                                  ) : (
+                                    <span className="text-muted-foreground/50">—</span>
+                                  )}
                                 </TableCell>
                               ))}
                             </TableRow>
@@ -809,20 +1109,35 @@ function NhapLieuPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
                   <ClipboardCheck className="h-4 w-4 text-primary" /> Kiểm tra & Ghi vào CSDL
-                  <InfoHint>Bấm <b>Kiểm tra dữ liệu</b> để soát từng dòng (tạo mới / cập nhật / lỗi), sau đó <b>Ghi vào CSDL</b>.</InfoHint>
+                  <InfoHint>
+                    Bấm <b>Kiểm tra dữ liệu</b> để soát từng dòng (tạo mới / cập nhật / lỗi), sau đó{" "}
+                    <b>Ghi vào CSDL</b>.
+                  </InfoHint>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex flex-wrap gap-2">
                   <Button size="sm" onClick={() => run(false)} disabled={busy || !hasData}>
-                    {busy ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-1.5 h-4 w-4" />}
+                    {busy ? (
+                      <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+                    ) : (
+                      <RefreshCw className="mr-1.5 h-4 w-4" />
+                    )}
                     Kiểm tra dữ liệu
                   </Button>
-                  <Button size="sm" onClick={() => run(true)} disabled={busy || !canCommit}
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm">
+                  <Button
+                    size="sm"
+                    onClick={() => run(true)}
+                    disabled={busy || !canCommit}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+                  >
                     <CheckCircle2 className="mr-1.5 h-4 w-4" /> Ghi vào CSDL
                   </Button>
-                  {!result && <p className="self-center text-xs text-muted-foreground">Hãy kiểm tra dữ liệu trước khi ghi.</p>}
+                  {!result && (
+                    <p className="self-center text-xs text-muted-foreground">
+                      Hãy kiểm tra dữ liệu trước khi ghi.
+                    </p>
+                  )}
                 </div>
 
                 {result && (
@@ -830,19 +1145,43 @@ function NhapLieuPage() {
                     <div className="flex flex-wrap gap-2">
                       {result.committed ? (
                         <>
-                          <Badge className="bg-success text-success-foreground">Tạo mới: {result.summary.created ?? 0}</Badge>
-                          <Badge className="bg-primary text-primary-foreground">Cập nhật: {result.summary.updated ?? 0}</Badge>
+                          <Badge className="bg-success text-success-foreground">
+                            Tạo mới: {result.summary.created ?? 0}
+                          </Badge>
+                          <Badge className="bg-primary text-primary-foreground">
+                            Cập nhật: {result.summary.updated ?? 0}
+                          </Badge>
                           {(result.summary.writeErrors ?? 0) > 0 && (
-                            <Badge variant="destructive">Lỗi ghi: {result.summary.writeErrors}</Badge>
+                            <Badge variant="destructive">
+                              Lỗi ghi: {result.summary.writeErrors}
+                            </Badge>
                           )}
                         </>
                       ) : (
                         <>
-                          <Badge className="bg-success text-success-foreground"><Plus className="mr-1 h-3 w-3" />Tạo mới: {result.summary.create}</Badge>
-                          <Badge className="bg-primary text-primary-foreground"><RefreshCw className="mr-1 h-3 w-3" />Cập nhật: {result.summary.update}</Badge>
-                          <Badge variant="destructive"><AlertTriangle className="mr-1 h-3 w-3" />Lỗi: {result.summary.error}</Badge>
-                          {result.summary.refCreate > 0 && <Badge variant="outline">Danh mục sẽ tạo: {result.summary.refCreate}</Badge>}
-                          {previewWarnings > 0 && <Badge className="bg-amber-500"><AlertTriangle className="mr-1 h-3 w-3" />Cảnh báo: {previewWarnings}</Badge>}
+                          <Badge className="bg-success text-success-foreground">
+                            <Plus className="mr-1 h-3 w-3" />
+                            Tạo mới: {result.summary.create}
+                          </Badge>
+                          <Badge className="bg-primary text-primary-foreground">
+                            <RefreshCw className="mr-1 h-3 w-3" />
+                            Cập nhật: {result.summary.update}
+                          </Badge>
+                          <Badge variant="destructive">
+                            <AlertTriangle className="mr-1 h-3 w-3" />
+                            Lỗi: {result.summary.error}
+                          </Badge>
+                          {result.summary.refCreate > 0 && (
+                            <Badge variant="outline">
+                              Danh mục sẽ tạo: {result.summary.refCreate}
+                            </Badge>
+                          )}
+                          {previewWarnings > 0 && (
+                            <Badge className="bg-amber-500">
+                              <AlertTriangle className="mr-1 h-3 w-3" />
+                              Cảnh báo: {previewWarnings}
+                            </Badge>
+                          )}
                         </>
                       )}
                     </div>
@@ -860,21 +1199,47 @@ function NhapLieuPage() {
                           </TableHeader>
                           <TableBody>
                             {result.preview.map((p) => (
-                              <TableRow key={p.index} className={p.action === "error" ? "bg-destructive/5" : ""}>
-                                <TableCell className="text-xs tabular-nums">{p.index + 1}</TableCell>
+                              <TableRow
+                                key={p.index}
+                                className={p.action === "error" ? "bg-destructive/5" : ""}
+                              >
+                                <TableCell className="text-xs tabular-nums">
+                                  {p.index + 1}
+                                </TableCell>
                                 <TableCell>
-                                  {p.action === "create" && <Badge className="bg-success text-success-foreground">Tạo mới</Badge>}
-                                  {p.action === "update" && <Badge className="bg-primary text-primary-foreground">Cập nhật</Badge>}
+                                  {p.action === "create" && (
+                                    <Badge className="bg-success text-success-foreground">
+                                      Tạo mới
+                                    </Badge>
+                                  )}
+                                  {p.action === "update" && (
+                                    <Badge className="bg-primary text-primary-foreground">
+                                      Cập nhật
+                                    </Badge>
+                                  )}
                                   {p.action === "error" && <Badge variant="destructive">Lỗi</Badge>}
                                 </TableCell>
                                 <TableCell className="font-mono text-xs">{p.key || "—"}</TableCell>
                                 <TableCell className="text-xs text-muted-foreground">
-                                  {p.messages.length > 0 && <span className="text-destructive">{p.messages.join("; ")}</span>}
+                                  {p.messages.length > 0 && (
+                                    <span className="text-destructive">
+                                      {p.messages.join("; ")}
+                                    </span>
+                                  )}
                                   {p.refCreations.length > 0 && (
-                                    <span className="text-amber-600"> {p.messages.length ? " · " : ""}Tạo danh mục: {p.refCreations.join(", ")}</span>
+                                    <span className="text-amber-600">
+                                      {" "}
+                                      {p.messages.length ? " · " : ""}Tạo danh mục:{" "}
+                                      {p.refCreations.join(", ")}
+                                    </span>
                                   )}
                                   {(p.warnings?.length ?? 0) > 0 && (
-                                    <span className="text-amber-500"> {(p.messages.length || p.refCreations.length) ? " · " : ""}⚠ {p.warnings!.join("; ")}</span>
+                                    <span className="text-amber-500">
+                                      {" "}
+                                      {p.messages.length || p.refCreations.length
+                                        ? " · "
+                                        : ""}⚠ {p.warnings!.join("; ")}
+                                    </span>
                                   )}
                                 </TableCell>
                               </TableRow>
@@ -894,14 +1259,22 @@ function NhapLieuPage() {
                     {result.committed && (result.refCreatedByTable?.length ?? 0) > 0 && (
                       <div className="space-y-2 rounded-md border border-amber-500/40 bg-amber-500/5 p-2.5 text-sm">
                         <p className="flex items-center gap-1.5 text-xs font-medium text-amber-700 dark:text-amber-400">
-                          <AlertTriangle className="h-3.5 w-3.5" /> Danh mục tự tạo trong lần nhập này
-                          <InfoHint>Rà lại các bản ghi tự tạo — bổ sung chủng loại, nhà sản xuất… để CSDL đầy đủ.</InfoHint>
+                          <AlertTriangle className="h-3.5 w-3.5" /> Danh mục tự tạo trong lần nhập
+                          này
+                          <InfoHint>
+                            Rà lại các bản ghi tự tạo — bổ sung chủng loại, nhà sản xuất… để CSDL
+                            đầy đủ.
+                          </InfoHint>
                         </p>
                         <ul className="space-y-1">
-
                           {result.refCreatedByTable!.map((g) => (
-                            <li key={g.table} className="flex flex-wrap items-center gap-1.5 text-xs">
-                              <Badge variant="outline" className="border-amber-500/50">{g.label}: {g.items.length} mới</Badge>
+                            <li
+                              key={g.table}
+                              className="flex flex-wrap items-center gap-1.5 text-xs"
+                            >
+                              <Badge variant="outline" className="border-amber-500/50">
+                                {g.label}: {g.items.length} mới
+                              </Badge>
                               {g.table === "dm_model" && (
                                 <Link
                                   to="/danh-muc/model"
@@ -912,7 +1285,11 @@ function NhapLieuPage() {
                                 </Link>
                               )}
                               <span className="text-muted-foreground">
-                                {g.items.slice(0, 6).map((x) => x.ten || x.ma).filter(Boolean).join(" · ")}
+                                {g.items
+                                  .slice(0, 6)
+                                  .map((x) => x.ten || x.ma)
+                                  .filter(Boolean)
+                                  .join(" · ")}
                                 {g.items.length > 6 ? ` … +${g.items.length - 6}` : ""}
                               </span>
                             </li>
@@ -923,18 +1300,21 @@ function NhapLieuPage() {
 
                     {result.committed && (result.refReusedByTable?.length ?? 0) > 0 && (
                       <div className="rounded-md border border-sky-500/30 bg-sky-500/5 p-3 text-xs text-muted-foreground">
-                        <span className="font-medium text-sky-700 dark:text-sky-400">Dùng lại danh mục:</span>{" "}
+                        <span className="font-medium text-sky-700 dark:text-sky-400">
+                          Dùng lại danh mục:
+                        </span>{" "}
                         {result.refReusedByTable!.map((r) => `${r.label}: ${r.count}`).join(" · ")}
                       </div>
                     )}
-
 
                     {result.committed && result.errors && result.errors.length > 0 && (
                       <div className="rounded-md border border-destructive/30 p-3 text-xs">
                         <p className="mb-1 font-medium text-destructive">Các dòng lỗi khi ghi:</p>
                         <ul className="space-y-0.5">
                           {result.errors.map((e, i) => (
-                            <li key={i}><span className="font-mono">{e.key}</span>: {e.message}</li>
+                            <li key={i}>
+                              <span className="font-mono">{e.key}</span>: {e.message}
+                            </li>
                           ))}
                         </ul>
                       </div>
@@ -947,11 +1327,20 @@ function NhapLieuPage() {
 
           {/* Điều hướng bước */}
           <div className="flex items-center justify-between gap-2">
-            <Button variant="outline" size="sm" disabled={step === 1} onClick={() => setStep((s) => (s > 1 ? ((s - 1) as 1 | 2 | 3) : s))}>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={step === 1}
+              onClick={() => setStep((s) => (s > 1 ? ((s - 1) as 1 | 2 | 3) : s))}
+            >
               <ChevronLeft className="mr-1 h-4 w-4" /> Quay lại
             </Button>
             {step < 3 ? (
-              <Button size="sm" onClick={() => goStep((step + 1) as 1 | 2 | 3)} disabled={step === 1 ? !hasData : missingRequired.length > 0}>
+              <Button
+                size="sm"
+                onClick={() => goStep((step + 1) as 1 | 2 | 3)}
+                disabled={step === 1 ? !hasData : missingRequired.length > 0}
+              >
                 Tiếp tục <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             ) : (
@@ -967,16 +1356,43 @@ function NhapLieuPage() {
       {tab === "allinone" && (
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2 rounded-lg border bg-muted/20 p-3">
-            <Button size="sm" variant="outline" onClick={() => exportAllInOne(false)} disabled={busy}>
-              {busy ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Download className="mr-1.5 h-4 w-4" />}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => exportAllInOne(false)}
+              disabled={busy}
+            >
+              {busy ? (
+                <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="mr-1.5 h-4 w-4" />
+              )}
               Tải mẫu all-in-one (trống)
             </Button>
-            <Button size="sm" variant="outline" onClick={() => exportAllInOne(false, true)} disabled={busy}>
-              {busy ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Download className="mr-1.5 h-4 w-4" />}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => exportAllInOne(false, true)}
+              disabled={busy}
+            >
+              {busy ? (
+                <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="mr-1.5 h-4 w-4" />
+              )}
               Tải mẫu RÚT GỌN (trống)
             </Button>
-            <Button size="sm" variant="outline" onClick={() => exportAllInOne(true)} disabled={busy}>
-              {busy ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Download className="mr-1.5 h-4 w-4" />}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => exportAllInOne(true)}
+              disabled={busy}
+            >
+              {busy ? (
+                <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="mr-1.5 h-4 w-4" />
+              )}
               Tải kèm TẤT CẢ dữ liệu
             </Button>
           </div>
@@ -987,8 +1403,6 @@ function NhapLieuPage() {
         </div>
       )}
 
-
-
       {/* ================= TAB: XUẤT & MẪU ================= */}
       {tab === "export" && (
         <Card>
@@ -996,29 +1410,52 @@ function NhapLieuPage() {
             <CardTitle className="flex items-center gap-2 text-base">
               <Download className="h-4 w-4 text-primary" /> Xuất dữ liệu & tải mẫu nhập liệu
               <InfoHint>
-                Tải mẫu CSV để điền, hoặc xuất dữ liệu hiện có (đã giải mã liên kết về mã).
-                Quy trình: Danh mục → Model → Hệ thống → Tài sản.
+                Tải mẫu CSV để điền, hoặc xuất dữ liệu hiện có (đã giải mã liên kết về mã). Quy
+                trình: Danh mục → Model → Hệ thống → Tài sản.
               </InfoHint>
-
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1.5 sm:max-w-xs">
               <Label>Đối tượng</Label>
-              <Select value={entity} onValueChange={(v) => { setEntity(v); setResult(null); }}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Select
+                value={entity}
+                onValueChange={(v) => {
+                  setEntity(v);
+                  setResult(null);
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
-                  {ENTITY_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+                  {ENTITY_OPTIONS.map((o) => (
+                    <SelectItem key={o.value} value={o.value}>
+                      {o.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
             {isCat && (
               <div className="space-y-1.5 sm:max-w-xs">
                 <Label>Bảng danh mục</Label>
-                <Select value={catTable} onValueChange={(v) => { setCatTable(v); setResult(null); }}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <Select
+                  value={catTable}
+                  onValueChange={(v) => {
+                    setCatTable(v);
+                    setResult(null);
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    {CATALOG_TABLES.map((c) => <SelectItem key={c.table} value={c.table}>{c.label}</SelectItem>)}
+                    {CATALOG_TABLES.map((c) => (
+                      <SelectItem key={c.table} value={c.table}>
+                        {c.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -1032,14 +1469,33 @@ function NhapLieuPage() {
                   onClick={() => setShowPicker((s) => !s)}
                   className="flex w-full items-center justify-between text-sm font-medium"
                 >
-                  <span className="flex items-center gap-1.5"><Wand2 className="h-4 w-4 text-primary" /> Chọn trường cho mẫu ({picked.size}/{ent.fields.length})</span>
-                  <span className="text-xs text-muted-foreground">{showPicker ? "Ẩn ▲" : "Hiện ▼"}</span>
+                  <span className="flex items-center gap-1.5">
+                    <Wand2 className="h-4 w-4 text-primary" /> Chọn trường cho mẫu ({picked.size}/
+                    {ent.fields.length})
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {showPicker ? "Ẩn ▲" : "Hiện ▼"}
+                  </span>
                 </button>
                 {showPicker && (
                   <div className="mt-3 space-y-3">
                     <div className="flex flex-wrap gap-2 text-xs">
-                      <Button variant="ghost" size="sm" className="h-7" onClick={() => resetPick(true)}>Chọn tất cả</Button>
-                      <Button variant="ghost" size="sm" className="h-7" onClick={() => resetPick(false)}>Chỉ trường bắt buộc</Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7"
+                        onClick={() => resetPick(true)}
+                      >
+                        Chọn tất cả
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7"
+                        onClick={() => resetPick(false)}
+                      >
+                        Chỉ trường bắt buộc
+                      </Button>
                     </div>
                     <div className="grid gap-x-4 gap-y-1.5 sm:grid-cols-2 lg:grid-cols-3">
                       {ent.fields.map((f) => {
@@ -1060,7 +1516,6 @@ function NhapLieuPage() {
                         );
                       })}
                     </div>
-
                   </div>
                 )}
               </div>
@@ -1074,7 +1529,12 @@ function NhapLieuPage() {
                 <Download className="mr-1.5 h-4 w-4" /> Tải mẫu đầy đủ
               </Button>
               <Button variant="outline" size="sm" onClick={exportData} disabled={busy}>
-                {busy ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Download className="mr-1.5 h-4 w-4" />} Xuất dữ liệu hiện có
+                {busy ? (
+                  <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+                ) : (
+                  <Download className="mr-1.5 h-4 w-4" />
+                )}{" "}
+                Xuất dữ liệu hiện có
               </Button>
             </div>
           </CardContent>

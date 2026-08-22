@@ -23,7 +23,15 @@ type SendResult = {
   errors: Array<{ chat_id: string; loai: string; ref_id: string; error: string }>;
 };
 
-async function trySend(admin: SupabaseClient, sub: Sub, loai: string, ref_id: string, text: string, meta: Record<string, unknown>, res: SendResult) {
+async function trySend(
+  admin: SupabaseClient,
+  sub: Sub,
+  loai: string,
+  ref_id: string,
+  text: string,
+  meta: Record<string, unknown>,
+  res: SendResult,
+) {
   // khử trùng lặp: insert vào bảng đã gửi trước; nếu trùng thì bỏ qua
   const { error: dupErr } = await admin
     .from("telegram_da_gui")
@@ -40,9 +48,19 @@ async function trySend(admin: SupabaseClient, sub: Sub, loai: string, ref_id: st
     res.ok++;
   } catch (e) {
     res.failed++;
-    res.errors.push({ chat_id: sub.chat_id, loai, ref_id, error: e instanceof Error ? e.message : String(e) });
+    res.errors.push({
+      chat_id: sub.chat_id,
+      loai,
+      ref_id,
+      error: e instanceof Error ? e.message : String(e),
+    });
     // rollback marker để lần sau thử lại
-    await admin.from("telegram_da_gui").delete().eq("loai", loai).eq("ref_id", ref_id).eq("chat_id", sub.chat_id);
+    await admin
+      .from("telegram_da_gui")
+      .delete()
+      .eq("loai", loai)
+      .eq("ref_id", ref_id)
+      .eq("chat_id", sub.chat_id);
   }
 }
 
@@ -52,7 +70,9 @@ function matchDonVi(sub: Sub, donViId: string | null): boolean {
   return donViId === sub.don_vi_id;
 }
 
-export async function runTelegramAlerts(opts: { manual?: boolean } = {}): Promise<SendResult & { subscribers: number }> {
+export async function runTelegramAlerts(
+  opts: { manual?: boolean } = {},
+): Promise<SendResult & { subscribers: number }> {
   const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
   const admin = supabaseAdmin as unknown as SupabaseClient;
   const res: SendResult = { ok: 0, failed: 0, errors: [] };
@@ -64,19 +84,28 @@ export async function runTelegramAlerts(opts: { manual?: boolean } = {}): Promis
   // 1) Giấy phép sắp hết hạn
   const anyGpSub = subs.some((s) => s.cac_loai.includes("gp_expiring"));
   if (anyGpSub) {
-    const maxNguong = Math.max(...subs.filter((s) => s.cac_loai.includes("gp_expiring")).map((s) => s.nguong_ngay));
+    const maxNguong = Math.max(
+      ...subs.filter((s) => s.cac_loai.includes("gp_expiring")).map((s) => s.nguong_ngay),
+    );
     const { data: gps } = await admin
       .from("v_giay_phep")
-      .select("id,so_giay_phep,ten_doi_tuong,don_vi_id,don_vi_ten,ngay_het_han,so_ngay_con_lai,trang_thai,bi_thay_the")
+      .select(
+        "id,so_giay_phep,ten_doi_tuong,don_vi_id,don_vi_ten,ngay_het_han,so_ngay_con_lai,trang_thai,bi_thay_the",
+      )
       .in("trang_thai", ["valid", "expiring"])
       .lte("so_ngay_con_lai", maxNguong)
       .gte("so_ngay_con_lai", 0);
 
     for (const gp of gps ?? []) {
       const g = gp as {
-        id: string; so_giay_phep: string | null; ten_doi_tuong: string | null;
-        don_vi_id: string | null; don_vi_ten: string | null;
-        ngay_het_han: string | null; so_ngay_con_lai: number | null; bi_thay_the: boolean | null;
+        id: string;
+        so_giay_phep: string | null;
+        ten_doi_tuong: string | null;
+        don_vi_id: string | null;
+        don_vi_ten: string | null;
+        ngay_het_han: string | null;
+        so_ngay_con_lai: number | null;
+        bi_thay_the: boolean | null;
       };
       if (g.bi_thay_the) continue;
       const daysLeft = g.so_ngay_con_lai ?? 999;
@@ -105,16 +134,27 @@ export async function runTelegramAlerts(opts: { manual?: boolean } = {}): Promis
     const since = new Date(Date.now() - 15 * 60_000).toISOString();
     const { data: sucos } = await admin
       .from("su_co")
-      .select("id,ma_su_co,hien_tuong,muc_do,trang_thai,snapshot_ten_thiet_bi,snapshot_he_thong,snapshot_don_vi,don_vi_id_snapshot,ngay_phat_hien,updated_at,created_at")
+      .select(
+        "id,ma_su_co,hien_tuong,muc_do,trang_thai,snapshot_ten_thiet_bi,snapshot_he_thong,snapshot_don_vi,don_vi_id_snapshot,ngay_phat_hien,updated_at,created_at",
+      )
       .or(`created_at.gte.${since},updated_at.gte.${since}`)
       .order("updated_at", { ascending: false })
       .limit(100);
 
     for (const sc of sucos ?? []) {
       const s = sc as {
-        id: string; ma_su_co: string | null; hien_tuong: string | null; muc_do: string | null; trang_thai: string | null;
-        snapshot_ten_thiet_bi: string | null; snapshot_he_thong: string | null; snapshot_don_vi: string | null;
-        don_vi_id_snapshot: string | null; ngay_phat_hien: string | null; updated_at: string; created_at: string;
+        id: string;
+        ma_su_co: string | null;
+        hien_tuong: string | null;
+        muc_do: string | null;
+        trang_thai: string | null;
+        snapshot_ten_thiet_bi: string | null;
+        snapshot_he_thong: string | null;
+        snapshot_don_vi: string | null;
+        don_vi_id_snapshot: string | null;
+        ngay_phat_hien: string | null;
+        updated_at: string;
+        created_at: string;
       };
       const isNew = s.created_at >= since;
       const refId = isNew ? `new:${s.id}` : `upd:${s.id}:${s.trang_thai ?? ""}`;
@@ -143,7 +183,9 @@ export async function runTelegramAlerts(opts: { manual?: boolean } = {}): Promis
     // Bảo dưỡng có kế hoạch → hôm nay/quá hạn
     const { data: bts } = await admin
       .from("bao_tri")
-      .select("id,ma_bao_tri,ke_hoach,ngay_bat_dau,ngay_hoan_thanh,trang_thai,snapshot_ten_thiet_bi,snapshot_he_thong,snapshot_don_vi,don_vi_id_snapshot")
+      .select(
+        "id,ma_bao_tri,ke_hoach,ngay_bat_dau,ngay_hoan_thanh,trang_thai,snapshot_ten_thiet_bi,snapshot_he_thong,snapshot_don_vi,don_vi_id_snapshot",
+      )
       .not("ke_hoach", "is", null)
       .lte("ke_hoach", in7)
       .is("ngay_hoan_thanh", null)
@@ -151,8 +193,13 @@ export async function runTelegramAlerts(opts: { manual?: boolean } = {}): Promis
 
     for (const bt of bts ?? []) {
       const b = bt as {
-        id: string; ma_bao_tri: string | null; ke_hoach: string | null; snapshot_ten_thiet_bi: string | null;
-        snapshot_he_thong: string | null; snapshot_don_vi: string | null; don_vi_id_snapshot: string | null;
+        id: string;
+        ma_bao_tri: string | null;
+        ke_hoach: string | null;
+        snapshot_ten_thiet_bi: string | null;
+        snapshot_he_thong: string | null;
+        snapshot_don_vi: string | null;
+        don_vi_id_snapshot: string | null;
       };
       if (!b.ke_hoach) continue;
       const days = Math.floor((new Date(b.ke_hoach).getTime() - today.getTime()) / 86400_000);
@@ -181,9 +228,17 @@ export async function runTelegramAlerts(opts: { manual?: boolean } = {}): Promis
       .limit(500);
 
     for (const tb of tbs ?? []) {
-      const t = tb as { id: string; ma_thiet_bi: string | null; ten_thiet_bi: string | null; don_vi_id: string | null; ngay_kiem_ke_ke_tiep: string | null };
+      const t = tb as {
+        id: string;
+        ma_thiet_bi: string | null;
+        ten_thiet_bi: string | null;
+        don_vi_id: string | null;
+        ngay_kiem_ke_ke_tiep: string | null;
+      };
       if (!t.ngay_kiem_ke_ke_tiep) continue;
-      const days = Math.floor((new Date(t.ngay_kiem_ke_ke_tiep).getTime() - today.getTime()) / 86400_000);
+      const days = Math.floor(
+        (new Date(t.ngay_kiem_ke_ke_tiep).getTime() - today.getTime()) / 86400_000,
+      );
       const milestones = [7, 3, 1, 0];
       if (!milestones.includes(days) && days > -1) continue;
       const overdue = days < 0;

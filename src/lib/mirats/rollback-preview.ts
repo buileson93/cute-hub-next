@@ -53,7 +53,9 @@ export type RollbackSummary = {
 };
 
 /** Tổng hợp kết quả preview để hiển thị và quyết định cho phép hoàn tác. */
-export function summarizeRollbackPreview(preview: RollbackPreview | null | undefined): RollbackSummary {
+export function summarizeRollbackPreview(
+  preview: RollbackPreview | null | undefined,
+): RollbackSummary {
   const items = preview?.items ?? [];
   const blocked = items.filter((i) => !i.can_rollback);
   const canCount = items.filter((i) => i.can_rollback).length;

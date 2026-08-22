@@ -16,13 +16,13 @@ interface StatusDotProps {
  * Semantic Status Dot for MIRATS dashboards.
  * Hợp nhất (Task 63): Dùng StatusBadge với prop dotOnly.
  */
-export function StatusDot({ 
-  variant = "default", 
+export function StatusDot({
+  variant = "default",
   domain,
   code,
-  size = "md", 
+  size = "md",
   label,
-  className 
+  className,
 }: StatusDotProps) {
   // Mapping variant cũ sang mã trạng thái của domain thiet_bi để giữ màu sắc tương đồng
   const variantToCode: Record<string, string> = {
@@ -43,10 +43,10 @@ export function StatusDot({
   };
 
   return (
-    <StatusBadge 
-      domain={finalDomain} 
-      code={finalCode} 
-      dotOnly 
+    <StatusBadge
+      domain={finalDomain}
+      code={finalCode}
+      dotOnly
       label={label}
       className={cn(sizeClasses[size], className)}
     />

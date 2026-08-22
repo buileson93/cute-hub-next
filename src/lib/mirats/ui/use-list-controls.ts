@@ -1,8 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import {
-  DEFAULT_LIST_STATE,
-  type ListControlsState,
-} from "@/lib/mirats/ui/list-controls";
+import { DEFAULT_LIST_STATE, type ListControlsState } from "@/lib/mirats/ui/list-controls";
 
 export interface UseListControlsReturn {
   state: ListControlsState;
@@ -14,9 +11,7 @@ export interface UseListControlsReturn {
   reset: () => void;
 }
 
-export function useListControls(
-  init: Partial<ListControlsState> = {},
-): UseListControlsReturn {
+export function useListControls(init: Partial<ListControlsState> = {}): UseListControlsReturn {
   const initial = useMemo<ListControlsState>(
     () => ({ ...DEFAULT_LIST_STATE, ...init }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

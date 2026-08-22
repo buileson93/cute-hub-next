@@ -7,12 +7,12 @@ let PdfWorker: any = null;
 let workerInitialized = false;
 async function ensureWorker() {
   if (workerInitialized) return;
-  
+
   if (!PdfWorker) {
     const workerModule = await import("pdfjs-dist/build/pdf.worker.mjs?worker");
     PdfWorker = workerModule.default;
   }
-  
+
   (pdfjsLib as any).GlobalWorkerOptions.workerSrc = new PdfWorker();
   workerInitialized = true;
 }
@@ -37,7 +37,7 @@ export class PdfExtractor {
 
   async getPage(pageNumber: number): Promise<PdfPageData> {
     if (!this.pdf) throw new Error("PDF not loaded");
-    
+
     const page = await this.pdf.getPage(pageNumber);
     const textContent = await page.getTextContent();
     const text = linesFromItems(textContent.items as RawPdfItem[]);
@@ -50,16 +50,16 @@ export class PdfExtractor {
       render: async (canvas: HTMLCanvasElement, dpi: number) => {
         const scale = dpi / 72; // PDF is 72 DPI
         const scaledViewport = page.getViewport({ scale });
-        
+
         canvas.width = scaledViewport.width;
         canvas.height = scaledViewport.height;
-        
+
         const ctx = canvas.getContext("2d");
         await page.render({
           canvasContext: ctx,
-          viewport: scaledViewport
+          viewport: scaledViewport,
         }).promise;
-      }
+      },
     };
   }
 

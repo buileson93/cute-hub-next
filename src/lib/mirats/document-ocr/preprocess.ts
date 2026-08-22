@@ -10,8 +10,8 @@ export interface PreprocessOptions {
  * Image preprocessing for OCR enhancement.
  */
 export function preprocessImage(
-  canvas: HTMLCanvasElement, 
-  options: PreprocessOptions = {}
+  canvas: HTMLCanvasElement,
+  options: PreprocessOptions = {},
 ): HTMLCanvasElement {
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
   if (!ctx) return canvas;
@@ -21,7 +21,7 @@ export function preprocessImage(
     contrast = 1.2,
     brightness = 1.0,
     threshold = null,
-    denoise = false
+    denoise = false,
   } = options;
 
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -58,7 +58,7 @@ export function preprocessImage(
     data[i + 2] = b;
   }
 
-  // Denoising usually requires more complex filters (e.g. median), 
+  // Denoising usually requires more complex filters (e.g. median),
   // skipping for now to keep performance high unless explicitly needed.
 
   ctx.putImageData(imageData, 0, 0);

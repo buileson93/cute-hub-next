@@ -1,8 +1,8 @@
-import { useState, useEffect, useMemo } from 'react';
-import { MiniSearchAdapter, SearchResultItem } from './engine';
-import { SearchSyncManager } from './sync';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useState, useEffect, useMemo } from "react";
+import { MiniSearchAdapter, SearchResultItem } from "./engine";
+import { SearchSyncManager } from "./sync";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export function useOcrSearch() {
   const [engine] = useState(() => new MiniSearchAdapter());
@@ -14,7 +14,9 @@ export function useOcrSearch() {
     let mounted = true;
 
     async function init() {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) return;
 
       const partitionKey = `default:${session.user.id}`; // Simple partition for now
@@ -28,7 +30,7 @@ export function useOcrSearch() {
         setIsSyncing(true);
         await syncManager.sync(partitionKey);
       } catch (err) {
-        console.error('OCR Search Init Error:', err);
+        console.error("OCR Search Init Error:", err);
         // Fallback or notification as per requirement
         toast.error("Không thể đồng bộ dữ liệu tìm kiếm offline.");
       } finally {
@@ -37,7 +39,9 @@ export function useOcrSearch() {
     }
 
     init();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [syncManager]);
 
   const search = (query: string) => {
@@ -48,6 +52,6 @@ export function useOcrSearch() {
   return {
     search,
     isReady,
-    isSyncing
+    isSyncing,
   };
 }

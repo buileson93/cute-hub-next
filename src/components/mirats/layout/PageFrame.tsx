@@ -15,12 +15,12 @@ interface PageFrameProps {
  */
 export function PageFrame({ children, className, density = "compact" }: PageFrameProps) {
   return (
-    <div 
+    <div
       data-density={density}
       className={cn(
         "flex min-h-screen w-full flex-col bg-background transition-colors duration-300",
         TYPO.BODY,
-        className
+        className,
       )}
     >
       {children}

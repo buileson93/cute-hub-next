@@ -29,11 +29,9 @@ describe("validateCatalogRows", () => {
   });
 
   it("cảnh báo FK không khớp — gắn cột & value", () => {
-    const iss = validateCatalogRows(
-      ["ten", "nha_san_xuat"],
-      [{ ten: "A", nha_san_xuat: "Xyz" }],
-      { refCols: [{ csvKey: "nha_san_xuat", allowed: new Set(["boeing", "airbus"]) }] },
-    );
+    const iss = validateCatalogRows(["ten", "nha_san_xuat"], [{ ten: "A", nha_san_xuat: "Xyz" }], {
+      refCols: [{ csvKey: "nha_san_xuat", allowed: new Set(["boeing", "airbus"]) }],
+    });
     expect(iss[0].issues).toContainEqual(
       expect.objectContaining({ field: "nha_san_xuat", value: "Xyz", level: "warning" }),
     );
@@ -44,4 +42,3 @@ describe("validateCatalogRows", () => {
     expect(CATALOG_TEMPLATE_VERSION.length).toBeGreaterThan(0);
   });
 });
-

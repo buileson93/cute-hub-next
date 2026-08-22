@@ -7,7 +7,6 @@ import { Loader2, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { ClipboardCheck } from "lucide-react";
 
-
 export const Route = createFileRoute("/_app/admin/kiem-tra-so-lieu")({
   head: () => ({
     meta: [
@@ -33,11 +32,7 @@ type ThietBi = {
 };
 type ThanhPhan = { id: string; he_thong_id: string | null; vi_tri_id: string | null };
 
-async function fetchAll<T>(
-  table: string,
-  cols: string,
-  order: string,
-): Promise<T[]> {
+async function fetchAll<T>(table: string, cols: string, order: string): Promise<T[]> {
   const page = 1000;
   let from = 0;
   const out: T[] = [];
@@ -74,16 +69,8 @@ function KiemTraSoLieuPage() {
           fetchAll<Nhom>("dm_nhom_he_thong", "id, ma, ten", "ten"),
           fetchAll<ViTri>("dm_vi_tri", "id, ma, ten", "ten"),
           fetchAll<HeThong>("dm_he_thong", "id, nhom_he_thong_id", "id"),
-          fetchAll<ThietBi>(
-            "thiet_bi",
-            "id, he_thong_id, nhom_he_thong_id, vi_tri_id",
-            "id",
-          ),
-          fetchAll<ThanhPhan>(
-            "he_thong_thanh_phan",
-            "id, he_thong_id, vi_tri_id",
-            "id",
-          ),
+          fetchAll<ThietBi>("thiet_bi", "id, he_thong_id, nhom_he_thong_id, vi_tri_id", "id"),
+          fetchAll<ThanhPhan>("he_thong_thanh_phan", "id, he_thong_id, vi_tri_id", "id"),
         ]);
         if (cancelled) return;
         setNhomList(nhom);
@@ -92,8 +79,7 @@ function KiemTraSoLieuPage() {
         setThietBiList(tb);
         setThanhPhanList(tp);
       } catch (e) {
-        if (!cancelled)
-          setError(e instanceof Error ? e.message : "Không xác định");
+        if (!cancelled) setError(e instanceof Error ? e.message : "Không xác định");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -111,12 +97,10 @@ function KiemTraSoLieuPage() {
     const treeCount = new Map<string, number>();
     const tableCount = new Map<string, number>();
     for (const tb of thietBiList) {
-      const treeKey =
-        tb.nhom_he_thong_id || htNhomMap.get(tb.he_thong_id ?? "") || "";
+      const treeKey = tb.nhom_he_thong_id || htNhomMap.get(tb.he_thong_id ?? "") || "";
       const tableKey = tb.nhom_he_thong_id ?? "";
       if (treeKey) treeCount.set(treeKey, (treeCount.get(treeKey) ?? 0) + 1);
-      if (tableKey)
-        tableCount.set(tableKey, (tableCount.get(tableKey) ?? 0) + 1);
+      if (tableKey) tableCount.set(tableKey, (tableCount.get(tableKey) ?? 0) + 1);
     }
     const rows = nhomList.map((n) => {
       const tree = treeCount.get(n.id) ?? 0;
@@ -153,9 +137,7 @@ function KiemTraSoLieuPage() {
   const viTriDelta = viTriRows.filter((r) => r.delta !== 0);
 
   const orphanTbNoHt = thietBiList.filter((tb) => !tb.he_thong_id).length;
-  const orphanTbNoNhom = thietBiList.filter(
-    (tb) => !tb.nhom_he_thong_id,
-  ).length;
+  const orphanTbNoNhom = thietBiList.filter((tb) => !tb.nhom_he_thong_id).length;
   const orphanTbNoViTri = thietBiList.filter((tb) => !tb.vi_tri_id).length;
   const orphanTpNoViTri = thanhPhanList.filter((tp) => !tp.vi_tri_id).length;
 
@@ -208,16 +190,17 @@ function KiemTraSoLieuPage() {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
-          <CardTitle className="text-base">
-            Nhóm hệ thống — Cây vs Bảng
-          </CardTitle>
+          <CardTitle className="text-base">Nhóm hệ thống — Cây vs Bảng</CardTitle>
           {nhomDelta.length === 0 ? (
             <Badge className="gap-1 border-success/30 bg-success/10 text-success hover:bg-success/20">
               <CheckCircle2 className="h-3.5 w-3.5" />
               Trùng khớp
             </Badge>
           ) : (
-            <Badge variant="outline" className="gap-1 border-warning/30 bg-warning/10 text-warning hover:bg-warning/20">
+            <Badge
+              variant="outline"
+              className="gap-1 border-warning/30 bg-warning/10 text-warning hover:bg-warning/20"
+            >
               <AlertTriangle className="h-3.5 w-3.5" />
               {nhomDelta.length} nhóm chênh lệch
             </Badge>
@@ -235,16 +218,17 @@ function KiemTraSoLieuPage() {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
-          <CardTitle className="text-base">
-            Vị trí lắp đặt — Tài sản vs Thành phần
-          </CardTitle>
+          <CardTitle className="text-base">Vị trí lắp đặt — Tài sản vs Thành phần</CardTitle>
           {viTriDelta.length === 0 ? (
             <Badge className="gap-1 border-success/30 bg-success/10 text-success hover:bg-success/20">
               <CheckCircle2 className="h-3.5 w-3.5" />
               Trùng khớp
             </Badge>
           ) : (
-            <Badge variant="outline" className="gap-1 border-warning/30 bg-warning/10 text-warning hover:bg-warning/20">
+            <Badge
+              variant="outline"
+              className="gap-1 border-warning/30 bg-warning/10 text-warning hover:bg-warning/20"
+            >
               <AlertTriangle className="h-3.5 w-3.5" />
               {viTriDelta.length} vị trí chênh lệch
             </Badge>
@@ -263,21 +247,11 @@ function KiemTraSoLieuPage() {
   );
 }
 
-function StatCard({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: number;
-  tone: "ok" | "warn";
-}) {
+function StatCard({ label, value, tone }: { label: string; value: number; tone: "ok" | "warn" }) {
   return (
     <div
       className={`rounded-lg border p-4 shadow-sm ${
-        tone === "warn"
-          ? "border-warning/40 bg-warning/5"
-          : "border-success/40 bg-success/5"
+        tone === "warn" ? "border-warning/40 bg-warning/5" : "border-success/40 bg-success/5"
       }`}
     >
       <div className="text-xs text-muted-foreground">{label}</div>
@@ -310,10 +284,7 @@ function DeltaTable({
         </thead>
         <tbody>
           {rows.map((r) => (
-            <tr
-              key={r.id}
-              className={`border-t ${r.delta !== 0 ? "bg-amber-500/5" : ""}`}
-            >
+            <tr key={r.id} className={`border-t ${r.delta !== 0 ? "bg-amber-500/5" : ""}`}>
               <td className="px-4 py-2">
                 <div className="font-medium">{r.ten}</div>
                 <div className="text-xs text-muted-foreground">{r.ma}</div>

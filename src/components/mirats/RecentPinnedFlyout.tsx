@@ -322,9 +322,7 @@ export function RecentPinnedPanel({ onNavigate }: { onNavigate?: () => void }) {
                     <Checkbox
                       className="ml-1.5"
                       checked={selectedPinned.has(p.path)}
-                      onCheckedChange={() =>
-                        toggleSel(selectedPinned, setSelectedPinned, p.path)
-                      }
+                      onCheckedChange={() => toggleSel(selectedPinned, setSelectedPinned, p.path)}
                     />
                   )}
                   <Link
@@ -403,9 +401,7 @@ export function RecentPinnedPanel({ onNavigate }: { onNavigate?: () => void }) {
                     <Checkbox
                       className="ml-1.5"
                       checked={selectedRecent.has(r.path)}
-                      onCheckedChange={() =>
-                        toggleSel(selectedRecent, setSelectedRecent, r.path)
-                      }
+                      onCheckedChange={() => toggleSel(selectedRecent, setSelectedRecent, r.path)}
                     />
                   )}
                   <Link

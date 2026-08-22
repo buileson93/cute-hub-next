@@ -8,10 +8,17 @@ export type R2Category = "image" | "pdf" | "office" | "video" | "other";
 export function categorize(nameOrType: string, contentType?: string): R2Category {
   const ct = (contentType || "").toLowerCase();
   const ext = (nameOrType.split(".").pop() || "").toLowerCase();
-  if (ct.startsWith("image/") || ["png","jpg","jpeg","webp","gif","svg","avif"].includes(ext)) return "image";
+  if (ct.startsWith("image/") || ["png", "jpg", "jpeg", "webp", "gif", "svg", "avif"].includes(ext))
+    return "image";
   if (ct === "application/pdf" || ext === "pdf") return "pdf";
-  if (ct.startsWith("video/") || ["mp4","mov","mkv","webm"].includes(ext)) return "video";
-  if (["doc","docx","xls","xlsx","ppt","pptx"].includes(ext) || ct.includes("officedocument") || ct.includes("msword") || ct.includes("ms-excel")) return "office";
+  if (ct.startsWith("video/") || ["mp4", "mov", "mkv", "webm"].includes(ext)) return "video";
+  if (
+    ["doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(ext) ||
+    ct.includes("officedocument") ||
+    ct.includes("msword") ||
+    ct.includes("ms-excel")
+  )
+    return "office";
   return "other";
 }
 
@@ -19,11 +26,16 @@ export function categorize(nameOrType: string, contentType?: string): R2Category
 export function ttlFor(category: R2Category, kind: "get" | "put"): number {
   if (kind === "put") return 900;
   switch (category) {
-    case "image": return 300;
-    case "pdf": return 900;
-    case "office": return 900;
-    case "video": return 1800;
-    default: return 600;
+    case "image":
+      return 300;
+    case "pdf":
+      return 900;
+    case "office":
+      return 900;
+    case "video":
+      return 1800;
+    default:
+      return 600;
   }
 }
 
@@ -41,7 +53,6 @@ export function isPrivateKey(key: string): boolean {
   return key.startsWith("private/") || key.startsWith("user/");
 }
 
-
 function sanitizeKey(userId: string, rawKey: string): string {
   const clean = rawKey.replace(/\\/g, "/").replace(/\.\.+/g, "").replace(/^\/+/, "");
   if (!clean) throw new Error("Key không hợp lệ");
@@ -50,7 +61,12 @@ function sanitizeKey(userId: string, rawKey: string): string {
   return clean;
 }
 
-async function assertAccess(supabase: any, userId: string, key: string, action: "put" | "get" | "delete") {
+async function assertAccess(
+  supabase: any,
+  userId: string,
+  key: string,
+  action: "put" | "get" | "delete",
+) {
   // 1. Luôn cho phép truy cập file cá nhân của chính mình
   if (key.startsWith(`user/${userId}/`)) return;
 
@@ -69,7 +85,8 @@ async function assertAccess(supabase: any, userId: string, key: string, action: 
 
   // 4. Cho phép PUT lên các prefix công khai đã định nghĩa (để upload mới)
   if (action === "put") {
-    const publicPrefix = /^(uploads|gpkt|bao-duong|dot-bao-duong|form|attachments|public|project)\//;
+    const publicPrefix =
+      /^(uploads|gpkt|bao-duong|dot-bao-duong|form|attachments|public|project)\//;
     if (publicPrefix.test(key)) return;
   }
 
@@ -77,17 +94,29 @@ async function assertAccess(supabase: any, userId: string, key: string, action: 
   throw new Error("Không có quyền truy cập file này");
 }
 
-
-
-async function logAccess(entry: { user_id: string|null; key: string; action: string; category?: string|null; expires_in?: number|null; ok?: boolean; reason?: string|null }) {
+async function logAccess(entry: {
+  user_id: string | null;
+  key: string;
+  action: string;
+  category?: string | null;
+  expires_in?: number | null;
+  ok?: boolean;
+  reason?: string | null;
+}) {
   try {
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     await supabaseAdmin.from("r2_access_log").insert({
-      user_id: entry.user_id, key: entry.key, action: entry.action,
-      category: entry.category ?? null, expires_in: entry.expires_in ?? null,
-      ok: entry.ok ?? true, reason: entry.reason ?? null,
+      user_id: entry.user_id,
+      key: entry.key,
+      action: entry.action,
+      category: entry.category ?? null,
+      expires_in: entry.expires_in ?? null,
+      ok: entry.ok ?? true,
+      reason: entry.reason ?? null,
     });
-  } catch (e) { console.warn("[r2] log fail", e); }
+  } catch (e) {
+    console.warn("[r2] log fail", e);
+  }
 }
 
 export const r2GetUploadUrl = createServerFn({ method: "POST" })
@@ -98,21 +127,52 @@ export const r2GetUploadUrl = createServerFn({ method: "POST" })
     const key = sanitizeKey(context.userId, data.key);
     const category = categorize(data.originalName || key, data.contentType);
     const expiresIn = ttlFor(category, "put");
-    try { await assertAccess(context.supabase, context.userId, key, "put"); }
-    catch (err: any) {
-      await logAccess({ user_id: context.userId, key, action: "put", category, expires_in: expiresIn, ok: false, reason: err.message });
+    try {
+      await assertAccess(context.supabase, context.userId, key, "put");
+    } catch (err: any) {
+      await logAccess({
+        user_id: context.userId,
+        key,
+        action: "put",
+        category,
+        expires_in: expiresIn,
+        ok: false,
+        reason: err.message,
+      });
       throw err;
     }
     const url = await r2PresignPut(key, data.contentType, expiresIn);
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
-    await supabaseAdmin.from("r2_file").upsert({
-      user_id: context.userId, key,
-      size: data.size ?? null, content_type: data.contentType ?? null,
-      category, original_name: data.originalName ?? null, status: "temp",
-      expires_at: new Date(Date.now() + 24*3600*1000).toISOString(),
-    }, { onConflict: "key" });
-    await logAccess({ user_id: context.userId, key, action: "put", category, expires_in: expiresIn, ok: true });
-    return { key, url, publicUrl: null, method: "PUT" as const, isPrivate: true, category, expiresIn };
+    await supabaseAdmin.from("r2_file").upsert(
+      {
+        user_id: context.userId,
+        key,
+        size: data.size ?? null,
+        content_type: data.contentType ?? null,
+        category,
+        original_name: data.originalName ?? null,
+        status: "temp",
+        expires_at: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
+      },
+      { onConflict: "key" },
+    );
+    await logAccess({
+      user_id: context.userId,
+      key,
+      action: "put",
+      category,
+      expires_in: expiresIn,
+      ok: true,
+    });
+    return {
+      key,
+      url,
+      publicUrl: null,
+      method: "PUT" as const,
+      isPrivate: true,
+      category,
+      expiresIn,
+    };
   });
 
 export const r2GetDownloadUrl = createServerFn({ method: "POST" })
@@ -122,13 +182,29 @@ export const r2GetDownloadUrl = createServerFn({ method: "POST" })
     const { r2PresignGet } = await import("./r2.server");
     const category = categorize(data.key);
     const expiresIn = ttlFor(category, "get");
-    try { await assertAccess(context.supabase, context.userId, data.key, "get"); }
-    catch (err: any) {
-      await logAccess({ user_id: context.userId, key: data.key, action: "get", category, expires_in: expiresIn, ok: false, reason: err.message });
+    try {
+      await assertAccess(context.supabase, context.userId, data.key, "get");
+    } catch (err: any) {
+      await logAccess({
+        user_id: context.userId,
+        key: data.key,
+        action: "get",
+        category,
+        expires_in: expiresIn,
+        ok: false,
+        reason: err.message,
+      });
       throw err;
     }
     const url = await r2PresignGet(data.key, expiresIn);
-    await logAccess({ user_id: context.userId, key: data.key, action: "get", category, expires_in: expiresIn, ok: true });
+    await logAccess({
+      user_id: context.userId,
+      key: data.key,
+      action: "get",
+      category,
+      expires_in: expiresIn,
+      ok: true,
+    });
     return { url, expiresIn, category };
   });
 
@@ -137,9 +213,16 @@ export const r2DeleteObject = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => delSchema.parse(d))
   .handler(async ({ data, context }) => {
     const { r2Delete } = await import("./r2.server");
-    try { await assertAccess(context.supabase, context.userId, data.key, "delete"); }
-    catch (err: any) {
-      await logAccess({ user_id: context.userId, key: data.key, action: "delete", ok: false, reason: err.message });
+    try {
+      await assertAccess(context.supabase, context.userId, data.key, "delete");
+    } catch (err: any) {
+      await logAccess({
+        user_id: context.userId,
+        key: data.key,
+        action: "delete",
+        ok: false,
+        reason: err.message,
+      });
       throw err;
     }
     await r2Delete(data.key);
@@ -151,12 +234,23 @@ export const r2DeleteObject = createServerFn({ method: "POST" })
 
 export const r2MarkReady = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({ key: z.string().min(1).max(1024), size: z.number().int().nonnegative().optional() }).parse(d))
+  .inputValidator((d: unknown) =>
+    z
+      .object({ key: z.string().min(1).max(1024), size: z.number().int().nonnegative().optional() })
+      .parse(d),
+  )
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
-    await supabaseAdmin.from("r2_file")
-      .update({ status: "ready", expires_at: null, size: data.size ?? null, updated_at: new Date().toISOString() })
-      .eq("key", data.key).eq("user_id", context.userId);
+    await supabaseAdmin
+      .from("r2_file")
+      .update({
+        status: "ready",
+        expires_at: null,
+        size: data.size ?? null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("key", data.key)
+      .eq("user_id", context.userId);
     return { ok: true };
   });
 
@@ -191,12 +285,20 @@ export const r2MultipartInit = createServerFn({ method: "POST" })
     const uploadId = await r2MultipartCreate(key, data.contentType);
     const category = categorize(data.originalName || key, data.contentType);
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
-    await supabaseAdmin.from("r2_file").upsert({
-      user_id: context.userId, key, size: data.size ?? null, content_type: data.contentType ?? null,
-      category, original_name: data.originalName ?? null, status: "temp",
-      meta: { multipart: true, uploadId },
-      expires_at: new Date(Date.now() + 24*3600*1000).toISOString(),
-    }, { onConflict: "key" });
+    await supabaseAdmin.from("r2_file").upsert(
+      {
+        user_id: context.userId,
+        key,
+        size: data.size ?? null,
+        content_type: data.contentType ?? null,
+        category,
+        original_name: data.originalName ?? null,
+        status: "temp",
+        meta: { multipart: true, uploadId },
+        expires_at: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
+      },
+      { onConflict: "key" },
+    );
     await logAccess({ user_id: context.userId, key, action: "mp_init", category, ok: true });
     return { key, uploadId, category };
   });
@@ -208,7 +310,10 @@ export const r2MultipartSign = createServerFn({ method: "POST" })
     const { r2MultipartSignPart } = await import("./r2.server");
     await assertAccess(context.supabase, context.userId, data.key, "put");
     const urls = await Promise.all(
-      data.partNumbers.map(async (n) => ({ partNumber: n, url: await r2MultipartSignPart(data.key, data.uploadId, n, 900) })),
+      data.partNumbers.map(async (n) => ({
+        partNumber: n,
+        url: await r2MultipartSignPart(data.key, data.uploadId, n, 900),
+      })),
     );
     return { urls };
   });
@@ -221,9 +326,16 @@ export const r2MultipartFinish = createServerFn({ method: "POST" })
     await assertAccess(context.supabase, context.userId, data.key, "put");
     await r2MultipartComplete(data.key, data.uploadId, data.parts);
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
-    await supabaseAdmin.from("r2_file")
-      .update({ status: "ready", expires_at: null, size: data.size ?? null, updated_at: new Date().toISOString() })
-      .eq("key", data.key).eq("user_id", context.userId);
+    await supabaseAdmin
+      .from("r2_file")
+      .update({
+        status: "ready",
+        expires_at: null,
+        size: data.size ?? null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("key", data.key)
+      .eq("user_id", context.userId);
     await logAccess({ user_id: context.userId, key: data.key, action: "mp_complete", ok: true });
     return { ok: true };
   });
@@ -252,7 +364,11 @@ export const r2MultipartListParts = createServerFn({ method: "POST" })
       return { parts, valid: true as const };
     } catch (err: any) {
       // uploadId có thể đã hết hạn hoặc bị abort
-      return { parts: [] as { PartNumber: number; ETag: string; Size: number }[], valid: false as const, reason: err?.message ?? "unknown" };
+      return {
+        parts: [] as { PartNumber: number; ETag: string; Size: number }[],
+        valid: false as const,
+        reason: err?.message ?? "unknown",
+      };
     }
   });
 
@@ -262,7 +378,9 @@ export const r2ListMyFiles = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { data } = await context.supabase
       .from("r2_file")
-      .select("id, key, size, content_type, category, status, original_name, expires_at, created_at")
+      .select(
+        "id, key, size, content_type, category, status, original_name, expires_at, created_at",
+      )
       .order("created_at", { ascending: false })
       .limit(200);
     return data ?? [];
@@ -281,7 +399,11 @@ export const r2Ping = createServerFn({ method: "GET" })
       const probe = await r2Head("__ping__");
       return { ok: true as const, bucket, probeExists: probe.exists };
     } catch (err: any) {
-      return { ok: false as const, bucket: null, probeExists: false, error: err?.message ?? String(err) };
+      return {
+        ok: false as const,
+        bucket: null,
+        probeExists: false,
+        error: err?.message ?? String(err),
+      };
     }
   });
-

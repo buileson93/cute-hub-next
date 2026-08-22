@@ -1,15 +1,19 @@
 import React, { useState } from "react";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
   DialogTrigger,
-  DialogFooter
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/mirats/ui/Icon";
-import { AVAILABLE_WIDGETS, WidgetType, DashboardWidgetConfig } from "@/lib/mirats/dashboard/widget-registry";
+import {
+  AVAILABLE_WIDGETS,
+  WidgetType,
+  DashboardWidgetConfig,
+} from "@/lib/mirats/dashboard/widget-registry";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
@@ -21,12 +25,12 @@ interface WidgetPickerProps {
 
 export function WidgetPicker({ currentLayout, onAdd, trigger }: WidgetPickerProps) {
   const [open, setOpen] = useState(false);
-  const currentTypes = new Set(currentLayout.map(w => w.type));
+  const currentTypes = new Set(currentLayout.map((w) => w.type));
 
   const available = Object.entries(AVAILABLE_WIDGETS).map(([type, info]) => ({
     type: type as WidgetType,
     ...info,
-    isAdded: currentTypes.has(type as WidgetType)
+    isAdded: currentTypes.has(type as WidgetType),
   }));
 
   return (
@@ -46,11 +50,13 @@ export function WidgetPicker({ currentLayout, onAdd, trigger }: WidgetPickerProp
         <ScrollArea className="h-[400px] pr-4 mt-4">
           <div className="grid grid-cols-2 gap-3">
             {available.map((widget) => (
-              <div 
+              <div
                 key={widget.type}
                 className={cn(
                   "p-4 rounded-xl border flex flex-col items-start gap-3 transition-all",
-                  widget.isAdded ? "bg-muted/50 opacity-60" : "hover:bg-primary/5 hover:border-primary/30 cursor-pointer"
+                  widget.isAdded
+                    ? "bg-muted/50 opacity-60"
+                    : "hover:bg-primary/5 hover:border-primary/30 cursor-pointer",
                 )}
                 onClick={() => {
                   if (!widget.isAdded) {
@@ -71,7 +77,11 @@ export function WidgetPicker({ currentLayout, onAdd, trigger }: WidgetPickerProp
                   </div>
                 </div>
                 {!widget.isAdded && (
-                  <Button size="sm" variant="secondary" className="w-full h-8 text-[11px] font-bold bg-primary text-primary-foreground hover:bg-primary/90">
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="w-full h-8 text-[11px] font-bold bg-primary text-primary-foreground hover:bg-primary/90"
+                  >
                     Thêm ngay
                   </Button>
                 )}
@@ -85,7 +95,9 @@ export function WidgetPicker({ currentLayout, onAdd, trigger }: WidgetPickerProp
           </div>
         </ScrollArea>
         <DialogFooter className="mt-4">
-          <Button variant="ghost" onClick={() => setOpen(false)}>Đóng</Button>
+          <Button variant="ghost" onClick={() => setOpen(false)}>
+            Đóng
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

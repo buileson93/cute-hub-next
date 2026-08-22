@@ -3,6 +3,7 @@
 The user reported that the search feature in the header has inconsistent behavior and layout issues when triggered from different buttons. Specifically, the `CommandPaletteButton` (icon button) and the `TopBar` search bar should trigger the same unified search experience.
 
 ## Analysis
+
 - `TopBar.tsx` uses a local `open` state and renders `PowerSearch.tsx` (a newer, more feature-rich search).
 - `CommandPaletteButton.tsx` dispatches a `mirats:toggle-command-palette` event.
 - `CommandPalette.tsx` (an older search component) listens for this event and opens itself.
@@ -11,14 +12,17 @@ The user reported that the search feature in the header has inconsistent behavio
 ## Proposed Changes
 
 ### 1. Unify Events
+
 - Update `TopBar.tsx` to listen for `mirats:toggle-command-palette` and `mirats:open-command-palette` events to open the `PowerSearch` dialog.
 - This ensures all triggers (keyboard shortcuts, buttons, global events) activate the same UI.
 
 ### 2. Update Triggers
+
 - Ensure `CommandPaletteButton.tsx` continues to dispatch the correct event.
 - Update `TopBar.tsx` to use the shared event listener instead of just local button state (though local state is fine for the button click itself, the event listener ensures other triggers work).
 
 ### 3. Cleanup
+
 - Decommission `CommandPalette.tsx` to avoid two search systems running in parallel. The logic and intents from `CommandPalette.tsx` that are missing in `PowerSearch.tsx` (like Navigation commands) should be moved or verified in `PowerSearch.tsx`.
 - Review `PowerSearch.tsx` to ensure it handles all intents (Navigation, AI commands, Log out) that were present in the old `CommandPalette.tsx`.
 

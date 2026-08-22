@@ -46,8 +46,10 @@ function ForgotPasswordPage() {
   }
 
   // Nạp challenge một lần khi mount.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { void loadChallenge(); }, []);
+
+  useEffect(() => {
+    void loadChallenge();
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -56,9 +58,15 @@ function ForgotPasswordPage() {
       toast.error(parsed.error.issues[0].message);
       return;
     }
-    if (!challenge) { toast.error("Chưa có mã CAPTCHA, thử làm mới."); return; }
+    if (!challenge) {
+      toast.error("Chưa có mã CAPTCHA, thử làm mới.");
+      return;
+    }
     const ansParsed = z.coerce.number().int().safeParse(answer);
-    if (!ansParsed.success) { toast.error("Đáp án CAPTCHA phải là số."); return; }
+    if (!ansParsed.success) {
+      toast.error("Đáp án CAPTCHA phải là số.");
+      return;
+    }
 
     setLoading(true);
     try {
@@ -95,7 +103,9 @@ function ForgotPasswordPage() {
           </div>
           <div>
             <div className="text-lg font-semibold tracking-tight">MIRATS</div>
-            <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Khôi phục mật khẩu</div>
+            <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+              Khôi phục mật khẩu
+            </div>
           </div>
         </div>
 
@@ -103,14 +113,17 @@ function ForgotPasswordPage() {
           <CardHeader>
             <CardTitle className="text-xl">Quên mật khẩu</CardTitle>
             <CardDescription>
-              Nhập email tài khoản và giải CAPTCHA. Hệ thống chỉ gửi link cho tài khoản đã được duyệt.
+              Nhập email tài khoản và giải CAPTCHA. Hệ thống chỉ gửi link cho tài khoản đã được
+              duyệt.
             </CardDescription>
           </CardHeader>
           <CardContent>
             {sent ? (
               <div className="space-y-4">
                 <div className="rounded-md border bg-emerald-50 p-4 text-sm text-emerald-800">
-                  Nếu <b>{email}</b> khớp một tài khoản đang hoạt động, link đặt lại mật khẩu đã được gửi vào hộp thư. Vui lòng kiểm tra Inbox và Spam. Link có hiệu lực trong thời gian giới hạn và chỉ dùng được 1 lần.
+                  Nếu <b>{email}</b> khớp một tài khoản đang hoạt động, link đặt lại mật khẩu đã
+                  được gửi vào hộp thư. Vui lòng kiểm tra Inbox và Spam. Link có hiệu lực trong thời
+                  gian giới hạn và chỉ dùng được 1 lần.
                 </div>
                 <Button asChild variant="outline" className="w-full">
                   <Link to="/auth">
@@ -123,29 +136,42 @@ function ForgotPasswordPage() {
                 <div className="space-y-1.5">
                   <Label htmlFor="email">Email</Label>
                   <Input
-                    id="email" type="email" autoComplete="email" required
-                    value={email} onChange={(e) => setEmail(e.target.value)}
-                    placeholder="ten@example.com" disabled={loading}
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="ten@example.com"
+                    disabled={loading}
                   />
                 </div>
 
                 <div className="space-y-1.5">
                   <Label htmlFor="captcha" className="flex items-center gap-1">
-                    <ShieldCheck className="h-3.5 w-3.5 text-primary" /> Xác nhận: bạn không phải bot
+                    <ShieldCheck className="h-3.5 w-3.5 text-primary" /> Xác nhận: bạn không phải
+                    bot
                   </Label>
                   <div className="flex items-center gap-2">
                     <div className="flex-1 rounded-md border bg-muted/40 px-3 py-2 font-mono text-sm">
                       {challenge?.question ?? "…"}
                     </div>
                     <Input
-                      id="captcha" inputMode="numeric" required
-                      value={answer} onChange={(e) => setAnswer(e.target.value)}
-                      placeholder="?" disabled={loading || !challenge}
+                      id="captcha"
+                      inputMode="numeric"
+                      required
+                      value={answer}
+                      onChange={(e) => setAnswer(e.target.value)}
+                      placeholder="?"
+                      disabled={loading || !challenge}
                       className="w-24"
                     />
                     <Button
-                      type="button" variant="outline" size="icon"
-                      onClick={loadChallenge} disabled={refreshing || loading}
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={loadChallenge}
+                      disabled={refreshing || loading}
                       aria-label="Làm mới CAPTCHA"
                     >
                       <RefreshCw className={refreshing ? "h-4 w-4 animate-spin" : "h-4 w-4"} />
@@ -154,11 +180,18 @@ function ForgotPasswordPage() {
                 </div>
 
                 <Button type="submit" className="w-full" disabled={loading || !challenge}>
-                  {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />}
+                  {loading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Mail className="mr-2 h-4 w-4" />
+                  )}
                   Gửi link đặt lại mật khẩu
                 </Button>
                 <div className="text-center">
-                  <Link to="/auth" className="text-xs text-muted-foreground underline-offset-4 hover:text-primary hover:underline">
+                  <Link
+                    to="/auth"
+                    className="text-xs text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
+                  >
                     <ArrowLeft className="mr-1 inline h-3 w-3" /> Quay lại đăng nhập
                   </Link>
                 </div>

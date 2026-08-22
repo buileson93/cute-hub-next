@@ -40,9 +40,7 @@ const CommandDialog = ({
 }: CommandDialogProps) => {
   return (
     <Dialog {...props}>
-      <DialogContent
-        className="overflow-hidden p-0 gap-0 border-none bg-transparent shadow-none sm:max-w-xl w-[calc(100vw-2rem)] sm:w-[42rem]"
-      >
+      <DialogContent className="overflow-hidden p-0 gap-0 border-none bg-transparent shadow-none sm:max-w-xl w-[calc(100vw-2rem)] sm:w-[42rem]">
         <Command
           filter={filter}
           shouldFilter={shouldFilter}
@@ -50,9 +48,7 @@ const CommandDialog = ({
           onValueChange={onValueChange}
           className="rounded-2xl border border-border/50 bg-popover shadow-2xl [&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:text-muted-foreground/50 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-1.5 [&_[cmdk-input-wrapper]]:border-b [&_[cmdk-input]]:h-11 [&_[cmdk-item]]:mx-1.5 [&_[cmdk-item]]:rounded-xl [&_[cmdk-item]]:px-3 [&_[cmdk-item]]:py-2 [&_[cmdk-item]_svg]:h-4 [&_[cmdk-item]_svg]:w-4 [&_[cmdk-item][data-selected=true]]:bg-muted/60 [&_[cmdk-item][data-selected=true]]:text-foreground"
         >
-          <div className="flex flex-col h-full overflow-hidden">
-            {children}
-          </div>
+          <div className="flex flex-col h-full overflow-hidden">{children}</div>
         </Command>
       </DialogContent>
     </Dialog>

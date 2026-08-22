@@ -6,6 +6,7 @@ Phụ thuộc: **N6** (máy trạng thái sự cố + `downtime_start`/`downtime
 ## 1. Mục tiêu
 
 Tính và hiển thị các chỉ số độ tin cậy cho từng **thiết bị**, **thành phần hệ thống**, **hệ thống** và **đơn vị**, trong một khoảng thời gian tuỳ chọn. Kết quả xuất hiện ở:
+
 - Dashboard N8 (KPI + top thiết bị/hệ thống kém tin cậy).
 - Panel Lý lịch của thiết bị/thành phần (tab "Độ tin cậy").
 
@@ -14,7 +15,7 @@ Tính và hiển thị các chỉ số độ tin cậy cho từng **thiết bị
 Downtime lấy **duy nhất** từ máy trạng thái N6 trên `su_co`:
 
 - `downtime_start` = `at_dang_xu_ly` (thời điểm chuyển sang `dang_xu_ly`).
-- `downtime_end`   = `at_hoan_thanh` (thời điểm chuyển sang `hoan_thanh`).
+- `downtime_end` = `at_hoan_thanh` (thời điểm chuyển sang `hoan_thanh`).
 - Nếu sự cố đã `huy` mà chưa từng vào `dang_xu_ly` ⇒ **không tính downtime**.
 - Nếu `hoan_thanh` bị mở lại (theo N6) ⇒ đoạn downtime tiếp theo bắt đầu từ lần `dang_xu_ly` mới, tạo **đoạn thứ hai** — không nối liền.
 - `wrench_time` = `downtime` − thời gian ở trạng thái `cho_vat_tu` (thông tin phụ, không dùng cho công thức chính; tính từ `su_co_lich_su`).
@@ -55,6 +56,7 @@ Chỉ số:
 ### Ví dụ (dùng cho test)
 
 Trong 30 ngày (2 592 000s), thiết bị X có 3 sự cố:
+
 - S1: start=day 2, end=day 2 + 4h ⇒ downtime 14 400s, đã đóng.
 - S2: start=day 10, end=day 10 + 2h ⇒ 7 200s, đã đóng.
 - S3: start=day 25, chưa đóng, tính tới `to`=day 30 ⇒ 5×86 400 = 432 000s, chưa đóng.
@@ -81,15 +83,21 @@ type FailureEvent = {
   id: string;
   downtime_start: Date;
   downtime_end: Date | null; // null = còn mở
-  closed_at: Date | null;    // thời điểm hoan_thanh (== downtime_end nếu đã đóng)
+  closed_at: Date | null; // thời điểm hoan_thanh (== downtime_end nếu đã đóng)
 };
 
 export function computeReliability(
   events: FailureEvent[],
   window: { from: Date; to: Date },
   operationalSeconds: number,
-): { mtbf_h: number | null; mttr_h: number | null; availability: number | null;
-     downtime_s: number; failures: number; failures_closed: number };
+): {
+  mtbf_h: number | null;
+  mttr_h: number | null;
+  availability: number | null;
+  downtime_s: number;
+  failures: number;
+  failures_closed: number;
+};
 ```
 
 Dùng cho test đơn vị và cho hiển thị khi đã có sẵn danh sách sự cố (panel lý lịch của 1 thiết bị).

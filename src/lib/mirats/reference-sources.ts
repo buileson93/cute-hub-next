@@ -20,7 +20,7 @@ export const REFERENCE_SOURCES = [
   { key: "dm_nha_cung_cap", nhan: "Nhà cung cấp" },
   { key: "dm_trang_thai_thiet_bi", nhan: "Trạng thái tài sản" },
   { key: "dm_nhom_he_thong", nhan: "Nhóm hệ thống" },
-  
+
   { key: "dm_he_thong", nhan: "Hệ thống" },
   { key: "dm_noi_cap", nhan: "Nơi cấp giấy phép" },
   { key: "dm_loai_giay_phep", nhan: "Loại giấy phép" },
@@ -79,7 +79,12 @@ export function useReferenceIdOptions(table: string | undefined) {
         .select(cols as never)
         .order("ten", { ascending: true });
       if (error) throw error;
-      const rows = (data ?? []) as unknown as Array<{ id: string; ma: string | null; ten: string | null; p_n?: string | null }>;
+      const rows = (data ?? []) as unknown as Array<{
+        id: string;
+        ma: string | null;
+        ten: string | null;
+        p_n?: string | null;
+      }>;
       return rows
         .filter((r) => (r.ten ?? "").trim())
         .map((r) => {

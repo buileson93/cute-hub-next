@@ -5,7 +5,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 // KHÔNG động vào cay_node_edit (trừ fallback cho node nháp `nh`).
 // ============================================================================
 
-type Row = { table: string; op: "update" | "upsert"; payload: Record<string, unknown>; match?: Record<string, unknown> };
+type Row = {
+  table: string;
+  op: "update" | "upsert";
+  payload: Record<string, unknown>;
+  match?: Record<string, unknown>;
+};
 const calls: Row[] = [];
 
 function makeBuilder(table: string) {
@@ -103,9 +108,7 @@ describe("renameEntity — fallback cho node nháp `nh` chưa có bản ghi th�
   });
 
   it("draft=true với kind khác `nh` → lỗi (không có khái niệm nháp)", async () => {
-    await expect(
-      renameEntity({ kind: "ht", id: "x", ten: "Y", draft: true }),
-    ).rejects.toThrow();
+    await expect(renameEntity({ kind: "ht", id: "x", ten: "Y", draft: true })).rejects.toThrow();
     expect(calls).toHaveLength(0);
   });
 });

@@ -1,24 +1,24 @@
-import { openDB, type IDBPDatabase } from 'idb';
-import type { OutboxItem, Storage } from './offline-queue';
+import { openDB, type IDBPDatabase } from "idb";
+import type { OutboxItem, Storage } from "./offline-queue";
 
-const DB_NAME = 'mirats-offline-db';
-const STORE_NAME = 'outbox';
+const DB_NAME = "mirats-offline-db";
+const STORE_NAME = "outbox";
 const VERSION = 1;
 
 export class IndexedDBStorage implements Storage {
   private dbPromise: Promise<IDBPDatabase> | null = null;
 
   private getDB() {
-    if (typeof window === 'undefined') {
-      throw new Error('IndexedDB is not available in non-browser environments');
+    if (typeof window === "undefined") {
+      throw new Error("IndexedDB is not available in non-browser environments");
     }
     if (!this.dbPromise) {
       this.dbPromise = openDB(DB_NAME, VERSION, {
         upgrade(db: IDBPDatabase) {
           if (!db.objectStoreNames.contains(STORE_NAME)) {
-            const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-            store.createIndex('status', 'status');
-            store.createIndex('created_at', 'created_at');
+            const store = db.createObjectStore(STORE_NAME, { keyPath: "id" });
+            store.createIndex("status", "status");
+            store.createIndex("created_at", "created_at");
           }
         },
       });

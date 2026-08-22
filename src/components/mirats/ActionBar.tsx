@@ -27,18 +27,26 @@ export interface ActionBarProps {
 }
 
 export function ActionBar({
-  domain, roles, onTao, onSua, onXoa, onHoanThanh, onDong,
-  extra, className, forceReadOnly = false,
+  domain,
+  roles,
+  onTao,
+  onSua,
+  onXoa,
+  onHoanThanh,
+  onDong,
+  extra,
+  className,
+  forceReadOnly = false,
 }: ActionBarProps) {
   const allowed = !forceReadOnly && canWrite(domain, roles);
 
   if (!allowed) {
     return (
       <div className={cn("flex items-center gap-1.5", className)}>
-          <Badge variant="outline" className="gap-1.5 py-0.5 text-muted-foreground font-medium">
-            <Lock className="h-3 w-3" />
-            Chế độ chỉ đọc
-          </Badge>
+        <Badge variant="outline" className="gap-1.5 py-0.5 text-muted-foreground font-medium">
+          <Lock className="h-3 w-3" />
+          Chế độ chỉ đọc
+        </Badge>
         {extra}
       </div>
     );

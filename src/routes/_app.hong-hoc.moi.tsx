@@ -5,11 +5,17 @@ export const Route = createFileRoute("/_app/hong-hoc/moi")({
   head: () => ({
     meta: [
       { title: "Tạo phiếu hỏng hóc — MIRATS" },
-      { name: "description", content: "Lập phiếu hỏng hóc–thay thế mới, gắn với sự cố nguồn và vị trí lắp đặt để khép vòng lý lịch tài sản." },
+      {
+        name: "description",
+        content:
+          "Lập phiếu hỏng hóc–thay thế mới, gắn với sự cố nguồn và vị trí lắp đặt để khép vòng lý lịch tài sản.",
+      },
       { name: "robots", content: "noindex" },
     ],
   }),
-  validateSearch: (s: Record<string, unknown>): { suCo?: string; heThong?: string; thietBi?: string } => ({
+  validateSearch: (
+    s: Record<string, unknown>,
+  ): { suCo?: string; heThong?: string; thietBi?: string } => ({
     suCo: typeof s.suCo === "string" ? s.suCo : undefined,
     heThong: typeof s.heThong === "string" ? s.heThong : undefined,
     thietBi: typeof s.thietBi === "string" ? s.thietBi : undefined,

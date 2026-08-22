@@ -183,7 +183,14 @@ export function normalizeResult(res: BulkImportResult): ImportPreviewResult {
   // Khi ghi thật không có `preview`; suy các dòng lỗi từ `errors`.
   if (previewRows.length === 0 && res.errors?.length) {
     for (const e of res.errors) {
-      previewRows.push({ index: -1, action: "error", key: e.key, messages: [e.message], warnings: [], refCreations: [] });
+      previewRows.push({
+        index: -1,
+        action: "error",
+        key: e.key,
+        messages: [e.message],
+        warnings: [],
+        refCreations: [],
+      });
     }
   }
   return {

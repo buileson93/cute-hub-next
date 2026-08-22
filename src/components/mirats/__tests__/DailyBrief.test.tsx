@@ -3,7 +3,11 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 vi.mock("@tanstack/react-router", () => ({
-  Link: ({ to, children, ...rest }: any) => <a href={to} {...rest}>{children}</a>,
+  Link: ({ to, children, ...rest }: any) => (
+    <a href={to} {...rest}>
+      {children}
+    </a>
+  ),
 }));
 
 const mockData = { data: undefined as any, isLoading: true };
@@ -15,18 +19,25 @@ import { DailyBrief } from "@/components/mirats/DailyBrief";
 
 describe("DailyBrief — GĐ2-02", () => {
   it("loading state → skeletons (no text)", () => {
-    mockData.data = undefined; mockData.isLoading = true;
+    mockData.data = undefined;
+    mockData.isLoading = true;
     const { container } = render(<DailyBrief />);
-    expect(container.querySelectorAll('[class*="skeleton" i], .animate-pulse').length).toBeGreaterThan(0);
+    expect(
+      container.querySelectorAll('[class*="skeleton" i], .animate-pulse').length,
+    ).toBeGreaterThan(0);
   });
 
   it("full data → render các câu tường thuật + link", () => {
     mockData.isLoading = false;
     mockData.data = {
-      expiring_gp_7d: 3, expiring_gp_30d: 5,
-      open_incidents: 2, critical_incidents: 1,
-      overdue_pm: 4, due_pm_7d: 6,
-      my_shift_tasks: 7, unread_notif: 0,
+      expiring_gp_7d: 3,
+      expiring_gp_30d: 5,
+      open_incidents: 2,
+      critical_incidents: 1,
+      overdue_pm: 4,
+      due_pm_7d: 6,
+      my_shift_tasks: 7,
+      unread_notif: 0,
       generated_at: new Date().toISOString(),
     };
     render(<DailyBrief />);
@@ -44,10 +55,14 @@ describe("DailyBrief — GĐ2-02", () => {
   it("empty → hiện câu chúc, không hiện CTA", () => {
     mockData.isLoading = false;
     mockData.data = {
-      expiring_gp_7d: 0, expiring_gp_30d: 0,
-      open_incidents: 0, critical_incidents: 0,
-      overdue_pm: 0, due_pm_7d: 0,
-      my_shift_tasks: 0, unread_notif: 0,
+      expiring_gp_7d: 0,
+      expiring_gp_30d: 0,
+      open_incidents: 0,
+      critical_incidents: 0,
+      overdue_pm: 0,
+      due_pm_7d: 0,
+      my_shift_tasks: 0,
+      unread_notif: 0,
       generated_at: new Date().toISOString(),
     };
     const { container } = render(<DailyBrief />);

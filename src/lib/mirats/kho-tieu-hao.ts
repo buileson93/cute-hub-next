@@ -53,10 +53,7 @@ export function buildXuatArgs(d: DongTieuHao, lienKet: LienKetTieuHao): Record<s
  * Dừng ngay khi gặp lỗi (không rollback các dòng trước — nghiệp vụ chấp nhận
  * ghi từng dòng, người dùng có thể sửa/xoá thủ công nếu cần).
  */
-export async function ghiTieuHao(
-  dong: DongTieuHao[],
-  lienKet: LienKetTieuHao,
-): Promise<string[]> {
+export async function ghiTieuHao(dong: DongTieuHao[], lienKet: LienKetTieuHao): Promise<string[]> {
   const ids: string[] = [];
   for (const d of dong) {
     const args = buildXuatArgs(d, lienKet);

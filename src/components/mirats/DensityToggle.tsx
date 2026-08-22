@@ -18,7 +18,9 @@ export function useDensity(): [Density, (d: Density) => void] {
   });
   useEffect(() => {
     apply(d);
-    try { localStorage.setItem(KEY, d); } catch {}
+    try {
+      localStorage.setItem(KEY, d);
+    } catch {}
   }, [d]);
   return [d, setD];
 }
@@ -37,8 +39,14 @@ export function DensityToggle() {
     return "compact";
   };
   return (
-    <AppTooltip 
-      noiDung={d === "compact" ? "Chế độ Gọn: Tối đa hóa dữ liệu hiển thị" : d === "comfortable" ? "Chế độ Vừa: Cân bằng giữa dữ liệu và khoảng trống" : "Chế độ Thoáng: Dễ nhìn, khoảng cách rộng rãi"}
+    <AppTooltip
+      noiDung={
+        d === "compact"
+          ? "Chế độ Gọn: Tối đa hóa dữ liệu hiển thị"
+          : d === "comfortable"
+            ? "Chế độ Vừa: Cân bằng giữa dữ liệu và khoảng trống"
+            : "Chế độ Thoáng: Dễ nhìn, khoảng cách rộng rãi"
+      }
       ben="bottom"
     >
       <Button
@@ -48,7 +56,13 @@ export function DensityToggle() {
         onClick={() => setD(nextDensity(d))}
         aria-label="Thay đổi mật độ hiển thị"
       >
-        {d === "compact" ? <Minimize2 className="h-4 w-4" /> : d === "comfortable" ? <LayoutGrid className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+        {d === "compact" ? (
+          <Minimize2 className="h-4 w-4" />
+        ) : d === "comfortable" ? (
+          <LayoutGrid className="h-4 w-4" />
+        ) : (
+          <Maximize2 className="h-4 w-4" />
+        )}
         <span className="sr-only">
           {d === "compact" ? "Gọn" : d === "comfortable" ? "Vừa" : "Thoáng"}
         </span>

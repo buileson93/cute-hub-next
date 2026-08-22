@@ -54,11 +54,32 @@ const nguon: NguonBaoCao = {
     },
   ],
   su_co: [
-    { id: "s1", thiet_bi_id: "tb1", mo_ta: "Mất tín hiệu", thoi_diem: "2026-06-10", mtr_phut: 30, trang_thai: "hoan_thanh" },
+    {
+      id: "s1",
+      thiet_bi_id: "tb1",
+      mo_ta: "Mất tín hiệu",
+      thoi_diem: "2026-06-10",
+      mtr_phut: 30,
+      trang_thai: "hoan_thanh",
+    },
   ],
   giay_phep: [
-    { id: "g1", so_gp: "GP-01", ten_gp: "GP khai thác VHF", han_gp: "2026-08-01", he_thong: "VCS", don_vi: "Đài ATC" },
-    { id: "g2", so_gp: "GP-02", ten_gp: "GP khai thác AWOS", han_gp: "2029-01-01", he_thong: "AWOS", don_vi: "MET" },
+    {
+      id: "g1",
+      so_gp: "GP-01",
+      ten_gp: "GP khai thác VHF",
+      han_gp: "2026-08-01",
+      he_thong: "VCS",
+      don_vi: "Đài ATC",
+    },
+    {
+      id: "g2",
+      so_gp: "GP-02",
+      ten_gp: "GP khai thác AWOS",
+      han_gp: "2029-01-01",
+      he_thong: "AWOS",
+      don_vi: "MET",
+    },
   ],
 };
 

@@ -21,13 +21,13 @@ export type EntityLoai =
 
 /** Kiểu định dạng của một trường hiển thị. */
 export type FieldLoai =
-  | "text"       // chuỗi thô
-  | "status"     // trạng thái theo trang-thai.ts (cần `domain`)
-  | "date"       // ISO/Date → dd/MM/yyyy
-  | "datetime"   // ISO/Date → dd/MM/yyyy HH:mm
-  | "vnd"        // số → format tiền
-  | "so"         // số → nhóm nghìn
-  | "expiring";  // ngày hết hạn → "còn X ngày" / "quá hạn X ngày"
+  | "text" // chuỗi thô
+  | "status" // trạng thái theo trang-thai.ts (cần `domain`)
+  | "date" // ISO/Date → dd/MM/yyyy
+  | "datetime" // ISO/Date → dd/MM/yyyy HH:mm
+  | "vnd" // số → format tiền
+  | "so" // số → nhóm nghìn
+  | "expiring"; // ngày hết hạn → "còn X ngày" / "quá hạn X ngày"
 
 export interface FieldView {
   /** Tên cột trong CSDL / khoá trong bản ghi. */

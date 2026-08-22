@@ -18,7 +18,7 @@
   - `statement_timeout` role `authenticated` = **30s**
   - `statement_timeout` role `anon` = **10s**
 - [ ] Bật extensions (Dashboard → Database → Extensions):
-  `pg_cron`, `pg_net`, `pgcrypto`, `pg_trgm`, `unaccent`, `uuid-ossp`, `pg_stat_statements`, `supabase_vault`.
+      `pg_cron`, `pg_net`, `pgcrypto`, `pg_trgm`, `unaccent`, `uuid-ossp`, `pg_stat_statements`, `supabase_vault`.
 - [ ] Auth → Providers:
   - Email/password: **enabled**, confirm email: **disabled** (dev), **enabled** (prod).
   - Google OAuth: Client ID + Secret; redirect URIs `https://<ref>.supabase.co/auth/v1/callback`, `https://vatm.app/auth/callback`, `http://localhost:8080/auth/callback`.
@@ -98,14 +98,14 @@ Thứ tự **BẮT BUỘC** (chạy bằng psql với `PGURI` trỏ tới projec
 
 ## Rủi ro & mitigations
 
-| Rủi ro | Xử lý |
-|---|---|
-| Password hash không tương thích | Bcrypt của Supabase Auth cross-project OK — chỉ cần giữ `encrypted_password` và `id`. |
-| FK violation khi COPY | `SET session_replication_role = 'replica';` trước, `= 'origin'` sau. Chạy `VALIDATE CONSTRAINT` cuối. |
-| Cron URL sai domain | URL đọc từ `app_cai_dat.public_app_url`, cập nhật 1 dòng thay vì sửa `cron.job`. |
-| RLS drift | Diff `pg_policies` — script `./scripts/diff-schema.sh policies`. |
-| Storage URL cứng trong DB | Chỉ ảnh hưởng bảng có `duong_dan` cache; batch UPDATE sau import. |
-| MCP tools dùng service role hết hạn | Rebind biến, không thay đổi code. |
+| Rủi ro                              | Xử lý                                                                                                 |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Password hash không tương thích     | Bcrypt của Supabase Auth cross-project OK — chỉ cần giữ `encrypted_password` và `id`.                 |
+| FK violation khi COPY               | `SET session_replication_role = 'replica';` trước, `= 'origin'` sau. Chạy `VALIDATE CONSTRAINT` cuối. |
+| Cron URL sai domain                 | URL đọc từ `app_cai_dat.public_app_url`, cập nhật 1 dòng thay vì sửa `cron.job`.                      |
+| RLS drift                           | Diff `pg_policies` — script `./scripts/diff-schema.sh policies`.                                      |
+| Storage URL cứng trong DB           | Chỉ ảnh hưởng bảng có `duong_dan` cache; batch UPDATE sau import.                                     |
+| MCP tools dùng service role hết hạn | Rebind biến, không thay đổi code.                                                                     |
 
 ---
 

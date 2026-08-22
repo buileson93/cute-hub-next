@@ -19,7 +19,7 @@ const Blockquote = React.forwardRef<HTMLQuoteElement, BlockquoteProps>(
           className={cn(
             "relative border-l-4 border-primary/40 bg-muted/30 py-4 pl-6 pr-4 italic text-foreground/90 transition-mirats-base",
             "before:absolute before:left-0 before:top-0 before:h-full before:w-1 before:bg-primary/20",
-            className
+            className,
           )}
           {...props}
         >
@@ -34,7 +34,7 @@ const Blockquote = React.forwardRef<HTMLQuoteElement, BlockquoteProps>(
         )}
       </figure>
     );
-  }
+  },
 );
 
 Blockquote.displayName = "Blockquote";

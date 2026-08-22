@@ -45,7 +45,9 @@ describe("command-intent — GĐ2-03", () => {
   });
 
   it("describeIntent trả tiếng Việt cho tất cả kind", () => {
-    expect(describeIntent({ kind: "mount-asset", asset: "TB1", component: "TPHT_1", confidence: 1 })).toMatch(/Gán/);
+    expect(
+      describeIntent({ kind: "mount-asset", asset: "TB1", component: "TPHT_1", confidence: 1 }),
+    ).toMatch(/Gán/);
     expect(describeIntent({ kind: "unmount-asset", asset: "TB1", confidence: 1 })).toMatch(/Tháo/);
     expect(describeIntent({ kind: "close-incident", id: "SC-1", confidence: 1 })).toMatch(/Đóng/);
     expect(describeIntent({ kind: "create-pm", target: "X", confidence: 1 })).toMatch(/bảo trì/);

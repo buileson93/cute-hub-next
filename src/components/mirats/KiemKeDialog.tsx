@@ -5,10 +5,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 
 export const TINH_TRANG_OPTIONS = [
@@ -51,8 +60,11 @@ export function KiemKeDialog({ thietBi, canManage, pending, onSubmit }: KiemKeDi
 
   const reset = () => {
     setTinhTrang(TINH_TRANG_OPTIONS[0]);
-    setGhiChu(""); setGps(null); setGpsErr(null);
-    setFile(null); setPreview(null);
+    setGhiChu("");
+    setGps(null);
+    setGpsErr(null);
+    setFile(null);
+    setPreview(null);
   };
 
   const layViTri = () => {
@@ -88,11 +100,25 @@ export function KiemKeDialog({ thietBi, canManage, pending, onSubmit }: KiemKeDi
 
   return (
     <>
-      <Button size="sm" variant="outline" onClick={() => { reset(); setOpen(true); }} disabled={pending}>
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => {
+          reset();
+          setOpen(true);
+        }}
+        disabled={pending}
+      >
         <ClipboardCheck className="mr-1.5 h-3.5 w-3.5" /> Kiểm kê
       </Button>
 
-      <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) reset(); }}>
+      <Dialog
+        open={open}
+        onOpenChange={(v) => {
+          setOpen(v);
+          if (!v) reset();
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Kiểm kê tài sản</DialogTitle>
@@ -106,10 +132,14 @@ export function KiemKeDialog({ thietBi, canManage, pending, onSubmit }: KiemKeDi
             <div className="space-y-1.5">
               <Label htmlFor="kk-tt">Tình trạng</Label>
               <Select value={tinhTrang} onValueChange={setTinhTrang}>
-                <SelectTrigger id="kk-tt"><SelectValue /></SelectTrigger>
+                <SelectTrigger id="kk-tt">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   {TINH_TRANG_OPTIONS.map((t) => (
-                    <SelectItem key={t} value={t}>{t}</SelectItem>
+                    <SelectItem key={t} value={t}>
+                      {t}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -118,8 +148,18 @@ export function KiemKeDialog({ thietBi, canManage, pending, onSubmit }: KiemKeDi
             <div className="space-y-1.5">
               <Label>Vị trí hiện tại</Label>
               <div className="flex items-center gap-2">
-                <Button type="button" size="sm" variant="secondary" onClick={layViTri} disabled={gpsBusy}>
-                  {gpsBusy ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <MapPin className="mr-1.5 h-3.5 w-3.5" />}
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  onClick={layViTri}
+                  disabled={gpsBusy}
+                >
+                  {gpsBusy ? (
+                    <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <MapPin className="mr-1.5 h-3.5 w-3.5" />
+                  )}
                   Lấy vị trí
                 </Button>
                 {gps && <span className="text-sm text-muted-foreground">{gps}</span>}
@@ -140,9 +180,14 @@ export function KiemKeDialog({ thietBi, canManage, pending, onSubmit }: KiemKeDi
               />
               {preview ? (
                 <div className="relative w-fit">
-                  <img src={preview} alt="Ảnh kiểm kê" className="h-32 rounded-md border object-cover" />
+                  <img
+                    src={preview}
+                    alt="Ảnh kiểm kê"
+                    className="h-32 rounded-md border object-cover"
+                  />
                   <Button
-                    size="icon" variant="destructive"
+                    size="icon"
+                    variant="destructive"
                     className="absolute -right-2 -top-2 h-6 w-6"
                     onClick={() => onPickFile(null)}
                   >
@@ -150,7 +195,12 @@ export function KiemKeDialog({ thietBi, canManage, pending, onSubmit }: KiemKeDi
                   </Button>
                 </div>
               ) : (
-                <Button type="button" size="sm" variant="outline" onClick={() => fileRef.current?.click()}>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => fileRef.current?.click()}
+                >
                   <Camera className="mr-1.5 h-3.5 w-3.5" /> Chụp / chọn ảnh
                 </Button>
               )}
@@ -158,13 +208,20 @@ export function KiemKeDialog({ thietBi, canManage, pending, onSubmit }: KiemKeDi
 
             <div className="space-y-1.5">
               <Label htmlFor="kk-ghichu">Ghi chú</Label>
-              <Textarea id="kk-ghichu" value={ghiChu} onChange={(e) => setGhiChu(e.target.value)} rows={2}
-                placeholder="Mô tả tình trạng, vị trí lắp đặt…" />
+              <Textarea
+                id="kk-ghichu"
+                value={ghiChu}
+                onChange={(e) => setGhiChu(e.target.value)}
+                rows={2}
+                placeholder="Mô tả tình trạng, vị trí lắp đặt…"
+              />
             </div>
           </div>
 
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setOpen(false)}>Huỷ</Button>
+            <Button variant="ghost" onClick={() => setOpen(false)}>
+              Huỷ
+            </Button>
             <Button onClick={submit} disabled={pending || !tinhTrang}>
               {pending && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
               Xác nhận kiểm kê

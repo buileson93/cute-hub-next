@@ -5,6 +5,7 @@
 ## 0. Bối cảnh hiện tại (không phá)
 
 Repo đã có:
+
 - `bao_tri_chinh_sach` (chính sách/mẫu bảo trì) — cột: `chu_ky_ngay`, `chu_ky_gio_chay`, `loai_thiet_bi_id`, `he_thong_id`, `thiet_bi_id`, `model_id`.
 - `bao_tri` (Sổ lý lịch bảo trì đã hoàn thành).
 - `cong_viec_bao_tri` (công việc thi công).
@@ -21,6 +22,7 @@ Hai loại (mutually exclusive per policy):
 - **`metric`** — theo chỉ số vận hành. `chu_ky_gia_tri` = ngưỡng tăng thêm (numeric > 0) trên counter `gio_chay` (số giờ chạy) hoặc `so_lan` (số lần khởi động). Chỉ số nguồn nằm ở `thiet_bi_do_dac` (bảng đã có) hoặc `thiet_bi.thuoc_tinh.gio_chay`.
 
 Trường mở rộng cho `bao_tri_chinh_sach`:
+
 - `chu_ky_loai` `time|metric` NOT NULL DEFAULT `time`.
 - `chu_ky_gia_tri` numeric NOT NULL (giữ lại `chu_ky_ngay`/`chu_ky_gio_chay` cũ để migrate, sau đó deprecate).
 - `metric_field` text NULL — tên chỉ số nếu `chu_ky_loai='metric'` (`gio_chay|so_lan|km`).
@@ -84,6 +86,7 @@ CREATE TABLE public.pm_cong_viec (
 `ky_hieu_han` = `format('%s-%s', chu_ky_loai, YYYYMMDD han)` cho `time`; cho `metric` dùng `format('m-%s-%s', metric_field, floor(threshold))`. Giúp `INSERT ... ON CONFLICT DO NOTHING` idempotent khi cron chạy nhiều lần.
 
 **RLS**:
+
 - SELECT: cùng `don_vi_id` với scope của user (`user_scope`) HOẶC `has_role admin|phong_kt`.
 - INSERT: chỉ qua RPC `pm_sinh_cong_viec` (SECURITY DEFINER) — user thường không insert trực tiếp.
 - UPDATE: `admin|phong_kt` HOẶC `nguoi_phu_trach_id = auth.uid()` và chỉ đổi `trang_thai` giữa các state hợp lệ.
@@ -94,6 +97,7 @@ CREATE TABLE public.pm_cong_viec (
 ## 5. Sinh công việc — `pm_sinh_cong_viec(as_of date DEFAULT current_date)`
 
 RPC SECURITY DEFINER:
+
 1. Với mỗi `bao_tri_chinh_sach WHERE active`:
    - Resolve danh sách target theo scope + priority.
    - Với mỗi target: gọi `next_due_date(policy, last_done)` để tính `han`.
@@ -105,6 +109,7 @@ RPC SECURITY DEFINER:
 3. Trả `{ created: n, updated: m }`.
 
 **Chạy khi nào**:
+
 - Cron `pg_cron` gọi TanStack route `/api/public/hooks/pm-generate` mỗi ngày 06:00. Route xác thực `apikey` (anon key), gọi RPC.
 - Ngoài ra, khi vào trang `/bao-tri/cong-viec` sẽ trigger `pm_sinh_cong_viec(current_date)` (throttle 5 phút qua cache) để user không phải chờ cron.
 
@@ -113,6 +118,7 @@ RPC SECURITY DEFINER:
 **KHÔNG** tạo nguồn dữ liệu song song. `bao_tri` là Sổ lý lịch chính; `pm_cong_viec` chỉ là hàng đợi.
 
 Chữ ký:
+
 ```ts
 completeTask(taskId, {
   thuc_hien_at: string;        // ISO date
@@ -125,6 +131,7 @@ completeTask(taskId, {
 ```
 
 RPC `pm_hoan_thanh_cong_viec` (SECURITY DEFINER):
+
 1. Kiểm tra `pm_cong_viec` tồn tại, `trang_thai ∈ (sap_den_han, den_han, qua_han, dang_thuc_hien)`.
 2. Kiểm caller có quyền edit trên đối tượng (RLS `bao_tri`).
 3. INSERT vào `bao_tri` với `chinh_sach_id`, `pm_cong_viec_id`, mọi payload. Trigger `audit_row_change` ghi audit.
@@ -150,6 +157,7 @@ RPC `pm_hoan_thanh_cong_viec` (SECURITY DEFINER):
 ## 8. Test — DoD
 
 **Unit** `src/lib/mirats/__tests__/pm-schedule.test.ts`:
+
 - `nextDueDate` time: chưa có lastDone → dùng `ngay_dua_vao_khai_thac` hoặc created_at + N; có lastDone → +N; edge: N=0/âm/null.
 - `nextDueDate` metric: không đủ dữ liệu counter → null + `estimated=true`; đủ → hạn hợp lý.
 - `generateDueTasks(policies, targets, as_of)`: trả danh sách task với `ky_hieu_han` deterministic; gọi 2 lần cùng input → set task giống hệt (idempotent).
@@ -163,6 +171,7 @@ RPC `pm_hoan_thanh_cong_viec` (SECURITY DEFINER):
 - Priority resolution: 1 tài sản khớp 3 policy → chọn scope hẹp nhất.
 
 **pgTAP** `supabase/tests/pm_no_duplicate.sql`:
+
 1. Seed 1 policy chu_ky_ngay=30, 1 tài sản, run `pm_sinh_cong_viec` 3 lần cùng ngày → chỉ 1 row `pm_cong_viec`.
 2. Complete task → policy `lan_gan_nhat_at` update; task mới có `han = lan_gan_nhat + 30`.
 3. `bao_tri` có 1 dòng mới, `audit_log` có 2 dòng (insert bao_tri + update pm_cong_viec).
@@ -173,15 +182,15 @@ RPC `pm_hoan_thanh_cong_viec` (SECURITY DEFINER):
 
 ## 9. Rủi ro & giảm thiểu
 
-| Rủi ro | Giảm thiểu |
-|---|---|
-| Trùng lặp với `cong_viec_bao_tri` hiện có | `pm_cong_viec` là hàng đợi PM; `cong_viec_bao_tri` là công việc thi công user tự tạo — có thể link `cong_viec_bao_tri.pm_cong_viec_id` nếu cần, không merge |
-| Counter `gio_chay` không được cập nhật đều → hạn metric drift | Flag `estimated=true` + hiện badge trong UI; cho phép user gõ counter tay khi hoàn thành |
-| Nhiều policy chồng chéo | Resolver priority + test; UI cảnh báo trước khi lưu policy nếu overlap |
-| Cron fail → không sinh task | Trigger fallback khi vào `/bao-tri/cong-viec` (throttle) |
-| Migrate `chu_ky_ngay` cũ | Migration backfill: `chu_ky_ngay → chu_ky_loai='time', chu_ky_gia_tri=chu_ky_ngay`; giữ cột cũ 1 release để rollback |
-| Skip PM để né chỉ số | Chỉ admin/phong_kt skip; ghi audit + report tuần |
-| RLS `pm_cong_viec` chặn assignee ngoài đơn vị | Cho phép read khi `nguoi_phu_trach_id = auth.uid()` bất kể đơn vị |
+| Rủi ro                                                        | Giảm thiểu                                                                                                                                                  |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Trùng lặp với `cong_viec_bao_tri` hiện có                     | `pm_cong_viec` là hàng đợi PM; `cong_viec_bao_tri` là công việc thi công user tự tạo — có thể link `cong_viec_bao_tri.pm_cong_viec_id` nếu cần, không merge |
+| Counter `gio_chay` không được cập nhật đều → hạn metric drift | Flag `estimated=true` + hiện badge trong UI; cho phép user gõ counter tay khi hoàn thành                                                                    |
+| Nhiều policy chồng chéo                                       | Resolver priority + test; UI cảnh báo trước khi lưu policy nếu overlap                                                                                      |
+| Cron fail → không sinh task                                   | Trigger fallback khi vào `/bao-tri/cong-viec` (throttle)                                                                                                    |
+| Migrate `chu_ky_ngay` cũ                                      | Migration backfill: `chu_ky_ngay → chu_ky_loai='time', chu_ky_gia_tri=chu_ky_ngay`; giữ cột cũ 1 release để rollback                                        |
+| Skip PM để né chỉ số                                          | Chỉ admin/phong_kt skip; ghi audit + report tuần                                                                                                            |
+| RLS `pm_cong_viec` chặn assignee ngoài đơn vị                 | Cho phép read khi `nguoi_phu_trach_id = auth.uid()` bất kể đơn vị                                                                                           |
 
 ## 10. Câu hỏi làm rõ
 
@@ -201,7 +210,8 @@ RPC `pm_hoan_thanh_cong_viec` (SECURITY DEFINER):
 ## 11. Alternative — tách hẳn `pm_ke_hoach`
 
 Nếu bạn muốn bảng riêng theo yêu cầu gốc:
+
 - `pm_ke_hoach(id, doi_tuong_type, doi_tuong_id, chu_ky_loai, chu_ky_gia_tri, noi_dung, nguoi_phu_trach_id, lan_gan_nhat_at)`.
 - `bao_tri_chinh_sach` chuyển vai trò → template/mẫu tái dùng.
 - Cần migration copy dữ liệu hiện có sang `pm_ke_hoach`.
-Chi phí lớn hơn, nhưng tách rõ concern. Chờ quyết định ở câu hỏi §10.1.
+  Chi phí lớn hơn, nhưng tách rõ concern. Chờ quyết định ở câu hỏi §10.1.

@@ -76,7 +76,7 @@ describe("Task 52 — nguồn cảnh báo hết hạn duy nhất", () => {
       const metricsImport = src.match(/from\s+["']@\/lib\/mirats\/metrics["']/g);
       if (metricsImport) {
         // Chỉ chấp nhận nếu KHÔNG kéo fmtVND / fmtDowntime.
-        const line = src.split("\n").find((l) => l.includes('@/lib/mirats/metrics'));
+        const line = src.split("\n").find((l) => l.includes("@/lib/mirats/metrics"));
         expect(line, `${f}: ${line}`).not.toMatch(/fmtVND|fmtDowntime/);
       }
     }

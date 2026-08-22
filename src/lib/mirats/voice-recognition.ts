@@ -53,7 +53,9 @@ export function createVoiceRecognition(opts: VoiceOptions): VoiceController | nu
   rec.interimResults = opts.interim ?? true;
 
   rec.onresult = (e: unknown) => {
-    const ev = e as { results: ArrayLike<ArrayLike<{ transcript: string }> & { isFinal: boolean }> };
+    const ev = e as {
+      results: ArrayLike<ArrayLike<{ transcript: string }> & { isFinal: boolean }>;
+    };
     let finalText = "";
     let interim = "";
     for (let i = 0; i < ev.results.length; i++) {
@@ -72,9 +74,27 @@ export function createVoiceRecognition(opts: VoiceOptions): VoiceController | nu
   rec.onend = () => opts.onEnd?.();
 
   return {
-    start: () => { try { rec.start(); } catch { /* already started */ } },
-    stop: () => { try { rec.stop(); } catch { /* not running */ } },
-    abort: () => { try { rec.abort(); } catch { /* noop */ } },
+    start: () => {
+      try {
+        rec.start();
+      } catch {
+        /* already started */
+      }
+    },
+    stop: () => {
+      try {
+        rec.stop();
+      } catch {
+        /* not running */
+      }
+    },
+    abort: () => {
+      try {
+        rec.abort();
+      } catch {
+        /* noop */
+      }
+    },
   };
 }
 
@@ -90,7 +110,11 @@ export interface VoiceDraft {
 export function saveVoiceDraft(d: Omit<VoiceDraft, "savedAt">): void {
   if (typeof sessionStorage === "undefined") return;
   const payload: VoiceDraft = { ...d, savedAt: Date.now() };
-  try { sessionStorage.setItem(VOICE_DRAFT_KEY, JSON.stringify(payload)); } catch { /* quota */ }
+  try {
+    sessionStorage.setItem(VOICE_DRAFT_KEY, JSON.stringify(payload));
+  } catch {
+    /* quota */
+  }
 }
 
 export function popVoiceDraft(): VoiceDraft | null {
@@ -100,5 +124,7 @@ export function popVoiceDraft(): VoiceDraft | null {
     if (!raw) return null;
     sessionStorage.removeItem(VOICE_DRAFT_KEY);
     return JSON.parse(raw) as VoiceDraft;
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }

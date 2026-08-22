@@ -10,7 +10,7 @@ interface HillMarker {
   id: string;
   name: string;
   position: number; // 0-100
-  status: 'climbing' | 'executing';
+  status: "climbing" | "executing";
 }
 
 export function HillChart({ project_id }: { project_id: string }) {
@@ -21,29 +21,32 @@ export function HillChart({ project_id }: { project_id: string }) {
   const { data: markers = [], isLoading } = useQuery({
     queryKey: ["hill-chart", project_id],
     queryFn: async () => {
-      const { data: pitches } = await supabase.from("pitches").select("id").eq("project_id", project_id);
+      const { data: pitches } = await supabase
+        .from("pitches")
+        .select("id")
+        .eq("project_id", project_id);
       const pitchesArr = (pitches || []) as any[];
       if (!pitchesArr.length) return [];
-      
-      const pitchIds = pitchesArr.map(p => p.id);
+
+      const pitchIds = pitchesArr.map((p) => p.id);
       const { data, error } = await supabase
         .from("pitch_scopes")
         .select("*")
         .in("pitch_id", pitchIds);
-      
+
       if (error) throw error;
       return (data || []).map((s: any) => ({
         id: s.id,
         name: s.name,
         position: s.hill_position || 0,
-        status: s.hill_status as 'climbing' | 'executing'
+        status: s.hill_status as "climbing" | "executing",
       })) as HillMarker[];
-    }
+    },
   });
 
   const updatePosition = useMutation({
     mutationFn: async ({ id, position }: { id: string; position: number }) => {
-      const status = position < 50 ? 'climbing' : 'executing';
+      const status = position < 50 ? "climbing" : "executing";
       const { error } = await supabase
         .from("pitch_scopes")
         .update({ hill_position: position, hill_status: status })
@@ -52,7 +55,7 @@ export function HillChart({ project_id }: { project_id: string }) {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["hill-chart", project_id] });
-    }
+    },
   });
 
   // Simple parabolic hill: y = 4 * x * (1 - x)
@@ -61,13 +64,13 @@ export function HillChart({ project_id }: { project_id: string }) {
     const y = 4 * normalizedX * (1 - normalizedX);
     return {
       x: x,
-      y: 100 - (y * 80) // Map 0-1 to 20-100 on Y axis (inverted)
+      y: 100 - y * 80, // Map 0-1 to 20-100 on Y axis (inverted)
     };
   };
 
   const hillPath = Array.from({ length: 101 }, (_, i) => {
     const p = getPoint(i);
-    return `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`;
+    return `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`;
   }).join(" ");
 
   if (isLoading) return <div className="p-4 text-xs text-slate-500">Đang tải Hill Chart...</div>;
@@ -77,62 +80,73 @@ export function HillChart({ project_id }: { project_id: string }) {
       <Card className="border-slate-200 overflow-hidden shadow-none">
         <CardHeader className="pb-2 bg-slate-50/50 border-b border-slate-100">
           <CardTitle className="text-sm font-semibold">Tiến độ Uncertainty (Hill Chart)</CardTitle>
-          <CardDescription className="text-xs">Trái: Climbing (Figuring out) | Phải: Executing (Rolling down)</CardDescription>
+          <CardDescription className="text-xs">
+            Trái: Climbing (Figuring out) | Phải: Executing (Rolling down)
+          </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
           <div className="relative aspect-[3/1] w-full bg-white p-6">
-            <svg 
-              viewBox="0 0 100 100" 
-              preserveAspectRatio="none" 
+            <svg
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
               className="w-full h-full overflow-visible"
               ref={containerRef}
             >
               {/* The Hill */}
-              <path 
-                d={hillPath} 
-                fill="none" 
-                stroke="#e2e8f0" 
-                strokeWidth="1.5" 
+              <path
+                d={hillPath}
+                fill="none"
+                stroke="#e2e8f0"
+                strokeWidth="1.5"
                 strokeDasharray="2 2"
               />
-              <path 
-                d={hillPath} 
-                fill="none" 
-                stroke="#1C51E0" 
-                strokeWidth="2" 
+              <path
+                d={hillPath}
+                fill="none"
+                stroke="#1C51E0"
+                strokeWidth="2"
                 className="opacity-20"
               />
 
               {/* Center line */}
               <line x1="50" y1="20" x2="50" y2="100" stroke="#f1f5f9" strokeWidth="1" />
-              <text x="50" y="15" textAnchor="middle" className="text-[4px] fill-slate-400 font-medium">SHAPED</text>
+              <text
+                x="50"
+                y="15"
+                textAnchor="middle"
+                className="text-[4px] fill-slate-400 font-medium"
+              >
+                SHAPED
+              </text>
 
               {/* Markers */}
               {markers.map((m) => {
                 const p = getPoint(m.position);
                 const isSelected = selectedMarker === m.id;
                 return (
-                  <g 
-                    key={m.id} 
+                  <g
+                    key={m.id}
                     className="cursor-pointer group"
                     onClick={() => setSelectedMarker(m.id)}
                   >
-                    <circle 
-                      cx={p.x} 
-                      cy={p.y} 
-                      r={isSelected ? 2.5 : 2} 
+                    <circle
+                      cx={p.x}
+                      cy={p.y}
+                      r={isSelected ? 2.5 : 2}
                       fill={isSelected ? "#1C51E0" : "#fff"}
                       stroke="#1C51E0"
                       strokeWidth="0.5"
                       className="transition-all"
                     />
-                    <text 
-                      x={p.x} 
-                      y={p.y - 4} 
-                      textAnchor="middle" 
+                    <text
+                      x={p.x}
+                      y={p.y - 4}
+                      textAnchor="middle"
                       className={cn(
                         "text-[3px] font-medium transition-all",
-                        isSelected ? "fill-indigo-700 font-bold" : "fill-slate-600 opacity-60 group-hover:opacity-100"
+                        isSelected
+                          ? "fill-indigo-700 font-bold"
+                          : "fill-slate-600 opacity-60 group-hover:opacity-100",
                       )}
                     >
                       {m.name}
@@ -147,20 +161,24 @@ export function HillChart({ project_id }: { project_id: string }) {
 
       {/* List Fallback / Accessible View */}
       <div className="grid gap-2">
-        {markers.map(m => (
-          <div 
-            key={m.id} 
+        {markers.map((m) => (
+          <div
+            key={m.id}
             className={cn(
               "flex items-center justify-between p-2 rounded-lg border text-sm transition",
-              selectedMarker === m.id ? "border-indigo-200 bg-indigo-50/50" : "border-slate-100 hover:border-slate-200"
+              selectedMarker === m.id
+                ? "border-indigo-200 bg-indigo-50/50"
+                : "border-slate-100 hover:border-slate-200",
             )}
             onClick={() => setSelectedMarker(m.id)}
           >
             <div className="flex items-center gap-2">
-              <div className={cn(
-                "w-2 h-2 rounded-full",
-                m.position < 50 ? "bg-amber-400" : "bg-emerald-400"
-              )} />
+              <div
+                className={cn(
+                  "w-2 h-2 rounded-full",
+                  m.position < 50 ? "bg-amber-400" : "bg-emerald-400",
+                )}
+              />
               <span className="font-medium text-slate-700">{m.name}</span>
             </div>
             <div className="flex items-center gap-3">

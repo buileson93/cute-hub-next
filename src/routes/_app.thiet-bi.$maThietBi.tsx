@@ -15,19 +15,18 @@ export const Route = createFileRoute("/_app/thiet-bi/$maThietBi")({
 function ThietBiDetailRoute() {
   const { maThietBi: ma } = Route.useParams();
   const { tab, doc: initialDocId } = Route.useSearch();
-  
+
   const { data: taxonomy } = useDbTaxonomy();
-  const asset = taxonomy?.devices.find(d => d.ma_thiet_bi === ma);
+  const asset = taxonomy?.devices.find((d) => d.ma_thiet_bi === ma);
 
   const { ops, isLoading } = useOperationsData();
   const { suCo, baoTri, hongHoc } = ops;
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Đang tải dữ liệu...</div>;
+  if (isLoading)
+    return <div className="p-8 text-center text-muted-foreground">Đang tải dữ liệu...</div>;
   if (!asset) {
     return (
-      <div className="p-8 text-center text-muted-foreground">
-        Không tìm thấy thiết bị "{ma}"
-      </div>
+      <div className="p-8 text-center text-muted-foreground">Không tìm thấy thiết bị "{ma}"</div>
     );
   }
 

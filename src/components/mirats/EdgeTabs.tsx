@@ -16,11 +16,7 @@ interface EdgeTabsProps {
 /**
  * Standardized Astryx Detail Tabs: Edge-to-edge on mobile, standardized spacing.
  */
-export function EdgeTabs({
-  tabs,
-  defaultTab,
-  className,
-}: EdgeTabsProps) {
+export function EdgeTabs({ tabs, defaultTab, className }: EdgeTabsProps) {
   return (
     <Tabs defaultValue={defaultTab || tabs[0]?.id} className={cn("w-full", className)}>
       <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0 border-b">

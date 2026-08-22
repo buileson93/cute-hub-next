@@ -15,7 +15,10 @@ const SubscriberInput = z.object({
 
 export const upsertSubscriber = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: z.infer<typeof SubscriberInput> & { id?: string }) => ({ ...SubscriberInput.parse(d), id: d.id }))
+  .inputValidator((d: z.infer<typeof SubscriberInput> & { id?: string }) => ({
+    ...SubscriberInput.parse(d),
+    id: d.id,
+  }))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const payload = {
@@ -31,11 +34,20 @@ export const upsertSubscriber = createServerFn({ method: "POST" })
       created_by: userId,
     };
     if (data.id) {
-      const { data: row, error } = await supabase.from("telegram_subscriber").update(payload).eq("id", data.id).select().single();
+      const { data: row, error } = await supabase
+        .from("telegram_subscriber")
+        .update(payload)
+        .eq("id", data.id)
+        .select()
+        .single();
       if (error) throw new Error(error.message);
       return row;
     }
-    const { data: row, error } = await supabase.from("telegram_subscriber").upsert(payload, { onConflict: "chat_id" }).select().single();
+    const { data: row, error } = await supabase
+      .from("telegram_subscriber")
+      .upsert(payload, { onConflict: "chat_id" })
+      .select()
+      .single();
     if (error) throw new Error(error.message);
     return row;
   });
@@ -68,7 +80,10 @@ export const sendTelegramTest = createServerFn({ method: "POST" })
 export const runTelegramAlertsNow = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data: isAdmin } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
     if (!isAdmin) throw new Error("Chỉ admin được kích hoạt gửi thủ công.");
     const { runTelegramAlerts } = await import("@/lib/telegram-alerts.server");
     return runTelegramAlerts({ manual: true });

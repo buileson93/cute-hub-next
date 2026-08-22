@@ -15,13 +15,13 @@ Giữ 3 bề mặt chính phản hồi tốt khi dữ liệu tăng lên hàng ch
 
 Ngưỡng chấp nhận (trên máy dev, dữ liệu mẫu lớn, xem §3):
 
-| Bề mặt | Ngưỡng |
-| --- | --- |
-| First meaningful paint bảng 20k dòng | ≤ 800ms sau khi data sẵn sàng |
-| Scroll bảng 20k dòng | ≥ 55fps, không jank khi kéo dài |
-| Mở nhánh cây bất kỳ | ≤ 200ms server round-trip + ≤ 100ms render |
-| Tìm kiếm cột (client-side, sau chỉ mục) | ≤ 50ms cho 20k dòng |
-| Bộ nhớ tab | ≤ 350MB ổn định (không leak khi navigate qua lại) |
+| Bề mặt                                  | Ngưỡng                                            |
+| --------------------------------------- | ------------------------------------------------- |
+| First meaningful paint bảng 20k dòng    | ≤ 800ms sau khi data sẵn sàng                     |
+| Scroll bảng 20k dòng                    | ≥ 55fps, không jank khi kéo dài                   |
+| Mở nhánh cây bất kỳ                     | ≤ 200ms server round-trip + ≤ 100ms render        |
+| Tìm kiếm cột (client-side, sau chỉ mục) | ≤ 50ms cho 20k dòng                               |
+| Bộ nhớ tab                              | ≤ 350MB ổn định (không leak khi navigate qua lại) |
 
 ---
 

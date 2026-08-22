@@ -14,24 +14,57 @@ const htOptions: ComboOption[] = [
 ];
 
 const loaiList: LoaiLienKet[] = [
-  { id: "l-1", ma: "LUONG_TIN_HIEU", ten: "Luồng tín hiệu", mo_ta: null, mau_sac: "#2563eb", kieu_net: "solid", thu_tu: 1 },
+  {
+    id: "l-1",
+    ma: "LUONG_TIN_HIEU",
+    ten: "Luồng tín hiệu",
+    mo_ta: null,
+    mau_sac: "#2563eb",
+    kieu_net: "solid",
+    thu_tu: 1,
+  },
 ];
 
 function makeRow(over: Partial<DoThiRow>): DoThiRow {
   return {
-    id: "e-1", nguon_id: "ht-1", nguon_ten: "VHF", nguon_nhom: null, nguon_don_vi: null,
-    dich_id: "ht-2", dich_ten: "VCCS", dich_nhom: null, dich_don_vi: null,
-    loai_lien_ket_id: "l-1", loai_ma: "LUONG_TIN_HIEU", loai_ten: "Luồng tín hiệu",
-    mau_sac: "#2563eb", kieu_net: "solid", lop: "logic", huong: "mot_chieu",
-    vai_tro_du_phong: null, giao_dien_nguon: null, giao_dien_dich: null, giao_thuc: null,
-    trang_thai: "hoat_dong", don_vi_id_snapshot: null,
+    id: "e-1",
+    nguon_id: "ht-1",
+    nguon_ten: "VHF",
+    nguon_nhom: null,
+    nguon_don_vi: null,
+    dich_id: "ht-2",
+    dich_ten: "VCCS",
+    dich_nhom: null,
+    dich_don_vi: null,
+    loai_lien_ket_id: "l-1",
+    loai_ma: "LUONG_TIN_HIEU",
+    loai_ten: "Luồng tín hiệu",
+    mau_sac: "#2563eb",
+    kieu_net: "solid",
+    lop: "logic",
+    huong: "mot_chieu",
+    vai_tro_du_phong: null,
+    giao_dien_nguon: null,
+    giao_dien_dich: null,
+    giao_thuc: null,
+    trang_thai: "hoat_dong",
+    don_vi_id_snapshot: null,
     ...over,
   };
 }
 
 const base: LienKetFormValues = {
-  nguonId: "", dichId: "", loaiId: "", lop: "logic", huong: "mot_chieu",
-  gdNguon: "", gdDich: "", giaoThuc: "", vaiTro: "", moTa: "", ghiChu: "",
+  nguonId: "",
+  dichId: "",
+  loaiId: "",
+  lop: "logic",
+  huong: "mot_chieu",
+  gdNguon: "",
+  gdDich: "",
+  giaoThuc: "",
+  vaiTro: "",
+  moTa: "",
+  ghiChu: "",
 };
 
 describe("kiemTraLienKet — validate thuần", () => {
@@ -58,7 +91,14 @@ describe("kiemTraLienKet — validate thuần", () => {
 
 describe("LienKetForm — render + validate nguồn≠đích", () => {
   it("nút lưu bị vô hiệu khi chưa đủ trường bắt buộc", () => {
-    render(<LienKetForm heThongOptions={htOptions} loaiList={loaiList} existingEdges={[]} onSubmit={vi.fn()} />);
+    render(
+      <LienKetForm
+        heThongOptions={htOptions}
+        loaiList={loaiList}
+        existingEdges={[]}
+        onSubmit={vi.fn()}
+      />,
+    );
     const submit = screen.getByRole("button", { name: /lưu liên kết/i });
     expect((submit as HTMLButtonElement).disabled).toBe(true);
   });

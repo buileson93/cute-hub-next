@@ -44,7 +44,10 @@ export function mtbfNgay(list: SuCo[]) {
   const sorted = [...list].sort((a, b) => a.ngay_phat_hien.localeCompare(b.ngay_phat_hien));
   let total = 0;
   for (let i = 1; i < sorted.length; i++) {
-    total += (new Date(sorted[i].ngay_phat_hien).getTime() - new Date(sorted[i - 1].ngay_phat_hien).getTime()) / 86400000;
+    total +=
+      (new Date(sorted[i].ngay_phat_hien).getTime() -
+        new Date(sorted[i - 1].ngay_phat_hien).getTime()) /
+      86400000;
   }
   return Math.round(total / (sorted.length - 1));
 }
@@ -78,7 +81,10 @@ function _namSanXuat(t: ThietBi) {
 /** @deprecated Dùng `phanTramTuoiTho` từ `@/lib/mirats/lifecycle`. */
 export function phanTramVongDoi(t: ThietBi, today = new Date()) {
   const life = (t.tuoi_tho_thiet_ke_nam as number | null) ?? null;
-  const pt = _phanTram({ namSanXuat: _namSanXuat(t), namKhaiThac: _namKhaiThac(t), tuoiThoThietKe: life }, today);
+  const pt = _phanTram(
+    { namSanXuat: _namSanXuat(t), namKhaiThac: _namKhaiThac(t), tuoiThoThietKe: life },
+    today,
+  );
   if (pt != null) return pt;
   const fallback = t.tuoi_tho_thiet_ke_nam || 10;
   const age = tuoiThietBi(t, today);
@@ -116,7 +122,11 @@ export interface HealthContext {
   chiPhiLuyKe?: number; // triệu VND
 }
 
-export function healthDetail(t: ThietBi, today = new Date(), ctx: HealthContext = {}): HealthDetail {
+export function healthDetail(
+  t: ThietBi,
+  today = new Date(),
+  ctx: HealthContext = {},
+): HealthDetail {
   const ptVongDoi = phanTramVongDoi(t, today);
   const suCo12t = ctx.suCo12t ?? 0;
   const downtimeMin = ctx.downtime12t ?? 0;
@@ -130,24 +140,54 @@ export function healthDetail(t: ThietBi, today = new Date(), ctx: HealthContext 
   const diemDowntime = Math.max(0, 100 - downtimeH * 2); // 50h → 0
   const diemChiPhi = Math.max(0, 100 - tyLeChiPhi * 2); // 50% → 0
   const diemBaoHanh = conBaoHanh(t, today) ? 100 : 0;
-  const diemTinhTrang = { "Tốt": 100, "Khá": 75, "Trung bình": 50, "Kém": 25 }[t.tinh_trang_ky_thuat] ?? 60;
+  const diemTinhTrang =
+    { Tốt: 100, Khá: 75, "Trung bình": 50, Kém: 25 }[t.tinh_trang_ky_thuat] ?? 60;
 
   let score = Math.round(
-    0.30 * diemTuoi + 0.25 * diemSuCo + 0.15 * diemDowntime +
-    0.15 * diemChiPhi + 0.05 * diemBaoHanh + 0.10 * diemTinhTrang
+    0.3 * diemTuoi +
+      0.25 * diemSuCo +
+      0.15 * diemDowntime +
+      0.15 * diemChiPhi +
+      0.05 * diemBaoHanh +
+      0.1 * diemTinhTrang,
   );
-  if (t.trang_thai === "Chờ thanh lý" || t.trang_thai === "Đã thanh lý") score = Math.min(score, 20);
+  if (t.trang_thai === "Chờ thanh lý" || t.trang_thai === "Đã thanh lý")
+    score = Math.min(score, 20);
   if (t.trang_thai === "Đang sửa chữa") score = Math.max(0, score - 10);
   score = Math.max(0, Math.min(100, score));
 
   let xepLoai: HealthDetail["xepLoai"];
   let khuyenNghi: string;
-  if (score >= 80) { xepLoai = "A"; khuyenNghi = "Tiếp tục sử dụng"; }
-  else if (score >= 60) { xepLoai = "B"; khuyenNghi = "Theo dõi, BT bình thường"; }
-  else if (score >= 40) { xepLoai = "C"; khuyenNghi = "Tăng cường BT, lên kế hoạch thay"; }
-  else { xepLoai = "D"; khuyenNghi = "Ưu tiên thay thế/nâng cấp"; }
+  if (score >= 80) {
+    xepLoai = "A";
+    khuyenNghi = "Tiếp tục sử dụng";
+  } else if (score >= 60) {
+    xepLoai = "B";
+    khuyenNghi = "Theo dõi, BT bình thường";
+  } else if (score >= 40) {
+    xepLoai = "C";
+    khuyenNghi = "Tăng cường BT, lên kế hoạch thay";
+  } else {
+    xepLoai = "D";
+    khuyenNghi = "Ưu tiên thay thế/nâng cấp";
+  }
 
-  return { score, xepLoai, khuyenNghi, diemTuoi, diemSuCo, diemDowntime, diemChiPhi, diemBaoHanh, diemTinhTrang, ptVongDoi, suCo12t, downtime12t: downtimeMin, chiPhiLuyKe, tyLeChiPhi };
+  return {
+    score,
+    xepLoai,
+    khuyenNghi,
+    diemTuoi,
+    diemSuCo,
+    diemDowntime,
+    diemChiPhi,
+    diemBaoHanh,
+    diemTinhTrang,
+    ptVongDoi,
+    suCo12t,
+    downtime12t: downtimeMin,
+    chiPhiLuyKe,
+    tyLeChiPhi,
+  };
 }
 
 export function healthScore(t: ThietBi, today = new Date(), ctx: HealthContext = {}) {

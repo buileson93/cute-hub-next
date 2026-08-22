@@ -71,7 +71,6 @@ describe("route smoke", () => {
     expect(missing).toEqual([]);
   });
 
-
   it("mọi khoá breadcrumb tĩnh trỏ tới route có thật", () => {
     const missing = Object.keys(routeTitles).filter((k) => !urls.has(k));
     expect(missing).toEqual([]);

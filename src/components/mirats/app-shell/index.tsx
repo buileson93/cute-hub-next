@@ -2,10 +2,22 @@ import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import {
-  ChevronDown, LogIn, LogOut, RotateCcw, UserCog, User as UserIcon, Bell, LifeBuoy, LogOut as LogOutIcon, LayoutPanelLeft, LayoutPanelTop
+  ChevronDown,
+  LogIn,
+  LogOut,
+  RotateCcw,
+  UserCog,
+  User as UserIcon,
+  Bell,
+  LifeBuoy,
+  LogOut as LogOutIcon,
+  LayoutPanelLeft,
+  LayoutPanelTop,
 } from "lucide-react";
 import {
-  ProductTourProvider, useProductTour, type TourStep,
+  ProductTourProvider,
+  useProductTour,
+  type TourStep,
 } from "@/components/mirats/ProductTour";
 import { useBranding } from "@/lib/mirats/branding";
 import vatmMark from "@/assets/vatm-mark-square.svg.asset.json";
@@ -16,8 +28,12 @@ import { useSession } from "@/hooks/use-session";
 import { useQueryClient } from "@tanstack/react-query";
 import { resetUserPrefs, useUserPref } from "@/hooks/use-user-pref";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
-  DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -60,7 +76,13 @@ export function SidebarLogoRail() {
         aria-hidden="true"
         className="pointer-events-none absolute left-full top-1/2 z-[70] ml-6 flex -translate-y-1/2 items-center rounded-3xl border border-border/60 bg-popover/95 px-10 py-8 opacity-0 scale-95 shadow-2xl ring-1 ring-black/5 backdrop-blur-md transition-mirats-base group-hover:opacity-100 group-hover:scale-100 group-hover:delay-[1000ms]"
       >
-        <img src={vatmLogoFullSrc} alt="" aria-hidden="true" draggable={false} className="h-40 w-auto object-contain md:h-56 lg:h-72" />
+        <img
+          src={vatmLogoFullSrc}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+          className="h-40 w-auto object-contain md:h-56 lg:h-72"
+        />
       </span>
     </a>
   );
@@ -76,7 +98,9 @@ export function UserMenu() {
     try {
       await qc.cancelQueries();
       qc.clear();
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     try {
       await supabase.auth.signOut();
     } catch (e) {
@@ -101,13 +125,18 @@ export function UserMenu() {
             data-tour="user"
             className="flex items-center gap-2 rounded-full py-1 pl-1 pr-2 text-sm transition-colors hover:bg-[#0074e2]/10"
           >
-            <UserAvatar name={profile.ho_ten} email={profile.email} url={profile.avatar_url} className="h-8 w-8" />
+            <UserAvatar
+              name={profile.ho_ten}
+              email={profile.email}
+              url={profile.avatar_url}
+              className="h-8 w-8"
+            />
             <div className="hidden text-left leading-tight sm:block">
               <div className="max-w-[120px] truncate text-[13px] font-semibold text-foreground">
-                {typeof profile.ho_ten === 'string' ? profile.ho_ten : profile.email.split("@")[0]}
+                {typeof profile.ho_ten === "string" ? profile.ho_ten : profile.email.split("@")[0]}
               </div>
               <div className="text-[10.5px] text-muted-foreground">
-                {typeof roles[0] === 'string' ? roles[0] : "—"}
+                {typeof roles[0] === "string" ? roles[0] : "—"}
               </div>
             </div>
             <ChevronDown className="hidden h-3.5 w-3.5 text-muted-foreground sm:block" />
@@ -117,13 +146,16 @@ export function UserMenu() {
           <DropdownMenuLabel>
             <div className="text-xs font-medium">{profile.email}</div>
             <div className="text-[10.5px] font-normal text-muted-foreground">
-              {typeof profile.ho_ten === 'string' ? profile.ho_ten : "—"}
+              {typeof profile.ho_ten === "string" ? profile.ho_ten : "—"}
             </div>
             <div className="mt-2 flex items-center gap-2">
-              <Badge variant="outline" className="rounded-full font-mono text-[10px] tracking-wider">
+              <Badge
+                variant="outline"
+                className="rounded-full font-mono text-[10px] tracking-wider"
+              >
                 {hasRole("admin") || hasRole("phong_kt")
                   ? "TOÀN HỆ THỐNG"
-                  : `ĐV: ${typeof profile.don_vi === 'string' ? profile.don_vi : (profile.don_vi as any)?.ten ?? String(profile.don_vi ?? "—")}`}
+                  : `ĐV: ${typeof profile.don_vi === "string" ? profile.don_vi : ((profile.don_vi as any)?.ten ?? String(profile.don_vi ?? "—"))}`}
               </Badge>
             </div>
           </DropdownMenuLabel>
@@ -175,10 +207,7 @@ export function UserMenu() {
             <RotateCcw className="mr-2 h-3.5 w-3.5" />
             Khôi phục giao diện mặc định
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={handleSignOut}
-            className="text-rose-600 focus:text-rose-700"
-          >
+          <DropdownMenuItem onSelect={handleSignOut} className="text-rose-600 focus:text-rose-700">
             <LogOutIcon className="mr-2 h-3.5 w-3.5" />
             Đăng xuất
           </DropdownMenuItem>
@@ -188,7 +217,11 @@ export function UserMenu() {
   }
 
   return (
-    <Button asChild size="sm" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 border-none shadow-sm shadow-primary/20">
+    <Button
+      asChild
+      size="sm"
+      className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 border-none shadow-sm shadow-primary/20"
+    >
       <Link to="/auth">
         <LogIn className="mr-2 h-3.5 w-3.5" />
         Đăng nhập

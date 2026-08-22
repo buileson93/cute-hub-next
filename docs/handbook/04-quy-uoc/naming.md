@@ -8,18 +8,18 @@
 
 ## Database
 
-| Loại | Quy ước | Ví dụ |
-|---|---|---|
-| Bảng | `snake_case`, số nhiều tự nhiên | `thiet_bi`, `dm_he_thong`, `su_co` |
-| Danh mục | Prefix `dm_` | `dm_don_vi`, `dm_model` |
-| Bảng nối | Ghép 2 tên | `he_thong_thanh_phan`, `gan_chuc_nang` |
-| Bảng log/lịch sử | Suffix `_lich_su` / `_log` | `su_co_lich_su`, `audit_log` |
-| Cột | `snake_case` | `don_vi_id`, `ngay_tao` |
-| Foreign key | `<bang>_id` | `thiet_bi_id`, `he_thong_id` |
-| Function | `snake_case`, verb đầu | `khai_them_*`, `agent_add_*`, `can_*`, `has_role` |
-| Function internal | Prefix `_` | `_sync_3lop`, `_validate_*` |
-| Trigger function | Suffix `_trigger` hoặc verb rõ | `audit_row_change` |
-| Enum | `snake_case` | `app_role` |
+| Loại              | Quy ước                         | Ví dụ                                             |
+| ----------------- | ------------------------------- | ------------------------------------------------- |
+| Bảng              | `snake_case`, số nhiều tự nhiên | `thiet_bi`, `dm_he_thong`, `su_co`                |
+| Danh mục          | Prefix `dm_`                    | `dm_don_vi`, `dm_model`                           |
+| Bảng nối          | Ghép 2 tên                      | `he_thong_thanh_phan`, `gan_chuc_nang`            |
+| Bảng log/lịch sử  | Suffix `_lich_su` / `_log`      | `su_co_lich_su`, `audit_log`                      |
+| Cột               | `snake_case`                    | `don_vi_id`, `ngay_tao`                           |
+| Foreign key       | `<bang>_id`                     | `thiet_bi_id`, `he_thong_id`                      |
+| Function          | `snake_case`, verb đầu          | `khai_them_*`, `agent_add_*`, `can_*`, `has_role` |
+| Function internal | Prefix `_`                      | `_sync_3lop`, `_validate_*`                       |
+| Trigger function  | Suffix `_trigger` hoặc verb rõ  | `audit_row_change`                                |
+| Enum              | `snake_case`                    | `app_role`                                        |
 
 ## Mã tài sản / thành phần
 
@@ -29,18 +29,18 @@
 
 ## TypeScript
 
-| Loại | Quy ước | Ví dụ |
-|---|---|---|
-| File component | `PascalCase.tsx` | `ThanhPhanTable.tsx` |
-| File logic | `kebab-case.ts` | `su-co-state.ts` |
-| Server fn file | `<domain>.functions.ts` | `rbac.functions.ts` |
-| Server-only file | `<domain>.server.ts` | `backup.server.ts` |
-| Hook | `use-*.ts` (kebab) | `use-session.ts` |
-| Route | flat dot, `_app.<path>.tsx` | `_app.he-thong.cay.tsx` |
-| Component export | `PascalCase` | `KhaiThemDialogs` |
-| Function/const | `camelCase` | `getMyPermissions` |
-| Type | `PascalCase` | `AppRole`, `MyPerms` |
-| Enum-like const | `SCREAMING_SNAKE` | `NAV_CONTRACT` |
+| Loại             | Quy ước                     | Ví dụ                   |
+| ---------------- | --------------------------- | ----------------------- |
+| File component   | `PascalCase.tsx`            | `ThanhPhanTable.tsx`    |
+| File logic       | `kebab-case.ts`             | `su-co-state.ts`        |
+| Server fn file   | `<domain>.functions.ts`     | `rbac.functions.ts`     |
+| Server-only file | `<domain>.server.ts`        | `backup.server.ts`      |
+| Hook             | `use-*.ts` (kebab)          | `use-session.ts`        |
+| Route            | flat dot, `_app.<path>.tsx` | `_app.he-thong.cay.tsx` |
+| Component export | `PascalCase`                | `KhaiThemDialogs`       |
+| Function/const   | `camelCase`                 | `getMyPermissions`      |
+| Type             | `PascalCase`                | `AppRole`, `MyPerms`    |
+| Enum-like const  | `SCREAMING_SNAKE`           | `NAV_CONTRACT`          |
 
 ## Query key
 

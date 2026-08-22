@@ -122,12 +122,15 @@ function KiemDinhPage() {
 
   const columns: StdColumn<KdHcRow>[] = [
     {
-      key: "ma_thiet_bi", label: "Mã tài sản", sortable: true,
+      key: "ma_thiet_bi",
+      label: "Mã tài sản",
+      sortable: true,
       value: (r) => r.ma_thiet_bi,
       cell: (r) => (
         <Link
           to="/thiet-bi/$maThietBi"
-          params={{ maThietBi: r.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}
+          params={{ maThietBi: r.ma_thiet_bi }}
+          search={{ tab: "tong-quan", doc: undefined, q: undefined }}
           className="font-mono text-primary hover:underline"
         >
           {r.ma_thiet_bi}
@@ -135,7 +138,9 @@ function KiemDinhPage() {
       ),
     },
     {
-      key: "ten_thiet_bi", label: "Tên / Model", sortable: true,
+      key: "ten_thiet_bi",
+      label: "Tên / Model",
+      sortable: true,
       value: (r) => r.ten_thiet_bi,
       cell: (r) => (
         <div className="min-w-0">
@@ -145,8 +150,11 @@ function KiemDinhPage() {
       ),
     },
     {
-      key: "don_vi", label: "Đơn vị / Hệ thống", hideBelow: "md",
-      value: (r) => `${donViMap.get(r.don_vi_id ?? "") ?? ""} ${heThongMap.get(r.he_thong_id ?? "") ?? ""}`,
+      key: "don_vi",
+      label: "Đơn vị / Hệ thống",
+      hideBelow: "md",
+      value: (r) =>
+        `${donViMap.get(r.don_vi_id ?? "") ?? ""} ${heThongMap.get(r.he_thong_id ?? "") ?? ""}`,
       cell: (r) => (
         <div className="text-xs text-muted-foreground">
           <div>{donViMap.get(r.don_vi_id ?? "") ?? "—"}</div>
@@ -155,7 +163,10 @@ function KiemDinhPage() {
       ),
     },
     {
-      key: "loai", label: "Loại", sortable: true, hideBelow: "sm",
+      key: "loai",
+      label: "Loại",
+      sortable: true,
+      hideBelow: "sm",
       value: (r) => r.che_do,
       cell: (r) => (
         <Badge
@@ -171,7 +182,8 @@ function KiemDinhPage() {
       ),
     },
     {
-      key: "so_giay", label: "Số giấy chứng nhận",
+      key: "so_giay",
+      label: "Số giấy chứng nhận",
       value: (r) => r.cc?.so_giay_chung_nhan ?? "",
       cell: (r) =>
         r.cc ? (
@@ -181,21 +193,32 @@ function KiemDinhPage() {
         ),
     },
     {
-      key: "ngay_bat_dau", label: "Bắt đầu", hideBelow: "xl",
+      key: "ngay_bat_dau",
+      label: "Bắt đầu",
+      hideBelow: "xl",
       value: (r) => r.cc?.ngay_bat_dau ?? "",
       cell: (r) => (r.cc?.ngay_bat_dau ? fmtNgay(r.cc.ngay_bat_dau) : "—"),
     },
     {
-      key: "ngay_het_han", label: "Hết hạn", sortable: true, hideBelow: "xl",
+      key: "ngay_het_han",
+      label: "Hết hạn",
+      sortable: true,
+      hideBelow: "xl",
       value: (r) => r.cc?.ngay_het_han ?? "",
       cell: (r) => (r.cc?.ngay_het_han ? fmtNgay(r.cc.ngay_het_han) : "—"),
     },
     {
-      key: "canh_bao", label: "Cảnh báo", hideBelow: "2xl",
-      value: (r) => (r.soNgay ?? ""),
+      key: "canh_bao",
+      label: "Cảnh báo",
+      hideBelow: "2xl",
+      value: (r) => r.soNgay ?? "",
       cell: (r) =>
         r.cc?.ngay_het_han ? (
-          <StatusBadge domain="expiry" code={getExpiryCode(r.soNgay)} label={getExpiryLabel(r.soNgay)} />
+          <StatusBadge
+            domain="expiry"
+            code={getExpiryCode(r.soNgay)}
+            label={getExpiryLabel(r.soNgay)}
+          />
         ) : (
           <Badge variant="outline" className="bg-slate-100 text-slate-600 border-slate-200">
             —
@@ -203,17 +226,22 @@ function KiemDinhPage() {
         ),
     },
     {
-      key: "actions", label: "", align: "right",
+      key: "actions",
+      label: "",
+      align: "right",
       cell: (r) => (
         <Button asChild size="sm" variant="ghost">
-          <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.ma_thiet_bi }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}>
+          <Link
+            to="/thiet-bi/$maThietBi"
+            params={{ maThietBi: r.ma_thiet_bi }}
+            search={{ tab: "tong-quan", doc: undefined, q: undefined }}
+          >
             <Eye className="mr-1 h-3.5 w-3.5" /> Xem
           </Link>
         </Button>
       ),
     },
   ];
-
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-4 md:p-6">
@@ -222,7 +250,6 @@ function KiemDinhPage() {
         title="Kiểm định & Hiệu chuẩn"
         help="Theo dõi tài sản thuộc diện kiểm định/hiệu chuẩn, chứng chỉ đã cấp và cảnh báo trước ngày hết hạn."
       />
-
 
       <div className="grid grid-cols-1 @md:grid-cols-2 @xl:grid-cols-3 gap-3">
         <Card>
@@ -268,7 +295,6 @@ function KiemDinhPage() {
         trangThai={{ dangTai: isLoading, loi: error ? String(error) : null }}
         pagination={{ controls, tong }}
       />
-
     </div>
   );
 }

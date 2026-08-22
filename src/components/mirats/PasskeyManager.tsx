@@ -1,9 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { ScanFace, Loader2, Trash2, Plus, ShieldCheck, Smartphone } from "lucide-react";
-import {
-  startRegistration,
-  browserSupportsWebAuthn,
-} from "@simplewebauthn/browser";
+import { startRegistration, browserSupportsWebAuthn } from "@simplewebauthn/browser";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -68,14 +65,13 @@ export function PasskeyManager() {
         }
         return;
       }
-      const deviceName =
-        /iPhone|iPad/i.test(navigator.userAgent)
-          ? "iPhone/iPad (FaceID / TouchID)"
-          : /Android/i.test(navigator.userAgent)
-            ? "Android (Vân tay / Khuôn mặt)"
-            : /Mac/i.test(navigator.userAgent)
-              ? "Mac (TouchID)"
-              : "Trình duyệt này";
+      const deviceName = /iPhone|iPad/i.test(navigator.userAgent)
+        ? "iPhone/iPad (FaceID / TouchID)"
+        : /Android/i.test(navigator.userAgent)
+          ? "Android (Vân tay / Khuôn mặt)"
+          : /Mac/i.test(navigator.userAgent)
+            ? "Mac (TouchID)"
+            : "Trình duyệt này";
       const result = await verifyRegistration({ data: { response: attResp, deviceName } });
       if (result.success) {
         toast.success("Đã đăng ký đăng nhập sinh trắc học!");
@@ -136,9 +132,7 @@ export function PasskeyManager() {
                 <div className="flex items-center gap-3 min-w-0">
                   <Smartphone className="h-5 w-5 shrink-0 text-muted-foreground" />
                   <div className="min-w-0">
-                    <div className="truncate text-sm font-medium">
-                      {k.device_name ?? "Tài sản"}
-                    </div>
+                    <div className="truncate text-sm font-medium">{k.device_name ?? "Tài sản"}</div>
                     <div className="text-xs text-muted-foreground">
                       Đăng ký {new Date(k.created_at).toLocaleDateString("vi-VN")}
                       {k.last_used_at &&

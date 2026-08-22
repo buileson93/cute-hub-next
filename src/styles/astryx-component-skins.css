@@ -1,14 +1,26 @@
-
 /* MIRATS — Astryx Static Component Skins (Phase 6A) */
 
 @layer components {
   /* Status Semantic Tokens - Standardized to Astryx Success/Warning/Danger/Info */
-  .astryx-status-normal { border-color: var(--color-border); }
-  .astryx-status-attention { border-color: color-mix(in oklab, var(--success) 20%, transparent); background-color: color-mix(in oklab, var(--success) 5%, transparent); }
-  .astryx-status-warning { border-color: color-mix(in oklab, var(--warning) 20%, transparent); background-color: color-mix(in oklab, var(--warning) 5%, transparent); }
-  .astryx-status-danger { border-color: color-mix(in oklab, var(--destructive) 20%, transparent); background-color: color-mix(in oklab, var(--destructive) 5%, transparent); }
-  .astryx-status-info { border-color: color-mix(in oklab, var(--info) 20%, transparent); background-color: color-mix(in oklab, var(--info) 5%, transparent); }
-
+  .astryx-status-normal {
+    border-color: var(--color-border);
+  }
+  .astryx-status-attention {
+    border-color: color-mix(in oklab, var(--success) 20%, transparent);
+    background-color: color-mix(in oklab, var(--success) 5%, transparent);
+  }
+  .astryx-status-warning {
+    border-color: color-mix(in oklab, var(--warning) 20%, transparent);
+    background-color: color-mix(in oklab, var(--warning) 5%, transparent);
+  }
+  .astryx-status-danger {
+    border-color: color-mix(in oklab, var(--destructive) 20%, transparent);
+    background-color: color-mix(in oklab, var(--destructive) 5%, transparent);
+  }
+  .astryx-status-info {
+    border-color: color-mix(in oklab, var(--info) 20%, transparent);
+    background-color: color-mix(in oklab, var(--info) 5%, transparent);
+  }
 
   /* Surface & Card */
 
@@ -16,24 +28,28 @@
     background-color: var(--color-card);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-container);
-    transition: box-shadow var(--duration-medium) var(--ease-standard), 
-                border-color var(--duration-medium) var(--ease-standard);
+    transition:
+      box-shadow var(--duration-medium) var(--ease-standard),
+      border-color var(--duration-medium) var(--ease-standard);
   }
 
   .astryx-card {
     background-color: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius-container);
-    box-shadow: 0 1px 3px 0 oklch(0 0 0 / 0.05), 0 1px 2px -1px oklch(0 0 0 / 0.05);
+    box-shadow:
+      0 1px 3px 0 oklch(0 0 0 / 0.05),
+      0 1px 2px -1px oklch(0 0 0 / 0.05);
     transition: all var(--duration-medium) var(--ease-standard);
   }
-  
+
   .astryx-card:hover {
     border-color: color-mix(in oklab, var(--border) 70%, var(--primary));
-    box-shadow: 0 4px 6px -1px oklch(0 0 0 / 0.05), 0 2px 4px -2px oklch(0 0 0 / 0.05);
+    box-shadow:
+      0 4px 6px -1px oklch(0 0 0 / 0.05),
+      0 2px 4px -2px oklch(0 0 0 / 0.05);
     transform: translateY(-1px);
   }
-
 
   /* Typography & Headings */
   .astryx-heading-1 {
@@ -126,12 +142,12 @@
     outline: 2px solid var(--color-ring);
     outline-offset: 1px;
   }
-  
+
   /* Overlap fix for buttons with borders */
   .astryx-control.border {
     box-sizing: border-box;
   }
-  
+
   /* Numeric Readouts (Plex Mono) */
   .astryx-number {
     font-family: var(--font-family-code);
@@ -139,7 +155,6 @@
     letter-spacing: -0.02em;
     font-weight: 500;
   }
-
 
   /* Form Primitives */
   .astryx-input {
@@ -150,8 +165,9 @@
     font-size: 0.875rem;
     line-height: 1.5;
     padding: 0.5rem 0.75rem;
-    transition: border-color var(--duration-fast) var(--ease-standard), 
-                box-shadow var(--duration-fast) var(--ease-standard);
+    transition:
+      border-color var(--duration-fast) var(--ease-standard),
+      box-shadow var(--duration-fast) var(--ease-standard);
   }
 
   .astryx-input:focus {
@@ -211,9 +227,9 @@
     left: 2px;
     transform: translateY(-50%);
     transition: all var(--duration-fast) var(--ease-standard);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
-  
+
   .astryx-switch[data-state="checked"] .astryx-switch-thumb {
     left: calc(100% - 18px);
     transform: translateY(-50%);
@@ -224,7 +240,9 @@
     background-color: var(--color-popover);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-container);
-    box-shadow: 0 10px 15px -3px oklch(0 0 0 / 0.1), 0 4px 6px -4px oklch(0 0 0 / 0.1);
+    box-shadow:
+      0 10px 15px -3px oklch(0 0 0 / 0.1),
+      0 4px 6px -4px oklch(0 0 0 / 0.1);
     backdrop-filter: blur(8px);
   }
 
@@ -232,7 +250,9 @@
     background-color: var(--color-background);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-container);
-    box-shadow: 0 20px 25px -5px oklch(0 0 0 / 0.1), 0 8px 10px -6px oklch(0 0 0 / 0.1);
+    box-shadow:
+      0 20px 25px -5px oklch(0 0 0 / 0.1),
+      0 8px 10px -6px oklch(0 0 0 / 0.1);
   }
 
   .astryx-tooltip {
@@ -272,7 +292,6 @@
     border-bottom: 1px solid var(--border);
   }
 
-
   .astryx-table-header-cell {
     font-family: var(--font-family-body);
     font-size: 0.6875rem; /* 11px */
@@ -297,7 +316,6 @@
   .astryx-table-row[data-state="selected"] {
     background-color: color-mix(in oklab, var(--primary) 10%, transparent);
   }
-
 
   .astryx-table-cell {
     padding: 0.5rem 0.75rem;
@@ -360,7 +378,6 @@
     backdrop-filter: blur(8px);
   }
 
-
   .astryx-nav-item {
     font-family: var(--font-family-body);
     font-size: 0.8125rem; /* 13px */
@@ -378,5 +395,3 @@
     opacity: 0.6;
   }
 }
-
-

@@ -28,7 +28,11 @@ function extractJson(raw: string): Record<string, unknown> | null {
   const start = s.indexOf("{");
   const end = s.lastIndexOf("}");
   if (start === -1 || end === -1 || end <= start) return null;
-  try { return JSON.parse(s.slice(start, end + 1)) as Record<string, unknown>; } catch { return null; }
+  try {
+    return JSON.parse(s.slice(start, end + 1)) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
 }
 
 const SYSTEM = `Bạn là trợ lý phân tích ảnh hiện trường sự cố kỹ thuật hàng không cho MIRATS.
@@ -45,7 +49,10 @@ export const analyzeIncidentImages = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => inputSchema.parse(data))
   .handler(async ({ data, context }): Promise<IncidentImageHint> => {
     const { data: cfgRow, error: cfgErr } = await context.supabase
-      .from("ai_config").select("*").eq("id", 1).maybeSingle();
+      .from("ai_config")
+      .select("*")
+      .eq("id", 1)
+      .maybeSingle();
     if (cfgErr) throw new Error(cfgErr.message);
     const cfg = cfgRow as unknown as AiRuntimeConfig | null;
     if (!cfg || !cfg.enabled) throw new Error("Tính năng AI đang tắt");
@@ -54,7 +61,8 @@ export const analyzeIncidentImages = createServerFn({ method: "POST" })
     const urls: string[] = [];
     for (const p of data.paths) {
       const { data: sig, error } = await context.supabase.storage
-        .from("su-co-images").createSignedUrl(p, 300);
+        .from("su-co-images")
+        .createSignedUrl(p, 300);
       if (error || !sig?.signedUrl) throw new Error(error?.message ?? "Không tạo được URL ảnh");
       urls.push(sig.signedUrl);
     }
@@ -79,11 +87,17 @@ export const analyzeIncidentImages = createServerFn({ method: "POST" })
     if (!obj) return EMPTY;
     const cat = String(obj.suggested_category ?? "").toUpperCase();
     const kws = Array.isArray(obj.keywords)
-      ? (obj.keywords as unknown[]).map((v) => String(v ?? "").trim()).filter(Boolean).slice(0, 20)
+      ? (obj.keywords as unknown[])
+          .map((v) => String(v ?? "").trim())
+          .filter(Boolean)
+          .slice(0, 20)
       : [];
     return {
-      short_description: typeof obj.short_description === "string" ? obj.short_description.trim() : "",
-      suggested_category: (["A","B","C","D","E"].includes(cat) ? cat : "") as IncidentImageHint["suggested_category"],
+      short_description:
+        typeof obj.short_description === "string" ? obj.short_description.trim() : "",
+      suggested_category: (["A", "B", "C", "D", "E"].includes(cat)
+        ? cat
+        : "") as IncidentImageHint["suggested_category"],
       keywords: kws,
     };
   });

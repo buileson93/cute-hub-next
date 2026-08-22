@@ -5,6 +5,7 @@ Tài liệu chi tiết: `docs/ops/backup-restore.md`, `docs/HUONG_DAN_BACKUP_VA_
 ## Backup UI
 
 `/admin/backup` (route `admin.backup.tsx`):
+
 - Export JSON toàn bộ bảng public → download file.
 - Xem lịch sử ở `backup_lich_su`.
 

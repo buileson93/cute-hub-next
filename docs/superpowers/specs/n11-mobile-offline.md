@@ -6,6 +6,7 @@ Phụ thuộc: **N6** (máy trạng thái sự cố), **N4** (PM), **N7** (QR mo
 ## 1. Mục tiêu
 
 Kỹ thuật viên hiện trường dùng điện thoại để:
+
 - Quét QR → xem lý lịch thiết bị (N7).
 - Báo sự cố mới (N6) và chuyển bước xử lý (tiếp nhận / xử lý / hoàn thành / chờ vật tư).
 - Hoàn thành công việc PM (N4): chụp ảnh minh chứng, ghi ghi chú, đóng công việc.
@@ -15,15 +16,15 @@ Kỹ thuật viên hiện trường dùng điện thoại để:
 
 ## 2. Luồng hiện trường (in scope N11)
 
-| # | Luồng | Nguồn API | Idempotent? |
-|---|---|---|---|
-| F1 | Xem lý lịch qua QR | server fn `get_thiet_bi_ly_lich` | GET, không cần queue |
-| F2 | Tạo sự cố mới (N6 `bao_cao`) | `su_co_create` | Có (khoá `client_uuid`) |
-| F3 | Chuyển trạng thái sự cố | `su_co_transition` | Có (khoá `client_uuid` + `from_state`) |
-| F4 | Đính kèm ảnh sự cố/PM | `attach_upload` (Storage) + `attach_link` | Có (hash file + `client_uuid`) |
-| F5 | Hoàn thành PM | `pm_complete_task` (N4) | Có (`client_uuid`) |
-| F6 | Ghi chú bàn giao ca | `ban_giao_add_note` | Có (`client_uuid`) |
-| F7 | Chỉnh sửa danh mục | KHÔNG offline (chặn khi mất mạng) | — |
+| #   | Luồng                        | Nguồn API                                 | Idempotent?                            |
+| --- | ---------------------------- | ----------------------------------------- | -------------------------------------- |
+| F1  | Xem lý lịch qua QR           | server fn `get_thiet_bi_ly_lich`          | GET, không cần queue                   |
+| F2  | Tạo sự cố mới (N6 `bao_cao`) | `su_co_create`                            | Có (khoá `client_uuid`)                |
+| F3  | Chuyển trạng thái sự cố      | `su_co_transition`                        | Có (khoá `client_uuid` + `from_state`) |
+| F4  | Đính kèm ảnh sự cố/PM        | `attach_upload` (Storage) + `attach_link` | Có (hash file + `client_uuid`)         |
+| F5  | Hoàn thành PM                | `pm_complete_task` (N4)                   | Có (`client_uuid`)                     |
+| F6  | Ghi chú bàn giao ca          | `ban_giao_add_note`                       | Có (`client_uuid`)                     |
+| F7  | Chỉnh sửa danh mục           | KHÔNG offline (chặn khi mất mạng)         | —                                      |
 
 Các luồng ngoài danh sách trên **vô hiệu hoá** khi offline (nút mờ + tooltip "Cần kết nối").
 
@@ -48,16 +49,21 @@ Store `mirats_outbox` với schema:
 
 ```ts
 type OutboxItem = {
-  id: string;              // uuid v4 = client_uuid
-  op: 'su_co_create' | 'su_co_transition' | 'pm_complete_task' |
-      'ban_giao_add_note' | 'attach_upload' | 'attach_link';
+  id: string; // uuid v4 = client_uuid
+  op:
+    | "su_co_create"
+    | "su_co_transition"
+    | "pm_complete_task"
+    | "ban_giao_add_note"
+    | "attach_upload"
+    | "attach_link";
   payload: Record<string, unknown>;
-  created_at: string;      // ISO
-  attempts: number;        // 0..N
+  created_at: string; // ISO
+  attempts: number; // 0..N
   next_attempt_at: string; // ISO, backoff
-  status: 'pending' | 'in_flight' | 'done' | 'failed' | 'conflict';
+  status: "pending" | "in_flight" | "done" | "failed" | "conflict";
   last_error?: string;
-  depends_on?: string[];   // id của item khác phải flush trước (ảnh trước → link)
+  depends_on?: string[]; // id của item khác phải flush trước (ảnh trước → link)
 };
 ```
 

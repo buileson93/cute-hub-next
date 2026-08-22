@@ -5,12 +5,12 @@ Nhóm hệ thống và Tài sản, trước khi refactor. P0 — chỉ đọc, k
 
 ## 1. Nguồn sự thật (khẳng định)
 
-| Thực thể            | Bảng gốc (SSoT)        | Cột tên            |
-| ------------------- | ---------------------- | ------------------ |
-| Hệ thống            | `dm_he_thong`          | `ten`              |
-| Nhóm hệ thống       | `dm_nhom_he_thong`     | `ten`              |
-| Tài sản / thành phần| `thiet_bi`             | `ten_thiet_bi`     |
-| Thành phần (vị trí) | `he_thong_thanh_phan`  | `ten_thanh_phan`   |
+| Thực thể             | Bảng gốc (SSoT)       | Cột tên          |
+| -------------------- | --------------------- | ---------------- |
+| Hệ thống             | `dm_he_thong`         | `ten`            |
+| Nhóm hệ thống        | `dm_nhom_he_thong`    | `ten`            |
+| Tài sản / thành phần | `thiet_bi`            | `ten_thiet_bi`   |
+| Thành phần (vị trí)  | `he_thong_thanh_phan` | `ten_thanh_phan` |
 
 Bảng `cay_node_edit` KHÔNG phải nguồn sự thật cho tên. Vai trò hợp lệ còn lại
 của nó chỉ là **metadata sơ đồ** (màu nhóm, thứ tự thủ công, `manual_nh_key`,
@@ -19,6 +19,7 @@ ghi chú, các bản nháp "nh" chưa có bản ghi thật).
 ## 2. Ba đường ghi/đọc TÊN hiện tại
 
 ### Đường A — `saveNode` (cây/mindmap)
+
 `src/routes/_app.he-thong.cay.tsx` (mutation `saveNode`, ~L980-1046):
 
 1. Nếu node là **THẬT** (`ht` / `tb`) → `UPDATE` thẳng vào bảng gốc
@@ -34,6 +35,7 @@ ghi chú, các bản nháp "nh" chưa có bản ghi thật).
 `renameDisplay` chỉ là wrapper mỏng gọi `saveNode.mutate({ kind, ma, ten })`.
 
 ### Đường B — Dialog "Danh mục › Hệ thống"
+
 `src/routes/_app.danh-muc.he-thong.tsx` (L145–L165):
 
 - Đọc `dm_he_thong` trực tiếp.
@@ -41,6 +43,7 @@ ghi chú, các bản nháp "nh" chưa có bản ghi thật).
 - KHÔNG chạm `cay_node_edit`.
 
 ### Đường C — Name-override maps (chỉ đọc)
+
 `src/lib/mirats/db-taxonomy.ts`:
 
 - `useSystemNameOverrides` (L452) — đọc `cay_node_edit` kind=`ht`, ưu tiên
@@ -56,6 +59,7 @@ tên bảng gốc bằng override → nguồn gốc của "sự lệch tên".
 ## 3. Kiểm kê nơi `cay_node_edit.ten` được ĐỌC / GHI
 
 ### Ghi (`insert` / `upsert` / `update`)
+
 - `src/routes/_app.he-thong.cay.tsx`:
   - `saveNode` upsert (L1015) — mọi lần edit trên cây/mindmap.
   - `renameGroupCode` (L1151, L1158) — copy nhóm nháp sang mã mới.
@@ -66,6 +70,7 @@ tên bảng gốc bằng override → nguồn gốc của "sự lệch tên".
 - `src/lib/mirats/cay-reorg.ts` (L124) — invalidate queryKey.
 
 ### Đọc (`select`)
+
 - `useOverrides` (L345) — map toàn cục cho cây + mindmap.
 - `useSystemNameOverrides`, `useDeviceNameOverrides`
   (`db-taxonomy.ts` L458, L492).

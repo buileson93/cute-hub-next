@@ -13,7 +13,7 @@ export const artifactRepository = {
     const arrayBuffer = await file.arrayBuffer();
     const hashBuffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   },
 
   /**
@@ -24,14 +24,14 @@ export const artifactRepository = {
     sourceId: string,
     fileHash: string,
     ocrVersion: string,
-    language: string
+    language: string,
   ): Promise<OcrArtifact | null> {
     const { data, error } = await supabase.rpc("find_reusable_ocr_artifact", {
       p_source_type: sourceType,
       p_source_id: sourceId,
       p_file_hash: fileHash,
       p_ocr_version: ocrVersion,
-      p_language: language
+      p_language: language,
     });
 
     if (error) {
@@ -40,7 +40,7 @@ export const artifactRepository = {
     }
 
     if (!data || data.length === 0) return null;
-    
+
     // find_reusable_ocr_artifact returns SETOF ocr_artifact, RPC returns array
     return data[0] as OcrArtifact;
   },
@@ -51,12 +51,12 @@ export const artifactRepository = {
   async publishArtifact(
     sourceType: OcrSourceType,
     sourceId: string,
-    artifactData: Partial<OcrArtifact>
+    artifactData: Partial<OcrArtifact>,
   ): Promise<string | null> {
     const { data, error } = await supabase.rpc("publish_ocr_artifact", {
       p_source_type: sourceType,
       p_source_id: sourceId,
-      p_artifact_data: artifactData
+      p_artifact_data: artifactData,
     });
 
     if (error) {
@@ -72,11 +72,11 @@ export const artifactRepository = {
    */
   async reportMetric(metric: OcrRuntimeMetric): Promise<void> {
     const { error } = await supabase.rpc("report_ocr_runtime_metric", {
-      p_metric_data: metric
+      p_metric_data: metric,
     });
 
     if (error) {
       console.warn("Error reporting OCR runtime metric:", error);
     }
-  }
+  },
 };

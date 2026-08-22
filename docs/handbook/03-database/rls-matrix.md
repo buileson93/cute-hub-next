@@ -6,15 +6,15 @@ Xem file gốc chi tiết ở `docs/security/rls-matrix.md`. Handbook này tóm 
 
 Enum `app_role` trong `user_roles.role`:
 
-| Role | Mô tả |
-|---|---|
-| `admin` | Toàn quyền, bypass mọi RLS bằng `has_role(uid,'admin')` trong policy |
-| `phong_kt` | Phòng Kỹ thuật — sửa danh mục, tài sản, hệ thống |
-| `phu_trach_dv` | Phụ trách đơn vị — xem/sửa scope đơn vị mình |
-| `ktv` | Kỹ thuật viên — nhập sự cố / hỏng hóc / bảo trì / công việc |
-| `to_truong` | Tổ trưởng — duyệt công việc |
-| `quan_ly_du_an` | Quản lý dự án |
-| `readonly` | Chỉ đọc |
+| Role            | Mô tả                                                                |
+| --------------- | -------------------------------------------------------------------- |
+| `admin`         | Toàn quyền, bypass mọi RLS bằng `has_role(uid,'admin')` trong policy |
+| `phong_kt`      | Phòng Kỹ thuật — sửa danh mục, tài sản, hệ thống                     |
+| `phu_trach_dv`  | Phụ trách đơn vị — xem/sửa scope đơn vị mình                         |
+| `ktv`           | Kỹ thuật viên — nhập sự cố / hỏng hóc / bảo trì / công việc          |
+| `to_truong`     | Tổ trưởng — duyệt công việc                                          |
+| `quan_ly_du_an` | Quản lý dự án                                                        |
+| `readonly`      | Chỉ đọc                                                              |
 
 ## Nguồn quyền GHI
 
@@ -30,12 +30,12 @@ File `src/lib/mirats/quyen.ts` là ma trận GHI ở client. **Phải khớp** v
 
 ## Bảng đặc biệt
 
-| Bảng | Chú thích |
-|---|---|
-| `user_roles` | `SELECT` chỉ cho self + admin; INSERT/UPDATE chỉ admin |
-| `system_signing_key` | Không cấp cho `authenticated`; chỉ service_role |
-| `_dbg_tmp` | RLS off — không dùng cho dữ liệu thật |
-| `form_submission` | 5 policy: người tạo edit khi draft, người ký xem, admin toàn quyền, v.v. |
+| Bảng                 | Chú thích                                                                |
+| -------------------- | ------------------------------------------------------------------------ |
+| `user_roles`         | `SELECT` chỉ cho self + admin; INSERT/UPDATE chỉ admin                   |
+| `system_signing_key` | Không cấp cho `authenticated`; chỉ service_role                          |
+| `_dbg_tmp`           | RLS off — không dùng cho dữ liệu thật                                    |
+| `form_submission`    | 5 policy: người tạo edit khi draft, người ký xem, admin toàn quyền, v.v. |
 
 ## Kiểm tra chéo đơn vị
 

@@ -8,9 +8,7 @@ afterEach(() => cleanup());
 describe("PageHeader", () => {
   it("render title", () => {
     render(<PageHeader title="Danh mục tài sản" />);
-    expect(screen.getByTestId("page-header-title").textContent).toBe(
-      "Danh mục tài sản",
-    );
+    expect(screen.getByTestId("page-header-title").textContent).toBe("Danh mục tài sản");
   });
 
   it("subtitle rỗng → không render phần tử subtitle", () => {
@@ -27,10 +25,7 @@ describe("PageHeader", () => {
 
   it("có help → hiện nút InfoHint (aria-label 'Hướng dẫn')", () => {
     render(<PageHeader title="X" help={<span>Trợ giúp</span>} />);
-    expect(
-      screen.getByRole("button", { name: "Hướng dẫn" }),
-    ).not.toBeNull();
-
+    expect(screen.getByRole("button", { name: "Hướng dẫn" })).not.toBeNull();
   });
 
   it("không có help → không có nút Hướng dẫn", () => {
@@ -39,12 +34,7 @@ describe("PageHeader", () => {
   });
 
   it("actions render trong slot bên phải", () => {
-    render(
-      <PageHeader
-        title="X"
-        actions={<button data-testid="act">Thêm</button>}
-      />,
-    );
+    render(<PageHeader title="X" actions={<button data-testid="act">Thêm</button>} />);
     const slot = screen.getByTestId("page-header-actions");
     expect(slot.querySelector('[data-testid="act"]')).not.toBeNull();
   });

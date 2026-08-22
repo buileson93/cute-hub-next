@@ -33,7 +33,8 @@ export function CustomFieldsForm({ entity, giaTri, onChange, disabled }: Props) 
     staleTime: 5 * 60_000,
   });
 
-  if (isLoading) return <div className="text-sm text-muted-foreground">Đang tải trường tuỳ biến…</div>;
+  if (isLoading)
+    return <div className="text-sm text-muted-foreground">Đang tải trường tuỳ biến…</div>;
   if (!defs || defs.length === 0) return null;
 
   const setValue = (k: string, v: unknown) => onChange({ ...giaTri, [k]: v });
@@ -42,7 +43,13 @@ export function CustomFieldsForm({ entity, giaTri, onChange, disabled }: Props) 
     <div className="space-y-4">
       <div className="text-sm font-medium text-muted-foreground">Trường tuỳ biến</div>
       {defs.map((d) => (
-        <FieldRow key={d.key} def={d} value={giaTri[d.key]} onChange={(v) => setValue(d.key, v)} disabled={disabled} />
+        <FieldRow
+          key={d.key}
+          def={d}
+          value={giaTri[d.key]}
+          onChange={(v) => setValue(d.key, v)}
+          disabled={disabled}
+        />
       ))}
     </div>
   );
@@ -87,10 +94,14 @@ function FieldRow({ def, value, onChange, disabled }: RowProps) {
           onValueChange={(v) => onChange(v)}
           disabled={disabled}
         >
-          <SelectTrigger id={id}><SelectValue placeholder="Chọn…" /></SelectTrigger>
+          <SelectTrigger id={id}>
+            <SelectValue placeholder="Chọn…" />
+          </SelectTrigger>
           <SelectContent>
             {(def.luaChon ?? []).map((opt) => (
-              <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+              <SelectItem key={opt} value={opt}>
+                {opt}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>

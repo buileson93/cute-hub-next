@@ -12,7 +12,7 @@ export async function fetchAllRows<T>(
 ): Promise<T[]> {
   const out: T[] = [];
   let from = 0;
-  // eslint-disable-next-line no-constant-condition
+
   while (true) {
     const to = from + pageSize - 1;
     const { data, error } = await build(from, to);

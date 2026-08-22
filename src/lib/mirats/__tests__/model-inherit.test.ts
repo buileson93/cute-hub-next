@@ -53,10 +53,7 @@ describe("computeInheritedThietBiPatch", () => {
   });
 
   it("p_n từ null → giá trị mới ⇒ ghi đè", () => {
-    const patch = computeInheritedThietBiPatch(
-      { ...base, p_n: null },
-      { ...base, p_n: "PN-NEW" },
-    );
+    const patch = computeInheritedThietBiPatch({ ...base, p_n: null }, { ...base, p_n: "PN-NEW" });
     expect(patch).toEqual({ p_n: "PN-NEW" });
   });
 
@@ -78,7 +75,10 @@ describe("migration `dm_model_propagate_to_thiet_bi`", () => {
   const sql = dirs
     .flatMap((d) =>
       fs.existsSync(d)
-        ? fs.readdirSync(d).filter((f) => f.endsWith(".sql")).map((f) => path.join(d, f))
+        ? fs
+            .readdirSync(d)
+            .filter((f) => f.endsWith(".sql"))
+            .map((f) => path.join(d, f))
         : [],
     )
     .map((p) => fs.readFileSync(p, "utf8"))

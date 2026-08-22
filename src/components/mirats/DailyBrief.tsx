@@ -23,40 +23,90 @@ export function DailyBrief() {
     );
   }
 
-  const sentences: { key: string; icon: typeof AlertTriangle; to: string; node: React.ReactNode }[] = [];
+  const sentences: {
+    key: string;
+    icon: typeof AlertTriangle;
+    to: string;
+    node: React.ReactNode;
+  }[] = [];
 
   if (data.expiring_gp_7d > 0) {
     sentences.push({
-      key: "gp7", icon: ShieldCheck, to: "/giay-phep?filter=expiring7",
-      node: <><b>{data.expiring_gp_7d}</b> giấy phép sắp hết hạn trong 7 ngày.</>,
+      key: "gp7",
+      icon: ShieldCheck,
+      to: "/giay-phep?filter=expiring7",
+      node: (
+        <>
+          <b>{data.expiring_gp_7d}</b> giấy phép sắp hết hạn trong 7 ngày.
+        </>
+      ),
     });
   } else if (data.expiring_gp_30d > 0) {
     sentences.push({
-      key: "gp30", icon: ShieldCheck, to: "/giay-phep?filter=expiring30",
-      node: <><b>{data.expiring_gp_30d}</b> giấy phép sắp hết hạn trong 30 ngày.</>,
+      key: "gp30",
+      icon: ShieldCheck,
+      to: "/giay-phep?filter=expiring30",
+      node: (
+        <>
+          <b>{data.expiring_gp_30d}</b> giấy phép sắp hết hạn trong 30 ngày.
+        </>
+      ),
     });
   }
 
   if (data.open_incidents > 0) {
     sentences.push({
-      key: "sc", icon: AlertTriangle, to: "/su-co",
-      node: <><b>{data.open_incidents}</b> sự cố đang mở{data.critical_incidents > 0 ? <>, trong đó <b>{data.critical_incidents}</b> nghiêm trọng</> : null}.</>,
+      key: "sc",
+      icon: AlertTriangle,
+      to: "/su-co",
+      node: (
+        <>
+          <b>{data.open_incidents}</b> sự cố đang mở
+          {data.critical_incidents > 0 ? (
+            <>
+              , trong đó <b>{data.critical_incidents}</b> nghiêm trọng
+            </>
+          ) : null}
+          .
+        </>
+      ),
     });
   }
 
   if (data.overdue_pm > 0 || data.due_pm_7d > 0) {
     sentences.push({
-      key: "pm", icon: Wrench, to: "/bao-tri/pm",
-      node: <>{data.overdue_pm > 0 ? <><b>{data.overdue_pm}</b> phiếu bảo trì quá hạn</> : null}
-        {data.overdue_pm > 0 && data.due_pm_7d > 0 ? ", " : null}
-        {data.due_pm_7d > 0 ? <><b>{data.due_pm_7d}</b> sắp đến hạn tuần này</> : null}.</>,
+      key: "pm",
+      icon: Wrench,
+      to: "/bao-tri/pm",
+      node: (
+        <>
+          {data.overdue_pm > 0 ? (
+            <>
+              <b>{data.overdue_pm}</b> phiếu bảo trì quá hạn
+            </>
+          ) : null}
+          {data.overdue_pm > 0 && data.due_pm_7d > 0 ? ", " : null}
+          {data.due_pm_7d > 0 ? (
+            <>
+              <b>{data.due_pm_7d}</b> sắp đến hạn tuần này
+            </>
+          ) : null}
+          .
+        </>
+      ),
     });
   }
 
   if (data.my_shift_tasks > 0) {
     sentences.push({
-      key: "shift", icon: ClipboardList, to: "/bao-tri/pm?mine=1",
-      node: <>Ca của bạn còn <b>{data.my_shift_tasks}</b> đầu việc.</>,
+      key: "shift",
+      icon: ClipboardList,
+      to: "/bao-tri/pm?mine=1",
+      node: (
+        <>
+          Ca của bạn còn <b>{data.my_shift_tasks}</b> đầu việc.
+        </>
+      ),
     });
   }
 

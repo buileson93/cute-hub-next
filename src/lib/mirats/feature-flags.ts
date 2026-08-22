@@ -29,7 +29,6 @@ export type FeatureFlag =
   | "externalDocumentApi"
   | "browserExtensionUpload"
   // Bật lập chỉ mục phía client cho tìm kiếm vector.
-
   | "documentClientIndexEnabled"
   // Thử nghiệm các provider OCR mới.
   | "documentOcrExperimentalProvidersEnabled";

@@ -5,9 +5,19 @@ import { countRefs, type ThietBiRefSubset } from "../danh-muc-refs";
 
 const tb: ThietBiRefSubset[] = [
   { nha_san_xuat_id: "nsx-A", loai_thiet_bi_id: "loai-1", model_id: "m1", nha_cung_cap_id: null },
-  { nha_san_xuat_id: "nsx-A", loai_thiet_bi_id: "loai-2", model_id: "m1", nha_cung_cap_id: "ncc-X" },
-  { nha_san_xuat_id: "nsx-B", loai_thiet_bi_id: "loai-1", model_id: "m2", nha_cung_cap_id: "ncc-X" },
-  { nha_san_xuat_id: null,    loai_thiet_bi_id: null,     model_id: null, nha_cung_cap_id: null },
+  {
+    nha_san_xuat_id: "nsx-A",
+    loai_thiet_bi_id: "loai-2",
+    model_id: "m1",
+    nha_cung_cap_id: "ncc-X",
+  },
+  {
+    nha_san_xuat_id: "nsx-B",
+    loai_thiet_bi_id: "loai-1",
+    model_id: "m2",
+    nha_cung_cap_id: "ncc-X",
+  },
+  { nha_san_xuat_id: null, loai_thiet_bi_id: null, model_id: null, nha_cung_cap_id: null },
 ];
 
 describe("countRefs", () => {
@@ -43,7 +53,10 @@ describe("FK guard danh mục ↔ thiet_bi (migration)", () => {
   const sql = dirs
     .flatMap((d) =>
       fs.existsSync(d)
-        ? fs.readdirSync(d).filter((f) => f.endsWith(".sql")).map((f) => path.join(d, f))
+        ? fs
+            .readdirSync(d)
+            .filter((f) => f.endsWith(".sql"))
+            .map((f) => path.join(d, f))
         : [],
     )
     .map((p) => fs.readFileSync(p, "utf8"))
@@ -86,10 +99,7 @@ describe("FK guard danh mục ↔ thiet_bi (migration)", () => {
 
 // P10.1 — primitive shared: renameEntity / updateEntityField / updateEntityRow
 describe("SSoT primitives dùng chung", () => {
-  const src = fs.readFileSync(
-    path.resolve(__dirname, "../rename-entity.ts"),
-    "utf8",
-  );
+  const src = fs.readFileSync(path.resolve(__dirname, "../rename-entity.ts"), "utf8");
   it("export đủ 3 primitive", () => {
     expect(src).toMatch(/export\s+async\s+function\s+renameEntity/);
     expect(src).toMatch(/export\s+async\s+function\s+updateEntityField/);
@@ -119,4 +129,3 @@ describe("SSoT primitives dùng chung", () => {
     expect(model).not.toMatch(/supabase\.from\("dm_model"\)\.update\(payload\)/);
   });
 });
-

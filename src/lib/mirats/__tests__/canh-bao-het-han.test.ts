@@ -78,9 +78,7 @@ describe("khoaChongTrung — khoá chống notification trùng", () => {
   });
 
   it("thiet_bi_id null vẫn tạo khoá ổn định", () => {
-    expect(khoaChongTrung("giay_phep", null, "2026-08-01", 90)).toBe(
-      "giay_phep|-|2026-08-01|90",
-    );
+    expect(khoaChongTrung("giay_phep", null, "2026-08-01", 90)).toBe("giay_phep|-|2026-08-01|90");
   });
 });
 

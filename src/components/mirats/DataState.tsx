@@ -14,35 +14,34 @@ interface DataStateProps {
    * 'success' sẽ hiển thị children.
    */
   state: "loading" | "empty" | "error" | "success";
-  
+
   /** true nếu đang trong chế độ lọc. Khi đó trạng thái 'empty' sẽ hiển thị thông báo khác. */
   isFiltering?: boolean;
 
-  /** 
-   * Loại skeleton hiển thị khi loading. 
+  /**
+   * Loại skeleton hiển thị khi loading.
    * Mặc định là 'none' (dùng LoadingState truyền thống).
    */
   loadingType?: SkeletonType;
-  
+
   /** Tiêu đề cho trạng thái rỗng hoặc lỗi. */
   title?: string;
-  
+
   /** Chi tiết thông báo (cho cả empty và error). */
   description?: string;
-  
+
   /** Hàm gọi lại khi bấm nút "Thử lại" ở trạng thái lỗi. */
   onRetry?: () => void;
-  
+
   /** Action bổ sung (thường là nút) hiển thị ở trạng thái rỗng. */
   emptyAction?: ReactNode;
-  
+
   /** Component con hiển thị khi state === 'success'. */
   children: ReactNode;
-  
+
   /** Class CSS bổ sung cho container bao ngoài. */
   className?: string;
 }
-
 
 /**
  * Component dùng chung để quản lý các trạng thái dữ liệu (Loading, Empty, Error).
@@ -59,7 +58,6 @@ export function DataState({
   children,
   className,
 }: DataStateProps) {
-
   if (state === "loading") {
     switch (loadingType) {
       case "table":
@@ -89,7 +87,7 @@ export function DataState({
   if (state === "empty") {
     const defaultTitle = isFiltering ? "Không có kết quả phù hợp" : "Không có dữ liệu";
     const defaultDesc = isFiltering ? "Thử thay đổi bộ lọc hoặc từ khoá tìm kiếm." : description;
-    
+
     return (
       <EmptyState
         title={title || defaultTitle}
@@ -100,7 +98,6 @@ export function DataState({
       />
     );
   }
-
 
   if (className || true) {
     return <div className={cn(TYPO.BODY, className)}>{children}</div>;

@@ -1,12 +1,23 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport, lastAssistantMessageIsCompleteWithApprovalResponses, type UIMessage } from "ai";
+import {
+  DefaultChatTransport,
+  lastAssistantMessageIsCompleteWithApprovalResponses,
+  type UIMessage,
+} from "ai";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import ReactMarkdown from "react-markdown";
 import {
-  Sparkles, X, Plus, Loader2, Send, Trash2, MessageSquareText, Wrench,
+  Sparkles,
+  X,
+  Plus,
+  Loader2,
+  Send,
+  Trash2,
+  MessageSquareText,
+  Wrench,
   MessagesSquare,
 } from "lucide-react";
 import { supabase } from "@/integrations/backend/client";
@@ -54,7 +65,6 @@ export function AiChatButton() {
     retry: 1,
   });
 
-
   // Mở panel AI từ nơi khác (Bảng lệnh) kèm câu hỏi soạn sẵn
   useEffect(() => {
     const onAsk = (e: Event) => {
@@ -92,11 +102,13 @@ export function AiChatButton() {
         <Sparkles className="h-5 w-5" strokeWidth={2} />
       </motion.button>
 
-
       <AnimatePresence>
         {open && (
           <AiChatPanel
-            onClose={() => { setOpen(false); setPendingPrompt(null); }}
+            onClose={() => {
+              setOpen(false);
+              setPendingPrompt(null);
+            }}
             betaLabel={cfg.beta_label}
             pendingPrompt={pendingPrompt}
             onConsumePrompt={() => setPendingPrompt(null)}
@@ -107,7 +119,17 @@ export function AiChatButton() {
   );
 }
 
-function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { onClose: () => void; betaLabel: string; pendingPrompt?: string | null; onConsumePrompt?: () => void }) {
+function AiChatPanel({
+  onClose,
+  betaLabel,
+  pendingPrompt,
+  onConsumePrompt,
+}: {
+  onClose: () => void;
+  betaLabel: string;
+  pendingPrompt?: string | null;
+  onConsumePrompt?: () => void;
+}) {
   const qc = useQueryClient();
   const listFn = useServerFn(listConversations);
   const createFn = useServerFn(createConversation);
@@ -149,12 +171,10 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
     }
   }, [tab, conversations, activeId, createMut]);
 
-
   // Có câu hỏi soạn sẵn (từ Bảng lệnh) → luôn về tab AI
   useEffect(() => {
     if (pendingPrompt) setTab("ai");
   }, [pendingPrompt]);
-
 
   const { data: historyRows = [] } = useQuery({
     queryKey: ["ai-messages", activeId],
@@ -179,13 +199,20 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            {tab === "ai" ? <Sparkles className="h-4 w-4" strokeWidth={2.2} /> : <MessagesSquare className="h-4 w-4" strokeWidth={2.2} />}
+            {tab === "ai" ? (
+              <Sparkles className="h-4 w-4" strokeWidth={2.2} />
+            ) : (
+              <MessagesSquare className="h-4 w-4" strokeWidth={2.2} />
+            )}
           </div>
           <div className="leading-tight">
             <div className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
               {tab === "ai" ? "MIRATS AI" : "Tin nhắn"}
               {tab === "ai" && (
-                <Badge variant="outline" className="rounded-full border-[#0074e2]/30 bg-[#0074e2]/10 px-1.5 py-0 text-[9px] font-bold uppercase text-[#0074e2]">
+                <Badge
+                  variant="outline"
+                  className="rounded-full border-[#0074e2]/30 bg-[#0074e2]/10 px-1.5 py-0 text-[9px] font-bold uppercase text-[#0074e2]"
+                >
                   {betaLabel}
                 </Badge>
               )}
@@ -208,7 +235,14 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
               <Plus className="h-4 w-4" />
             </Button>
           )}
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose} title="Đóng" aria-label="Đóng bảng">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={onClose}
+            title="Đóng"
+            aria-label="Đóng bảng"
+          >
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -221,7 +255,9 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
           onClick={() => setTab("ai")}
           className={cn(
             "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
-            tab === "ai" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-muted transition-mirats-fast",
+            tab === "ai"
+              ? "bg-primary text-primary-foreground shadow-sm"
+              : "text-muted-foreground hover:bg-muted transition-mirats-fast",
           )}
         >
           <Sparkles className="h-3.5 w-3.5" /> Hỏi AI
@@ -231,7 +267,9 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
           onClick={() => setTab("messages")}
           className={cn(
             "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
-            tab === "messages" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-muted transition-mirats-fast",
+            tab === "messages"
+              ? "bg-primary text-primary-foreground shadow-sm"
+              : "text-muted-foreground hover:bg-muted transition-mirats-fast",
           )}
         >
           <MessagesSquare className="h-3.5 w-3.5" /> Tin nhắn
@@ -246,19 +284,26 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
       ) : (
         <div className="flex min-h-0 flex-1">
           <div className="hidden w-[140px] shrink-0 flex-col border-r border-border bg-muted/30 py-2 sm:flex">
-            <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Lịch sử</div>
+            <div className="px-2 pb-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+              Lịch sử
+            </div>
             <div className="flex-1 overflow-y-auto">
               {conversations.map((c: any) => (
-                <div key={c.id} className={cn(
-                  "group flex items-center gap-1 px-1",
-                  activeId === c.id && "bg-accent/60",
-                )}>
+                <div
+                  key={c.id}
+                  className={cn(
+                    "group flex items-center gap-1 px-1",
+                    activeId === c.id && "bg-accent/60",
+                  )}
+                >
                   <button
                     type="button"
                     onClick={() => setActiveId(c.id)}
                     className={cn(
                       "flex-1 truncate rounded px-1.5 py-1.5 text-left text-[11px] transition-colors",
-                      activeId === c.id ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground transition-colors"
+                      activeId === c.id
+                        ? "text-foreground font-medium"
+                        : "text-muted-foreground hover:text-foreground transition-colors",
                     )}
                   >
                     <MessageSquareText className="mr-1 inline h-3 w-3 opacity-60" />
@@ -289,7 +334,6 @@ function AiChatPanel({ onClose, betaLabel, pendingPrompt, onConsumePrompt }: { o
         </div>
       )}
     </motion.aside>
-
   );
 }
 
@@ -326,7 +370,9 @@ function ChatArea({
               body = JSON.stringify(parsed);
               headers.set("Content-Type", "application/json");
             }
-          } catch { /* ignore */ }
+          } catch {
+            /* ignore */
+          }
           return fetch(url, { ...init, headers, body });
         },
       }),
@@ -376,13 +422,18 @@ function ChatArea({
           <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
             <Sparkles className="h-8 w-8 text-primary/60" />
             <div className="text-sm font-medium text-foreground">Bạn muốn hỏi gì về MIRATS?</div>
-            <div className="text-[11px] text-muted-foreground">Trợ lý chỉ đọc dữ liệu bạn có quyền truy cập</div>
+            <div className="text-[11px] text-muted-foreground">
+              Trợ lý chỉ đọc dữ liệu bạn có quyền truy cập
+            </div>
             <div className="mt-2 grid w-full max-w-[320px] gap-1.5">
               {SUGGESTIONS.map((s) => (
                 <button
                   key={s}
                   type="button"
-                  onClick={() => { setInput(s); inputRef.current?.focus(); }}
+                  onClick={() => {
+                    setInput(s);
+                    inputRef.current?.focus();
+                  }}
                   className="rounded-lg border border-border bg-card px-3 py-2 text-left text-[12px] text-foreground transition-colors hover:bg-accent"
                 >
                   {s}
@@ -415,7 +466,10 @@ function ChatArea({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); }
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                submit();
+              }
             }}
             rows={1}
             placeholder="Hỏi về tài sản, giấy phép, biểu mẫu…"
@@ -425,8 +479,14 @@ function ChatArea({
             size="icon"
             className="h-8 w-8 shrink-0 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
             onClick={submit}
-            disabled={busy || !input.trim()} aria-label="Đang tải">
-            {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+            disabled={busy || !input.trim()}
+            aria-label="Đang tải"
+          >
+            {busy ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Send className="h-3.5 w-3.5" />
+            )}
           </Button>
         </div>
         <div className="mt-1.5 text-center text-[10px] text-muted-foreground">
@@ -452,7 +512,10 @@ function MessageBubble({
   onApprove: (opts: { id: string; approved: boolean }) => void;
 }) {
   const isUser = message.role === "user";
-  const textParts = message.parts.filter((p) => p.type === "text") as Array<{ type: "text"; text: string }>;
+  const textParts = message.parts.filter((p) => p.type === "text") as Array<{
+    type: "text";
+    text: string;
+  }>;
   const toolParts = message.parts.filter((p) => p.type.startsWith("tool-"));
 
   return (
@@ -460,9 +523,7 @@ function MessageBubble({
       <div
         className={cn(
           "max-w-[85%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed",
-          isUser
-            ? "bg-primary text-primary-foreground"
-            : "bg-muted text-foreground",
+          isUser ? "bg-primary text-primary-foreground" : "bg-muted text-foreground",
         )}
       >
         {toolParts.map((p, i) => {
@@ -518,14 +579,23 @@ function MessageBubble({
           }
 
           return (
-            <div key={i} className="mb-1.5 flex items-center gap-1.5 text-[10.5px] text-muted-foreground">
+            <div
+              key={i}
+              className="mb-1.5 flex items-center gap-1.5 text-[10.5px] text-muted-foreground"
+            >
               <Wrench className="h-3 w-3" />
               <span className="font-mono">{label}</span>
             </div>
           );
         })}
         {textParts.map((p, i) => (
-          <div key={i} className={cn("prose prose-sm max-w-none", isUser ? "prose-invert" : "dark:prose-invert")}>
+          <div
+            key={i}
+            className={cn(
+              "prose prose-sm max-w-none",
+              isUser ? "prose-invert" : "dark:prose-invert",
+            )}
+          >
             <ReactMarkdown>{p.text}</ReactMarkdown>
           </div>
         ))}

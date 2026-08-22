@@ -11,7 +11,6 @@ export interface DeviceProfile {
 
 export type ProfileTierOverride = "low" | "medium" | "high" | null;
 
-
 const DB_NAME = "mirats_ocr_profiler";
 const STORE_NAME = "device_profiles";
 const APP_VERSION = "1.0.0"; // Should ideally come from env
@@ -23,7 +22,6 @@ export class DeviceProfiler {
   setTierOverride(tier: ProfileTierOverride) {
     this.tierOverride = tier;
   }
-
 
   private getDB() {
     if (typeof window === "undefined" || !window.indexedDB) return null;
@@ -37,23 +35,24 @@ export class DeviceProfiler {
     return this.db;
   }
 
-
   async getProfile(): Promise<DeviceProfile> {
     const caps = await detectCapabilities();
     const db = await this.getDB();
-    
+
     if (db) {
       const cached = await db.get(STORE_NAME, "current");
 
-      if (cached && cached.appVersion === APP_VERSION && Date.now() - cached.timestamp < 1000 * 60 * 60 * 24 * 7) {
+      if (
+        cached &&
+        cached.appVersion === APP_VERSION &&
+        Date.now() - cached.timestamp < 1000 * 60 * 60 * 24 * 7
+      ) {
         return cached;
       }
     }
 
-
     const score = await this.runMicroBenchmark(caps);
     const tier = this.tierOverride || this.determineTier(caps, score);
-
 
     const profile: DeviceProfile = {
       capabilities: caps,
@@ -69,10 +68,9 @@ export class DeviceProfiler {
     return profile;
   }
 
-
   private async runMicroBenchmark(caps: DeviceCapabilities): Promise<number> {
     if (typeof window === "undefined") return 0;
-    
+
     // Very simple benchmark: just measure how long a small canvas operation takes
     const start = performance.now();
     try {
@@ -86,7 +84,7 @@ export class DeviceProfiler {
         ctx.fillStyle = `rgb(${i % 255}, 0, 0)`;
         ctx.fillRect(i % 100, (i / 100) | 0, 1, 1);
       }
-      
+
       // Indirect memory/pressure check could be added here
       return performance.now() - start;
     } catch {

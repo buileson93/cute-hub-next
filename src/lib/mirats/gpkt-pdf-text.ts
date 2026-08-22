@@ -20,27 +20,28 @@ export type { RawPdfItem } from "./gpkt-pdf-parse";
 let workerInitialized = false;
 function ensureWorker() {
   if (workerInitialized) return;
-  (pdfjsLib as unknown as { GlobalWorkerOptions: { workerPort: Worker | null } })
-    .GlobalWorkerOptions.workerPort = new PdfWorker();
+  (
+    pdfjsLib as unknown as { GlobalWorkerOptions: { workerPort: Worker | null } }
+  ).GlobalWorkerOptions.workerPort = new PdfWorker();
   workerInitialized = true;
 }
 
 export async function extractPdfText(file: File): Promise<string> {
   const { PdfExtractor } = await import("./document-ocr/pdf-extractor");
   const { normalizeWgs84 } = await import("./gpkt-pdf-parse");
-  
+
   const extractor = new PdfExtractor();
   const numPages = await extractor.load(file);
   const pages: string[] = [];
-  
+
   // GPKT logic usually limits to 8 pages unless it's the new pipeline
   const maxPages = Math.min(numPages, 8);
-  
+
   for (let i = 1; i <= maxPages; i++) {
     const pageData = await extractor.getPage(i);
     pages.push(pageData.text);
   }
-  
+
   await extractor.close();
   return normalizeWgs84(pages.join("\n\n"));
 }

@@ -5,20 +5,24 @@ Reintegrate `IndexedDBStorage` into the offline queue system to ensure persisten
 ## Proposed Changes
 
 ### 1. `src/hooks/use-offline-queue.ts`
+
 - Update `getOfflineQueue` to use the exported `offlineStorage` instance (from `indexeddb-storage.ts`) instead of instantiating `IndexedDBStorage` directly or using `SessionStorageAdapter` in browser environments.
 - Ensure the `typeof window !== "undefined"` guard is correctly applied to prevent IndexedDB access during SSR.
 - Keep `SessionStorageAdapter` only as a fallback for non-browser environments (SSR) to avoid hydration errors.
 
 ### 2. `src/lib/mirats/indexeddb-storage.ts`
+
 - Ensure the `offlineStorage` singleton is exported correctly and doesn't trigger side effects during SSR.
 
 ## Verification Plan
 
 ### Automated Tests
+
 - Run `npm test src/lib/mirats/__tests__/offline-queue.test.ts` to ensure no regressions in queue logic.
 - Run `npx tsc --noEmit` to verify type safety.
 
 ### Manual Verification (Smoke Test)
+
 1. **Prepare**: Open the app and log in.
 2. **Offline Mode**: Turn off network (via browser devtools or physical disconnect).
 3. **Queue Task**: Record a new incident (su_co_create). Verify it shows in `OfflineBadge` as "1 chờ".

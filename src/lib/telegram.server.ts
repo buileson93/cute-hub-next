@@ -10,7 +10,10 @@ function envOrThrow(name: string): string {
   return v;
 }
 
-export async function tgCall<T = unknown>(method: string, body: Record<string, unknown>): Promise<T> {
+export async function tgCall<T = unknown>(
+  method: string,
+  body: Record<string, unknown>,
+): Promise<T> {
   const LOVABLE_API_KEY = envOrThrow("LOVABLE_API_KEY");
   const TELEGRAM_API_KEY = envOrThrow("TELEGRAM_API_KEY");
 
@@ -33,7 +36,11 @@ export async function tgCall<T = unknown>(method: string, body: Record<string, u
   return json.result as T;
 }
 
-export async function sendMessage(chat_id: string, text: string, opts: { parse_mode?: "HTML" | "Markdown"; disable_web_page_preview?: boolean } = {}) {
+export async function sendMessage(
+  chat_id: string,
+  text: string,
+  opts: { parse_mode?: "HTML" | "Markdown"; disable_web_page_preview?: boolean } = {},
+) {
   return tgCall("sendMessage", {
     chat_id,
     text,

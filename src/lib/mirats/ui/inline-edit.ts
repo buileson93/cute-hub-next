@@ -97,8 +97,8 @@ export function validateField(
       loai === "su_co"
         ? canTransitionSuCo(from, to)
         : loai === "cong_viec"
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ? canTransitionCongViec(from, to as any)
+          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            canTransitionCongViec(from, to as any)
           : false;
     if (!ok) {
       loi.push(`Không được chuyển trạng thái từ "${from || "?"}" sang "${to || "?"}"`);
@@ -155,7 +155,6 @@ export function buildUpdatePayload(
 /** Layer nghiệp vụ cho cây hệ thống — khớp với `EditKind` ở route. */
 export type CayKind = "pl" | "nh" | "ht" | "tb" | "tp" | "root" | "vtg" | "vt" | "lv";
 
-
 /** View gốc chỉ để log/telemetry; KHÔNG dùng để đổi đích ghi. */
 export type CayView = "tree" | "table" | "mindmap";
 
@@ -168,7 +167,14 @@ export type CellEditIntent =
    * Rơi vào saveNode: hoặc node nháp (không có bản ghi thật) đổi tên,
    * hoặc field/du_lieu khác cột vật lý của layer tài sản.
    */
-  | { target: "saveNode"; kind: CayKind; ma: string; field: string; value: unknown; isReal: boolean };
+  | {
+      target: "saveNode";
+      kind: CayKind;
+      ma: string;
+      field: string;
+      value: unknown;
+      isReal: boolean;
+    };
 
 export interface ResolveEditInput {
   kind: CayKind;
@@ -219,4 +225,3 @@ export function resolveEditIntent(input: ResolveEditInput): CellEditIntent {
   // 3) Còn lại — saveNode (du_lieu / cột layer khác)
   return { target: "saveNode", kind, ma, field, value, isReal };
 }
-

@@ -8,7 +8,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import type { Candidate, MatchResult } from "@/lib/mirats/entity-resolve";
 
@@ -88,35 +93,70 @@ export function ResolutionReview({
                 <TableCell className="text-xs text-muted-foreground">
                   {candidateLabel(cand)}
                   {r.candidates.length > 1 && (
-                    <span className="ml-1 text-[10px] text-amber-600">+{r.candidates.length - 1} ứng viên</span>
+                    <span className="ml-1 text-[10px] text-amber-600">
+                      +{r.candidates.length - 1} ứng viên
+                    </span>
                   )}
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-col gap-1">
-                    <Badge variant={DECISION_VARIANT[r.decision]} className="w-fit">{KIND_LABEL[r.kind]}</Badge>
+                    <Badge variant={DECISION_VARIANT[r.decision]} className="w-fit">
+                      {KIND_LABEL[r.kind]}
+                    </Badge>
                     <span className="text-[10px] text-muted-foreground">
-                      {r.confidence > 0 ? `${Math.round(r.confidence * 100)}% · ` : ""}{r.reason}
+                      {r.confidence > 0 ? `${Math.round(r.confidence * 100)}% · ` : ""}
+                      {r.reason}
                     </span>
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
                   {row.chosen ? (
-                    <Badge variant="outline" className="uppercase">{row.chosen}</Badge>
+                    <Badge variant="outline" className="uppercase">
+                      {row.chosen}
+                    </Badge>
                   ) : (
                     <div className="flex flex-wrap justify-end gap-1">
-                      <Button size="sm" variant="secondary" className="h-7 text-xs" onClick={() => onAction(row, "create")}>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        className="h-7 text-xs"
+                        onClick={() => onAction(row, "create")}
+                      >
                         Tạo mới
                       </Button>
-                      <Button size="sm" variant="outline" className="h-7 text-xs" disabled={!cand} onClick={() => onAction(row, "update", cand)}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 text-xs"
+                        disabled={!cand}
+                        onClick={() => onAction(row, "update", cand)}
+                      >
                         Cập nhật
                       </Button>
-                      <Button size="sm" variant="outline" className="h-7 text-xs" disabled={!canMerge} onClick={() => onAction(row, "merge", cand)}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 text-xs"
+                        disabled={!canMerge}
+                        onClick={() => onAction(row, "merge", cand)}
+                      >
                         Gộp
                       </Button>
-                      <Button size="sm" variant="outline" className="h-7 text-xs" disabled={!cand} onClick={() => onAction(row, "save_alias", cand)}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 text-xs"
+                        disabled={!cand}
+                        onClick={() => onAction(row, "save_alias", cand)}
+                      >
                         Lưu alias
                       </Button>
-                      <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => onAction(row, "skip")}>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 text-xs"
+                        onClick={() => onAction(row, "skip")}
+                      >
                         Bỏ qua
                       </Button>
                     </div>

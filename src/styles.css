@@ -13,32 +13,34 @@
 
 /* MIRATS Brand Foundation — Astryx Overrides */
 @layer astryx-brand {
-
   [data-astryx-theme="df3"] {
     /* Core Tokens mapped from df3-theme.ts */
     --color-accent: light-dark(#262626, #ebebeb);
     --color-icon-accent: var(--color-accent);
     --color-text-accent: var(--color-accent);
-    
+
     /* Semantic Colors */
     --color-success: light-dark(#007004, #9fe59b);
     --color-error: light-dark(#a50c25, #ffc6c1);
     --color-warning: light-dark(#745b00, #fdcf4f);
-    
+
     /* Surfaces */
     --color-background-body: light-dark(#f1f1f1, #1b1b1b);
     --color-background-surface: light-dark(#ffffff, #262626);
     --color-background-card: light-dark(#ffffff, #1b1b1b);
-    
+
     /* Typography - Standardized to Figtree for DF3 style */
-    --font-family-body: "Geist Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --font-family-heading: "Geist Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --font-family-code: ui-monospace, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    
+    --font-family-body:
+      "Geist Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-family-heading:
+      "Geist Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-family-code:
+      ui-monospace, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
     /* Spacing & Radius */
     --radius-container: 0.75rem;
     --radius-element: 0.625rem;
-    
+
     /* Motion */
     --duration-fast: 125ms;
     --duration-medium: 200ms;
@@ -46,17 +48,14 @@
   }
 }
 
-
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/space-grotesk";
 @import "@fontsource/ibm-plex-mono/400.css";
 @import "@fontsource/ibm-plex-mono/500.css";
 @import "@fontsource/ibm-plex-mono/600.css";
 
-
 @custom-variant dark (&:is(.dark *));
 @custom-variant density-compact (&:is([data-density="compact"] *));
-
 
 /*
  * MIRATS — VATM Middle Region ATC.
@@ -66,7 +65,9 @@
  */
 
 @theme inline {
-  --font-sans: "Geist Variable", "Inter", "Inter var", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans:
+    "Geist Variable", "Inter", "Inter var", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --radius-sm: calc(var(--radius) - 4px);
@@ -112,7 +113,6 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-
 @layer astryx-brand {
   :root {
     --radius: 0.75rem; /* 12px from DF3 */
@@ -122,10 +122,10 @@
     /* Astryx Semantic Palette - Light Mode (OKLCH) */
     --background: oklch(0.99 0.002 250);
     --foreground: oklch(0.12 0.01 250);
-    
+
     --card: oklch(1 0 0);
     --card-foreground: oklch(0.12 0.01 250);
-    
+
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.12 0.01 250);
 
@@ -177,10 +177,10 @@
     /* Astryx Semantic Palette - Dark Mode (OKLCH) */
     --background: oklch(0.12 0.01 250);
     --foreground: oklch(0.98 0.002 250);
-    
+
     --card: oklch(0.16 0.01 250);
     --card-foreground: oklch(0.98 0.002 250);
-    
+
     --popover: oklch(0.16 0.01 250);
     --popover-foreground: oklch(0.98 0.002 250);
 
@@ -213,11 +213,10 @@
   }
 }
 
-
 @layer base {
   * {
     border-color: var(--color-border);
-}
+  }
 
   html {
     font-family: var(--font-sans);
@@ -231,11 +230,17 @@
     letter-spacing: -0.005em;
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     letter-spacing: -0.025em;
   }
 
-  code, kbd, .font-mono, [class~="font-mono"] {
+  code,
+  kbd,
+  .font-mono,
+  [class~="font-mono"] {
     font-family: var(--font-mono);
     font-feature-settings: "zero", "ss01";
   }
@@ -271,7 +276,6 @@
   }
 }
 
-
 /* Tiện ích chuyển động — GĐ1-06 */
 @utility transition-mirats-fast {
   transition-property: background-color, border-color, color, box-shadow, transform, opacity;
@@ -286,21 +290,36 @@
 }
 
 /* GĐ1-05: Global focus-visible — ring hiển thị nhất quán cho a11y */
-:where(a, button, [role="button"], [role="link"], [role="menuitem"], [role="tab"], [role="option"], select, textarea, summary, [tabindex]):focus-visible,
+:where(
+  a,
+  button,
+  [role="button"],
+  [role="link"],
+  [role="menuitem"],
+  [role="tab"],
+  [role="option"],
+  select,
+  textarea,
+  summary,
+  [tabindex]
+):focus-visible,
 :where(input:not(.astryx-input-wrapper input)):focus-visible {
   outline: 2px solid var(--color-ring);
   outline-offset: 1px;
 }
 
-
 /* MIRATS-specific suppression: Never show outline on command palette input */
-[cmdk-input], [cmdk-input]:focus, [cmdk-input]:focus-visible {
+[cmdk-input],
+[cmdk-input]:focus,
+[cmdk-input]:focus-visible {
   outline: none !important;
   box-shadow: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, ::before, ::after {
+  *,
+  ::before,
+  ::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -308,11 +327,12 @@
   }
 }
 
-
-
 /* React Flow: bỏ viền chọn/focus để sơ đồ tư duy gọn gàng */
 .react-flow__node {
-  transition: transform var(--duration-slow) var(--ease-emphasized), opacity var(--duration-base) var(--ease-standard), filter var(--duration-base) var(--ease-standard);
+  transition:
+    transform var(--duration-slow) var(--ease-emphasized),
+    opacity var(--duration-base) var(--ease-standard),
+    filter var(--duration-base) var(--ease-standard);
 }
 
 .react-flow__node.dragging {
@@ -337,9 +357,15 @@
 
 /* Thanh tiến độ vô hạn (dùng cho trạng thái đang tải lại dữ liệu) */
 @keyframes indeterminate {
-  0% { transform: translateX(-100%); }
-  50% { transform: translateX(150%); }
-  100% { transform: translateX(400%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(150%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
 }
 
 /* ============================================================
@@ -392,7 +418,10 @@
    ========================================================= */
 
 /* Icon mặc định của lucide (h-4/h-5) nhỏ hơn một chút khi cần */
-.lucide:not([class*="h-"]) { transform: scale(0.9); transform-origin: center; }
+.lucide:not([class*="h-"]) {
+  transform: scale(0.9);
+  transform-origin: center;
+}
 
 /* Bảng: Chuẩn hóa styles ô bảng thông qua các utility và skin, tránh ghi đè global bừa bãi */
 .mirats-table-cell-base {
@@ -425,7 +454,6 @@
   border-bottom: 1px solid var(--border) !important;
 }
 
-
 /* Badge / chip nhỏ hơn */
 .badge,
 [data-slot="badge"] {
@@ -440,14 +468,15 @@
 .space-y-3 > * + * {
   margin-top: 0.75rem;
 }
-.gap-4 { gap: 1rem; }
-.gap-3 { gap: 0.75rem; }
+.gap-4 {
+  gap: 1rem;
+}
+.gap-3 {
+  gap: 0.75rem;
+}
 
 #lovable-badge {
   display: none !important;
   visibility: hidden !important;
   pointer-events: none !important;
 }
-
-
-

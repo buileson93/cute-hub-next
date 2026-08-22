@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  summarizeRollbackPreview,
-  actionLabel,
-  type RollbackPreview,
-} from "../rollback-preview";
+import { summarizeRollbackPreview, actionLabel, type RollbackPreview } from "../rollback-preview";
 
 function item(over: Partial<RollbackPreview["items"][number]>) {
   return {

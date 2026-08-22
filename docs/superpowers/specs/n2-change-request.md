@@ -12,30 +12,30 @@
 
 ## 2. Hành động nhạy cảm (whitelist `loai`)
 
-| `loai` | Ý nghĩa | Payload chính | Áp dụng bằng |
-|---|---|---|---|
-| `cay.delete_node` | Xoá mềm node (hệ thống / thành phần) | `{ node_id, entity, reason }` | RPC `cay_soft_delete_node` |
-| `cay.restore_node` | Khôi phục node từ thùng rác | `{ node_id, entity }` | RPC `cay_restore_node` |
-| `cay.hard_delete_node` | Xoá cứng (chỉ khi 0 dependency) | `{ node_id, entity }` | RPC `dm_xoa_an_toan` / equivalent |
-| `cay.reorg` | Đổi cấu trúc cha-con: chuyển thành phần sang hệ thống khác, đổi nhóm | `{ node_id, from_parent, to_parent, entity }` | RPC `cay_reorg_move` |
-| `thiet_bi.change_model` | Đổi `model_id` của tài sản (kéo theo kế thừa NSX/loại/P/N) | `{ thiet_bi_id, from_model_id, to_model_id }` | UPDATE `thiet_bi.model_id` + trigger propagate đã có |
-| `thiet_bi.change_don_vi` | Chuyển tài sản sang đơn vị khác | `{ thiet_bi_id, to_don_vi_id }` | UPDATE `thiet_bi.don_vi_id` (nếu có) hoặc reassign qua thành phần |
-| `he_thong.change_nhom` | Đổi `nhom_he_thong_id` của hệ thống | `{ he_thong_id, to_nhom_id }` | UPDATE `dm_he_thong.nhom_he_thong_id` |
-| `he_thong.change_don_vi` | Đổi đơn vị quản lý của hệ thống (cascade xuống thành phần & tài sản qua trigger) | `{ he_thong_id, to_don_vi_id }` | UPDATE `dm_he_thong.don_vi_id` |
-| `danh_muc.merge` | Gộp 2 bản ghi danh mục (N1) | `{ entity, keep_id, drop_id }` | RPC `merge_danh_muc` |
-| `danh_muc.deactivate` | Vô hiệu hoá 1 mục danh mục có tham chiếu | `{ entity, id }` | UPDATE `active=false` |
-| `role.grant` | Cấp vai trò `admin`/`phong_kt` cho user | `{ user_id, role }` | INSERT `user_roles` |
-| `role.revoke` | Thu hồi vai trò tương ứng | `{ user_id, role }` | DELETE `user_roles` |
+| `loai`                   | Ý nghĩa                                                                          | Payload chính                                 | Áp dụng bằng                                                      |
+| ------------------------ | -------------------------------------------------------------------------------- | --------------------------------------------- | ----------------------------------------------------------------- |
+| `cay.delete_node`        | Xoá mềm node (hệ thống / thành phần)                                             | `{ node_id, entity, reason }`                 | RPC `cay_soft_delete_node`                                        |
+| `cay.restore_node`       | Khôi phục node từ thùng rác                                                      | `{ node_id, entity }`                         | RPC `cay_restore_node`                                            |
+| `cay.hard_delete_node`   | Xoá cứng (chỉ khi 0 dependency)                                                  | `{ node_id, entity }`                         | RPC `dm_xoa_an_toan` / equivalent                                 |
+| `cay.reorg`              | Đổi cấu trúc cha-con: chuyển thành phần sang hệ thống khác, đổi nhóm             | `{ node_id, from_parent, to_parent, entity }` | RPC `cay_reorg_move`                                              |
+| `thiet_bi.change_model`  | Đổi `model_id` của tài sản (kéo theo kế thừa NSX/loại/P/N)                       | `{ thiet_bi_id, from_model_id, to_model_id }` | UPDATE `thiet_bi.model_id` + trigger propagate đã có              |
+| `thiet_bi.change_don_vi` | Chuyển tài sản sang đơn vị khác                                                  | `{ thiet_bi_id, to_don_vi_id }`               | UPDATE `thiet_bi.don_vi_id` (nếu có) hoặc reassign qua thành phần |
+| `he_thong.change_nhom`   | Đổi `nhom_he_thong_id` của hệ thống                                              | `{ he_thong_id, to_nhom_id }`                 | UPDATE `dm_he_thong.nhom_he_thong_id`                             |
+| `he_thong.change_don_vi` | Đổi đơn vị quản lý của hệ thống (cascade xuống thành phần & tài sản qua trigger) | `{ he_thong_id, to_don_vi_id }`               | UPDATE `dm_he_thong.don_vi_id`                                    |
+| `danh_muc.merge`         | Gộp 2 bản ghi danh mục (N1)                                                      | `{ entity, keep_id, drop_id }`                | RPC `merge_danh_muc`                                              |
+| `danh_muc.deactivate`    | Vô hiệu hoá 1 mục danh mục có tham chiếu                                         | `{ entity, id }`                              | UPDATE `active=false`                                             |
+| `role.grant`             | Cấp vai trò `admin`/`phong_kt` cho user                                          | `{ user_id, role }`                           | INSERT `user_roles`                                               |
+| `role.revoke`            | Thu hồi vai trò tương ứng                                                        | `{ user_id, role }`                           | DELETE `user_roles`                                               |
 
 **Không** cần phê duyệt: cập nhật `ten`, ghi chú, tạo mới danh mục thông thường, tạo sự cố/công việc, nhập kho. Các CRUD hằng ngày do RLS quyết định trực tiếp.
 
 ## 3. Ai được làm gì
 
-| Vai trò | Tạo change_request | Duyệt/Từ chối | Ghi chú |
-|---|---|---|---|
-| `admin` | ✅ (được phép áp dụng trực tiếp không cần CR nếu bấm "Áp dụng ngay") | ✅ | Không thể self-approve CR **do chính mình tạo** — phải admin khác. |
-| `phong_kt` | ✅ | ❌ | Có thể huỷ CR khi trạng thái `pending` do chính mình tạo. |
-| `to_truong`, `ktv`, các role khác | ❌ (chỉ dùng CRUD được RLS cho phép) | ❌ | Không được gọi mutation nhạy cảm dưới bất kỳ hình thức nào. |
+| Vai trò                           | Tạo change_request                                                   | Duyệt/Từ chối | Ghi chú                                                            |
+| --------------------------------- | -------------------------------------------------------------------- | ------------- | ------------------------------------------------------------------ |
+| `admin`                           | ✅ (được phép áp dụng trực tiếp không cần CR nếu bấm "Áp dụng ngay") | ✅            | Không thể self-approve CR **do chính mình tạo** — phải admin khác. |
+| `phong_kt`                        | ✅                                                                   | ❌            | Có thể huỷ CR khi trạng thái `pending` do chính mình tạo.          |
+| `to_truong`, `ktv`, các role khác | ❌ (chỉ dùng CRUD được RLS cho phép)                                 | ❌            | Không được gọi mutation nhạy cảm dưới bất kỳ hình thức nào.        |
 
 Sequence:
 
@@ -88,6 +88,7 @@ CREATE INDEX idx_change_request_nguoi_tao ON change_request(nguoi_tao);
 ## 5. Hành vi Duyệt / Từ chối / Huỷ
 
 **`approve(id, ly_do?)`** (RPC `SECURITY DEFINER`):
+
 1. Kiểm tra caller là `admin` và `nguoi_tao <> auth.uid()`.
 2. Kiểm tra `trang_thai = 'pending'`.
 3. Kiểm tra idempotency: nếu payload đã bị conflict (ví dụ node đã xoá) → chuyển `applied_failed` với `error_message`.
@@ -113,6 +114,7 @@ CREATE INDEX idx_change_request_nguoi_tao ON change_request(nguoi_tao);
 ## 7. Test — Definition of Done
 
 **Unit `src/lib/mirats/__tests__/change-request.test.ts`**:
+
 - `createChangeRequest(loai, payload)` trả về row `pending`; validate `loai` thuộc whitelist; từ chối payload thiếu field.
 - `approve` được gọi bởi admin khác → dispatch đúng RPC theo `loai`; payload sai → `applied_failed`.
 - `reject` giữ nguyên dữ liệu, `ly_do` bắt buộc.
@@ -120,6 +122,7 @@ CREATE INDEX idx_change_request_nguoi_tao ON change_request(nguoi_tao);
 - Mock guard: `phong_kt` gọi `approve` → throw `not_authorized`.
 
 **pgTAP `supabase/tests/change_request_rls.sql`**:
+
 1. Seed 3 user: admin_a, admin_b, kt_a (phong_kt), ktv_a.
 2. `kt_a` INSERT CR → OK; `ktv_a` INSERT → RLS reject.
 3. `kt_a` UPDATE `trang_thai='approved'` cùng row → RLS reject.
@@ -131,14 +134,14 @@ CREATE INDEX idx_change_request_nguoi_tao ON change_request(nguoi_tao);
 
 ## 8. Rủi ro & Giảm thiểu
 
-| Rủi ro | Giảm thiểu |
-|---|---|
-| CR chồng chéo (2 CR cùng đổi 1 node) | Khi approve, tự động `cancel` các CR pending có `payload.node_id` trùng và ghi audit |
-| Payload lỗi thời (node đã bị xoá) | `applied_failed` + error_message; không rollback thay đổi trước |
-| Admin lạm quyền "Áp dụng ngay" | Ghi audit `admin_direct_apply` với `change_request_id=NULL`; báo cáo hàng tuần |
-| Realtime badge sai | Poll fallback 30s khi channel disconnect |
-| Legacy code đường tắt | Grep guard test: cấm gọi RPC nhạy cảm ngoài `change-request.ts` (regex qua `src/lib/mirats/__tests__/no-direct-sensitive-mutation.test.ts`) |
-| RLS đọc quá rộng cho phong_kt | Ẩn `payload` chi tiết nếu CR không thuộc scope của user (view + policy) |
+| Rủi ro                               | Giảm thiểu                                                                                                                                  |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| CR chồng chéo (2 CR cùng đổi 1 node) | Khi approve, tự động `cancel` các CR pending có `payload.node_id` trùng và ghi audit                                                        |
+| Payload lỗi thời (node đã bị xoá)    | `applied_failed` + error_message; không rollback thay đổi trước                                                                             |
+| Admin lạm quyền "Áp dụng ngay"       | Ghi audit `admin_direct_apply` với `change_request_id=NULL`; báo cáo hàng tuần                                                              |
+| Realtime badge sai                   | Poll fallback 30s khi channel disconnect                                                                                                    |
+| Legacy code đường tắt                | Grep guard test: cấm gọi RPC nhạy cảm ngoài `change-request.ts` (regex qua `src/lib/mirats/__tests__/no-direct-sensitive-mutation.test.ts`) |
+| RLS đọc quá rộng cho phong_kt        | Ẩn `payload` chi tiết nếu CR không thuộc scope của user (view + policy)                                                                     |
 
 ## 9. Câu hỏi làm rõ
 

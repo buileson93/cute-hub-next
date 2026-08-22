@@ -41,7 +41,9 @@ function PendingPage() {
           </div>
           <div>
             <div className="text-lg font-semibold tracking-tight">MIRATS</div>
-            <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">TÀI KHOẢN CHỜ DUYỆT</div>
+            <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+              TÀI KHOẢN CHỜ DUYỆT
+            </div>
           </div>
         </div>
 
@@ -52,18 +54,21 @@ function PendingPage() {
             </div>
             <CardTitle className="text-xl">Đang chờ quản trị viên duyệt</CardTitle>
             <CardDescription>
-              Đăng ký của bạn đã được ghi nhận. Quản trị hệ thống sẽ kiểm tra và cấp quyền truy cập trong thời gian sớm nhất.
+              Đăng ký của bạn đã được ghi nhận. Quản trị hệ thống sẽ kiểm tra và cấp quyền truy cập
+              trong thời gian sớm nhất.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="rounded-md border bg-muted/40 px-4 py-3 text-sm">
-              <div className="text-muted-foreground text-[11px] uppercase tracking-wider">Tài khoản</div>
+              <div className="text-muted-foreground text-[11px] uppercase tracking-wider">
+                Tài khoản
+              </div>
               <div className="font-medium">{profile?.ho_ten ?? profile?.email}</div>
               <div className="text-xs text-muted-foreground">{profile?.email}</div>
             </div>
             <div className="text-xs leading-relaxed text-muted-foreground">
-              Sau khi được duyệt, bạn có thể đăng nhập lại để bắt đầu sử dụng hệ thống.
-              Nếu cần hỗ trợ nhanh, liên hệ <b>Phòng Kỹ thuật</b> hoặc quản trị viên qua email nội bộ.
+              Sau khi được duyệt, bạn có thể đăng nhập lại để bắt đầu sử dụng hệ thống. Nếu cần hỗ
+              trợ nhanh, liên hệ <b>Phòng Kỹ thuật</b> hoặc quản trị viên qua email nội bộ.
             </div>
             <div className="grid grid-cols-2 gap-2">
               <Button variant="outline" onClick={refresh}>
@@ -74,7 +79,10 @@ function PendingPage() {
               </Button>
             </div>
             <div className="text-center">
-              <Link to="/auth" className="text-xs text-muted-foreground underline-offset-4 hover:text-primary hover:underline">
+              <Link
+                to="/auth"
+                className="text-xs text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
+              >
                 Về trang đăng nhập
               </Link>
             </div>

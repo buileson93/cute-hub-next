@@ -7,6 +7,7 @@ type: feature
 # T29 — DataState Standardization Plan
 
 ## Giai đoạn 1: Khảo sát (Đã hoàn thành)
+
 - Đã tìm thấy: `LoadingState`, `EmptyState`, `ErrorState`, và `Skeletons.tsx`.
 - Thống kê: < 20% route có xử lý đủ 3 trạng thái.
 - Top 5 màn hình mục tiêu:
@@ -19,21 +20,25 @@ type: feature
 ## Giai đoạn 2: Triển khai
 
 ### 1. Tạo component `DataState.tsx`
+
 - Hợp nhất 3 trạng thái vào một component duy nhất.
 - Hỗ trợ các kiểu skeleton từ `Skeletons.tsx` (table, list, card, drawer).
 - Xử lý logic `empty` thông minh: Phân biệt "không có dữ liệu" và "không tìm thấy kết quả lọc".
 
 ### 2. Áp dụng thí điểm (Lượt 1)
+
 - Áp dụng cho màn hình **Sổ lý lịch tài sản** (`src/routes/_app.thiet-bi.index.tsx`).
 - Kiểm tra đủ 3 trạng thái: Loading (TableSkeleton), Empty (với nút Xoá lọc), Error (với nút Thử lại).
 
 ### 3. Áp dụng cho các màn hình còn lại (Sau khi thí điểm được duyệt)
+
 - Lượt 2: Cây hệ thống.
 - Lượt 3: Danh sách sự cố.
 - Lượt 4: Tổng quan.
 - Lượt 5: Danh sách bảo trì.
 
 ## Tiêu chuẩn hoàn thành
+
 - Không còn màn hình trắng khi đang tải (thay bằng Skeleton phù hợp).
 - Thông báo lỗi bằng tiếng Việt, có nút Thử lại.
 - Trạng thái trống có hướng dẫn hành động tiếp theo.

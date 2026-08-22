@@ -3,13 +3,22 @@ import { ChevronRight, CornerDownRight, Paperclip } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import {
-  type CongVanLinkRow, type CongVanRow, type CongVanTepRow,
-  LIEN_KET_META, LOAI_META, TRANG_THAI_META, cvMoc, fmtDate,
+  type CongVanLinkRow,
+  type CongVanRow,
+  type CongVanTepRow,
+  LIEN_KET_META,
+  LOAI_META,
+  TRANG_THAI_META,
+  cvMoc,
+  fmtDate,
 } from "./types";
 
 /** Danh sách phân cấp: công văn phúc đáp là "thẻ con" của công văn gốc, sắp xếp ngày tăng dần. */
 export function CongVanTree({
-  congVans, links, teps, onOpen,
+  congVans,
+  links,
+  teps,
+  onOpen,
 }: {
   congVans: CongVanRow[];
   links: CongVanLinkRow[];
@@ -78,25 +87,36 @@ export function CongVanTree({
             className="flex w-full items-center gap-2 border-b px-3 py-2 text-left text-sm last:border-b-0 hover:bg-muted/50"
             style={{ paddingLeft: 12 + depth * 26 }}
           >
-            {depth > 0
-              ? <CornerDownRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-              : <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50" />}
+            {depth > 0 ? (
+              <CornerDownRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+            ) : (
+              <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50" />
+            )}
             <span className={cn("h-2 w-2 shrink-0 rounded-full", meta.dot)} />
             <span className="w-[110px] shrink-0 text-xs tabular-nums text-muted-foreground">
               {fmtDate(cv.ngay_ban_hanh ?? cv.ngay_tiep_nhan)}
             </span>
-            <Badge variant="outline" className={cn("shrink-0 text-[10px]", meta.tone)}>{meta.short}</Badge>
+            <Badge variant="outline" className={cn("shrink-0 text-[10px]", meta.tone)}>
+              {meta.short}
+            </Badge>
             <span className="shrink-0 font-medium">{cv.so_cong_van}</span>
             <span className="min-w-0 flex-1 truncate text-muted-foreground">
               {cv.trich_yeu || "(chưa có trích yếu)"}
             </span>
-            {rel && <span className="hidden shrink-0 text-[11px] text-muted-foreground lg:inline">{rel}</span>}
-            {files > 0 && (
-              <span className="inline-flex shrink-0 items-center gap-1 text-[11px] text-muted-foreground">
-                <Paperclip className="h-3 w-3" />{files}
+            {rel && (
+              <span className="hidden shrink-0 text-[11px] text-muted-foreground lg:inline">
+                {rel}
               </span>
             )}
-            <Badge variant="outline" className={cn("shrink-0 text-[10px]", st.tone)}>{st.label}</Badge>
+            {files > 0 && (
+              <span className="inline-flex shrink-0 items-center gap-1 text-[11px] text-muted-foreground">
+                <Paperclip className="h-3 w-3" />
+                {files}
+              </span>
+            )}
+            <Badge variant="outline" className={cn("shrink-0 text-[10px]", st.tone)}>
+              {st.label}
+            </Badge>
           </button>
         );
       })}

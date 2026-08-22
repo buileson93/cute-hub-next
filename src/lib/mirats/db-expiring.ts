@@ -20,7 +20,7 @@ export interface ExpiringRow {
 
 /** Lọc thuần: chỉ giữ mục còn hạn trong khoảng [0, days], sắp xếp gần hết hạn trước.
  *  Đối với tài sản, chỉ áp dụng cảnh báo nếu là 'Tài sản hệ thống' (vai_tro='he_thong')
- *  hoặc Nhóm 1 (phan_loai_id mapped to N1). 
+ *  hoặc Nhóm 1 (phan_loai_id mapped to N1).
  *  LƯU Ý: logic vai_tro nên được lọc ở view v_sap_het_han nếu có thể,
  *  nhưng ở đây ta lọc thêm ở frontend để chắc chắn.
  */
@@ -30,9 +30,10 @@ export function locSapHetHan(rows: ExpiringRow[], days: number): ExpiringRow[] {
     .sort((a, b) => a.so_ngay_con_lai - b.so_ngay_con_lai);
 }
 
-
 /** Đọc view v_sap_het_han rồi lọc theo số ngày còn lại. */
-export async function getExpiring({ days = DEFAULT_NGAY_SAP_HET_HAN }: { days?: number } = {}): Promise<ExpiringRow[]> {
+export async function getExpiring({
+  days = DEFAULT_NGAY_SAP_HET_HAN,
+}: { days?: number } = {}): Promise<ExpiringRow[]> {
   const { data, error } = await supabase
     .from("v_sap_het_han")
     .select("loai, thiet_bi_id, ten, ngay_het_han, so_ngay_con_lai")

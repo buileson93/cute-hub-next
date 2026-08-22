@@ -38,10 +38,7 @@ export function saveColumnPrefs(
 ): void {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(
-      keyFor(tableId, userId),
-      JSON.stringify(visibleKeys),
-    );
+    window.localStorage.setItem(keyFor(tableId, userId), JSON.stringify(visibleKeys));
   } catch {
     // Bỏ qua khi localStorage đầy hoặc bị chặn — không ảnh hưởng nghiệp vụ.
   }

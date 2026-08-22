@@ -2,7 +2,11 @@
 // Dùng trong Nhật ký thay đổi (ChangeLogPanel) để xem chính xác từng trường đã đổi giữa hai phiên bản.
 import { ArrowRight, Columns2 } from "lucide-react";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +19,9 @@ function DiffCell({ value, tone }: { value: unknown; tone: "before" | "after" })
       ? "border-destructive/20 bg-destructive/10 text-destructive"
       : "border-primary/20 bg-primary/10 text-primary";
   return (
-    <div className={`min-h-[2rem] whitespace-pre-wrap break-words rounded-md border px-2.5 py-1.5 text-xs ${base} ${empty ? "italic opacity-70" : ""}`}>
+    <div
+      className={`min-h-[2rem] whitespace-pre-wrap break-words rounded-md border px-2.5 py-1.5 text-xs ${base} ${empty ? "italic opacity-70" : ""}`}
+    >
       {formatVal(value)}
     </div>
   );
@@ -57,11 +63,18 @@ export function ChangeDiffDialog({
             <div className="mb-2 grid grid-cols-[minmax(120px,1fr)_1fr_auto_1fr] items-center gap-2 px-0.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
               <span>Trường</span>
               <span className="flex items-center gap-1">
-                <Badge variant="outline" className="border-destructive/30 bg-destructive/10 text-destructive">Trước</Badge>
+                <Badge
+                  variant="outline"
+                  className="border-destructive/30 bg-destructive/10 text-destructive"
+                >
+                  Trước
+                </Badge>
               </span>
               <span aria-hidden />
               <span className="flex items-center gap-1">
-                <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary">Sau</Badge>
+                <Badge variant="outline" className="border-primary/30 bg-primary/10 text-primary">
+                  Sau
+                </Badge>
               </span>
             </div>
             <div className="space-y-1.5">

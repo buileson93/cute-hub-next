@@ -24,7 +24,9 @@ export function QRScanner({ onDetect, className }: Props) {
   const streamRef = useRef<MediaStream | null>(null);
   const rafRef = useRef<number | null>(null);
   const zxingControlsRef = useRef<{ stop: () => void } | null>(null);
-  const [status, setStatus] = useState<"idle" | "starting" | "scanning" | "denied" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "starting" | "scanning" | "denied" | "error">(
+    "idle",
+  );
   const [manual, setManual] = useState("");
   const [errMsg, setErrMsg] = useState<string | null>(null);
 
@@ -55,7 +57,11 @@ export function QRScanner({ onDetect, className }: Props) {
       setStatus("scanning");
 
       // 1) BarcodeDetector native
-      const AnyWin = window as unknown as { BarcodeDetector?: new (opts: { formats: string[] }) => { detect: (src: CanvasImageSource) => Promise<Array<{ rawValue: string }>> } };
+      const AnyWin = window as unknown as {
+        BarcodeDetector?: new (opts: { formats: string[] }) => {
+          detect: (src: CanvasImageSource) => Promise<Array<{ rawValue: string }>>;
+        };
+      };
       if (AnyWin.BarcodeDetector) {
         const detector = new AnyWin.BarcodeDetector({ formats: ["qr_code"] });
         const tick = async () => {
@@ -67,7 +73,9 @@ export function QRScanner({ onDetect, className }: Props) {
               handleDetected(val);
               return;
             }
-          } catch { /* ignore per-frame errors */ }
+          } catch {
+            /* ignore per-frame errors */
+          }
           rafRef.current = requestAnimationFrame(tick);
         };
         rafRef.current = requestAnimationFrame(tick);
@@ -101,7 +109,6 @@ export function QRScanner({ onDetect, className }: Props) {
 
   useEffect(() => {
     return () => cleanup();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const submitManual = (e: React.FormEvent) => {
@@ -117,15 +124,30 @@ export function QRScanner({ onDetect, className }: Props) {
         {status !== "scanning" && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/60 text-white/90">
             {status === "starting" ? (
-              <><Loader2 className="h-8 w-8 animate-spin" /><span>Đang mở camera…</span></>
+              <>
+                <Loader2 className="h-8 w-8 animate-spin" />
+                <span>Đang mở camera…</span>
+              </>
             ) : status === "denied" ? (
-              <><CameraOff className="h-8 w-8" /><span className="px-6 text-center text-sm">Chưa cấp quyền camera. Nhập mã bên dưới.</span></>
+              <>
+                <CameraOff className="h-8 w-8" />
+                <span className="px-6 text-center text-sm">
+                  Chưa cấp quyền camera. Nhập mã bên dưới.
+                </span>
+              </>
             ) : status === "error" ? (
-              <><CameraOff className="h-8 w-8" /><span className="px-6 text-center text-sm">{errMsg}</span></>
+              <>
+                <CameraOff className="h-8 w-8" />
+                <span className="px-6 text-center text-sm">{errMsg}</span>
+              </>
             ) : (
               <>
                 <QrCode className="h-10 w-10 opacity-70" />
-                <Button onClick={start} size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2">
+                <Button
+                  onClick={start}
+                  size="lg"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2"
+                >
                   <Camera className="h-4 w-4" /> Bật camera quét
                 </Button>
               </>
@@ -144,11 +166,22 @@ export function QRScanner({ onDetect, className }: Props) {
           placeholder="Nhập mã thiết bị hoặc dán link…"
           aria-label="Nhập mã thiết bị"
         />
-        <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90">Mở</Button>
+        <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90">
+          Mở
+        </Button>
       </form>
       {status === "scanning" && (
         <div className="mt-2 flex justify-end">
-          <Button type="button" size="sm" variant="ghost" className="h-8 text-primary hover:text-primary/90 hover:bg-primary/5" onClick={() => { cleanup(); setStatus("idle"); }}>
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            className="h-8 text-primary hover:text-primary/90 hover:bg-primary/5"
+            onClick={() => {
+              cleanup();
+              setStatus("idle");
+            }}
+          >
             Tắt camera
           </Button>
         </div>

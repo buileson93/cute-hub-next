@@ -6,7 +6,12 @@ describe("buildXuatArgs", () => {
 
   it("gắn đúng _vat_tu_id/_kho_id/_so_luong", () => {
     const a = buildXuatArgs(dong, { congViecId: "cv1" });
-    expect(a).toMatchObject({ _vat_tu_id: "v1", _kho_id: "k1", _so_luong: 3, _cong_viec_id: "cv1" });
+    expect(a).toMatchObject({
+      _vat_tu_id: "v1",
+      _kho_id: "k1",
+      _so_luong: 3,
+      _cong_viec_id: "cv1",
+    });
   });
 
   it("gắn đúng khoá liên kết sự cố", () => {
@@ -32,7 +37,10 @@ describe("buildXuatArgs", () => {
   });
 
   it("giữ don_gia và ghi_chu khi hợp lệ", () => {
-    const a = buildXuatArgs({ ...dong, don_gia: 12000, ghi_chu: " thay lọc " }, { congViecId: "cv1" });
+    const a = buildXuatArgs(
+      { ...dong, don_gia: 12000, ghi_chu: " thay lọc " },
+      { congViecId: "cv1" },
+    );
     expect(a._don_gia).toBe(12000);
     expect(a._ghi_chu).toBe("thay lọc");
   });

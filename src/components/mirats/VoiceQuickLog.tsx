@@ -26,11 +26,16 @@ export function VoiceQuickLog({ maThietBi }: Props) {
   const [text, setText] = useState("");
   const ctrlRef = useRef<VoiceController | null>(null);
 
-  useEffect(() => { setSupported(isVoiceSupported()); }, []);
+  useEffect(() => {
+    setSupported(isVoiceSupported());
+  }, []);
 
   function handoff(finalText: string) {
     const t = finalText.trim();
-    if (t.length < 5) { toast.error("Nội dung quá ngắn"); return; }
+    if (t.length < 5) {
+      toast.error("Nội dung quá ngắn");
+      return;
+    }
     saveVoiceDraft({ transcript: t, maThietBi });
     void navigate({
       to: "/su-co/moi",
@@ -44,10 +49,16 @@ export function VoiceQuickLog({ maThietBi }: Props) {
       lang: "vi-VN",
       interim: true,
       onTranscript: (t) => setText(t),
-      onError: (msg) => { toast.error(`Ghi âm lỗi: ${msg}`); setListening(false); },
+      onError: (msg) => {
+        toast.error(`Ghi âm lỗi: ${msg}`);
+        setListening(false);
+      },
       onEnd: () => setListening(false),
     });
-    if (!ctrl) { toast.error("Không khởi tạo được micro"); return; }
+    if (!ctrl) {
+      toast.error("Không khởi tạo được micro");
+      return;
+    }
     ctrlRef.current = ctrl;
     setText("");
     setListening(true);
@@ -60,7 +71,12 @@ export function VoiceQuickLog({ maThietBi }: Props) {
   }
 
   // Cleanup nếu unmount trong khi đang ghi.
-  useEffect(() => () => { ctrlRef.current?.abort(); }, []);
+  useEffect(
+    () => () => {
+      ctrlRef.current?.abort();
+    },
+    [],
+  );
 
   return (
     <div className="rounded-lg border bg-card p-3 space-y-3">
@@ -83,7 +99,15 @@ export function VoiceQuickLog({ maThietBi }: Props) {
             }`}
             aria-label="Nhấn giữ để ghi âm sự cố"
           >
-            {listening ? <><MicOff className="h-6 w-6" /> Đang nghe… (thả để dừng)</> : <><Mic className="h-6 w-6" /> Nhấn giữ để nói</>}
+            {listening ? (
+              <>
+                <MicOff className="h-6 w-6" /> Đang nghe… (thả để dừng)
+              </>
+            ) : (
+              <>
+                <Mic className="h-6 w-6" /> Nhấn giữ để nói
+              </>
+            )}
           </button>
           {text && (
             <div className="rounded-md border bg-muted/50 p-2 text-sm min-h-[3rem] max-h-40 overflow-y-auto whitespace-pre-wrap">
@@ -96,8 +120,12 @@ export function VoiceQuickLog({ maThietBi }: Props) {
           <div className="text-xs text-muted-foreground">
             Trình duyệt không hỗ trợ ghi âm — gõ tay mô tả sự cố:
           </div>
-          <Textarea value={text} onChange={(e) => setText(e.target.value)} rows={4}
-            placeholder="Mô tả ngắn: hiện tượng, thời điểm, ảnh hưởng…" />
+          <Textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            rows={4}
+            placeholder="Mô tả ngắn: hiện tượng, thời điểm, ảnh hưởng…"
+          />
         </div>
       )}
 
@@ -109,7 +137,11 @@ export function VoiceQuickLog({ maThietBi }: Props) {
           onClick={() => handoff(text)}
           disabled={text.trim().length < 5}
         >
-          {listening ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Send className="h-4 w-4 mr-1.5" />}
+          {listening ? (
+            <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+          ) : (
+            <Send className="h-4 w-4 mr-1.5" />
+          )}
           Tiếp tục lập báo cáo
         </Button>
       </div>

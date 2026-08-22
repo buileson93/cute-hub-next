@@ -11,15 +11,15 @@ Postgres migration là **một chiều theo mặc định**: một khi `ALTER`/`
 
 ## 2. Phân loại theo mức độ rủi ro
 
-| Loại                                        | Rủi ro | Phương án hoàn tác                     |
-|---------------------------------------------|--------|----------------------------------------|
-| `CREATE TABLE`, `CREATE INDEX CONCURRENTLY` | Thấp   | Forward: `DROP TABLE`/`DROP INDEX`     |
-| `ADD COLUMN` nullable + default trống       | Thấp   | Forward: `DROP COLUMN`                 |
-| `CREATE POLICY`, `GRANT`                    | Thấp   | Forward: `DROP POLICY` / `REVOKE`      |
-| `ALTER COLUMN TYPE`                         | **Cao** | Cần backup + kịch bản đảo type        |
-| `DROP COLUMN` / `DROP TABLE`                | **Cao** | PITR / restore dump — KHÔNG đảo được  |
-| `UPDATE`/`DELETE` diện rộng                 | **Cao** | PITR về thời điểm trước migration     |
-| `ALTER … NOT NULL` khi có NULL trong dữ liệu| Cao    | Backfill trước, rồi set NOT NULL      |
+| Loại                                         | Rủi ro  | Phương án hoàn tác                   |
+| -------------------------------------------- | ------- | ------------------------------------ |
+| `CREATE TABLE`, `CREATE INDEX CONCURRENTLY`  | Thấp    | Forward: `DROP TABLE`/`DROP INDEX`   |
+| `ADD COLUMN` nullable + default trống        | Thấp    | Forward: `DROP COLUMN`               |
+| `CREATE POLICY`, `GRANT`                     | Thấp    | Forward: `DROP POLICY` / `REVOKE`    |
+| `ALTER COLUMN TYPE`                          | **Cao** | Cần backup + kịch bản đảo type       |
+| `DROP COLUMN` / `DROP TABLE`                 | **Cao** | PITR / restore dump — KHÔNG đảo được |
+| `UPDATE`/`DELETE` diện rộng                  | **Cao** | PITR về thời điểm trước migration    |
+| `ALTER … NOT NULL` khi có NULL trong dữ liệu | Cao     | Backfill trước, rồi set NOT NULL     |
 
 ## 3. Cấu trúc migration khuyến nghị
 

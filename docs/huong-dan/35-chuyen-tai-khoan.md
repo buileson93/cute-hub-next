@@ -6,12 +6,12 @@
 
 Một dự án MIRATS gồm **4 khối** cần chuyển:
 
-| Khối | Nằm ở đâu | Có tự chuyển kèm project không? |
-|---|---|---|
-| **Code** (routes, components, migrations) | Repo Lovable | ✅ Có |
-| **Database** (Postgres + RLS) | Lovable Cloud | ⚠️ Chỉ khi **Transfer ownership** |
-| **Storage** (avatars, model-anh, chat-files, database-backups) | Lovable Cloud | ⚠️ Chỉ khi **Transfer ownership** |
-| **Secrets** (Telegram, Cron secret, backup keys…) | Project settings | ❌ Không, phải khai lại |
+| Khối                                                           | Nằm ở đâu        | Có tự chuyển kèm project không?   |
+| -------------------------------------------------------------- | ---------------- | --------------------------------- |
+| **Code** (routes, components, migrations)                      | Repo Lovable     | ✅ Có                             |
+| **Database** (Postgres + RLS)                                  | Lovable Cloud    | ⚠️ Chỉ khi **Transfer ownership** |
+| **Storage** (avatars, model-anh, chat-files, database-backups) | Lovable Cloud    | ⚠️ Chỉ khi **Transfer ownership** |
+| **Secrets** (Telegram, Cron secret, backup keys…)              | Project settings | ❌ Không, phải khai lại           |
 
 Có 2 kịch bản:
 
@@ -54,14 +54,14 @@ Sau khi chuyển xong: Cloud (DB + storage + auth users) đi theo project.
 
 Vào **Project Settings → Secrets** trên tài khoản mới, khai lại:
 
-| Secret | Bắt buộc? | Ghi chú |
-|---|---|---|
-| `LOVABLE_API_KEY` | Tự cấp | Không cần copy |
-| `TELEGRAM_BOT_TOKEN` | Nếu dùng cảnh báo | Copy từ BotFather |
-| `TELEGRAM_CHAT_ID` | Nếu dùng cảnh báo | |
-| `CRON_SECRET` | Nếu dùng cron | Random 32 ký tự |
-| `X_CRON_SECRET` | Nếu dùng cron pg_cron | Giống trên |
-| Google OAuth Client ID/Secret | Nếu bật Google login | Cấu hình trong Cloud → Users → Auth Settings |
+| Secret                        | Bắt buộc?             | Ghi chú                                      |
+| ----------------------------- | --------------------- | -------------------------------------------- |
+| `LOVABLE_API_KEY`             | Tự cấp                | Không cần copy                               |
+| `TELEGRAM_BOT_TOKEN`          | Nếu dùng cảnh báo     | Copy từ BotFather                            |
+| `TELEGRAM_CHAT_ID`            | Nếu dùng cảnh báo     |                                              |
+| `CRON_SECRET`                 | Nếu dùng cron         | Random 32 ký tự                              |
+| `X_CRON_SECRET`               | Nếu dùng cron pg_cron | Giống trên                                   |
+| Google OAuth Client ID/Secret | Nếu bật Google login  | Cấu hình trong Cloud → Users → Auth Settings |
 
 ### Bước 5. Kiểm tra sau chuyển (checklist)
 
@@ -126,11 +126,13 @@ zip -r /mnt/documents/mirats-storage-$(date +%Y%m%d).zip storage-dump
 ### Bước 3. Chuẩn bị project đích
 
 **Tùy chọn B1 — Remix trên Lovable:**
+
 1. Ở project cũ: **Settings → Project → General** → bật **Public remixing**
 2. Đăng nhập tài khoản đích → mở URL project cũ → nút **Remix**
 3. Ở project đích: bật **Cloud** (tạo Supabase instance mới, trống)
 
 **Tùy chọn B2 — Self-host trên Supabase riêng:**
+
 1. Tạo project Supabase mới ở supabase.com
 2. Clone code repo về máy
 3. Cấu hình theo `docs/HUONG_DAN_CAI_DAT_BUILD.md`
@@ -159,6 +161,7 @@ bash scripts/restore-from-backup.sh /mnt/documents/mirats-backup-YYYYMMDD-HHMMSS
 ```
 
 Script này (xem file bên dưới):
+
 1. Giải nén ZIP
 2. Import từng CSV vào bảng tương ứng với `\COPY FROM STDIN`
 3. Import theo **thứ tự phụ thuộc FK** (danh mục → thiết bị → sự cố / bảo dưỡng)
@@ -234,13 +237,18 @@ echo "✅ Xong. Đối chiếu số dòng với $ROOT/tables/_manifest.tsv"
 **Cách 1 — Người dùng đăng ký lại**: đơn giản, phù hợp nếu chỉ có vài admin.
 
 **Cách 2 — Migrate qua Auth Admin API**:
+
 ```js
 // Export ở project cũ
-const { data: { users } } = await supabaseOld.auth.admin.listUsers();
+const {
+  data: { users },
+} = await supabaseOld.auth.admin.listUsers();
 // Import vào project mới
 for (const u of users) {
   await supabaseNew.auth.admin.createUser({
-    email: u.email, email_confirm: true, user_metadata: u.user_metadata,
+    email: u.email,
+    email_confirm: true,
+    user_metadata: u.user_metadata,
     // Password không xuất được → gửi email đặt lại mật khẩu
   });
 }

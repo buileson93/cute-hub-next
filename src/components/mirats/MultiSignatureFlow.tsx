@@ -24,7 +24,10 @@ export type SignatureSlot = {
 export type SignerConfig = { key: string; label: string };
 
 export function MultiSignatureFlow({
-  value, onChange, signers, disabled,
+  value,
+  onChange,
+  signers,
+  disabled,
 }: {
   value: SignatureSlot[];
   onChange: (v: SignatureSlot[]) => void;
@@ -72,44 +75,70 @@ export function MultiSignatureFlow({
         const signed = !!s.signed_at;
         const isNext = !signed && i === firstPendingIdx;
         const canSignHere = !disabled && isNext;
-        const canClear = !disabled && signed && s.signer_id === session?.user.id
-          && !slots.slice(i + 1).some((x) => x.signed_at);
+        const canClear =
+          !disabled &&
+          signed &&
+          s.signer_id === session?.user.id &&
+          !slots.slice(i + 1).some((x) => x.signed_at);
         return (
           <div key={s.key} className="rounded border bg-background p-2">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="font-mono text-[10px]">#{i + 1}</Badge>
+                <Badge variant="outline" className="font-mono text-[10px]">
+                  #{i + 1}
+                </Badge>
                 <span className="text-sm font-medium">{s.label}</span>
                 {signed ? (
-                  <Badge className="bg-primary text-primary-foreground"><Check className="mr-1 h-3 w-3" />Đã ký</Badge>
+                  <Badge className="bg-primary text-primary-foreground">
+                    <Check className="mr-1 h-3 w-3" />
+                    Đã ký
+                  </Badge>
                 ) : isNext ? (
-                  <Badge variant="outline" className="bg-muted text-muted-foreground border-border shadow-none"><Clock className="mr-1 h-3 w-3" />Chờ ký</Badge>
+                  <Badge
+                    variant="outline"
+                    className="bg-muted text-muted-foreground border-border shadow-none"
+                  >
+                    <Clock className="mr-1 h-3 w-3" />
+                    Chờ ký
+                  </Badge>
                 ) : (
-                  <Badge variant="outline" className="text-muted-foreground">Chưa tới lượt</Badge>
+                  <Badge variant="outline" className="text-muted-foreground">
+                    Chưa tới lượt
+                  </Badge>
                 )}
               </div>
               <div className="flex gap-1">
                 {canSignHere && (
-                  <Button type="button" size="sm" variant="outline"
-                    onClick={() => setOpenSlot(openSlot === s.key ? null : s.key)}>
-                    <PenLine className="mr-1 h-3.5 w-3.5" />Ký
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setOpenSlot(openSlot === s.key ? null : s.key)}
+                  >
+                    <PenLine className="mr-1 h-3.5 w-3.5" />
+                    Ký
                   </Button>
                 )}
                 {canClear && (
-                  <Button type="button" size="sm" variant="ghost"
-                    onClick={() => clearSlot(s.key)}>
-                    <Trash2 className="mr-1 h-3.5 w-3.5" />Xoá ký
+                  <Button type="button" size="sm" variant="ghost" onClick={() => clearSlot(s.key)}>
+                    <Trash2 className="mr-1 h-3.5 w-3.5" />
+                    Xoá ký
                   </Button>
                 )}
               </div>
             </div>
 
             {signed && s.data_url?.startsWith("data:") && (
-              <img src={s.data_url} alt="chữ ký" className="mt-2 h-16 rounded border bg-white object-contain" />
+              <img
+                src={s.data_url}
+                alt="chữ ký"
+                className="mt-2 h-16 rounded border bg-white object-contain"
+              />
             )}
             {signed && (
               <p className="mt-1 text-[11px] text-muted-foreground">
-                {s.signer_name || s.signer_id || "?"} · {s.signed_at ? new Date(s.signed_at).toLocaleString("vi-VN") : ""}
+                {s.signer_name || s.signer_id || "?"} ·{" "}
+                {s.signed_at ? new Date(s.signed_at).toLocaleString("vi-VN") : ""}
               </p>
             )}
 
@@ -117,11 +146,25 @@ export function MultiSignatureFlow({
               <div className="mt-2">
                 <SignaturePad value={pending} onChange={setPending} height={140} />
                 <div className="mt-2 flex justify-end gap-1">
-                  <Button type="button" size="sm" variant="ghost" onClick={() => { setOpenSlot(null); setPending(null); }}>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      setOpenSlot(null);
+                      setPending(null);
+                    }}
+                  >
                     Huỷ
                   </Button>
-                  <Button type="button" size="sm" onClick={() => commitSign(s.key, pending)} disabled={!pending}>
-                    <Check className="mr-1 h-3.5 w-3.5" />Xác nhận ký
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => commitSign(s.key, pending)}
+                    disabled={!pending}
+                  >
+                    <Check className="mr-1 h-3.5 w-3.5" />
+                    Xác nhận ký
                   </Button>
                 </div>
               </div>
@@ -130,7 +173,10 @@ export function MultiSignatureFlow({
         );
       })}
       {signers.length === 0 && (
-        <p className="text-xs text-muted-foreground">Chưa cấu hình người ký. Vào Thiết kế mẫu → tab Biểu mẫu tự do, thêm cột (key/label) cho trường chữ ký để bật quy trình ký nhiều người.</p>
+        <p className="text-xs text-muted-foreground">
+          Chưa cấu hình người ký. Vào Thiết kế mẫu → tab Biểu mẫu tự do, thêm cột (key/label) cho
+          trường chữ ký để bật quy trình ký nhiều người.
+        </p>
       )}
     </div>
   );

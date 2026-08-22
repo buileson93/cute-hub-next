@@ -69,7 +69,9 @@ export function DataTableCore<T>({
 }: DataTableCoreProps<T>) {
   const [density] = useDensity();
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const [calculatedMaxHeight, setCalculatedMaxHeight] = React.useState<string | number | undefined>(initialMaxHeight);
+  const [calculatedMaxHeight, setCalculatedMaxHeight] = React.useState<string | number | undefined>(
+    initialMaxHeight,
+  );
 
   React.useLayoutEffect(() => {
     if (!fitViewport || !containerRef.current) return;
@@ -85,8 +87,8 @@ export function DataTableCore<T>({
     };
 
     calculate();
-    window.addEventListener('resize', calculate);
-    return () => window.removeEventListener('resize', calculate);
+    window.addEventListener("resize", calculate);
+    return () => window.removeEventListener("resize", calculate);
   }, [fitViewport, initialMaxHeight]);
 
   const maxHeight = fitViewport ? calculatedMaxHeight : initialMaxHeight;
@@ -116,16 +118,21 @@ export function DataTableCore<T>({
 
   const tableClasses = cn(
     "relative w-full border-separate border-spacing-0",
-    density === "compact" ? "text-[12px]" : "text-[13px]"
+    density === "compact" ? "text-[12px]" : "text-[13px]",
   );
 
   return (
-    <div 
+    <div
       ref={containerRef}
-      className={cn("relative overflow-auto mirats-scroll rounded-xl bg-card mirats-data-table-core", className)}
+      className={cn(
+        "relative overflow-auto mirats-scroll rounded-xl bg-card mirats-data-table-core",
+        className,
+      )}
       style={{ maxHeight }}
     >
-      <Table className={cn(tableClasses, "mirats-data-table-core-element whitespace-nowrap min-w-full")}>
+      <Table
+        className={cn(tableClasses, "mirats-data-table-core-element whitespace-nowrap min-w-full")}
+      >
         <TableHeader className="sticky top-0 z-40">
           <TableRow className="hover:bg-transparent border-b-0 border-t-0">
             {selectable && (
@@ -142,10 +149,11 @@ export function DataTableCore<T>({
                 }}
                 className={cn(
                   "mirats-table-header-base",
-                  col.sticky && "sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px] border-r border-border/20",
+                  col.sticky &&
+                    "sticky left-0 z-50 bg-muted/95 backdrop-blur-[4px] border-r border-border/20",
                   selectable && col.sticky && "left-10",
                   col.align === "center" && "text-center",
-                  col.align === "right" && "text-right"
+                  col.align === "right" && "text-right",
                 )}
               >
                 {col.header}
@@ -174,12 +182,12 @@ export function DataTableCore<T>({
                   className={cn(
                     "group transition-mirats-fast hover:bg-muted/50",
                     onRowClick && "cursor-pointer",
-                    isSelected && "bg-primary/5"
+                    isSelected && "bg-primary/5",
                   )}
                   onClick={() => onRowClick?.(row)}
                 >
                   {selectable && (
-                    <TableCell 
+                    <TableCell
                       className="w-10 px-2 text-center sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-l border-b border-r border-border/20"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -195,11 +203,13 @@ export function DataTableCore<T>({
                       className={cn(
                         "mirats-table-cell-base border-b border-r border-border/20",
                         col.cellClassName,
-                        col.sticky && "sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-r border-border/20",
+                        col.sticky &&
+                          "sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-r border-border/20",
                         selectable && col.sticky && "left-10",
                         col.align === "center" && "text-center",
                         col.align === "right" && "text-right tabular-nums",
-                        col.type === "actions" && "sticky right-0 z-20 bg-card/80 backdrop-blur-[2px] border-l border-border/20"
+                        col.type === "actions" &&
+                          "sticky right-0 z-20 bg-card/80 backdrop-blur-[2px] border-l border-border/20",
                       )}
                       style={{
                         width: col.width,

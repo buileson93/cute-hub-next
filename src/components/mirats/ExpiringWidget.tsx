@@ -8,7 +8,10 @@ import { cn } from "@/lib/utils";
 const THRESHOLDS = NGUONG_CANH_BAO;
 type Threshold = NguongCanhBao;
 
-const LOAI_META: Record<ExpiringRow["loai"], { label: string; cls: string; icon: React.ComponentType<{ className?: string }> }> = {
+const LOAI_META: Record<
+  ExpiringRow["loai"],
+  { label: string; cls: string; icon: React.ComponentType<{ className?: string }> }
+> = {
   bao_hanh: {
     label: "Bảo hành",
     cls: "bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300",
@@ -42,7 +45,11 @@ export function ExpiringWidget({
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
-      <div role="tablist" aria-label="Ngưỡng số ngày" className="inline-flex h-9 items-center gap-1 rounded-lg bg-muted p-1">
+      <div
+        role="tablist"
+        aria-label="Ngưỡng số ngày"
+        className="inline-flex h-9 items-center gap-1 rounded-lg bg-muted p-1"
+      >
         {THRESHOLDS.map((t) => (
           <button
             key={t}
@@ -52,7 +59,9 @@ export function ExpiringWidget({
             onClick={() => setThreshold(t)}
             className={cn(
               "rounded-md px-3 py-1 text-sm font-medium transition-colors",
-              threshold === t ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+              threshold === t
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {t} ngày
@@ -60,14 +69,16 @@ export function ExpiringWidget({
         ))}
       </div>
 
-
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-border py-10 text-center text-sm text-muted-foreground">
           <AlertTriangle className="h-5 w-5 opacity-50" />
           Không có mục nào sắp hết hạn trong {threshold} ngày.
         </div>
       ) : (
-        <ul aria-label={`Danh sách sắp hết hạn trong ${threshold} ngày`} className="divide-y divide-border rounded-lg border border-border">
+        <ul
+          aria-label={`Danh sách sắp hết hạn trong ${threshold} ngày`}
+          className="divide-y divide-border rounded-lg border border-border"
+        >
           {filtered.map((r) => {
             const meta = LOAI_META[r.loai];
             const Icon = meta.icon;
@@ -80,19 +91,23 @@ export function ExpiringWidget({
                     <Badge variant="outline" className={cn("border-0 text-[10.5px]", meta.cls)}>
                       {meta.label}
                     </Badge>
-                    <span className="text-[11px] text-muted-foreground">Hết hạn {r.ngay_het_han}</span>
+                    <span className="text-[11px] text-muted-foreground">
+                      Hết hạn {r.ngay_het_han}
+                    </span>
                   </div>
                 </div>
-                <Badge variant="outline" className={cn("border-0 shrink-0 text-[11px] font-semibold", ngayBadge(r.so_ngay_con_lai))}>
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    "border-0 shrink-0 text-[11px] font-semibold",
+                    ngayBadge(r.so_ngay_con_lai),
+                  )}
+                >
                   còn {r.so_ngay_con_lai} ngày
                 </Badge>
               </div>
             );
-            return (
-              <li key={`${r.loai}-${r.thiet_bi_id ?? r.ten}-${r.ngay_het_han}`}>
-                {content}
-              </li>
-            );
+            return <li key={`${r.loai}-${r.thiet_bi_id ?? r.ten}-${r.ngay_het_han}`}>{content}</li>;
           })}
         </ul>
       )}

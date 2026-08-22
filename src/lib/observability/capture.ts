@@ -59,7 +59,7 @@ export function captureError(
 ): void {
   if (typeof window === "undefined") {
     // SSR — chỉ log console; kênh trung tâm được xử lý ở edge/log.
-    // eslint-disable-next-line no-console
+
     console.error("[observability]", error, extra);
     return;
   }
@@ -83,7 +83,6 @@ export function captureError(
     /* ignore reporter failures */
   }
 
-  // eslint-disable-next-line no-console
   console.error("[observability]", severity, error, context);
 }
 

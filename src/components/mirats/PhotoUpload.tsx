@@ -5,7 +5,16 @@
 // ============================================================================
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, Upload, X, FileText, Image as ImageIcon, Check, Copy as CopyIcon, AlertCircle } from "lucide-react";
+import {
+  Loader2,
+  Upload,
+  X,
+  FileText,
+  Image as ImageIcon,
+  Check,
+  Copy as CopyIcon,
+  AlertCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 import {
   type FormAttachment,
@@ -27,25 +36,38 @@ type Row = {
 
 function labelOf(s: UploadStatus): string {
   switch (s.phase) {
-    case "queued": return "Đang chờ";
-    case "hashing": return "Kiểm tra trùng";
-    case "compressing": return "Đang nén";
-    case "dedup": return "Trùng nội dung – bỏ qua";
-    case "uploading": return `Tải lên ${s.progress ?? 0}%`;
-    case "done": return "Hoàn tất";
-    case "error": return `Lỗi: ${s.message ?? ""}`;
+    case "queued":
+      return "Đang chờ";
+    case "hashing":
+      return "Kiểm tra trùng";
+    case "compressing":
+      return "Đang nén";
+    case "dedup":
+      return "Trùng nội dung – bỏ qua";
+    case "uploading":
+      return `Tải lên ${s.progress ?? 0}%`;
+    case "done":
+      return "Hoàn tất";
+    case "error":
+      return `Lỗi: ${s.message ?? ""}`;
   }
 }
 
 function pctOf(s: UploadStatus): number {
   switch (s.phase) {
-    case "queued": return 0;
-    case "compressing": return 10;
-    case "hashing": return 25;
-    case "uploading": return 35 + Math.round(((s.progress ?? 0) * 60) / 100);
+    case "queued":
+      return 0;
+    case "compressing":
+      return 10;
+    case "hashing":
+      return 25;
+    case "uploading":
+      return 35 + Math.round(((s.progress ?? 0) * 60) / 100);
     case "dedup":
-    case "done": return 100;
-    case "error": return 100;
+    case "done":
+      return 100;
+    case "error":
+      return 100;
   }
 }
 
@@ -86,14 +108,19 @@ export function PhotoUpload({
       const next: Record<string, string> = {};
       for (const a of value) {
         if (!a.type?.startsWith("image/")) continue;
-        if (urls[a.path]) { next[a.path] = urls[a.path]; continue; }
+        if (urls[a.path]) {
+          next[a.path] = urls[a.path];
+          continue;
+        }
         const u = await signedUrl(a.path, 3600);
         if (u) next[a.path] = u;
       }
       if (!cancelled) setUrls(next);
     })();
-    return () => { cancelled = true; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   const pick = useCallback(() => inputRef.current?.click(), []);
@@ -116,15 +143,20 @@ export function PhotoUpload({
 
     const results = await runQueue(arr, CONCURRENCY, async (file, i) => {
       if (photoOnly && !file.type.startsWith("image/")) {
-        setRows((prev) => prev.map((r, k) => k === i
-          ? { ...r, status: { phase: "error", message: "Không phải ảnh" } }
-          : r));
+        setRows((prev) =>
+          prev.map((r, k) =>
+            k === i ? { ...r, status: { phase: "error", message: "Không phải ảnh" } } : r,
+          ),
+        );
         return null;
       }
       try {
         const att = await uploadAttachment(file, {
-          templateCode, draftId, fieldKey,
-          onStatus: (st) => setRows((prev) => prev.map((r, k) => k === i ? { ...r, status: st } : r)),
+          templateCode,
+          draftId,
+          fieldKey,
+          onStatus: (st) =>
+            setRows((prev) => prev.map((r, k) => (k === i ? { ...r, status: st } : r))),
         });
         if (att.dedup) toast.success(`"${file.name}" đã tồn tại — dùng lại bản cũ.`);
         return att;
@@ -143,27 +175,38 @@ export function PhotoUpload({
     if (inputRef.current) inputRef.current.value = "";
   };
 
-
   const remove = async (att: FormAttachment) => {
     if (!confirm(`Xoá "${att.name}"?`)) return;
     try {
       await removeAttachment(att.path);
-    } catch { /* vẫn xoá khỏi list — tệp có thể đã bị dọn */ }
+    } catch {
+      /* vẫn xoá khỏi list — tệp có thể đã bị dọn */
+    }
     onChange(value.filter((x) => x.path !== att.path));
   };
 
   return (
     <div className="space-y-2">
       <input
-        ref={inputRef} type="file" hidden multiple
+        ref={inputRef}
+        type="file"
+        hidden
+        multiple
         accept={photoOnly ? "image/*" : undefined}
         onChange={(e) => onFiles(e.target.files)}
       />
       <Button
-        type="button" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm" size="sm"
-        onClick={pick} disabled={disabled || busy || value.length >= maxFiles}
+        type="button"
+        className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+        size="sm"
+        onClick={pick}
+        disabled={disabled || busy || value.length >= maxFiles}
       >
-        {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+        {busy ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          <Upload className="mr-2 h-4 w-4" />
+        )}
         {photoOnly ? "Thêm ảnh" : "Thêm tệp"} ({value.length}/{maxFiles})
       </Button>
 
@@ -171,20 +214,29 @@ export function PhotoUpload({
         <div className="space-y-1.5 rounded-md border bg-muted/20 p-2">
           {rows.map((r) => {
             const pct = pctOf(r.status);
-            const savings = r.status.compressedSize && r.status.compressedSize < r.size
-              ? ` · ${Math.round((1 - r.status.compressedSize / r.size) * 100)}% nhỏ hơn`
-              : "";
+            const savings =
+              r.status.compressedSize && r.status.compressedSize < r.size
+                ? ` · ${Math.round((1 - r.status.compressedSize / r.size) * 100)}% nhỏ hơn`
+                : "";
             return (
               <div key={r.key} className="text-[11px]">
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   {r.status.phase === "done" && <Check className="h-3 w-3 text-success" />}
                   {r.status.phase === "dedup" && <CopyIcon className="h-3 w-3 text-success" />}
-                  {r.status.phase === "error" && <AlertCircle className="h-3 w-3 text-destructive" />}
+                  {r.status.phase === "error" && (
+                    <AlertCircle className="h-3 w-3 text-destructive" />
+                  )}
                   <span className="truncate flex-1">{r.name}</span>
-                  <span className="tabular-nums">{labelOf(r.status)}{savings}</span>
+                  <span className="tabular-nums">
+                    {labelOf(r.status)}
+                    {savings}
+                  </span>
                 </div>
                 <div className="mt-0.5 h-1.5 overflow-hidden rounded bg-muted border border-border/5">
-                  <div className={`h-full ${colorOf(r.status)} transition-all shadow-sm`} style={{ width: `${pct}%` }} />
+                  <div
+                    className={`h-full ${colorOf(r.status)} transition-all shadow-sm`}
+                    style={{ width: `${pct}%` }}
+                  />
                 </div>
               </div>
             );
@@ -192,29 +244,37 @@ export function PhotoUpload({
         </div>
       )}
 
-
       {value.length > 0 && (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
           {value.map((a) => {
             const isImg = a.type?.startsWith("image/");
             const u = urls[a.path];
             return (
-              <div key={a.path} className="group relative rounded-md border bg-muted/20 p-1 text-xs">
+              <div
+                key={a.path}
+                className="group relative rounded-md border bg-muted/20 p-1 text-xs"
+              >
                 {isImg && u ? (
                   <a href={u} target="_blank" rel="noreferrer">
                     <img src={u} alt={a.name} className="h-24 w-full rounded object-cover" />
                   </a>
                 ) : (
                   <div className="flex h-24 items-center justify-center rounded bg-muted">
-                    {isImg ? <ImageIcon className="h-6 w-6 text-muted-foreground" />
-                           : <FileText className="h-6 w-6 text-muted-foreground" />}
+                    {isImg ? (
+                      <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                    ) : (
+                      <FileText className="h-6 w-6 text-muted-foreground" />
+                    )}
                   </div>
                 )}
-                <p className="mt-1 truncate" title={a.name}>{a.name}</p>
+                <p className="mt-1 truncate" title={a.name}>
+                  {a.name}
+                </p>
                 <p className="text-[10px] text-muted-foreground">{(a.size / 1024).toFixed(0)} KB</p>
                 {!disabled && (
                   <button
-                    type="button" onClick={() => remove(a)}
+                    type="button"
+                    onClick={() => remove(a)}
                     className="absolute right-1 top-1 hidden rounded-full bg-destructive text-destructive-foreground p-1 shadow-sm hover:bg-destructive/90 group-hover:flex items-center justify-center transition-all"
                     aria-label="Xoá"
                   >

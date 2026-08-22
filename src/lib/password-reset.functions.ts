@@ -23,14 +23,13 @@ function clientIp(): string {
   return (
     getRequestHeader("cf-connecting-ip") ??
     getRequestHeader("x-real-ip") ??
-    (getRequestHeader("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown")
+    getRequestHeader("x-forwarded-for")?.split(",")[0]?.trim() ??
+    "unknown"
   );
 }
 
 function signChallenge(payload: string): string {
-  return createHmac("sha256", process.env.RESET_CHALLENGE_SECRET!)
-    .update(payload)
-    .digest("hex");
+  return createHmac("sha256", process.env.RESET_CHALLENGE_SECRET!).update(payload).digest("hex");
 }
 
 function verifyChallengeToken(token: string, answer: number): { ok: boolean; reason?: string } {
@@ -40,7 +39,8 @@ function verifyChallengeToken(token: string, answer: number): { ok: boolean; rea
   const expected = signChallenge(payloadB64);
   const a = Buffer.from(sig, "hex");
   const b = Buffer.from(expected, "hex");
-  if (a.length !== b.length || !timingSafeEqual(a, b)) return { ok: false, reason: "bad_signature" };
+  if (a.length !== b.length || !timingSafeEqual(a, b))
+    return { ok: false, reason: "bad_signature" };
   let payload: { a: number; b: number; ans: number; exp: number };
   try {
     payload = JSON.parse(Buffer.from(payloadB64, "base64url").toString("utf8"));

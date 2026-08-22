@@ -13,30 +13,38 @@ Implement a widget-based system for the Overview and Dashboard pages, allowing u
 ## Proposed Changes
 
 ### Dashboard Infrastructure
+
 - Create `src/lib/mirats/dashboard/widget-registry.ts` to define available widgets (Reliability, MTTR, MTBF, PM, Health, Timeline, etc.).
 - Each widget entry will include a unique ID, default size (span), and a render function or component reference.
 
 ### Components
+
 #### `src/components/mirats/dashboard/DashboardGrid.tsx`
+
 - A container that renders a list of active widget IDs.
 - Implements "Edit Mode" where widgets show "Remove" buttons and an "Add Widget" trigger appears.
 - Supports reordering (initially via simple "Move Up/Down" or basic drag-and-drop if library available).
 
 #### `src/components/mirats/dashboard/WidgetPicker.tsx`
+
 - A Dialog or Popover allowing users to select from the registry to add new widgets to their dashboard.
 
 ### Dashboard Routes
+
 #### `src/routes/_app.tong-quan.tsx` & `src/routes/_app.index.tsx`
+
 - Refactor to use `DashboardGrid` instead of hardcoded layouts.
 - Use `useUserPref('dashboard:widgets', defaultWidgetList)` to manage the state.
 - Add a "Personalize" (Cá nhân hóa) button to the `PageHeader` actions.
 
 ## Technical Details
+
 - **State Schema**: `string[]` (list of widget IDs) or `Array<{ id: string, w: number }>` for varying widths.
 - **Rendering**: Dynamic lookup in `widgetRegistry` by ID.
 - **Consistency**: Ensure `useUnifiedDashboardStats` continues to provide data efficiently without over-fetching when widgets are hidden.
 
 ## Quality Assurance
+
 - Verify that a user's layout is preserved after page refresh.
 - Test "Reset to Default" functionality.
 - Ensure "Edit Mode" is only accessible to authorized users if needed, though the request implies per-user personalization for all.

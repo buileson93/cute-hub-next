@@ -74,7 +74,10 @@ const uuid4 = (): string => {
   // Có crypto.randomUUID trên browser/node ≥ 19.
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
   // Fallback đơn giản (test-only).
-  const rnd = () => Math.floor(Math.random() * 0xffff).toString(16).padStart(4, "0");
+  const rnd = () =>
+    Math.floor(Math.random() * 0xffff)
+      .toString(16)
+      .padStart(4, "0");
   return `${rnd()}${rnd()}-${rnd()}-4${rnd().slice(1)}-${rnd()}-${rnd()}${rnd()}${rnd()}`;
 };
 
@@ -117,16 +120,26 @@ export function humanizeQueueError(err: unknown): string {
   return raw || "Lỗi không xác định.";
 }
 
-
 // ---------------- In-memory Storage (test) --------------------------------
 export function createMemoryStorage(): Storage {
   const map = new Map<string, OutboxItem>();
   return {
-    async put(item) { map.set(item.id, structuredCloneCompat(item)); },
-    async get(id) { const it = map.get(id); return it ? structuredCloneCompat(it) : undefined; },
-    async list() { return Array.from(map.values()).map(structuredCloneCompat); },
-    async remove(id) { map.delete(id); },
-    async clear() { map.clear(); },
+    async put(item) {
+      map.set(item.id, structuredCloneCompat(item));
+    },
+    async get(id) {
+      const it = map.get(id);
+      return it ? structuredCloneCompat(it) : undefined;
+    },
+    async list() {
+      return Array.from(map.values()).map(structuredCloneCompat);
+    },
+    async remove(id) {
+      map.delete(id);
+    },
+    async clear() {
+      map.clear();
+    },
   };
 }
 
@@ -225,7 +238,9 @@ export class OfflineQueue {
     const now = (this.opts.now ?? (() => new Date()))();
     if (!handler) {
       await this.storage.put({
-        ...item, status: "failed", last_error: `Handler thiếu cho op=${item.op}`,
+        ...item,
+        status: "failed",
+        last_error: `Handler thiếu cho op=${item.op}`,
       });
       return;
     }
@@ -234,7 +249,9 @@ export class OfflineQueue {
       const res = await handler(item.payload);
       if ("conflict" in res && res.conflict) {
         await this.storage.put({
-          ...item, status: "conflict", server_state: res.server_state,
+          ...item,
+          status: "conflict",
+          server_state: res.server_state,
         });
         return;
       }

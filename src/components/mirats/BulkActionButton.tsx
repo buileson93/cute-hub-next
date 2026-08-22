@@ -9,8 +9,14 @@ import { Lock } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 
@@ -28,7 +34,14 @@ type Props = {
 };
 
 export function BulkActionButton({
-  label, icon, duocPhep = true, lyDoKhoa, busy = false, xacNhan, onRun, variant = "outline",
+  label,
+  icon,
+  duocPhep = true,
+  lyDoKhoa,
+  busy = false,
+  xacNhan,
+  onRun,
+  variant = "outline",
 }: Props) {
   const [open, setOpen] = useState(false);
 
@@ -53,7 +66,9 @@ export function BulkActionButton({
   );
 
   const content = (
-    <AppTooltip noiDung={duocPhep ? label : (lyDoKhoa ?? "Bạn không có quyền thực hiện thao tác này.")}>
+    <AppTooltip
+      noiDung={duocPhep ? label : (lyDoKhoa ?? "Bạn không có quyền thực hiện thao tác này.")}
+    >
       {duocPhep ? nut : <span className="inline-flex cursor-not-allowed">{nut}</span>}
     </AppTooltip>
   );
@@ -74,7 +89,11 @@ export function BulkActionButton({
             <AlertDialogFooter>
               <AlertDialogCancel>Huỷ</AlertDialogCancel>
               <AlertDialogAction
-                className={xacNhan.nguyHiem ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : undefined}
+                className={
+                  xacNhan.nguyHiem
+                    ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    : undefined
+                }
                 onClick={() => void onRun()}
               >
                 {xacNhan.nutXacNhan ?? "Xác nhận"}

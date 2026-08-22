@@ -1,12 +1,6 @@
 import * as React from "react";
 import { BookOpen } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 export interface HelpDrawerProps {
@@ -20,12 +14,7 @@ export interface HelpDrawerProps {
  * Khung hướng dẫn chi tiết — mặc định ĐÓNG, chỉ mở khi bấm nút "Hướng dẫn".
  * Dùng cho các nội dung dài (thay cho mở sẵn tại trang).
  */
-export function HelpDrawer({
-  title,
-  children,
-  defaultOpen = false,
-  className,
-}: HelpDrawerProps) {
+export function HelpDrawer({ title, children, defaultOpen = false, className }: HelpDrawerProps) {
   const [open, setOpen] = React.useState<boolean>(defaultOpen);
   return (
     <Sheet open={open} onOpenChange={setOpen}>

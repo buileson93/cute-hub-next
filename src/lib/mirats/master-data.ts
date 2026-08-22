@@ -61,10 +61,7 @@ type Pair = {
  * - Text hiện có nhưng KHÔNG khớp tên FK hiện tại → đánh dấu lệch.
  * - Không tự merge khi có nhiều ứng viên trùng tên (bỏ qua, không gợi ý).
  */
-export function resolveThietBiRefs(
-  row: ThietBiRefRow,
-  danhMuc: DanhMucBundle,
-): ResolveRefsResult {
+export function resolveThietBiRefs(row: ThietBiRefRow, danhMuc: DanhMucBundle): ResolveRefsResult {
   const pl = danhMuc.phan_loai ?? danhMuc.loai ?? [];
   const pairs: Pair[] = [
     { key: "nha_san_xuat_id", text: row.nha_san_xuat, id: row.nha_san_xuat_id, items: danhMuc.nsx },
@@ -80,7 +77,7 @@ export function resolveThietBiRefs(
   for (const p of pairs) {
     if (!p.items) continue;
     const textN = chuanHoaTen(String(p.text ?? ""));
-    const cur = p.id ? p.items.find((i) => i.id === p.id) ?? null : null;
+    const cur = p.id ? (p.items.find((i) => i.id === p.id) ?? null) : null;
 
     // FK hiện tại: kiểm lệch với text.
     if (p.id && textN && cur && chuanHoaTen(cur.ten) !== textN) {

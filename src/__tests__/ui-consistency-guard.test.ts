@@ -33,10 +33,10 @@ const RAW_TABLE_ALLOWLIST = new Set<string>([
   // Bảng nhật ký kỹ thuật (không phải trang danh sách nghiệp vụ) — xem docs/ui-consistency-checklist.md
   "_app.admin.luu-tru.tsx",
   // Các bảng phụ trợ/tóm tắt (không phải trang danh sách nghiệp vụ chính):
-  "_app.admin.forms.index.tsx",     // bảng quản trị mẫu form
-  "_app.bao-cao.do-tin-cay.tsx",    // bảng tổng hợp MTTR trong báo cáo
-  "_app.bao-tri.pm.tsx",            // bảng chính sách PM (số dòng rất nhỏ)
-  "_app.su-co.import-history.tsx",  // bảng lịch sử import (nhật ký)
+  "_app.admin.forms.index.tsx", // bảng quản trị mẫu form
+  "_app.bao-cao.do-tin-cay.tsx", // bảng tổng hợp MTTR trong báo cáo
+  "_app.bao-tri.pm.tsx", // bảng chính sách PM (số dòng rất nhỏ)
+  "_app.su-co.import-history.tsx", // bảng lịch sử import (nhật ký)
 ]);
 
 function walk(dir: string, out: string[] = []): string[] {
@@ -54,13 +54,17 @@ describe("UI consistency guard", () => {
     for (const file of walk(SRC_DIR)) {
       if (file.includes("__tests__")) continue;
       const src = readFileSync(file, "utf8");
-      if (/from\s+["'][^"']*\/DataTable["']/.test(src) ||
-          /import\s+.*\bDataTable\b.*from/.test(src)) {
+      if (
+        /from\s+["'][^"']*\/DataTable["']/.test(src) ||
+        /import\s+.*\bDataTable\b.*from/.test(src)
+      ) {
         offenders.push(file);
       }
     }
-    expect(offenders, `Cấm import DataTable — dùng StandardTable:\n${offenders.join("\n")}`)
-      .toEqual([]);
+    expect(
+      offenders,
+      `Cấm import DataTable — dùng StandardTable:\n${offenders.join("\n")}`,
+    ).toEqual([]);
   });
 
   it("không có <Table thô mới trong src/routes/_app.*.tsx (ngoài allowlist)", () => {

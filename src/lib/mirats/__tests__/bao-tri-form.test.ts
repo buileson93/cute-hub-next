@@ -78,7 +78,9 @@ describe("findMissingRequired", () => {
   });
   it("mảng rỗng tính là thiếu, mảng có phần tử là đủ", () => {
     expect(findMissingRequired([{ key: "m", label: "M", required: true }], { m: [] })).toBe("M");
-    expect(findMissingRequired([{ key: "m", label: "M", required: true }], { m: ["x"] })).toBeNull();
+    expect(
+      findMissingRequired([{ key: "m", label: "M", required: true }], { m: ["x"] }),
+    ).toBeNull();
   });
   it("bỏ qua trường không bắt buộc dù rỗng", () => {
     expect(findMissingRequired([{ key: "b", label: "B", required: false }], {})).toBeNull();
@@ -103,7 +105,14 @@ describe("buildSubmissionInsert", () => {
       template_code: "BD-VHF",
       template_version: 2,
       template_snapshot: {
-        template: { id: "t1", code: "BD-VHF", ten: "Phiếu BD VHF", version: 2, require_signature: false, thiet_bi_mode: "none" },
+        template: {
+          id: "t1",
+          code: "BD-VHF",
+          ten: "Phiếu BD VHF",
+          version: 2,
+          require_signature: false,
+          thiet_bi_mode: "none",
+        },
         fields: [],
       },
       he_thong_id: "ht1",
@@ -124,7 +133,14 @@ describe("buildSubmissionInsert", () => {
       values: {},
       submittedAt: "2026-07-13T00:00:00.000Z",
       fields: [
-        { key: "tinh_trang", label: "Tình trạng", kind: "select", options: ["Tốt", "Xấu"], required: true, position: 0 },
+        {
+          key: "tinh_trang",
+          label: "Tình trạng",
+          kind: "select",
+          options: ["Tốt", "Xấu"],
+          required: true,
+          position: 0,
+        },
         { key: "ghi_chu", label: "Ghi chú", position: 1 },
       ],
     });

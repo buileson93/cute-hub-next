@@ -4,49 +4,54 @@
     "public.he_thong_thanh_phan": {
       "authenticated": ["SELECT", "INSERT", "UPDATE", "DELETE"],
       "sandbox_exec": ["SELECT", "INSERT", "UPDATE", "DELETE"],
-      "postgres":     ["SELECT", "INSERT", "UPDATE", "DELETE"],
+      "postgres": ["SELECT", "INSERT", "UPDATE", "DELETE"],
       "service_role": ["SELECT", "INSERT", "UPDATE", "DELETE"]
     },
     "public.gan_chuc_nang": {
       "authenticated": ["SELECT", "INSERT", "UPDATE", "DELETE"],
       "sandbox_exec": ["SELECT", "INSERT", "UPDATE", "DELETE"],
-      "postgres":     ["SELECT", "INSERT", "UPDATE", "DELETE"]
+      "postgres": ["SELECT", "INSERT", "UPDATE", "DELETE"]
     },
     "public.dm_he_thong": {
       "authenticated": ["SELECT", "INSERT", "UPDATE", "DELETE", "REFERENCES"],
       "sandbox_exec": ["SELECT", "UPDATE"],
-      "postgres":     ["SELECT", "UPDATE"]
+      "postgres": ["SELECT", "UPDATE"]
     },
     "public.dm_nhom_he_thong": {
       "authenticated": ["SELECT", "INSERT", "UPDATE", "DELETE"],
       "sandbox_exec": ["SELECT"],
-      "postgres":     ["SELECT"]
+      "postgres": ["SELECT"]
     },
     "public.dm_don_vi": {
       "authenticated": ["SELECT"],
       "sandbox_exec": ["SELECT"],
-      "postgres":     ["SELECT"]
+      "postgres": ["SELECT"]
     },
-    "public.dm_phan_loai":       { "authenticated": ["SELECT"], "sandbox_exec": ["SELECT"] },
-    "public.dm_loai_thiet_bi":   { "authenticated": ["SELECT", "REFERENCES"], "sandbox_exec": ["SELECT"] },
-    "public.dm_model":           { "authenticated": ["SELECT"], "sandbox_exec": ["SELECT"] },
-    "public.dm_vi_tri":          { "authenticated": ["SELECT"], "sandbox_exec": ["SELECT"] },
+    "public.dm_phan_loai": { "authenticated": ["SELECT"], "sandbox_exec": ["SELECT"] },
+    "public.dm_loai_thiet_bi": {
+      "authenticated": ["SELECT", "REFERENCES"],
+      "sandbox_exec": ["SELECT"]
+    },
+    "public.dm_model": { "authenticated": ["SELECT"], "sandbox_exec": ["SELECT"] },
+    "public.dm_vi_tri": { "authenticated": ["SELECT"], "sandbox_exec": ["SELECT"] },
     "public.thiet_bi": {
       "authenticated": ["SELECT", "INSERT", "UPDATE"],
       "sandbox_exec": ["SELECT", "UPDATE"],
-      "postgres":     ["SELECT", "UPDATE"]
+      "postgres": ["SELECT", "UPDATE"]
     },
     "public.audit_log": {
       "authenticated": ["SELECT", "INSERT"],
       "sandbox_exec": ["INSERT"],
-      "postgres":     ["INSERT"]
+      "postgres": ["INSERT"]
     },
-    "public.cay_node_edit":      { "authenticated": ["SELECT", "INSERT", "UPDATE", "DELETE"] },
-    "public.profiles":           { "authenticated": ["SELECT"] },
-    "public.user_roles":         { "authenticated": ["SELECT"] }
+    "public.cay_node_edit": { "authenticated": ["SELECT", "INSERT", "UPDATE", "DELETE"] },
+    "public.profiles": { "authenticated": ["SELECT"] },
+    "public.user_roles": { "authenticated": ["SELECT"] }
   },
   "functions": {
-    "public.khai_them_thanh_phan_he_thong(uuid,text,text,uuid,uuid,boolean,integer,text)": ["authenticated"],
+    "public.khai_them_thanh_phan_he_thong(uuid,text,text,uuid,uuid,boolean,integer,text)": [
+      "authenticated"
+    ],
     "public.thao_tai_san_khoi_thanh_phan(uuid,uuid,text,text)": ["authenticated"],
     "public.rpc_thanh_phan_toan_cuc()": ["authenticated"],
     "public.has_role(uuid,app_role)": ["authenticated"],

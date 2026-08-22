@@ -5,7 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Combobox } from "@/components/mirats/Combobox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -21,14 +27,13 @@ interface CompatibilityManagerProps {
   systemOptions: { value: string; label: string }[];
 }
 
-const PHAN_LOAI_OPTS = [
-  "Thay thế trực tiếp",
-  "Dự phòng phụ",
-  "Tương đương",
-  "Khác",
-];
+const PHAN_LOAI_OPTS = ["Thay thế trực tiếp", "Dự phòng phụ", "Tương đương", "Khác"];
 
-export function CompatibilityManager({ value, onChange, systemOptions }: CompatibilityManagerProps) {
+export function CompatibilityManager({
+  value,
+  onChange,
+  systemOptions,
+}: CompatibilityManagerProps) {
   const [adding, setAdding] = useState(false);
   const [newItem, setNewItem] = useState<CompatibilityItem>({
     he_thong_id: "",
@@ -36,10 +41,10 @@ export function CompatibilityManager({ value, onChange, systemOptions }: Compati
     danh_gia: "",
   });
 
-  const usedSystemIds = useMemo(() => new Set(value.map(v => v.he_thong_id)), [value]);
-  const availableOptions = useMemo(() => 
-    systemOptions.filter(opt => !usedSystemIds.has(opt.value)),
-    [systemOptions, usedSystemIds]
+  const usedSystemIds = useMemo(() => new Set(value.map((v) => v.he_thong_id)), [value]);
+  const availableOptions = useMemo(
+    () => systemOptions.filter((opt) => !usedSystemIds.has(opt.value)),
+    [systemOptions, usedSystemIds],
   );
 
   const add = () => {
@@ -50,11 +55,11 @@ export function CompatibilityManager({ value, onChange, systemOptions }: Compati
   };
 
   const remove = (id: string) => {
-    onChange(value.filter(v => v.he_thong_id !== id));
+    onChange(value.filter((v) => v.he_thong_id !== id));
   };
 
   const update = (id: string, updates: Partial<CompatibilityItem>) => {
-    onChange(value.map(v => v.he_thong_id === id ? { ...v, ...updates } : v));
+    onChange(value.map((v) => (v.he_thong_id === id ? { ...v, ...updates } : v)));
   };
 
   return (
@@ -71,8 +76,8 @@ export function CompatibilityManager({ value, onChange, systemOptions }: Compati
               </TooltipTrigger>
               <TooltipContent>
                 <p className="max-w-xs text-xs">
-                  Xác định vật tư này có thể dùng dự phòng/thay thế cho những hệ thống nào. 
-                  Một vật tư có thể thay thế cho nhiều hệ thống khác nhau tùy theo đánh giá kỹ thuật.
+                  Xác định vật tư này có thể dùng dự phòng/thay thế cho những hệ thống nào. Một vật
+                  tư có thể thay thế cho nhiều hệ thống khác nhau tùy theo đánh giá kỹ thuật.
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -90,43 +95,55 @@ export function CompatibilityManager({ value, onChange, systemOptions }: Compati
           <CardContent className="p-3 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">Hệ thống</Label>
+                <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                  Hệ thống
+                </Label>
                 <Combobox
                   options={availableOptions}
                   value={newItem.he_thong_id}
-                  onChange={(val) => setNewItem(prev => ({ ...prev, he_thong_id: val }))}
+                  onChange={(val) => setNewItem((prev) => ({ ...prev, he_thong_id: val }))}
                   placeholder="Chọn hệ thống..."
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">Phân loại</Label>
+                <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                  Phân loại
+                </Label>
                 <Select
                   value={newItem.phan_loai}
-                  onValueChange={(val) => setNewItem(prev => ({ ...prev, phan_loai: val }))}
+                  onValueChange={(val) => setNewItem((prev) => ({ ...prev, phan_loai: val }))}
                 >
                   <SelectTrigger className="h-9">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {PHAN_LOAI_OPTS.map(opt => (
-                      <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                    {PHAN_LOAI_OPTS.map((opt) => (
+                      <SelectItem key={opt} value={opt}>
+                        {opt}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">Đánh giá khả năng thay thế</Label>
+              <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                Đánh giá khả năng thay thế
+              </Label>
               <Input
                 className="h-9"
                 placeholder="VD: Có thể thay thế trực tiếp, cần cài đặt lại cấu hình..."
                 value={newItem.danh_gia}
-                onChange={(e) => setNewItem(prev => ({ ...prev, danh_gia: e.target.value }))}
+                onChange={(e) => setNewItem((prev) => ({ ...prev, danh_gia: e.target.value }))}
               />
             </div>
             <div className="flex justify-end gap-2 pt-1">
-              <Button type="button" variant="ghost" size="sm" onClick={() => setAdding(false)}>Hủy</Button>
-              <Button type="button" size="sm" disabled={!newItem.he_thong_id} onClick={add}>Xác nhận</Button>
+              <Button type="button" variant="ghost" size="sm" onClick={() => setAdding(false)}>
+                Hủy
+              </Button>
+              <Button type="button" size="sm" disabled={!newItem.he_thong_id} onClick={add}>
+                Xác nhận
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -139,18 +156,25 @@ export function CompatibilityManager({ value, onChange, systemOptions }: Compati
           </div>
         )}
         {value.map((item) => {
-          const sys = systemOptions.find(o => o.value === item.he_thong_id);
+          const sys = systemOptions.find((o) => o.value === item.he_thong_id);
           return (
-            <div key={item.he_thong_id} className="group relative flex flex-col sm:flex-row gap-3 p-3 rounded-lg border bg-card hover:border-emerald-500/50 transition-colors">
+            <div
+              key={item.he_thong_id}
+              className="group relative flex flex-col sm:flex-row gap-3 p-3 rounded-lg border bg-card hover:border-emerald-500/50 transition-colors"
+            >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="font-medium text-sm truncate">{sys?.label ?? "Hệ thống không xác định"}</span>
+                  <span className="font-medium text-sm truncate">
+                    {sys?.label ?? "Hệ thống không xác định"}
+                  </span>
                   <Badge variant="secondary" className="text-[10px] py-0 h-5">
                     {item.phan_loai}
                   </Badge>
                 </div>
                 {item.danh_gia ? (
-                  <p className="text-xs text-muted-foreground line-clamp-2 italic">“{item.danh_gia}”</p>
+                  <p className="text-xs text-muted-foreground line-clamp-2 italic">
+                    “{item.danh_gia}”
+                  </p>
                 ) : (
                   <p className="text-xs text-muted-foreground italic">Chưa có đánh giá chi tiết</p>
                 )}

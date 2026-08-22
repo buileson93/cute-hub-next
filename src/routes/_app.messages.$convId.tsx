@@ -109,7 +109,12 @@ function ChatPane() {
     const ch = freshChannel(`msg:${convId}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${convId}` },
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter: `conversation_id=eq.${convId}`,
+        },
         (payload) => {
           const m = payload.new as Message;
           setMessages((prev) => (prev.find((x) => x.id === m.id) ? prev : [...prev, m]));
@@ -253,7 +258,12 @@ function ChatPane() {
             <FileIcon className="h-3.5 w-3.5 text-muted-foreground" />
             <span className="truncate">{file.name}</span>
             <span className="text-muted-foreground">({(file.size / 1024).toFixed(0)} KB)</span>
-            <Button size="icon" variant="ghost" className="ml-auto h-6 w-6" onClick={() => setFile(null)}>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="ml-auto h-6 w-6"
+              onClick={() => setFile(null)}
+            >
               <X className="h-3 w-3" />
             </Button>
           </div>
@@ -293,7 +303,13 @@ function ChatPane() {
               }
             }}
           />
-          <Button onClick={send} disabled={sending || (!input.trim() && !file)} size="icon" className="h-10 w-10 shrink-0 rounded-full" aria-label="Gửi">
+          <Button
+            onClick={send}
+            disabled={sending || (!input.trim() && !file)}
+            size="icon"
+            className="h-10 w-10 shrink-0 rounded-full"
+            aria-label="Gửi"
+          >
             <Send className="h-4 w-4" />
           </Button>
         </div>
@@ -341,7 +357,9 @@ function FileAttachment({
       download={name}
       className={cn(
         "inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-xs transition-colors",
-        mine ? "border-primary/20 bg-primary/5 hover:bg-primary/10" : "border-border bg-secondary/70 hover:bg-secondary",
+        mine
+          ? "border-primary/20 bg-primary/5 hover:bg-primary/10"
+          : "border-border bg-secondary/70 hover:bg-secondary",
       )}
     >
       {isImage ? <ImageIcon className="h-4 w-4" /> : <FileIcon className="h-4 w-4" />}

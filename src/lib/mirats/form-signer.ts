@@ -129,9 +129,7 @@ export function sortSigners(signers: readonly SignerRecord[]): SignerRecord[] {
 }
 
 /** Đủ chữ ký = cả người thực hiện và phụ trách đã ký. */
-export function isFullySigned(
-  signers: readonly SignerRecord[] | null | undefined,
-): boolean {
+export function isFullySigned(signers: readonly SignerRecord[] | null | undefined): boolean {
   return nextSignerRole(signers) === null;
 }
 

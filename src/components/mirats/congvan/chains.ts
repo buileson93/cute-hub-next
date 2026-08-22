@@ -118,16 +118,35 @@ export function gapDays(a: CongVanRow, b: CongVanRow): number {
 }
 
 export function isOverdue(cv: CongVanRow): boolean {
-  return !!cv.han_phuc_dap && new Date(cv.han_phuc_dap).getTime() < Date.now() && !CLOSED.has(cv.trang_thai);
+  return (
+    !!cv.han_phuc_dap &&
+    new Date(cv.han_phuc_dap).getTime() < Date.now() &&
+    !CLOSED.has(cv.trang_thai)
+  );
 }
 
 /** Màu nhận diện luồng (theo chỉ số). */
 export const CHAIN_COLORS = [
   { stroke: "stroke-sky-500", text: "text-sky-700", bg: "bg-sky-500", ring: "ring-sky-400" },
-  { stroke: "stroke-violet-500", text: "text-violet-700", bg: "bg-violet-500", ring: "ring-violet-400" },
-  { stroke: "stroke-amber-500", text: "text-amber-700", bg: "bg-amber-500", ring: "ring-amber-400" },
+  {
+    stroke: "stroke-violet-500",
+    text: "text-violet-700",
+    bg: "bg-violet-500",
+    ring: "ring-violet-400",
+  },
+  {
+    stroke: "stroke-amber-500",
+    text: "text-amber-700",
+    bg: "bg-amber-500",
+    ring: "ring-amber-400",
+  },
   { stroke: "stroke-teal-500", text: "text-teal-700", bg: "bg-teal-500", ring: "ring-teal-400" },
   { stroke: "stroke-rose-500", text: "text-rose-700", bg: "bg-rose-500", ring: "ring-rose-400" },
-  { stroke: "stroke-indigo-500", text: "text-indigo-700", bg: "bg-indigo-500", ring: "ring-indigo-400" },
+  {
+    stroke: "stroke-indigo-500",
+    text: "text-indigo-700",
+    bg: "bg-indigo-500",
+    ring: "ring-indigo-400",
+  },
 ];
 export const chainColor = (i: number) => CHAIN_COLORS[i % CHAIN_COLORS.length];

@@ -16,18 +16,25 @@ export interface AppTooltipProps {
  * Tự động thêm aria-label nếu children là button hoặc có role="button".
  */
 export function AppTooltip({
-  noiDung, children, ben = "top", canhLe = "center", treMo = 200, className,
+  noiDung,
+  children,
+  ben = "top",
+  canhLe = "center",
+  treMo = 200,
+  className,
 }: AppTooltipProps) {
   if (noiDung == null || noiDung === "") return children;
 
   // Tự động bổ sung aria-label cho các phần tử tương tác nếu chưa có
-  const interactiveTypes = ['button', 'a'];
+  const interactiveTypes = ["button", "a"];
   const childType = children.type as any;
-  const isInteractive = interactiveTypes.includes(childType) || (children.props as any)?.role === 'button';
-  
-  const clonedElement = isInteractive && !(children.props as any)?.['aria-label'] && typeof noiDung === 'string'
-    ? React.cloneElement(children, { 'aria-label': noiDung } as any)
-    : children;
+  const isInteractive =
+    interactiveTypes.includes(childType) || (children.props as any)?.role === "button";
+
+  const clonedElement =
+    isInteractive && !(children.props as any)?.["aria-label"] && typeof noiDung === "string"
+      ? React.cloneElement(children, { "aria-label": noiDung } as any)
+      : children;
 
   return (
     <TooltipProvider delayDuration={treMo} skipDelayDuration={100}>

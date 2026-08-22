@@ -12,6 +12,7 @@ MIRATS. Mục đích: khi lỗi lặp lại, tra ở đây trước khi debug l�
 UI "Khai thêm thành phần" báo lỗi 403; đôi khi cả bảng list rỗng.
 
 **Nguyên nhân gốc rễ (đã xác minh bằng psql + Playwright):**
+
 1. Supabase Data API KHÔNG grant mặc định trên schema `public` cho `anon` /
    `authenticated` / `service_role` / `sandbox_exec`.
 2. Mỗi lần `CREATE TABLE`, `DROP + CREATE FUNCTION`, `ALTER TABLE` chạy trong
@@ -203,6 +204,7 @@ lint.
 **Vấn đề:** giao diện bảng quá nhiều cột trên mobile, Dialog tràn màn hình.
 
 **Quyết định kiến trúc:**
+
 1. Áp dụng thuộc tính `hideBelow` (sm, md, lg, xl, 2xl) cho mọi cột `StandardTable`.
 2. Dùng `ResponsiveDialog` (tự chuyển thành Drawer trên mobile) cho các form nhập liệu quan trọng (`SchemaDialog`, `GiayPhepFormDialog`).
 3. Quy ước cột: Tên/Mã (luôn hiện), Trạng thái (sm), Vị trí (md), Model (lg), Ngày (xl), Dẫn xuất (2xl).

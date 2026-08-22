@@ -1,6 +1,16 @@
 import { useMemo, useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Upload, Trash2, FileText, ImageIcon, Loader2, Download, ExternalLink, Eye, RefreshCcw } from "lucide-react";
+import {
+  Upload,
+  Trash2,
+  FileText,
+  ImageIcon,
+  Loader2,
+  Download,
+  ExternalLink,
+  Eye,
+  RefreshCcw,
+} from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/backend/client";
 import { storage } from "@/lib/storage";
@@ -24,7 +34,12 @@ import { ImageCropDialog } from "@/components/mirats/ImageCropDialog";
 import { DocViewerDialog } from "@/components/mirats/DocViewerDialog";
 import { useCanDownloadAttachments } from "@/hooks/use-can-download";
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { MAX_MB } from "@/lib/mirats/storage-config";
 
@@ -55,7 +70,13 @@ function fmtSize(n: number | null | undefined) {
   return `${(n / 1024 / 1024).toFixed(1)} MB`;
 }
 
-export function ThietBiTepDinhKem({ maThietBi, initialDocId }: { maThietBi: string; initialDocId?: string | null }) {
+export function ThietBiTepDinhKem({
+  maThietBi,
+  initialDocId,
+}: {
+  maThietBi: string;
+  initialDocId?: string | null;
+}) {
   const qc = useQueryClient();
   const { hasRole } = useSession();
   const canManage = hasRole("admin") || hasRole("phong_kt");
@@ -65,7 +86,10 @@ export function ThietBiTepDinhKem({ maThietBi, initialDocId }: { maThietBi: stri
     queryKey: ["thiet_bi_by_ma", maThietBi],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("thiet_bi").select("id").eq("ma_thiet_bi", maThietBi).maybeSingle();
+        .from("thiet_bi")
+        .select("id")
+        .eq("ma_thiet_bi", maThietBi)
+        .maybeSingle();
       if (error) throw error;
       return data?.id ?? null;
     },
@@ -78,7 +102,9 @@ export function ThietBiTepDinhKem({ maThietBi, initialDocId }: { maThietBi: stri
     queryFn: async (): Promise<TepRow[]> => {
       const { data: rows, error: rowsError } = await supabase
         .from("thiet_bi_tep_dinh_kem")
-        .select("id, thiet_bi_id, loai, bucket, file_path, file_name, mime_type, kich_thuoc, mo_ta, created_at")
+        .select(
+          "id, thiet_bi_id, loai, bucket, file_path, file_name, mime_type, kich_thuoc, mo_ta, created_at",
+        )
         .eq("thiet_bi_id", tbId!)
         .order("created_at", { ascending: false });
 
@@ -90,11 +116,14 @@ export function ThietBiTepDinhKem({ maThietBi, initialDocId }: { maThietBi: stri
         .from("tai_lieu_ocr")
         .select("source_id, status, processed_pages, page_count")
         .eq("source_type", "thiet_bi_tep_dinh_kem")
-        .in("source_id", rows.map(r => r.id));
+        .in(
+          "source_id",
+          rows.map((r) => r.id),
+        );
 
-      return rows.map(row => ({
+      return rows.map((row) => ({
         ...row,
-        tai_lieu_ocr: ocrData?.find(o => o.source_id === row.id) || null
+        tai_lieu_ocr: ocrData?.find((o) => o.source_id === row.id) || null,
       })) as TepRow[];
     },
   });
@@ -130,8 +159,15 @@ export function ThietBiTepDinhKem({ maThietBi, initialDocId }: { maThietBi: stri
     <div className="space-y-6">
       {canManage && (
         <div className="flex flex-wrap gap-2">
-          <ImageUploadDialog thietBiId={tbId} onDone={() => qc.invalidateQueries({ queryKey: ["thiet_bi_tep", tbId] })} />
-          <UploadDialog thietBiId={tbId} loai="tai_lieu" onDone={() => qc.invalidateQueries({ queryKey: ["thiet_bi_tep", tbId] })} />
+          <ImageUploadDialog
+            thietBiId={tbId}
+            onDone={() => qc.invalidateQueries({ queryKey: ["thiet_bi_tep", tbId] })}
+          />
+          <UploadDialog
+            thietBiId={tbId}
+            loai="tai_lieu"
+            onDone={() => qc.invalidateQueries({ queryKey: ["thiet_bi_tep", tbId] })}
+          />
         </div>
       )}
 
@@ -159,7 +195,13 @@ export function ThietBiTepDinhKem({ maThietBi, initialDocId }: { maThietBi: stri
         ) : (
           <div className="space-y-2">
             {docs.map((r) => (
-              <DocRow key={r.id} row={r} canManage={canManage} onDelete={() => del.mutate(r)} initialOpen={initialDocId === r.id} />
+              <DocRow
+                key={r.id}
+                row={r}
+                canManage={canManage}
+                onDelete={() => del.mutate(r)}
+                initialOpen={initialDocId === r.id}
+              />
             ))}
           </div>
         )}
@@ -172,15 +214,28 @@ function useSignedUrl(bucket: string, path: string, expires = 3600) {
   const [url, setUrl] = useState<string | null>(null);
   useEffect(() => {
     let cancel = false;
-    storage.from(bucket).createSignedUrl(path, expires).then(({ data }) => {
-      if (!cancel) setUrl(data?.signedUrl ?? null);
-    });
-    return () => { cancel = true; };
+    storage
+      .from(bucket)
+      .createSignedUrl(path, expires)
+      .then(({ data }) => {
+        if (!cancel) setUrl(data?.signedUrl ?? null);
+      });
+    return () => {
+      cancel = true;
+    };
   }, [bucket, path, expires]);
   return url;
 }
 
-function ImageTile({ row, canManage, onDelete }: { row: TepRow; canManage: boolean; onDelete: () => void }) {
+function ImageTile({
+  row,
+  canManage,
+  onDelete,
+}: {
+  row: TepRow;
+  canManage: boolean;
+  onDelete: () => void;
+}) {
   const url = useSignedUrl(row.bucket, row.file_path);
   return (
     <Card className="overflow-hidden">
@@ -188,21 +243,34 @@ function ImageTile({ row, canManage, onDelete }: { row: TepRow; canManage: boole
         <AspectRatio ratio={1 / 1}>
           {url ? (
             <a href={url} target="_blank" rel="noreferrer">
-              <img src={url} alt={row.file_name} className="h-full w-full object-cover transition-transform hover:scale-105" />
+              <img
+                src={url}
+                alt={row.file_name}
+                className="h-full w-full object-cover transition-transform hover:scale-105"
+              />
             </a>
           ) : (
-            <div className="flex h-full items-center justify-center"><Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /></div>
+            <div className="flex h-full items-center justify-center">
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            </div>
           )}
         </AspectRatio>
         {canManage && (
-          <Button size="icon" variant="destructive" className="absolute right-1 top-1 h-7 w-7 opacity-90 z-10"
-            onClick={onDelete} aria-label="Xoá">
+          <Button
+            size="icon"
+            variant="destructive"
+            className="absolute right-1 top-1 h-7 w-7 opacity-90 z-10"
+            onClick={onDelete}
+            aria-label="Xoá"
+          >
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
         )}
       </div>
       <CardContent className="p-2">
-        <div className="truncate text-xs font-medium" title={row.file_name}>{row.file_name}</div>
+        <div className="truncate text-xs font-medium" title={row.file_name}>
+          {row.file_name}
+        </div>
         {row.mo_ta && <div className="truncate text-xs text-muted-foreground">{row.mo_ta}</div>}
         <div className="text-[10px] text-muted-foreground">{fmtSize(row.kich_thuoc)}</div>
       </CardContent>
@@ -210,7 +278,17 @@ function ImageTile({ row, canManage, onDelete }: { row: TepRow; canManage: boole
   );
 }
 
-function DocRow({ row, canManage, onDelete, initialOpen }: { row: TepRow; canManage: boolean; onDelete: () => void; initialOpen?: boolean }) {
+function DocRow({
+  row,
+  canManage,
+  onDelete,
+  initialOpen,
+}: {
+  row: TepRow;
+  canManage: boolean;
+  onDelete: () => void;
+  initialOpen?: boolean;
+}) {
   const url = useSignedUrl(row.bucket, row.file_path);
   const [viewerOpen, setViewerOpen] = useState(initialOpen || false);
   const canDownload = useCanDownloadAttachments();
@@ -220,17 +298,25 @@ function DocRow({ row, canManage, onDelete, initialOpen }: { row: TepRow; canMan
         <FileText className="h-5 w-5 shrink-0 text-red-600" />
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <div className="truncate font-medium" title={row.file_name}>{row.file_name}</div>
+            <div className="truncate font-medium" title={row.file_name}>
+              {row.file_name}
+            </div>
             {row.tai_lieu_ocr && (
-              <StatusBadge 
+              <StatusBadge
                 domain="ocr"
-                code={row.tai_lieu_ocr.status} 
-                label={row.tai_lieu_ocr.status === 'ocr_running' ? `Đang xử lý (${row.tai_lieu_ocr.processed_pages}/${row.tai_lieu_ocr.page_count || '?'})` : undefined}
+                code={row.tai_lieu_ocr.status}
+                label={
+                  row.tai_lieu_ocr.status === "ocr_running"
+                    ? `Đang xử lý (${row.tai_lieu_ocr.processed_pages}/${row.tai_lieu_ocr.page_count || "?"})`
+                    : undefined
+                }
               />
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            <Badge variant="outline" className="text-[10px]">{row.mime_type ?? "PDF"}</Badge>
+            <Badge variant="outline" className="text-[10px]">
+              {row.mime_type ?? "PDF"}
+            </Badge>
             <span>{fmtSize(row.kich_thuoc)}</span>
             {row.mo_ta && <span className="truncate">· {row.mo_ta}</span>}
           </div>
@@ -239,21 +325,45 @@ function DocRow({ row, canManage, onDelete, initialOpen }: { row: TepRow; canMan
       <div className="flex items-center gap-1">
         {url && (
           <>
-            <Button size="sm" variant="ghost" title="Xem" onClick={() => setViewerOpen(true)}><Eye className="h-4 w-4" /></Button>
-            <Button asChild size="sm" variant="ghost"><a href={url} target="_blank" rel="noreferrer"><ExternalLink className="h-4 w-4" /></a></Button>
+            <Button size="sm" variant="ghost" title="Xem" onClick={() => setViewerOpen(true)}>
+              <Eye className="h-4 w-4" />
+            </Button>
+            <Button asChild size="sm" variant="ghost">
+              <a href={url} target="_blank" rel="noreferrer">
+                <ExternalLink className="h-4 w-4" />
+              </a>
+            </Button>
             {canDownload && (
-              <Button asChild size="sm" variant="ghost" title="Tải xuống"><a href={url} download={row.file_name}><Download className="h-4 w-4" /></a></Button>
+              <Button asChild size="sm" variant="ghost" title="Tải xuống">
+                <a href={url} download={row.file_name}>
+                  <Download className="h-4 w-4" />
+                </a>
+              </Button>
             )}
           </>
         )}
         {canManage && (
           <>
             {row.tai_lieu_ocr?.status === "failed" && (
-              <Button size="sm" variant="ghost" title="Thử chạy lại OCR" onClick={() => {/* TODO */}} className="h-7 w-7 p-0">
+              <Button
+                size="sm"
+                variant="ghost"
+                title="Thử chạy lại OCR"
+                onClick={() => {
+                  /* TODO */
+                }}
+                className="h-7 w-7 p-0"
+              >
                 <RefreshCcw className="h-4 w-4" />
               </Button>
             )}
-            <Button size="icon" variant="ghost" onClick={onDelete} className="text-red-600" aria-label="Xoá">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={onDelete}
+              className="text-red-600"
+              aria-label="Xoá"
+            >
               <Trash2 className="h-4 w-4" />
             </Button>
           </>
@@ -283,15 +393,25 @@ function ImageUploadDialog({ thietBiId, onDone }: { thietBiId: string; onDone: (
     const base = file.name.replace(/\.[^.]+$/, "").replace(/[^\w.\-]+/g, "_") || "anh-thiet-bi";
     const filePath = `${thietBiId}/${crypto.randomUUID()}-${base}.webp`;
     const up = await storage.from(IMG_BUCKET).upload(filePath, file, {
-      cacheControl: "3600", upsert: false, contentType: "image/webp",
+      cacheControl: "3600",
+      upsert: false,
+      contentType: "image/webp",
     });
     if (up.error) throw up.error;
     const { error } = await supabase.from("thiet_bi_tep_dinh_kem").insert({
-      thiet_bi_id: thietBiId, loai: "hinh_anh", bucket: IMG_BUCKET,
-      file_path: filePath, file_name: file.name, mime_type: "image/webp",
-      kich_thuoc: file.size, mo_ta: moTa || null,
+      thiet_bi_id: thietBiId,
+      loai: "hinh_anh",
+      bucket: IMG_BUCKET,
+      file_path: filePath,
+      file_name: file.name,
+      mime_type: "image/webp",
+      kich_thuoc: file.size,
+      mo_ta: moTa || null,
     });
-    if (error) { await storage.from(IMG_BUCKET).remove([filePath]); throw error; }
+    if (error) {
+      await storage.from(IMG_BUCKET).remove([filePath]);
+      throw error;
+    }
     toast.success("Đã tải ảnh lên");
     onDone();
   }
@@ -315,10 +435,15 @@ function ImageUploadDialog({ thietBiId, onDone }: { thietBiId: string; onDone: (
   );
 }
 
-
 function UploadDialog({
-  thietBiId, loai, onDone,
-}: { thietBiId: string; loai: "hinh_anh" | "tai_lieu"; onDone: () => void }) {
+  thietBiId,
+  loai,
+  onDone,
+}: {
+  thietBiId: string;
+  loai: "hinh_anh" | "tai_lieu";
+  onDone: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [moTa, setMoTa] = useState("");
@@ -327,11 +452,12 @@ function UploadDialog({
   const [ocrQuality, setOcrQuality] = useState<any>("auto");
   const [deviceTier, setDeviceTier] = useState<string | null>(null);
 
-  const { startOcr, progress, isProcessing, isPaused, pauseOcr, setIsPaused, cancelOcr } = useOcrTask();
+  const { startOcr, progress, isProcessing, isPaused, pauseOcr, setIsPaused, cancelOcr } =
+    useOcrTask();
 
   useEffect(() => {
     if (open) {
-      deviceProfiler.getProfile().then(p => setDeviceTier(p.tier));
+      deviceProfiler.getProfile().then((p) => setDeviceTier(p.tier));
     }
   }, [open]);
 
@@ -339,11 +465,15 @@ function UploadDialog({
   const label = loai === "hinh_anh" ? "Tải ảnh lên" : "Tải PDF lên";
   const bucket = BUCKET[loai];
 
-  const reset = () => { setFile(null); setMoTa(""); };
+  const reset = () => {
+    setFile(null);
+    setMoTa("");
+  };
 
   async function submit() {
     if (!file) return toast.error("Chưa chọn tệp");
-    if (loai === "tai_lieu" && file.type !== "application/pdf") return toast.error("Chỉ nhận file PDF");
+    if (loai === "tai_lieu" && file.type !== "application/pdf")
+      return toast.error("Chỉ nhận file PDF");
     if (loai === "hinh_anh" && !file.type.startsWith("image/")) return toast.error("Chỉ nhận ảnh");
     if (file.size > MAX_MB * 1024 * 1024) return toast.error(`Tệp vượt quá ${MAX_MB}MB`);
 
@@ -352,18 +482,26 @@ function UploadDialog({
       const safeName = file.name.replace(/[^\w.\-]+/g, "_");
       const filePath = `${thietBiId}/${crypto.randomUUID()}-${safeName}`;
       const up = await storage.from(bucket).upload(filePath, file, {
-        cacheControl: "3600", upsert: false, contentType: file.type,
+        cacheControl: "3600",
+        upsert: false,
+        contentType: file.type,
       });
       if (up.error) throw up.error;
 
-      const { data: inserted, error } = await supabase.from("thiet_bi_tep_dinh_kem").insert({
-        thiet_bi_id: thietBiId,
-        loai, bucket, file_path: filePath,
-        file_name: file.name,
-        mime_type: file.type || null,
-        kich_thuoc: file.size,
-        mo_ta: moTa.trim() || null,
-      }).select("id").single();
+      const { data: inserted, error } = await supabase
+        .from("thiet_bi_tep_dinh_kem")
+        .insert({
+          thiet_bi_id: thietBiId,
+          loai,
+          bucket,
+          file_path: filePath,
+          file_name: file.name,
+          mime_type: file.type || null,
+          kich_thuoc: file.size,
+          mo_ta: moTa.trim() || null,
+        })
+        .select("id")
+        .single();
 
       if (error) {
         // rollback storage
@@ -372,11 +510,16 @@ function UploadDialog({
       }
 
       // OCR Flow
-      if (loai === "tai_lieu" && ocrEnabled && file.type === "application/pdf" && isFeatureEnabled("documentOcrEnabled")) {
+      if (
+        loai === "tai_lieu" &&
+        ocrEnabled &&
+        file.type === "application/pdf" &&
+        isFeatureEnabled("documentOcrEnabled")
+      ) {
         const hash = await sha256Hex(file);
-        
+
         await ocrRepository.queueOcr("thiet_bi_tep_dinh_kem", inserted.id, hash);
-        
+
         const existing = await ocrRepository.findExisting(hash);
         if (existing) {
           await ocrRepository.upsertOcr("thiet_bi_tep_dinh_kem", inserted.id, {
@@ -385,18 +528,20 @@ function UploadDialog({
             normalized_text: existing.normalized_text,
             pages: existing.pages as any,
             processed_pages: existing.processed_pages,
-            page_count: existing.page_count
+            page_count: existing.page_count,
           });
           toast.success("Đã tìm thấy dữ liệu OCR cũ.");
         } else {
           startOcr(file, "thiet_bi_tep_dinh_kem", inserted.id, {
             quality: ocrQuality,
-            language: "vie+eng"
-          }).catch(err => console.error("OCR Pipeline Error:", err));
+            language: "vie+eng",
+          }).catch((err) => console.error("OCR Pipeline Error:", err));
         }
       }
       toast.success("Đã tải lên");
-      setOpen(false); reset(); onDone();
+      setOpen(false);
+      reset();
+      onDone();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Tải lên thất bại");
     } finally {
@@ -405,34 +550,58 @@ function UploadDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) reset(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        setOpen(v);
+        if (!v) reset();
+      }}
+    >
       <DialogTrigger asChild>
         <Button size="sm" variant="outline">
-          <Upload className="mr-2 h-4 w-4" />{label}
+          <Upload className="mr-2 h-4 w-4" />
+          {label}
         </Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader><DialogTitle>{label}</DialogTitle></DialogHeader>
+        <DialogHeader>
+          <DialogTitle>{label}</DialogTitle>
+        </DialogHeader>
         <div className="space-y-3">
           <div>
-            <Label>Chọn tệp ({loai === "hinh_anh" ? "JPG/PNG/WebP" : "PDF"}, tối đa {MAX_MB}MB)</Label>
-            <Input type="file" accept={accept} onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+            <Label>
+              Chọn tệp ({loai === "hinh_anh" ? "JPG/PNG/WebP" : "PDF"}, tối đa {MAX_MB}MB)
+            </Label>
+            <Input
+              type="file"
+              accept={accept}
+              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+            />
           </div>
           <div>
             <Label>Mô tả (tùy chọn)</Label>
-            <Textarea value={moTa} onChange={(e) => setMoTa(e.target.value)} rows={2} maxLength={500}
-              placeholder="VD: Datasheet nhà sản xuất, ảnh mặt trước…" />
-          </div>
-          {isFeatureEnabled("documentOcrEnabled") && loai === "tai_lieu" && file?.type === "application/pdf" && (
-            <OcrSettings
-              enabled={ocrEnabled}
-              onEnabledChange={setOcrEnabled}
-              quality={ocrQuality}
-              onQualityChange={setOcrQuality}
-              deviceTier={deviceTier || undefined}
-              autoReason={deviceTier === "low" ? "Ưu tiên tiết kiệm pin." : "Ưu tiên độ chính xác."}
+            <Textarea
+              value={moTa}
+              onChange={(e) => setMoTa(e.target.value)}
+              rows={2}
+              maxLength={500}
+              placeholder="VD: Datasheet nhà sản xuất, ảnh mặt trước…"
             />
-          )}
+          </div>
+          {isFeatureEnabled("documentOcrEnabled") &&
+            loai === "tai_lieu" &&
+            file?.type === "application/pdf" && (
+              <OcrSettings
+                enabled={ocrEnabled}
+                onEnabledChange={setOcrEnabled}
+                quality={ocrQuality}
+                onQualityChange={setOcrQuality}
+                deviceTier={deviceTier || undefined}
+                autoReason={
+                  deviceTier === "low" ? "Ưu tiên tiết kiệm pin." : "Ưu tiên độ chính xác."
+                }
+              />
+            )}
         </div>
         <OcrProgressDialog
           open={isProcessing}
@@ -447,7 +616,9 @@ function UploadDialog({
           onCancel={() => cancelOcr("thiet_bi_tep_dinh_kem", "")}
         />
         <DialogFooter>
-          <Button variant="ghost" onClick={() => setOpen(false)} disabled={busy}>Hủy</Button>
+          <Button variant="ghost" onClick={() => setOpen(false)} disabled={busy}>
+            Hủy
+          </Button>
           <Button onClick={submit} disabled={busy || !file}>
             {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Tải lên
           </Button>

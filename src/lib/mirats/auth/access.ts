@@ -33,10 +33,7 @@ export function laRouteCongKhai(path: string): boolean {
   return false;
 }
 
-export function decideAccess(
-  phien: TrangThaiPhien,
-  path: string,
-): QuyetDinhTruyCap {
+export function decideAccess(phien: TrangThaiPhien, path: string): QuyetDinhTruyCap {
   const congKhai = laRouteCongKhai(path);
 
   if (phien.kieu === "dang_tai") {
@@ -94,4 +91,3 @@ export function laLoiHetPhien(loi: unknown): boolean {
   // KHÔNG match `status === 401` trần — 401 có thể do RLS/GRANT, để lớp query xử lý retry.
   return false;
 }
-

@@ -2,7 +2,12 @@ import { describe, it, expect } from "vitest";
 import { buildSuCoInsert, type SuCoInsertForm, type SuCoDevice } from "@/lib/mirats/su-co-insert";
 
 const dev = (over: Partial<SuCoDevice> = {}): SuCoDevice => ({
-  id: "tb-1", ma_thiet_bi: "TB_00000001", don_vi: "DV1", _htId: "ht-1", _htTen: "AWOS", ...over,
+  id: "tb-1",
+  ma_thiet_bi: "TB_00000001",
+  don_vi: "DV1",
+  _htId: "ht-1",
+  _htTen: "AWOS",
+  ...over,
 });
 
 const base = (over: Partial<SuCoInsertForm> = {}): SuCoInsertForm => ({
@@ -34,19 +39,23 @@ describe("buildSuCoInsert — gắn van_de_id vào payload", () => {
   });
 
   it("chọn Vấn đề → mọi row đều có van_de_id giống nhau", () => {
-    const rows = buildSuCoInsert(base({
-      van_de_id: "vd-42",
-      selected: [dev({ id: "a", ma_thiet_bi: "TB_A" }), dev({ id: "b", ma_thiet_bi: "TB_B" })],
-    }));
+    const rows = buildSuCoInsert(
+      base({
+        van_de_id: "vd-42",
+        selected: [dev({ id: "a", ma_thiet_bi: "TB_A" }), dev({ id: "b", ma_thiet_bi: "TB_B" })],
+      }),
+    );
     expect(rows).toHaveLength(2);
     expect(rows[0].van_de_id).toBe("vd-42");
     expect(rows[1].van_de_id).toBe("vd-42");
   });
 
   it("mã sự cố = ma_nhom_bc + số thứ tự 2 chữ số", () => {
-    const rows = buildSuCoInsert(base({
-      selected: [dev({ id: "a", ma_thiet_bi: "TB_A" }), dev({ id: "b", ma_thiet_bi: "TB_B" })],
-    }));
+    const rows = buildSuCoInsert(
+      base({
+        selected: [dev({ id: "a", ma_thiet_bi: "TB_A" }), dev({ id: "b", ma_thiet_bi: "TB_B" })],
+      }),
+    );
     expect(rows.map((r) => r.ma_su_co)).toEqual(["BC-XYZ-01", "BC-XYZ-02"]);
   });
 

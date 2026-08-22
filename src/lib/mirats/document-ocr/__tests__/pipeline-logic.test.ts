@@ -11,20 +11,23 @@ describe("OCR Pipeline Logic", () => {
     });
 
     it("should flag low meaningful word count", () => {
-      const longButMeaningless = "123 456 789 !!! ??? 000 111 222 333 444 555 666 777 888 999 000 111 222 333 444 555";
+      const longButMeaningless =
+        "123 456 789 !!! ??? 000 111 222 333 444 555 666 777 888 999 000 111 222 333 444 555";
       const result = classifyPageText(longButMeaningless);
       expect(result.needsOcr).toBe(true);
       expect(result.reason).toContain("Insufficient meaningful words");
     });
 
     it("should accept valid Vietnamese text without OCR", () => {
-      const validText = "Cộng hòa Xã hội Chủ nghĩa Việt Nam. Độc lập - Tự do - Hạnh phúc. Thiết bị đo áp suất P/N: 12345.";
+      const validText =
+        "Cộng hòa Xã hội Chủ nghĩa Việt Nam. Độc lập - Tự do - Hạnh phúc. Thiết bị đo áp suất P/N: 12345.";
       const result = classifyPageText(validText);
       expect(result.needsOcr).toBe(false);
     });
-    
+
     it("should flag high error ratio", () => {
-      const errorText = "Page content with many invalid characters \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD";
+      const errorText =
+        "Page content with many invalid characters \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD \uFFFD";
       const result = classifyPageText(errorText);
       expect(result.needsOcr).toBe(true);
       expect(result.reason).toContain("High error/placeholder ratio");

@@ -24,10 +24,7 @@ export interface OrphanResult {
   bienBanKhongThuocPhieu: string[];
 }
 
-export function findOrphans(
-  phieu: PhieuInput[],
-  bienBan: BienBanInput[],
-): OrphanResult {
+export function findOrphans(phieu: PhieuInput[], bienBan: BienBanInput[]): OrphanResult {
   const referencedPhieuIds = new Set<string>();
   const bienBanKhongThuocPhieu: string[] = [];
 

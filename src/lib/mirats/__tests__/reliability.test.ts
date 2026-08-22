@@ -57,9 +57,7 @@ describe("computeReliability — công thức §4 spec N9", () => {
 
   it("sự cố còn mở tại `to` → cộng downtime, không đóng góp MTTR", () => {
     const window = { from: at(0), to: at(10) };
-    const events: FailureEvent[] = [
-      { id: "OPEN", downtime_start: at(9), downtime_end: null },
-    ];
+    const events: FailureEvent[] = [{ id: "OPEN", downtime_start: at(9), downtime_end: null }];
     const r = computeReliability(events, window, 10 * 86_400);
     expect(r.downtime_s).toBe(86_400); // 1 ngày trong cửa sổ
     expect(r.failures).toBe(1);

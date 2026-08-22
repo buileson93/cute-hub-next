@@ -1,4 +1,11 @@
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 import { AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
@@ -37,7 +44,9 @@ export function PreviewKhaiDialog({ open, input, dangGhi, onCancel, onConfirm }:
                 <XCircle className="h-4 w-4" /> Lỗi cần sửa
               </div>
               <ul className="list-disc pl-5 space-y-1 text-sm">
-                {kq.loi.map((e, i) => <li key={i}>{e}</li>)}
+                {kq.loi.map((e, i) => (
+                  <li key={i}>{e}</li>
+                ))}
               </ul>
             </div>
           )}
@@ -47,7 +56,9 @@ export function PreviewKhaiDialog({ open, input, dangGhi, onCancel, onConfirm }:
                 <AlertTriangle className="h-4 w-4" /> Cảnh báo
               </div>
               <ul className="list-disc pl-5 space-y-1 text-sm">
-                {kq.canhBao.map((w, i) => <li key={i}>{w}</li>)}
+                {kq.canhBao.map((w, i) => (
+                  <li key={i}>{w}</li>
+                ))}
               </ul>
             </div>
           )}
@@ -57,13 +68,17 @@ export function PreviewKhaiDialog({ open, input, dangGhi, onCancel, onConfirm }:
               Sẽ phát sinh
             </div>
             <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
-              {pv.sePhatSinh.map((s, i) => <li key={i}>{s}</li>)}
+              {pv.sePhatSinh.map((s, i) => (
+                <li key={i}>{s}</li>
+              ))}
             </ul>
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onCancel} disabled={dangGhi}>Huỷ</Button>
+          <Button variant="outline" onClick={onCancel} disabled={dangGhi}>
+            Huỷ
+          </Button>
           <Button onClick={onConfirm} disabled={!kq.hopLe || dangGhi}>
             {dangGhi ? "Đang ghi..." : "Xác nhận ghi"}
           </Button>

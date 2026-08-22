@@ -8,7 +8,14 @@ const SKIP_BUCKETS = new Set(["database-backups"]);
 /** Giới hạn tổng dung lượng tệp trong Storage đưa vào backup (2 GB — bao toàn bộ tài liệu/hình ảnh) */
 const MAX_STORAGE_BYTES = 2 * 1024 * 1024 * 1024;
 
-type Col = { name: string; type: string; udt: string; nullable: boolean; default: string | null; is_pk?: boolean };
+type Col = {
+  name: string;
+  type: string;
+  udt: string;
+  nullable: boolean;
+  default: string | null;
+  is_pk?: boolean;
+};
 type SchemaInfo = { tables: { table_name: string; columns: Col[] }[]; foreign_keys: any[] };
 
 /** Sự kiện tiến trình gửi về giao diện */
@@ -34,9 +41,12 @@ export async function exportAllTables(supabaseAdmin: any, onProgress?: ProgressF
     const rows: any[] = [];
     let from = 0;
     const page = 1000;
-    // eslint-disable-next-line no-constant-condition
+
     while (true) {
-      const { data: chunk, error: e } = await supabaseAdmin.from(t).select("*").range(from, from + page - 1);
+      const { data: chunk, error: e } = await supabaseAdmin
+        .from(t)
+        .select("*")
+        .range(from, from + page - 1);
       if (e) throw new Error(`Lỗi đọc bảng ${t}: ${e.message}`);
       rows.push(...(chunk ?? []));
       if (!chunk || chunk.length < page) break;
@@ -54,7 +64,13 @@ export async function exportAllTables(supabaseAdmin: any, onProgress?: ProgressF
     });
   }
   return {
-    meta: { version: 2, created_at: new Date().toISOString(), tables: tables.length, rows: totalRows, source: "MIRATS" },
+    meta: {
+      version: 2,
+      created_at: new Date().toISOString(),
+      tables: tables.length,
+      rows: totalRows,
+      source: "MIRATS",
+    },
     data,
   };
 }
@@ -66,11 +82,26 @@ function qStr(s: any): string {
 }
 function baseType(u: string): string {
   const m: Record<string, string> = {
-    text: "text", varchar: "varchar", bpchar: "char", bool: "boolean",
-    int2: "smallint", int4: "integer", int8: "bigint", float4: "real",
-    float8: "double precision", numeric: "numeric", uuid: "uuid",
-    timestamptz: "timestamptz", timestamp: "timestamp", timetz: "timetz",
-    time: "time", date: "date", jsonb: "jsonb", json: "json", bytea: "bytea", inet: "inet",
+    text: "text",
+    varchar: "varchar",
+    bpchar: "char",
+    bool: "boolean",
+    int2: "smallint",
+    int4: "integer",
+    int8: "bigint",
+    float4: "real",
+    float8: "double precision",
+    numeric: "numeric",
+    uuid: "uuid",
+    timestamptz: "timestamptz",
+    timestamp: "timestamp",
+    timetz: "timetz",
+    time: "time",
+    date: "date",
+    jsonb: "jsonb",
+    json: "json",
+    bytea: "bytea",
+    inet: "inet",
   };
   return m[u] ?? u; // enum/domain giữ nguyên tên kiểu
 }
@@ -92,7 +123,8 @@ function sqlVal(v: any, udt: string): string {
   if (v === null || v === undefined) return "NULL";
   if (udt.startsWith("_")) {
     const base = udt.slice(1);
-    if (!Array.isArray(v)) return qStr(typeof v === "string" ? v : JSON.stringify(v)) + "::" + baseType(base) + "[]";
+    if (!Array.isArray(v))
+      return qStr(typeof v === "string" ? v : JSON.stringify(v)) + "::" + baseType(base) + "[]";
     if (v.length === 0) return "'{}'::" + baseType(base) + "[]";
     return "ARRAY[" + v.map((e) => sqlScalar(e, base)).join(",") + "]::" + baseType(base) + "[]";
   }
@@ -100,7 +132,10 @@ function sqlVal(v: any, udt: string): string {
 }
 
 /** Sinh tệp SQL đầy đủ: DDL (best-effort) + toàn bộ dữ liệu dưới dạng INSERT — khôi phục được vào Postgres/Supabase */
-export function buildSqlDump(dump: { meta: any; data: Record<string, any[]> }, schema: SchemaInfo): string {
+export function buildSqlDump(
+  dump: { meta: any; data: Record<string, any[]> },
+  schema: SchemaInfo,
+): string {
   const schemaMap = new Map<string, Col[]>();
   for (const t of schema?.tables ?? []) schemaMap.set(t.table_name, t.columns);
 
@@ -145,14 +180,20 @@ export function buildSqlDump(dump: { meta: any; data: Record<string, any[]> }, s
 
     out.push(`-- ============ public.${t} (${rows.length} dòng) ============`);
     out.push(`DELETE FROM public."${t}";`);
-    if (rows.length === 0) { out.push(``); continue; }
+    if (rows.length === 0) {
+      out.push(``);
+      continue;
+    }
 
     const colList = colNames.map((c) => `"${c}"`).join(", ");
     const CHUNK = 200;
     for (let i = 0; i < rows.length; i += CHUNK) {
       const slice = rows.slice(i, i + CHUNK);
       const valuesSql = slice
-        .map((r) => "(" + colNames.map((c) => sqlVal(r[c], udtByName.get(c) ?? "text")).join(", ") + ")")
+        .map(
+          (r) =>
+            "(" + colNames.map((c) => sqlVal(r[c], udtByName.get(c) ?? "text")).join(", ") + ")",
+        )
         .join(",\n");
       out.push(`INSERT INTO public."${t}" (${colList}) VALUES\n${valuesSql};`);
     }
@@ -185,7 +226,7 @@ export async function exportStorage(supabaseAdmin: any, onProgress?: ProgressFn)
     const walk = async (prefix: string) => {
       let offset = 0;
       const limit = 100;
-      // eslint-disable-next-line no-constant-condition
+
       while (true) {
         const { data: items, error: le } = await storage
           .from(b.name)
@@ -197,10 +238,16 @@ export async function exportStorage(supabaseAdmin: any, onProgress?: ProgressFn)
             // thư mục → duyệt tiếp
             await walk(full);
           } else {
-            if (totalBytes >= MAX_STORAGE_BYTES) { skipped++; continue; }
+            if (totalBytes >= MAX_STORAGE_BYTES) {
+              skipped++;
+              continue;
+            }
             try {
               const { data: blob, error: de } = await storage.from(b.name).download(full);
-              if (de || !blob) { skipped++; continue; }
+              if (de || !blob) {
+                skipped++;
+                continue;
+              }
               const bytes = new Uint8Array(await blob.arrayBuffer());
               files[`${b.name}/${full}`] = bytes;
               manifest.push({ bucket: b.name, path: full, size: bytes.length });
@@ -211,10 +258,12 @@ export async function exportStorage(supabaseAdmin: any, onProgress?: ProgressFn)
                   phase: "storage",
                   message: `Gom tệp Storage: ${count} tệp (${(totalBytes / 1048576).toFixed(1)} MB)`,
                   current: count,
-                  pct: 40 + Math.min(35, Math.round(totalBytes / MAX_STORAGE_BYTES * 35)),
+                  pct: 40 + Math.min(35, Math.round((totalBytes / MAX_STORAGE_BYTES) * 35)),
                 });
               }
-            } catch { skipped++; }
+            } catch {
+              skipped++;
+            }
           }
         }
         if (items.length < limit) break;
@@ -226,7 +275,9 @@ export async function exportStorage(supabaseAdmin: any, onProgress?: ProgressFn)
 
   await onProgress?.({
     phase: "storage",
-    message: `Đã gom ${count} tệp Storage (${(totalBytes / 1048576).toFixed(1)} MB)` + (skipped ? `, bỏ qua ${skipped}` : ""),
+    message:
+      `Đã gom ${count} tệp Storage (${(totalBytes / 1048576).toFixed(1)} MB)` +
+      (skipped ? `, bỏ qua ${skipped}` : ""),
     current: count,
     pct: 75,
   });
@@ -236,7 +287,10 @@ export async function exportStorage(supabaseAdmin: any, onProgress?: ProgressFn)
 
 // ==================== ĐỒNG BỘ ĐÁM MÂY ====================
 
-export async function syncGoogleDrive(fileName: string, bytes: Uint8Array): Promise<{ ok: boolean; msg: string }> {
+export async function syncGoogleDrive(
+  fileName: string,
+  bytes: Uint8Array,
+): Promise<{ ok: boolean; msg: string }> {
   const lovableKey = process.env.LOVABLE_API_KEY;
   const gdKey = process.env.GOOGLE_DRIVE_API_KEY;
   if (!lovableKey || !gdKey) return { ok: false, msg: "Chưa kết nối Google Drive" };
@@ -245,7 +299,7 @@ export async function syncGoogleDrive(fileName: string, bytes: Uint8Array): Prom
     const metadata = JSON.stringify({ name: fileName });
     const head = new TextEncoder().encode(
       `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${metadata}\r\n` +
-      `--${boundary}\r\nContent-Type: application/zip\r\n\r\n`
+        `--${boundary}\r\nContent-Type: application/zip\r\n\r\n`,
     );
     const tail = new TextEncoder().encode(`\r\n--${boundary}--`);
     const body = new Uint8Array(head.length + bytes.length + tail.length);
@@ -269,7 +323,10 @@ export async function syncGoogleDrive(fileName: string, bytes: Uint8Array): Prom
   }
 }
 
-export async function syncS3(fileName: string, bytes: Uint8Array): Promise<{ ok: boolean; msg: string }> {
+export async function syncS3(
+  fileName: string,
+  bytes: Uint8Array,
+): Promise<{ ok: boolean; msg: string }> {
   const lovableKey = process.env.LOVABLE_API_KEY;
   const s3Key = process.env.AWS_S3_API_KEY;
   if (!lovableKey || !s3Key) return { ok: false, msg: "Chưa kết nối Amazon S3" };
@@ -307,7 +364,7 @@ export async function performBackup(
     schema?: SchemaInfo | null;
     includeStorage?: boolean;
     onProgress?: ProgressFn;
-  }
+  },
 ) {
   const onProgress = opts.onProgress;
   await onProgress?.({ phase: "tables", message: "Bắt đầu đọc toàn bộ bảng dữ liệu…", pct: 2 });
@@ -315,12 +372,24 @@ export async function performBackup(
   const dump = await exportAllTables(supabaseAdmin, onProgress);
 
   await onProgress?.({ phase: "sql", message: "Sinh tệp database.sql…", pct: 40 });
-  const sql = opts.schema ? buildSqlDump(dump, opts.schema) : "-- (không có thông tin lược đồ để sinh SQL)\n";
+  const sql = opts.schema
+    ? buildSqlDump(dump, opts.schema)
+    : "-- (không có thông tin lược đồ để sinh SQL)\n";
 
   // Gom tệp Storage (tài liệu + hình ảnh)
-  let storage = { files: {} as Record<string, Uint8Array>, manifest: [] as any[], totalBytes: 0, skipped: 0, buckets: 0 };
+  let storage = {
+    files: {} as Record<string, Uint8Array>,
+    manifest: [] as any[],
+    totalBytes: 0,
+    skipped: 0,
+    buckets: 0,
+  };
   if (opts.includeStorage !== false) {
-    await onProgress?.({ phase: "storage", message: "Gom toàn bộ tài liệu & hình ảnh trong Storage…", pct: 42 });
+    await onProgress?.({
+      phase: "storage",
+      message: "Gom toàn bộ tài liệu & hình ảnh trong Storage…",
+      pct: 42,
+    });
     try {
       storage = await exportStorage(supabaseAdmin, onProgress);
     } catch {
@@ -354,7 +423,11 @@ export async function performBackup(
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
   const fileName = `backup-${stamp}.zip`;
 
-  await onProgress?.({ phase: "upload", message: `Lưu tệp ${fileName} (${(bytes.length / 1048576).toFixed(1)} MB)…`, pct: 88 });
+  await onProgress?.({
+    phase: "upload",
+    message: `Lưu tệp ${fileName} (${(bytes.length / 1048576).toFixed(1)} MB)…`,
+    pct: 88,
+  });
   const { error: upErr } = await createAdminStorage(supabaseAdmin)
     .from(BUCKET)
     .upload(fileName, bytes, { contentType: "application/zip", upsert: true });

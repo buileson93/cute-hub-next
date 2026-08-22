@@ -18,24 +18,28 @@ export const Route = createFileRoute("/_app/phan-quyen")({
   head: () => ({
     meta: [
       { title: "Phân quyền & Bảo mật — MIRATS" },
-      { name: "description", content: "Vai trò, RBAC theo collection, phân bố tài khoản theo đơn vị và nhật ký kiểm toán — số liệu thật." },
+      {
+        name: "description",
+        content:
+          "Vai trò, RBAC theo collection, phân bố tài khoản theo đơn vị và nhật ký kiểm toán — số liệu thật.",
+      },
     ],
   }),
   component: PhanQuyenPage,
 });
 
 function PhanQuyenPage() {
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
 
   if (isMobile) {
     return (
       <div className="p-4">
-        <PageHeader 
-          icon={Monitor} 
-          title="Phân quyền & Bảo mật" 
+        <PageHeader
+          icon={Monitor}
+          title="Phân quyền & Bảo mật"
           description="Quản trị vai trò và kiểm soát truy cập."
         />
-        <DesktopOnly 
+        <DesktopOnly
           featureName="Quản trị Phân quyền"
           reason="Ma trận phân quyền với hàng chục cột và vai trò cần màn hình rộng để có cái nhìn tổng thể và cấu hình chính xác. Vui lòng sử dụng máy tính để thực hiện các thay đổi về bảo mật."
         >
@@ -117,18 +121,26 @@ function PhanQuyenPage() {
         }
       />
 
-      <RoleOverview 
-        stats={statsQ.data} 
-        loading={statsQ.isLoading} 
-        error={statsQ.error} 
-      />
+      <RoleOverview stats={statsQ.data} loading={statsQ.isLoading} error={statsQ.error} />
 
       <Tabs defaultValue="matrix" className="space-y-4">
         <TabsList className="bg-muted/50 p-1">
-          <TabsTrigger value="matrix" className="data-[state=active]:bg-background"><Lock className="mr-1.5 h-3.5 w-3.5" />Ma trận quyền</TabsTrigger>
-          <TabsTrigger value="phanbo" className="data-[state=active]:bg-background"><Boxes className="mr-1.5 h-3.5 w-3.5" />Phân bố</TabsTrigger>
-          <TabsTrigger value="audit" className="data-[state=active]:bg-background"><FileClock className="mr-1.5 h-3.5 w-3.5" />Nhật ký</TabsTrigger>
-          <TabsTrigger value="policy" className="data-[state=active]:bg-background"><ShieldCheck className="mr-1.5 h-3.5 w-3.5" />Chính sách</TabsTrigger>
+          <TabsTrigger value="matrix" className="data-[state=active]:bg-background">
+            <Lock className="mr-1.5 h-3.5 w-3.5" />
+            Ma trận quyền
+          </TabsTrigger>
+          <TabsTrigger value="phanbo" className="data-[state=active]:bg-background">
+            <Boxes className="mr-1.5 h-3.5 w-3.5" />
+            Phân bố
+          </TabsTrigger>
+          <TabsTrigger value="audit" className="data-[state=active]:bg-background">
+            <FileClock className="mr-1.5 h-3.5 w-3.5" />
+            Nhật ký
+          </TabsTrigger>
+          <TabsTrigger value="policy" className="data-[state=active]:bg-background">
+            <ShieldCheck className="mr-1.5 h-3.5 w-3.5" />
+            Chính sách
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="matrix" className="mt-0">
@@ -138,12 +150,12 @@ function PhanQuyenPage() {
           <DistributionStats stats={statsQ.data} />
         </TabsContent>
         <TabsContent value="audit" className="mt-0">
-          <AuditLogViewer 
-            auditLogs={auditQ.data ?? []} 
-            loading={auditQ.isLoading} 
-            profileMap={profileMap} 
-            q={q} 
-            setQ={setQ} 
+          <AuditLogViewer
+            auditLogs={auditQ.data ?? []}
+            loading={auditQ.isLoading}
+            profileMap={profileMap}
+            q={q}
+            setQ={setQ}
           />
         </TabsContent>
         <TabsContent value="policy" className="mt-0">

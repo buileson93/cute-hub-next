@@ -8,8 +8,12 @@ const isEmptyStr = (v: string | null | undefined) => !v || !v.trim();
 describe("useAmbientApply", () => {
   it("applies suggestion once when field is empty", () => {
     let value: string = "";
-    const apply = vi.fn((v: string) => { value = v; });
-    const clear = vi.fn(() => { value = ""; });
+    const apply = vi.fn((v: string) => {
+      value = v;
+    });
+    const clear = vi.fn(() => {
+      value = "";
+    });
 
     const { result, rerender } = renderHook(
       ({ suggested, currentValue }: { suggested: string | null; currentValue: string }) =>

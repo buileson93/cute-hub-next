@@ -24,11 +24,10 @@ import {
 } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export interface OptimisticOptions<TData, TVars, TQueryData>
-  extends Omit<
-    UseMutationOptions<TData, Error, TVars, { snapshots: Array<{ key: QueryKey; data: unknown }> }>,
-    "onMutate" | "onError" | "onSettled"
-  > {
+export interface OptimisticOptions<TData, TVars, TQueryData> extends Omit<
+  UseMutationOptions<TData, Error, TVars, { snapshots: Array<{ key: QueryKey; data: unknown }> }>,
+  "onMutate" | "onError" | "onSettled"
+> {
   /** Cache cần cập nhật lạc quan. Chấp nhận 1 hoặc nhiều key. */
   queryKey?: QueryKey;
   queryKeys?: QueryKey[];
@@ -38,7 +37,11 @@ export interface OptimisticOptions<TData, TVars, TQueryData>
    * Nếu dùng nhiều `queryKeys`, hàm được gọi cho từng key:
    *   (old, vars, key) => newOld
    */
-  applyOptimistic: (old: TQueryData | undefined, vars: TVars, key: QueryKey) => TQueryData | undefined;
+  applyOptimistic: (
+    old: TQueryData | undefined,
+    vars: TVars,
+    key: QueryKey,
+  ) => TQueryData | undefined;
   /** Refetch sau khi mutation kết thúc — chỉ những key liên quan trực tiếp. */
   invalidates?: QueryKey[];
   successMessage?: string;
@@ -49,7 +52,15 @@ export function useOptimisticMutation<TData, TVars, TQueryData = unknown>(
   opts: OptimisticOptions<TData, TVars, TQueryData>,
 ) {
   const qc = useQueryClient();
-  const { queryKey, queryKeys, applyOptimistic, invalidates, successMessage, errorMessage, ...rest } = opts;
+  const {
+    queryKey,
+    queryKeys,
+    applyOptimistic,
+    invalidates,
+    successMessage,
+    errorMessage,
+    ...rest
+  } = opts;
 
   const keys: QueryKey[] = queryKeys ?? (queryKey ? [queryKey] : []);
 
