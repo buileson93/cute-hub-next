@@ -10763,7 +10763,7 @@ export type Database = {
         Args: {
           new_don_vi: string
           new_ho_ten: string
-          new_roles: string[]
+          new_roles: Database["public"]["Enums"]["app_role"][]
           target_uid: string
         }
         Returns: undefined
