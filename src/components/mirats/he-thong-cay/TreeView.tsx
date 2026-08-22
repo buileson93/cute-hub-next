@@ -20,7 +20,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { TruncatedNodeLabel } from "./TruncatedNodeLabel";
+
 import { CodeBadge } from "@/components/mirats/CodeBadge";
 import {
   DropdownMenu,
@@ -143,14 +145,7 @@ export function TreeView({
           </div>
           <Cpu className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
           <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="truncate text-sm font-medium cursor-help">{tbLabel(d.tb)}</span>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <div className="text-xs font-mono">Mã: {d.tb.ma_thiet_bi}</div>
-              </TooltipContent>
-            </Tooltip>
+            <TruncatedNodeLabel label={tbLabel(d.tb)} code={d.tb.ma_thiet_bi} />
             {chips.map((c, i) => (
               <Badge
                 key={i}
@@ -162,6 +157,7 @@ export function TreeView({
               </Badge>
             ))}
           </div>
+
 
           <div className="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100">
             {canManageNodes && (
@@ -237,9 +233,10 @@ export function TreeView({
             )}
           </button>
           <Network className="h-3.5 w-3.5 shrink-0 text-primary" />
-          <span className="flex-1 truncate text-[13px] font-medium leading-tight">
-            {htMind(ht.ma)}
-          </span>
+          <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
+            <TruncatedNodeLabel label={htMind(ht.ma)} code={ht.ma} />
+          </div>
+
           <Badge
             variant="outline"
             className="shrink-0 text-[10px] px-1 py-0 h-4 min-w-[1.25rem] justify-center"
@@ -309,9 +306,10 @@ export function TreeView({
             )}
           </button>
           <FolderTree className="h-3.5 w-3.5 shrink-0 text-violet-500" />
-          <span className="flex-1 truncate text-[13px] font-semibold leading-tight">
-            {nhLabel(nh.ma)}
-          </span>
+          <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
+            <TruncatedNodeLabel label={nhLabel(nh.ma)} code={nh.ma} />
+          </div>
+
           <Badge
             variant="secondary"
             className="shrink-0 text-[10px] px-1 py-0 h-4 min-w-[1.25rem] justify-center"

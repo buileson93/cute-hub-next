@@ -79,7 +79,9 @@ import {
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
+import { TruncatedNodeLabel } from "./TruncatedNodeLabel";
 import { useCayContext } from "./CayContext";
+
 import type {
   MindKind,
   MindData,
@@ -180,64 +182,6 @@ type Raw = {
   parent?: Raw;
 };
 
-function TruncatedNodeLabel({ label, code }: { label: string; code?: string }) {
-  const ref = useRef<HTMLSpanElement | null>(null);
-  const [truncated, setTruncated] = useState(false);
-
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    let frameId: number;
-    const update = () => {
-      frameId = requestAnimationFrame(() => {
-        if (!el) return;
-        const isTruncated = el.scrollWidth > el.clientWidth + 1;
-        setTruncated((prev) => (prev !== isTruncated ? isTruncated : prev));
-      });
-    };
-
-    update();
-    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(update) : null;
-    ro?.observe(el);
-    window.addEventListener("resize", update);
-    return () => {
-      ro?.disconnect();
-      cancelAnimationFrame(frameId);
-      window.removeEventListener("resize", update);
-    };
-  }, [label]);
-
-  const text = (
-    <span
-      ref={ref}
-      className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-medium"
-    >
-      {label}
-    </span>
-  );
-
-  // Hiển thị tooltip nếu bị cắt HOẶC nếu có mã
-  if (!truncated && !code) return text;
-
-  const content = code ? (
-    <div className="flex flex-col gap-0.5">
-      <div className="font-semibold">{label}</div>
-      <div className="text-[10px] opacity-80 font-mono">Mã: {code}</div>
-    </div>
-  ) : (
-    label
-  );
-
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>{text}</TooltipTrigger>
-      <TooltipContent side="top" align="center" className="max-w-80 break-words leading-snug">
-        {label}
-      </TooltipContent>
-    </Tooltip>
-  );
-}
 
 function MindNode({ data }: { data: MindData }) {
   const [editing, setEditing] = useState(false);

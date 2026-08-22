@@ -10,10 +10,13 @@
 //           → Tài sản (thiet_bi)
 // ============================================================================
 
+
 import { useQuery, type QueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/backend/client";
+import { supabase } from "@/integrations/supabase/client";
 import { fetchAllRows } from "@/lib/mirats/paginate";
 import type { ThietBi } from "@/lib/mirats/types";
+import { parseHtSysMa, NONE_HT } from "@/components/mirats/he-thong-cay/utils";
+
 
 /** Tài sản lấy từ CSDL, kèm mã phân lớp taxonomy để dựng cây. */
 export interface DbDevice extends ThietBi {
@@ -271,3 +274,49 @@ export function useDeviceNameOverrides() {
     staleTime: 30_000,
   });
 }
+
+/** 
+ * Typed resolvers for Phase 10L - Normalizing Taxonomy References
+ * Resolves ID or Code to a canonical { id, ma, label } object.
+ */
+
+export interface TaxonomyResolved {
+  id: string;
+  ma: string;
+  label: string;
+}
+
+export function resolvePhanLoai(ref: string | null | undefined, taxonomy: DbTaxonomy | undefined): TaxonomyResolved {
+  const id = ref || "KHAC";
+  const label = taxonomy?.plNameMap.get(id) || id;
+  return { id, ma: id, label };
+}
+
+export function resolveNhom(ref: string | null | undefined, taxonomy: DbTaxonomy | undefined): TaxonomyResolved {
+  const id = ref || "KHAC";
+  const label = taxonomy?.nhomNameMap.get(id) || taxonomy?.nhomMaMap.get(id) || id;
+  const ma = taxonomy?.nhomList.find(n => n.id === id)?.ma || id;
+  return { id, ma, label };
+}
+
+export function resolveHeThong(ref: string | null | undefined, taxonomy: DbTaxonomy | undefined): TaxonomyResolved {
+  const ma = ref || NONE_HT;
+  const parsed = parseHtSysMa(ma);
+  const sysId = parsed.sysName;
+  
+  if (!sysId || sysId === NONE_HT) {
+    return { id: NONE_HT, ma: NONE_HT, label: "Hệ thống khác" };
+  }
+
+  const label = taxonomy?.htNameMap.get(sysId) || taxonomy?.htMaMap.get(sysId) || sysId;
+  const canonicalMa = taxonomy?.htList.find(h => h.id === sysId || h.ma === sysId)?.ma || sysId;
+  
+  return { id: sysId, ma: canonicalMa, label };
+
+}
+
+export function resolveThietBi(d: DbDevice, overrides?: Map<string, any>): TaxonomyResolved {
+  const label = overrides?.get(`tb:${d.ma_thiet_bi}`)?.ten || d.ten || d.ma_thiet_bi;
+  return { id: d.id, ma: d.ma_thiet_bi, label };
+}
+

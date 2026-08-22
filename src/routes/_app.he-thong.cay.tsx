@@ -35,7 +35,16 @@ import "@xyflow/react/dist/style.css";
 
 import { DataState } from "@/components/mirats/DataState";
 import { supabase } from "@/integrations/supabase/client";
-import { useDbTaxonomy, type DbDevice, type DbTaxonomy } from "@/lib/mirats/db-taxonomy";
+import { 
+  useDbTaxonomy, 
+  type DbDevice, 
+  type DbTaxonomy,
+  resolvePhanLoai,
+  resolveNhom,
+  resolveHeThong,
+  resolveThietBi
+} from "@/lib/mirats/db-taxonomy";
+
 import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
 import { useCan } from "@/hooks/use-permissions";
 import { Button } from "@/components/ui/button";
@@ -176,18 +185,22 @@ function useOverrides() {
 
 function usePlMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | undefined) {
   return useCallback(
-    (id: string) => overrides?.get(okey("pl", id))?.ten || taxonomy?.plNameMap.get(id) || id,
+    (id: string) => {
+      const override = overrides?.get(okey("pl", id))?.ten;
+      if (override) return override;
+      return resolvePhanLoai(id, taxonomy).label;
+    },
     [overrides, taxonomy],
   );
 }
 
 function useNhMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | undefined) {
   return useCallback(
-    (ma: string) =>
-      overrides?.get(okey("nh", ma))?.ten ||
-      taxonomy?.nhomNameMap.get(ma) ||
-      taxonomy?.nhomMaMap.get(ma) ||
-      ma,
+    (ma: string) => {
+      const override = overrides?.get(okey("nh", ma))?.ten;
+      if (override) return override;
+      return resolveNhom(ma, taxonomy).label;
+    },
     [overrides, taxonomy],
   );
 }
@@ -195,15 +208,9 @@ function useNhMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | un
 function useHtMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | undefined) {
   return useCallback(
     (ma: string) => {
-      const parsed = parseHtSysMa(ma);
-      const sysName = parsed.sysName;
-      if (!sysName || sysName === NONE_HT) return "Hệ thống khác";
-      return (
-        overrides?.get(okey("ht", ma))?.ten ||
-        taxonomy?.htNameMap.get(sysName) ||
-        taxonomy?.htMaMap.get(sysName) ||
-        ma
-      );
+      const override = overrides?.get(okey("ht", ma))?.ten;
+      if (override) return override;
+      return resolveHeThong(ma, taxonomy).label;
     },
     [overrides, taxonomy],
   );
@@ -211,10 +218,15 @@ function useHtMind(overrides: OverrideMap | undefined, taxonomy: DbTaxonomy | un
 
 function useTbMind(overrides: OverrideMap | undefined) {
   return useCallback(
-    (d: DbDevice) => overrides?.get(okey("tb", d.ma_thiet_bi))?.ten || d.ten || d.ma_thiet_bi,
+    (d: DbDevice) => {
+      const override = overrides?.get(okey("tb", d.ma_thiet_bi))?.ten;
+      if (override) return override;
+      return resolveThietBi(d, overrides).label;
+    },
     [overrides],
   );
 }
+
 
 function HeThongCayPage() {
   const nav = useNavigate();
@@ -336,17 +348,24 @@ function HeThongCayPage() {
         }
       }
 
-      return allData.map((d: any) => ({
-        ...d,
-        _pl: d.phan_loai_id,
-        _nhKey: d.nhom_he_thong_id,
-        _htId: d.he_thong_id,
-        _thanhPhanId: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.id,
-        _thanhPhanMa: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ma_thanh_phan,
-        _thanhPhanTen: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ten,
-        _loaiTbTen: d._loaiTbTen?.ten,
-        _loaiTbOrder: d._loaiTbOrder?.thu_tu,
-      }));
+      return allData.map((d: any) => {
+        const pl = resolvePhanLoai(d.phan_loai_id, taxonomy);
+        const nh = resolveNhom(d.nhom_he_thong_id, taxonomy);
+        const ht = resolveHeThong(d.he_thong_id, taxonomy);
+        
+        return {
+          ...d,
+          _pl: pl.id,
+          _nhKey: nh.ma, // Canonical business code for grouping
+          _htId: ht.ma,  // Canonical composite code for grouping
+          _thanhPhanId: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.id,
+          _thanhPhanMa: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ma_thanh_phan,
+          _thanhPhanTen: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ten,
+          _loaiTbTen: d._loaiTbTen?.ten,
+          _loaiTbOrder: d._loaiTbOrder?.thu_tu,
+        };
+      });
+
     },
   });
 
@@ -363,15 +382,17 @@ function HeThongCayPage() {
       }
 
       const realSystems = htList.map((h) => {
-        const nhom = nhomList.find((n) => n.id === h.nhomId);
+        const nh = resolveNhom(h.nhomId, taxonomy);
+        const resolved = resolveHeThong(h.ma, taxonomy);
         return {
           ma: h.ma,
           ten: h.ten,
-          nhMa: nhom?.ma || h.nhomId || "KHAC",
-          nhTen: nhom?.ten || taxonomy?.nhomNameMap.get(h.nhomId || "KHAC") || "Khác",
-          plId: h.phanLoaiId || nhom?.phanLoaiId || plList[0]?.id || "KHAC",
+          nhMa: nh.ma,
+          nhTen: nh.label,
+          plId: h.phanLoaiId || plList[0]?.id || "KHAC",
         };
       });
+
 
       const ordNh = (ma: string) => (overrides?.get(okey("nh", ma))?.du_lieu as any)?.thu_tu;
       const ordHt = (ma: string) => (overrides?.get(okey("ht", ma))?.du_lieu as any)?.thu_tu;
