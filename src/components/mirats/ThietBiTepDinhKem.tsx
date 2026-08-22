@@ -364,9 +364,8 @@ function DocRow({
                 size="sm"
                 variant="ghost"
                 title="Thử chạy lại OCR"
-                onClick={() => {
-                  /* TODO */
-                }}
+                onClick={handleRetry}
+                disabled={isProcessing}
                 className="h-7 w-7 p-0"
               >
                 <RefreshCcw className="h-4 w-4" />
@@ -376,6 +375,7 @@ function DocRow({
               size="icon"
               variant="ghost"
               onClick={onDelete}
+              disabled={isProcessing}
               className="text-red-600"
               aria-label="Xoá"
             >
@@ -384,7 +384,20 @@ function DocRow({
           </>
         )}
       </div>
+      <OcrProgressDialog
+        open={isProcessing}
+        onOpenChange={() => {}}
+        fileName={row.file_name}
+        currentPage={progress.current}
+        totalPages={progress.total}
+        status={progress.status}
+        isPaused={isPaused}
+        onPause={pauseOcr}
+        onResume={() => setIsPaused(false)}
+        onCancel={() => cancelOcr("thiet_bi_tep_dinh_kem", row.id)}
+      />
       <DocViewerDialog
+
         open={viewerOpen}
         onOpenChange={setViewerOpen}
         url={url}

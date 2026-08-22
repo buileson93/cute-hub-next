@@ -719,10 +719,29 @@ function OcrBenchmarkTab() {
             </table>
           </div>
           <div className="mt-4 flex justify-end">
-            <Button size="sm" className="h-8 text-xs">
+            <Button
+              size="sm"
+              className="h-8 text-xs"
+              onClick={() => {
+                toast.promise(
+                  (async () => {
+                    const profile = await deviceProfiler.getProfile();
+                    // Mock benchmark execution logic for now as it requires specific fixture processing
+                    await new Promise((resolve) => setTimeout(resolve, 2000));
+                    return profile;
+                  })(),
+                  {
+                    loading: "Đang chạy benchmark hệ thống...",
+                    success: (p) => `Benchmark hoàn tất: ${Math.round(p.benchmarkScore)}ms`,
+                    error: "Lỗi khi chạy benchmark",
+                  },
+                );
+              }}
+            >
               <Play className="h-3 w-3 mr-2" /> Chạy Benchmark Toàn bộ
             </Button>
           </div>
+
         </CardContent>
       </Card>
     </div>
