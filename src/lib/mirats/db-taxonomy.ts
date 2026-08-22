@@ -81,6 +81,7 @@ export interface DbTaxonomy {
   }>;
   viTriList: Array<{ id: string; ma: string; ten: string; mo_ta: string }>;
   trangThaiList: string[];
+  devices: any[];
 }
 
 function noAccent(s: string): string {
