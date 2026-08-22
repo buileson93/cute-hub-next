@@ -92,6 +92,7 @@ export const createUser = createServerFn({ method: "POST" })
     await assertAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
+    // Phase 1: Create Auth User
     const { data: created, error: authErr } = await supabaseAdmin.auth.admin.createUser({
       email: data.email,
       password: data.password,
@@ -104,29 +105,33 @@ export const createUser = createServerFn({ method: "POST" })
     if (authErr || !created.user) throw new Error(authErr?.message ?? "Không tạo được user");
     const uid = created.user.id;
 
-    // profile được tạo bởi trigger. Cập nhật thêm ho_ten & don_vi.
-    await supabaseAdmin
-      .from("profiles")
-      .update({
-        ho_ten: data.ho_ten,
-        don_vi: data.don_vi,
-      })
-      .eq("id", uid);
+    try {
+      // Phase 2: Update Profile and Roles via transactional RPC
+      const { error: rpcErr } = await supabaseAdmin.rpc("update_user_full", {
+        target_uid: uid,
+        new_ho_ten: data.ho_ten,
+        new_don_vi: data.don_vi,
+        new_roles: data.roles,
+      });
 
-    // insert roles
-    await supabaseAdmin
-      .from("user_roles")
-      .insert(data.roles.map((role) => ({ user_id: uid, role })));
+      if (rpcErr) throw rpcErr;
 
-    await supabaseAdmin.from("audit_log").insert({
-      user_id: context.userId,
-      action: "create_user",
-      entity: "user",
-      entity_id: uid,
-      detail: { email: data.email, roles: data.roles, don_vi: data.don_vi },
-    });
+      // Phase 3: Audit Log
+      await supabaseAdmin.from("audit_log").insert({
+        user_id: context.userId,
+        action: "create_user",
+        entity: "user",
+        entity_id: uid,
+        detail: { email: data.email, roles: data.roles, don_vi: data.don_vi },
+      });
 
-    return { id: uid };
+      return { id: uid };
+    } catch (err: any) {
+      // SAGA/COMPENSATION: Cleanup auth user on DB failure
+      console.error("Partial failure in createUser, cleaning up auth user:", uid, err);
+      await supabaseAdmin.auth.admin.deleteUser(uid);
+      throw new Error(`Lỗi khởi tạo dữ liệu: ${err.message || "Unknown error"}`);
+    }
   });
 
 // ==================== UPDATE USER ====================
