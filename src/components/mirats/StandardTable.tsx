@@ -580,17 +580,7 @@ export function StandardTableInner<T>({
 
   const virtualRows = rowVirtualizer.getVirtualItems();
 
-  // Force render all items in JSDOM tests since scrolling/sizing is broken
-  const displayItems = isTest
-    ? display.map((d, index) => ({
-        index,
-        start: index * estimateRowHeight,
-        size: estimateRowHeight,
-        end: (index + 1) * estimateRowHeight,
-        lane: 0,
-        key: index,
-      }))
-    : virtualRows;
+  const displayItems = virtualRows;
 
   const totalSize = rowVirtualizer.getTotalSize();
   const paddingTop = displayItems.length > 0 ? displayItems[0]?.start || 0 : 0;
