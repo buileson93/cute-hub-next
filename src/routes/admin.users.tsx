@@ -342,8 +342,17 @@ function AdminUsers() {
                     <Button
                       size="sm"
                       variant={u.active ? "outline" : "default"}
-                      onClick={() => toggleM.mutate({ user_id: u.id, active: !u.active })}
+                      onClick={() => {
+                        if (u.active) {
+                          if (confirm(`Bạn có chắc muốn khoá tài khoản ${u.email}?`)) {
+                            toggleM.mutate({ user_id: u.id, active: false });
+                          }
+                        } else {
+                          toggleM.mutate({ user_id: u.id, active: true });
+                        }
+                      }}
                       disabled={toggleM.isPending}
+                      aria-label={u.active ? "Khoá tài khoản" : "Mở khoá tài khoản"}
                     >
                       {u.active ? (
                         <Lock className="h-3.5 w-3.5" />
