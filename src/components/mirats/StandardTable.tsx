@@ -227,19 +227,20 @@ export function StandardTable<T>({
       onSelect?.(next);
       setSelected?.(next);
     },
-    [onSelect, selected],
+    [onSelect, selected, setSelected],
   );
 
   const toggleAll = useCallback(() => {
     if (!onSelect || !selected) return;
     if (selected.size === rows.length) {
       onSelect(new Set());
+      setSelected?.(new Set());
     } else {
       const next = new Set(rows.map(getRowIdInternal));
       onSelect?.(next);
       setSelected?.(next);
     }
-  }, [onSelect, selected, rows, getRowIdInternal]);
+  }, [onSelect, selected, rows, getRowIdInternal, setSelected]);
 
   const toggleExpand = useCallback((id: string) => {
     setExpandedRows((prev) => {
@@ -252,7 +253,8 @@ export function StandardTable<T>({
 
   const clearSelection = useCallback(() => {
     onSelect?.(new Set());
-  }, [onSelect]);
+    setSelected?.(new Set());
+  }, [onSelect, setSelected]);
 
   const clearAllFilters = useCallback(() => {
     setTextFilters({});
@@ -380,7 +382,7 @@ export function StandardTable<T>({
     if (lastItem.index >= display.length - 20) {
       infiniteScroll.fetchNextPage();
     }
-  }, [rowVirtualizer.getVirtualItems(), infiniteScroll?.hasNextPage, infiniteScroll?.isFetchingNextPage, display.length]);
+  }, [rowVirtualizer, infiniteScroll?.hasNextPage, infiniteScroll?.isFetchingNextPage, display.length, infiniteScroll]);
 
   const isClient = typeof window !== "undefined";
   const useIsomorphicLayoutEffect = isClient ? React.useLayoutEffect : useEffect;
