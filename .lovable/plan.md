@@ -3,7 +3,7 @@
 Lỗi `Could not find the table 'public.rpc_thanh_phan_toan_cuc' in the schema cache` xảy ra do mã nguồn frontend gọi một hàm cơ sở dữ liệu (RPC) bằng cú pháp `supabase.from()`, vốn chỉ dành cho Bảng (Table) hoặc View. Việc này thường xảy ra khi chuyển sang sử dụng `fetchKeyset` để tối ưu hiệu năng.
 
 ## Chỉnh sửa văn bản trực quan
-Cập nhật `src/routes/__root.tsx` để hiển thị dòng chữ: "viết plan tiếng việt để tôi xem" (thay thế cho nội dung debug cũ).
+Cập nhật `src/routes/__root.tsx` để hiển thị dòng chữ: "bỏ công việc này trong plan không chỉnh sửa văn bản gì cả" (thay thế nội dung cũ).
 
 ## Giải pháp kỹ thuật
 Chuyển đổi các hàm RPC hiện tại thành các View chuẩn để hỗ trợ cú pháp `supabase.from()` và bộ lọc của Supabase.
