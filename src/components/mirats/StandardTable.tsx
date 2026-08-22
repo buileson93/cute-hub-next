@@ -430,7 +430,7 @@ export function StandardTable<T>({
     [onHandleMouseMove, onHandleMouseUp],
   );
 
-  const renderGlobalState = () => {
+  const renderGlobalState = useCallback(() => {
     if (trangThai.loi) {
       const err = trangThai.loi;
       if (errorContent) return errorContent;
@@ -456,19 +456,21 @@ export function StandardTable<T>({
     }
 
     if (fullDisplay.length === 0) {
+      const emptyContentResult = emptyContent ?? (
+        <div className="text-sm text-muted-foreground italic">
+          {hasFilter ? "Không có dòng nào khớp bộ lọc" : (emptyText || "Không có dữ liệu")}
+        </div>
+      );
+      
       return (
         <div className="py-20 border rounded-lg bg-card text-center">
-          {emptyContent ?? (
-            <div className="text-sm text-muted-foreground italic">
-              {hasFilter ? "Không có dòng nào khớp bộ lọc" : (emptyText || "Không có dữ liệu")}
-            </div>
-          )}
+          {emptyContentResult}
         </div>
       );
     }
 
-    return <div className="hidden" />;
-  };
+    return <div className="hidden" aria-hidden="true" />;
+  }, [trangThai.loi, trangThai.dangTai, errorContent, loadingContent, columns.length, fullDisplay.length, emptyContent, hasFilter, emptyText]);
 
   const isMobile = isClient && window.innerWidth < BP_PX.md;
   const shownCols = useMemo(() => columns.filter(c => !prefs.hidden.has(c.key)), [columns, prefs.hidden]);

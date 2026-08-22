@@ -180,7 +180,7 @@ function RootShell({ children }: { children: ReactNode }) {
         stdout:
         vite v8.0.16 building client environment for production...
         transforming...✓ 6933 modules transformed.
-        Lỗi xem nguyên nhân do đâu ở bước nào mà bị rồi khắc phục
+        bạn sửa cho tới khi build thành công mới kết thúc công việc
       */}
       <head>
         <HeadContent />
