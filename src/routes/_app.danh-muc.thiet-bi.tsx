@@ -1443,21 +1443,6 @@ function DanhMucThietBiPage() {
               </div>
             }
 
-                    Chỉ tài sản độc lập
-                  </Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="show-retired"
-                    checked={showRetired}
-                    onCheckedChange={setShowRetired}
-                  />
-                  <Label htmlFor="show-retired" className="cursor-pointer text-sm">
-                    Kể cả đã nghỉ khai thác
-                  </Label>
-                </div>
-              </div>
-            }
             toolbarRight={({ filteredRows, visibleColumns }) => (
               <div className="flex items-center gap-2">
                 <Button
