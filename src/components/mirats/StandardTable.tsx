@@ -1550,7 +1550,7 @@ export function StandardTableInner<T>({
                           className={cn(
                             "group border-b border-border/40 transition-mirats-fast hover:bg-muted/60",
                             (onRowClick || selectable) && "cursor-pointer",
-                            isSel && "bg-[#0074e2]/5",
+                            isSel && "bg-[#0074e2]/5 !bg-[#0074e2]/5",
                             expandedRows.has(rid) && "bg-muted/40",
                             UI_DENSITY.TABLE_ROW_H,
                             rowClassName?.(r),
