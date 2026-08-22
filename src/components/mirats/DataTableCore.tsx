@@ -200,7 +200,10 @@ export function DataTableCore<T>({
             ))}
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody style={{ 
+          height: virtualize ? `${rowVirtualizer.getTotalSize()}px` : 'auto',
+          position: 'relative'
+        }}>
           {rows.length === 0 ? (
             <TableRow>
               <TableCell
@@ -210,6 +213,63 @@ export function DataTableCore<T>({
                 Không có dữ liệu hiển thị
               </TableCell>
             </TableRow>
+          ) : virtualize ? (
+            rowVirtualizer.getVirtualItems().map((virtualRow) => {
+              const row = rows[virtualRow.index];
+              const id = getRowId(row);
+              const isSelected = selected?.has(id);
+
+              return (
+                <TableRow
+                  key={id}
+                  data-index={virtualRow.index}
+                  ref={(el) => rowVirtualizer.measureElement(el)}
+                  className={cn(
+                    "group transition-mirats-fast hover:bg-muted/50 absolute w-full",
+                    onRowClick && "cursor-pointer",
+                    isSelected && "bg-primary/5",
+                  )}
+                  style={{
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                  onClick={() => onRowClick?.(row)}
+                >
+                  {selectable && (
+                    <TableCell
+                      className="w-10 px-2 text-center sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-l border-b border-r border-border/20"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelect?.(id);
+                      }}
+                    >
+                      <Checkbox checked={isSelected} />
+                    </TableCell>
+                  )}
+                  {columns.map((col) => (
+                    <TableCell
+                      key={col.key}
+                      className={cn(
+                        "mirats-table-cell-base border-b border-r border-border/20",
+                        col.cellClassName,
+                        col.sticky &&
+                          "sticky left-0 z-20 bg-card group-hover:bg-muted/50 border-r border-border/20",
+                        selectable && col.sticky && "left-10",
+                        col.align === "center" && "text-center",
+                        col.align === "right" && "text-right tabular-nums",
+                        col.type === "actions" &&
+                          "sticky right-0 z-20 bg-card/80 backdrop-blur-[2px] border-l border-border/20",
+                      )}
+                      style={{
+                        width: col.width,
+                        minWidth: col.minWidth || (col.width ? undefined : 100),
+                      }}
+                    >
+                      {renderCellContent(col, row)}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              );
+            })
           ) : (
             rows.map((row) => {
               const id = getRowId(row);
