@@ -1382,6 +1382,7 @@ function DanhMucThietBiPage() {
               <Button
                 variant="ghost"
                 size="sm"
+                aria-label="Xoá tất cả bộ lọc"
                 className="h-9 gap-1.5 text-muted-foreground"
                 onClick={clearFilters}
               >
