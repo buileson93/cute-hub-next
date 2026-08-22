@@ -1104,7 +1104,7 @@ function DanhMucThietBiPage() {
 
   // ---- KPI Stats & Click-to-filter ----
   const kpiStats = useMemo(() => {
-    const total = devices.length;
+    const total = totalCount;
     const inService = devices.filter((d) => d.trang_thai === "Đang sử dụng").length;
     const warranty = devices.filter(
       (d) => d.han_bao_hanh && new Date(d.han_bao_hanh) > new Date(),
@@ -1143,6 +1143,7 @@ function DanhMucThietBiPage() {
         icon: AlertTriangle,
         color: "text-amber-600",
         bg: "bg-amber-50",
+
       },
     ];
   }, [devices]);
