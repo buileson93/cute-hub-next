@@ -1511,6 +1511,7 @@ function DanhMucThietBiPage() {
                       size="sm"
                       variant={ACTION_PATTERNS.BULK_ACTION}
                       className="h-8 gap-1.5"
+                      aria-label="Gán các tài sản đã chọn vào hệ thống"
                       onClick={() => setAssignTargets(selectedRows)}
                     >
                       <PackagePlus className="h-3.5 w-3.5" /> Gán vào hệ thống
