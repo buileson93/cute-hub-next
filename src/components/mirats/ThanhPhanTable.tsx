@@ -1166,16 +1166,15 @@ export function ThanhPhanTable({
                 group: "Tài sản",
                 value: (r) => r.taiSanTrangThai,
                 cell: (r) => {
-                  if (r.taiSanTrangThai) {
+                  const status = r.taiSanTrangThai;
+                  if (status) {
                     return (
                       <Badge variant="outline" className="text-[10px]">
-                        {r.taiSanTrangThai}
+                        {status}
                       </Badge>
                     );
                   }
-                  return (
-                    <span className="text-xs text-muted-foreground">—</span>
-                  );
+                  return <span className="text-xs text-muted-foreground">—</span>;
                 },
               },
               {

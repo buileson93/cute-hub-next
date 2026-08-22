@@ -1307,8 +1307,9 @@ export function StandardTableInner<T>({
 
       {isMobile ? (
         <div className="space-y-3">
-          {renderGlobalState() !== null ? renderGlobalState() : null}
-          {renderGlobalState() === null && display.map((r, idx) => {
+          {renderGlobalState() !== null && renderGlobalState()}
+          {renderGlobalState() === null &&
+            display.map((r, idx) => {
               const rid = getRowIdInternal(r);
               return (
                 <MobileRecordCard
@@ -1578,7 +1579,7 @@ export function StandardTableInner<T>({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {renderGlobalState() !== null ? (
+              {renderGlobalState() !== null && (
                 <TableRow>
                   <TableCell
                     colSpan={
@@ -1589,7 +1590,8 @@ export function StandardTableInner<T>({
                     {renderGlobalState()}
                   </TableCell>
                 </TableRow>
-              ) : (
+              )}
+              {renderGlobalState() === null && (
                 <>
                   {paddingTop > 0 && (
                     <TableRow className="hover:bg-transparent">
