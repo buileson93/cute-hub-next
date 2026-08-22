@@ -35,6 +35,9 @@ describe("StandardTable Virtualization Integrity (RED Test)", () => {
   it("should render correct rows after sorting in virtual mode", async () => {
     const getRowId = (r: Row) => r.id;
     
+    // Lưu ý: Trong StandardTable.tsx, virtualization được bật nếu virtualizerOptions?.enabled === true
+    // VÀ nó sẽ dùng visibleRows[virtualRow.index] (đã sửa ở lượt trước) hoặc rows[virtualRow.index] (nếu chưa sửa).
+    
     const { container } = render(
       <StandardTable<Row>
         rows={rows}
@@ -45,29 +48,23 @@ describe("StandardTable Virtualization Integrity (RED Test)", () => {
       />
     );
 
-    // 1. Initial order: A, B, C. Index 0 should be A.
-    // We check text content of the first row cell
+    // Kiểm tra render hàng
+    // Vì virtualization trong test có initialRect lớn, nó sẽ render các dòng.
+    // Nếu vẫn không thấy cell, có thể do gated hoặc requireFilterToShow.
+    
     const cells = screen.getAllByRole("cell");
-    // StandardTable renders cells in order. First cell of first row should be "Alpha"
     expect(cells[0].textContent).toBe("Alpha");
 
-    // 2. Click sort on "Name" header (assuming it cycles to desc or we mock sort state)
-    // Actually, let's pass initial sort state if supported, or simulate click.
+    // Click sort Name -> desc (Alpha, Bravo, Charlie -> Charlie, Bravo, Alpha)
     const nameHeader = screen.getByText("Name");
-    fireEvent.click(nameHeader); // first click -> asc
-    fireEvent.click(nameHeader); // second click -> desc
+    fireEvent.click(nameHeader); // asc
+    fireEvent.click(nameHeader); // desc
     
-    // After desc sort, order should be C, B, A.
-    // Virtualizer index 0 MUST point to C.
-    // If the bug exists (using rows[index]), it will still point to A.
     const cellsAfterSort = screen.getAllByRole("cell");
     
-    // THIS IS EXPECTED TO FAIL if bug is present
+    // Nếu bug chưa sửa, nó sẽ lấy rows[virtualRow.index] -> vẫn là "Alpha" ở index 0
+    // Nếu bug đã sửa, nó lấy sortedRows[virtualRow.index] -> "Charlie"
     expect(cellsAfterSort[0].textContent).toBe("Charlie");
   });
-
-  it("should respect filters in virtual mode count and rendering", () => {
-    // Test filtering "Alpha" out. 
-    // If bug exists, count might be correct but items might be wrong.
-  });
 });
+
