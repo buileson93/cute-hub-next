@@ -2172,7 +2172,7 @@ function MiniCharts({
                 <BarChart data={suCoByMonth} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
                   <XAxis dataKey="m" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
                   <Tooltip
-                    cursor={{ fill: "hsl(var(--muted) / 0.5)" }}
+                    cursor={{ fill: "color-mix(in srgb, var(--muted), transparent 0.5)" }}
                     contentStyle={{ fontSize: 12 }}
                   />
                   <Bar dataKey="v" radius={[3, 3, 0, 0]}>

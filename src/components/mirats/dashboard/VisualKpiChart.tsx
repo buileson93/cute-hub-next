@@ -37,7 +37,7 @@ export function VisualKpiChart({
   unit,
   data,
   type = "area",
-  color = "hsl(var(--primary))",
+  color = "var(--primary)",
   icon,
   height = 140,
   status = "normal",

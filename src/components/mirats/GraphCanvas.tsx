@@ -157,7 +157,7 @@ function LienKetEdge(props: EdgeProps) {
     targetY,
     targetPosition,
   });
-  const stroke = d.impacted ? "hsl(var(--destructive))" : d.color;
+  const stroke = d.impacted ? "var(--destructive)" : d.color;
   const width = d.hovered
     ? Math.max(d.width * 1.9, 3.5)
     : d.impacted

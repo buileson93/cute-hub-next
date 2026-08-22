@@ -216,17 +216,17 @@ function BanGiaoPage() {
           <div className="h-72">
             <ResponsiveContainer>
               <BarChart data={perUnit.slice(0, 12)} margin={{ left: -8, right: 8, top: 8 }}>
-                <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeDasharray="3 3" />
-                <XAxis dataKey="ma" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
+                <XAxis dataKey="ma" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
                 <YAxis
-                  tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                  tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
                   allowDecimals={false}
                 />
                 <Tooltip
-                  cursor={{ fill: "hsl(var(--muted))", opacity: 0.4 }}
+                  cursor={{ fill: "var(--muted)", opacity: 0.4 }}
                   contentStyle={{
-                    background: "hsl(var(--popover))",
-                    border: "1px solid hsl(var(--border))",
+                    background: "var(--popover)",
+                    border: "1px solid var(--border)",
                     borderRadius: 8,
                     fontSize: 12,
                   }}
@@ -235,13 +235,13 @@ function BanGiaoPage() {
                 <Bar
                   dataKey="dangGiu"
                   name="Đang giữ"
-                  fill="hsl(var(--primary))"
+                  fill="var(--primary)"
                   radius={[4, 4, 0, 0]}
                 />
                 <Bar
                   dataKey="total"
                   name="Tổng phiếu"
-                  fill="hsl(var(--muted-foreground))"
+                  fill="var(--muted-foreground)"
                   opacity={0.35}
                   radius={[4, 4, 0, 0]}
                 />

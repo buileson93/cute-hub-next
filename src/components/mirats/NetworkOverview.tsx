@@ -1062,7 +1062,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
         ctx.stroke();
         ctx.setLineDash([]);
       } else if (isFocusNode || node.id === selectedId) {
-        ctx.strokeStyle = "hsl(var(--primary))";
+        ctx.strokeStyle = "var(--primary)";
         ctx.lineWidth = 2 / scale + 0.5;
         ctx.stroke();
       }
@@ -1184,9 +1184,9 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
         ctx.lineJoin = "round";
         ctx.miterLimit = 2;
         ctx.lineWidth = Math.max(1.2 / scale, fs * 0.12);
-        ctx.strokeStyle = "hsl(var(--background) / 0.55)";
+        ctx.strokeStyle = "color-mix(in srgb, var(--background), transparent 0.55)";
         ctx.strokeText(label, x, y);
-        ctx.fillStyle = "hsl(var(--foreground))";
+        ctx.fillStyle = "var(--foreground)";
         ctx.fillText(label, x, y);
       }
       ctx.globalAlpha = 1;

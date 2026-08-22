@@ -283,8 +283,8 @@ function GiayPhepPage() {
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                   <XAxis dataKey="thang" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-                  <Tooltip cursor={{ fill: "hsl(var(--muted))" }} />
-                  <Bar dataKey="so_gp" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                  <Tooltip cursor={{ fill: "var(--muted)" }} />
+                  <Bar dataKey="so_gp" fill="var(--primary)" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}

@@ -261,8 +261,8 @@ function TuoiThoPage() {
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      background: "hsl(var(--popover))",
-                      border: "1px solid hsl(var(--border))",
+                      background: "var(--popover)",
+                      border: "1px solid var(--border)",
                       borderRadius: 8,
                       fontSize: 12,
                     }}
@@ -306,18 +306,18 @@ function TuoiThoPage() {
                   <LineChart data={trend} margin={{ left: -8, right: 8, top: 8 }}>
                     <CartesianGrid
                       vertical={false}
-                      stroke="hsl(var(--border))"
+                      stroke="var(--border)"
                       strokeDasharray="3 3"
                     />
                     <XAxis
                       dataKey="ky"
-                      tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                      tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
                     />
-                    <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+                    <YAxis tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
                     <Tooltip
                       contentStyle={{
-                        background: "hsl(var(--popover))",
-                        border: "1px solid hsl(var(--border))",
+                        background: "var(--popover)",
+                        border: "1px solid var(--border)",
                         borderRadius: 8,
                         fontSize: 12,
                       }}
@@ -327,7 +327,7 @@ function TuoiThoPage() {
                       type="monotone"
                       dataKey="avg"
                       name="Health TB"
-                      stroke="hsl(var(--primary))"
+                      stroke="var(--primary)"
                       strokeWidth={2}
                       dot={{ r: 3 }}
                     />
@@ -365,26 +365,26 @@ function TuoiThoPage() {
           <div className="h-56">
             <ResponsiveContainer>
               <BarChart data={forecast} margin={{ left: -8, right: 8, top: 8 }}>
-                <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeDasharray="3 3" />
+                <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
                 <XAxis
                   dataKey="nam"
-                  tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                  tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
                 />
                 <YAxis
                   yAxisId="left"
-                  tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                  tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
                   allowDecimals={false}
                 />
                 <YAxis
                   yAxisId="right"
                   orientation="right"
-                  tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                  tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
                   tickFormatter={(v) => fmtVND(v as number)}
                 />
                 <Tooltip
                   contentStyle={{
-                    background: "hsl(var(--popover))",
-                    border: "1px solid hsl(var(--border))",
+                    background: "var(--popover)",
+                    border: "1px solid var(--border)",
                     borderRadius: 8,
                     fontSize: 12,
                   }}
@@ -397,14 +397,14 @@ function TuoiThoPage() {
                   yAxisId="left"
                   dataKey="count"
                   name="Số tài sản"
-                  fill="hsl(var(--primary))"
+                  fill="var(--primary)"
                   radius={[4, 4, 0, 0]}
                 />
                 <Bar
                   yAxisId="right"
                   dataKey="chiPhi"
                   name="Chi phí"
-                  fill="hsl(var(--muted-foreground))"
+                  fill="var(--muted-foreground)"
                   opacity={0.4}
                   radius={[4, 4, 0, 0]}
                 />

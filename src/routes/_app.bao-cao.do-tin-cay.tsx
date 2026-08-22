@@ -172,7 +172,7 @@ function TrendCard({
                   yAxisId="left"
                   dataKey="so_su_co"
                   name="Sự cố"
-                  fill="hsl(var(--primary))"
+                  fill="var(--primary)"
                   radius={[3, 3, 0, 0]}
                   cursor="pointer"
                   onClick={(payloadItem) => {
@@ -197,7 +197,7 @@ function TrendCard({
                   yAxisId="left"
                   dataKey="so_dong"
                   name="Đã đóng"
-                  fill="hsl(var(--muted-foreground))"
+                  fill="var(--muted-foreground)"
                   radius={[3, 3, 0, 0]}
                 />
                 <Line
@@ -205,7 +205,7 @@ function TrendCard({
                   type="monotone"
                   dataKey="mttr_gio"
                   name="MTTR (giờ)"
-                  stroke="hsl(var(--destructive))"
+                  stroke="var(--destructive)"
                   strokeWidth={2}
                   dot={{ r: 3 }}
                 />
@@ -647,12 +647,12 @@ function DoTinCayPage() {
                           style={{
                             backgroundColor:
                               v === 0
-                                ? "hsl(var(--muted) / 0.35)"
-                                : `hsl(var(--primary) / ${0.15 + intensity * 0.75})`,
+                                ? "color-mix(in srgb, var(--muted), transparent 0.35)"
+                                : `color-mix(in srgb, var(--primary), transparent ${0.15 + intensity * 0.75})`,
                             color:
                               intensity > 0.55
-                                ? "hsl(var(--primary-foreground))"
-                                : "hsl(var(--foreground))",
+                                ? "var(--primary-foreground)"
+                                : "var(--foreground)",
                           }}
                         >
                           {v > 0 ? v : ""}
@@ -667,7 +667,7 @@ function DoTinCayPage() {
                     <div
                       key={a}
                       className="h-3 w-6 rounded-sm border border-border/40"
-                      style={{ backgroundColor: `hsl(var(--primary) / ${a})` }}
+                      style={{ backgroundColor: `color-mix(in srgb, var(--primary), transparent ${a})` }}
                     />
                   ))}
                   <span>Nhiều</span>
@@ -833,7 +833,7 @@ function DoTinCayPage() {
                     yAxisId="left"
                     dataKey="so_su_co"
                     name="Sự cố"
-                    fill="hsl(var(--primary))"
+                    fill="var(--primary)"
                     radius={[3, 3, 0, 0]}
                     cursor="pointer"
                     onClick={(payloadItem) => {
@@ -850,20 +850,20 @@ function DoTinCayPage() {
                     type="monotone"
                     dataKey="cum_pct"
                     name="Luỹ kế"
-                    stroke="hsl(var(--destructive))"
+                    stroke="var(--destructive)"
                     strokeWidth={2}
                     dot={{ r: 3 }}
                   />
                   <ReferenceLine
                     yAxisId="right"
                     y={80}
-                    stroke="hsl(var(--destructive))"
+                    stroke="var(--destructive)"
                     strokeDasharray="4 4"
                     label={{
                       value: "80%",
                       position: "right",
                       fontSize: 10,
-                      fill: "hsl(var(--destructive))",
+                      fill: "var(--destructive)",
                     }}
                   />
                 </ComposedChart>
