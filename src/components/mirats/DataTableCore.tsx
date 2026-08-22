@@ -259,7 +259,7 @@ export function DataTableCore<T>({
                     <OptimizedCell
                       colKey="selection"
                       style={{ width: 40, minWidth: 40 }}
-                      className="w-10 px-3 text-center sticky left-0 z-20 bg-inherit border-b border-border/20"
+                      className="w-10 px-3 text-center sticky left-0 z-20 bg-inherit"
                       onClick={(e: React.MouseEvent) => {
                         e.stopPropagation();
                         onSelect?.(id);
