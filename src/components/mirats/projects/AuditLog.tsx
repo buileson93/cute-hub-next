@@ -218,7 +218,7 @@ export function AuditLog({ entityType, entityId }: AuditLogProps) {
           Xuất báo cáo hoạt động
         </Button>
       </div>
-    </ScrollArea>
+    </div>
   );
 }
 
