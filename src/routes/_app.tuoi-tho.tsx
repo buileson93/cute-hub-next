@@ -245,120 +245,89 @@ function TuoiThoPage() {
 
       {/* Charts */}
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-1">
-          <CardHeader>
-            <CardTitle className="text-base">Phân bổ xếp loại</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-56">
-              <ResponsiveContainer>
-                <PieChart>
-                  <Pie
-                    data={distribution}
-                    dataKey="count"
-                    nameKey="loai"
-                    innerRadius={45}
-                    outerRadius={80}
-                    paddingAngle={2}
-                  >
-                    {distribution.map((d) => (
-                      <Cell key={d.loai} fill={d.hex} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      background: "var(--popover)",
-                      border: "1px solid var(--border)",
-                      borderRadius: 8,
-                      fontSize: 12,
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="mt-2 grid grid-cols-2 @sm:grid-cols-4 gap-2 text-center text-xs">
-              {distribution.map((d) => (
-                <div key={d.loai}>
-                  <div className="mx-auto h-2 w-2 rounded-full" style={{ background: d.hex }} />
-                  <div className="mt-1 font-mono font-semibold">{d.count}</div>
-                  <div className="text-muted-foreground">Loại {d.loai}</div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="lg:col-span-1">
+          <ERPChartFrame
+            title="Phân bổ xếp loại"
+            subtitle="Tỉ lệ tài sản theo health score A/B/C/D"
+            className="h-[320px]"
+          >
+            <ChartContainer
+              config={{
+                A: { label: "A — Tốt", color: XEP_LOAI_HEALTH_TOKEN.A.hex },
+                B: { label: "B — Khá", color: XEP_LOAI_HEALTH_TOKEN.B.hex },
+                C: { label: "C — Yếu", color: XEP_LOAI_HEALTH_TOKEN.C.hex },
+                D: { label: "D — Kém", color: XEP_LOAI_HEALTH_TOKEN.D.hex },
+              }}
+            >
+              <PieChart>
+                <Pie
+                  data={distribution}
+                  dataKey="count"
+                  nameKey="loai"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={4}
+                  stroke="none"
+                >
+                  {distribution.map((d) => (
+                    <Cell key={d.loai} fill={d.hex} />
+                  ))}
+                </Pie>
+                <ChartTooltip content={<ChartTooltipContent hideIndicator unit="tài sản" />} />
+                <ChartLegend content={<ChartLegendContent />} />
+              </PieChart>
+            </ChartContainer>
+          </ERPChartFrame>
+        </div>
 
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-base">Xu hướng health score theo quý</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {trend.length <= 1 ? (
-              <div className="flex h-56 flex-col items-center justify-center gap-2 text-center">
-                <div className="text-3xl font-mono font-semibold">
-                  {trend.length === 1 ? trend[0].avg : "—"}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Health TB {trend.length === 1 ? `quý ${trend[0].ky}` : "hiện tại"}
-                </div>
-                <p className="mt-2 max-w-sm text-xs text-muted-foreground">
-                  Chưa đủ dữ liệu để vẽ xu hướng theo quý. Biểu đồ này chỉ hiển thị khi hệ thống đã
-                  lưu snapshot health score theo thời gian.
-                </p>
-              </div>
-            ) : (
-              <div className="h-56">
-                <ResponsiveContainer>
-                  <LineChart data={trend} margin={{ left: -8, right: 8, top: 8 }}>
-                    <CartesianGrid
-                      vertical={false}
-                      stroke="var(--border)"
-                      strokeDasharray="3 3"
-                    />
-                    <XAxis
-                      dataKey="ky"
-                      tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
-                    />
-                    <YAxis tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
-                    <Tooltip
-                      contentStyle={{
-                        background: "var(--popover)",
-                        border: "1px solid var(--border)",
-                        borderRadius: 8,
-                        fontSize: 12,
-                      }}
-                    />
-                    <Legend wrapperStyle={{ fontSize: 11 }} />
-                    <Line
-                      type="monotone"
-                      dataKey="avg"
-                      name="Health TB"
-                      stroke="var(--primary)"
-                      strokeWidth={2}
-                      dot={{ r: 3 }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="C"
-                      name="Loại C"
-                      stroke="#f59e0b"
-                      strokeWidth={1.5}
-                      dot={{ r: 2 }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="D"
-                      name="Loại D"
-                      stroke="#ef4444"
-                      strokeWidth={1.5}
-                      dot={{ r: 2 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <div className="lg:col-span-2">
+          <ERPChartFrame
+            title="Xu hướng health score theo quý"
+            subtitle="Điểm sức khỏe trung bình và số lượng tài sản C/D"
+            empty={trend.length <= 1}
+            className="h-[320px]"
+          >
+            <ChartContainer
+              config={{
+                avg: { label: "Health TB", color: "var(--chart-1)" },
+                C: { label: "Loại C", color: XEP_LOAI_HEALTH_TOKEN.C.hex },
+                D: { label: "Loại D", color: XEP_LOAI_HEALTH_TOKEN.D.hex },
+              }}
+            >
+              <LineChart data={trend} margin={{ left: -20, right: 10, top: 10 }}>
+                <CartesianGrid vertical={false} />
+                <XAxis dataKey="ky" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} domain={[0, 100]} />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <ChartLegend content={<ChartLegendContent />} />
+                <Line
+                  type="monotone"
+                  dataKey="avg"
+                  stroke="var(--color-avg)"
+                  strokeWidth={2.5}
+                  dot={{ r: 4, fill: "var(--color-avg)" }}
+                  activeDot={{ r: 6 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="C"
+                  stroke="var(--color-C)"
+                  strokeWidth={1.5}
+                  strokeDasharray="4 4"
+                  dot={{ r: 3 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="D"
+                  stroke="var(--color-D)"
+                  strokeWidth={1.5}
+                  strokeDasharray="4 4"
+                  dot={{ r: 3 }}
+                />
+              </LineChart>
+            </ChartContainer>
+          </ERPChartFrame>
+        </div>
       </div>
 
       <Card>
