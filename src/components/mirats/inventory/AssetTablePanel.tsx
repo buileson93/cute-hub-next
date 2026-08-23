@@ -44,6 +44,7 @@ export function AssetTablePanel({
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const { data: multiRoleMap } = useMultiRoleMap();
   const { data: modelRegistry = {} } = useModelRegistry();
 
