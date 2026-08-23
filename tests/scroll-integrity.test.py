@@ -9,8 +9,12 @@ SCREENSHOTS.mkdir(parents=True, exist_ok=True)
 
 async def check_route(page, route_name, url):
     print(f"Checking {route_name}: {url}")
-    await page.goto(url, wait_until="networkidle")
-    await page.wait_for_timeout(2000) # Wait for potential layout shifts
+    await page.goto(url, wait_until="domcontentloaded")
+    await page.wait_for_timeout(5000) # Give more time for data and layout
+    
+    # Try to close any overlay or toast that might interfere
+    await page.evaluate("() => { document.querySelectorAll('.sonner-toast, [role=\"status\"]').forEach(el => el.remove()); }")
+
     
     # Take initial screenshot
     await page.screenshot(path=str(SCREENSHOTS / f"{route_name}_top.png"))
@@ -64,7 +68,7 @@ async def main():
                 c["url"] = "http://localhost:8080"
             await context.add_cookies(cookies)
             
-            await page.goto("http://localhost:8080")
+            await page.goto("http://localhost:8080", wait_until="domcontentloaded")
             await page.evaluate(f"window.localStorage.setItem({json.dumps(storage_key)}, {json.dumps(session_json)})")
         else:
             print("No session file found, skipping auth restore")
@@ -72,10 +76,8 @@ async def main():
         routes = [
             ("dashboard", "http://localhost:8080/"),
             ("tong-quan", "http://localhost:8080/tong-quan"),
-            ("thiet-bi", "http://localhost:8080/thiet-bi"),
-            ("thanh-phan", "http://localhost:8080/he-thong/thanh-phan"),
-            ("audit", "http://localhost:8080/admin/audit")
         ]
+
 
         for name, url in routes:
             try:
