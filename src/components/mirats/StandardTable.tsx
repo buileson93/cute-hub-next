@@ -394,12 +394,12 @@ export function StandardTable<T>({
   const rowVirtualizer = useVirtualizer({
     count: display.length,
     getScrollElement: () => scrollContainerRef.current,
-    estimateSize: () => (density === "compact" ? 36 : 44),
-    overscan: adaptiveOverscan > 0 ? adaptiveOverscan : 8, // Ensure a stable fallback for overscan
-    getItemKey: (index) => {
+    estimateSize: useCallback(() => (density === "compact" ? 36 : 44), [density]),
+    overscan: adaptiveOverscan > 0 ? adaptiveOverscan : 5, // Reduced from 8 to 5 for better performance as per plan
+    getItemKey: useCallback((index: number) => {
       const row = display[index];
       return row ? getRowIdInternal(row) : `row-${index}`;
-    },
+    }, [display, getRowIdInternal]),
     paddingStart: 0,
     paddingEnd: 0,
   });
