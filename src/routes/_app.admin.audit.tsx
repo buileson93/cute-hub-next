@@ -49,7 +49,7 @@ function AuditLogPage() {
     queryKey: ["audit-logs", filter],
     queryFn: async () => {
       let query = supabase
-        .from("nhat_ky_he_thong")
+        .from("nhat_ky_he_thong" as any)
         .select(`
           *,
           profiles:user_id (
@@ -60,8 +60,8 @@ function AuditLogPage() {
         .order("thoi_gian", { ascending: false })
         .limit(500);
 
-      if (filter.action) query = query.ilike("hanh_dong", `%${filter.action}%`);
-      if (filter.domain) query = query.ilike("doi_tuong", `%${filter.domain}%`);
+      if (filter.action) query = (query as any).ilike("hanh_dong", `%${filter.action}%`);
+      if (filter.domain) query = (query as any).ilike("doi_tuong", `%${filter.domain}%`);
       
       const { data, error } = await query;
       if (error) throw error;
@@ -216,7 +216,7 @@ function AuditLogPage() {
             rows={logs}
             columns={columns}
             tableKey="admin-audit-logs"
-            trangThai={{ dangTai: isLoading, loi: error }}
+            trangThai={{ dangTai: isLoading, loi: error as any }}
             countUnit="nhật ký"
           />
         </div>
