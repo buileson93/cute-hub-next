@@ -1873,5 +1873,7 @@ function MergePickDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+      </PageBody>
+    </PageFrame>
   );
 }
