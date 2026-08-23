@@ -529,7 +529,6 @@ export function StandardTable<T>({
 
     return null;
   }, [trangThai, fullDisplay.length, errorContent, emptyContent, loadingContent, emptyText, columns.length, hasFilter, clearAllFilters]);
-  }, [trangThai.loi, trangThai.dangTai, errorContent, loadingContent, columns.length, fullDisplay.length, emptyContent, hasFilter, emptyText]);
 
   const isMobile = isClient && window.innerWidth < BP_PX.md;
   const shownCols = useMemo(() => columns.filter(c => !prefs.hidden.has(c.key)), [columns, prefs.hidden]);
