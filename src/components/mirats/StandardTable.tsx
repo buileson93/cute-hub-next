@@ -17,11 +17,8 @@ import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 import { MobileRecordCard } from "@/components/mirats/ui/MobileRecordCard";
 import { BulkActionBar } from "@/components/mirats/BulkActionBar";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
+
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { memo } from "react";
-
-const MemoizedTableRow = memo(TableRow);
-
 import { Icon } from "@/components/mirats/ui/Icon";
 import { useDensity } from "@/components/mirats/DensityToggle";
 import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2 } from "lucide-react";
@@ -397,12 +394,12 @@ export function StandardTable<T>({
   const rowVirtualizer = useVirtualizer({
     count: display.length,
     getScrollElement: () => scrollContainerRef.current,
-    estimateSize: useCallback(() => (density === "compact" ? 36 : 44), [density]),
-    overscan: adaptiveOverscan > 0 ? adaptiveOverscan : 5, // Reduced from 8 to 5 for better performance as per plan
-    getItemKey: useCallback((index: number) => {
+    estimateSize: () => (density === "compact" ? 36 : 44),
+    overscan: adaptiveOverscan > 0 ? adaptiveOverscan : 8, // Ensure a stable fallback for overscan
+    getItemKey: (index) => {
       const row = display[index];
       return row ? getRowIdInternal(row) : `row-${index}`;
-    }, [display, getRowIdInternal]),
+    },
     paddingStart: 0,
     paddingEnd: 0,
   });
@@ -706,7 +703,7 @@ export function StandardTable<T>({
                     const r = display[v.index];
                     const rid = getRowIdInternal(r);
                     return (
-                      <MemoizedTableRow 
+                      <TableRow 
                         key={rid} 
                         className={cn("group transition-colors border-b", rowClassName?.(r))} 
                         onClick={() => onRowClick?.(r)}
@@ -729,8 +726,6 @@ export function StandardTable<T>({
                           <OptimizedCell 
                             key={c.key} 
                             colKey={c.key}
-                            rowId={rid}
-                            dataHash={String(colText(c, r))}
                             className={cn("px-3 py-2 text-[13px] truncate", c.cellClassName)} 
                             style={{ 
                               width: prefs.widths[c.key] || 150,
@@ -743,7 +738,7 @@ export function StandardTable<T>({
                             {renderCellContent(c, r)}
                           </OptimizedCell>
                         ))}
-                      </MemoizedTableRow>
+                      </TableRow>
                     );
                   })}
                   {paddingBottom > 0 && (

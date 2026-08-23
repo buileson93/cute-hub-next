@@ -814,13 +814,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "bao_tri_chinh_sach_loai_thiet_bi_id_fkey"
-            columns: ["loai_thiet_bi_id"]
-            isOneToOne: false
-            referencedRelation: "v_thanh_phan_toan_cuc"
-            referencedColumns: ["modelId"]
-          },
-          {
             foreignKeyName: "bao_tri_chinh_sach_nguoi_phu_trach_id_fkey"
             columns: ["nguoi_phu_trach_id"]
             isOneToOne: false
@@ -1847,13 +1840,6 @@ export type Database = {
             referencedRelation: "dm_loai_thiet_bi"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "dm_loai_thiet_bi_merged_into_fkey"
-            columns: ["merged_into"]
-            isOneToOne: false
-            referencedRelation: "v_thanh_phan_toan_cuc"
-            referencedColumns: ["modelId"]
-          },
         ]
       }
       dm_model: {
@@ -1927,25 +1913,11 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "dm_model_loai_thiet_bi_id_fkey"
-            columns: ["loai_thiet_bi_id"]
-            isOneToOne: false
-            referencedRelation: "v_thanh_phan_toan_cuc"
-            referencedColumns: ["modelId"]
-          },
-          {
             foreignKeyName: "dm_model_merged_into_fkey"
             columns: ["merged_into"]
             isOneToOne: false
             referencedRelation: "dm_model"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "dm_model_merged_into_fkey"
-            columns: ["merged_into"]
-            isOneToOne: false
-            referencedRelation: "v_tai_san_toan_cuc"
-            referencedColumns: ["modelId"]
           },
           {
             foreignKeyName: "dm_model_merged_into_fkey"
@@ -2000,13 +1972,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dm_model"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "dm_model_dac_tinh_model_id_fkey"
-            columns: ["model_id"]
-            isOneToOne: false
-            referencedRelation: "v_tai_san_toan_cuc"
-            referencedColumns: ["modelId"]
           },
           {
             foreignKeyName: "dm_model_dac_tinh_model_id_fkey"
@@ -4829,13 +4794,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "he_thong_thanh_phan_loai_thiet_bi_yeu_cau_fkey"
-            columns: ["loai_thiet_bi_yeu_cau"]
-            isOneToOne: false
-            referencedRelation: "v_thanh_phan_toan_cuc"
-            referencedColumns: ["modelId"]
-          },
-          {
             foreignKeyName: "he_thong_thanh_phan_thanh_phan_cha_fkey"
             columns: ["thanh_phan_cha"]
             isOneToOne: false
@@ -5821,13 +5779,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dm_model"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "model_tai_lieu_model_id_fkey"
-            columns: ["model_id"]
-            isOneToOne: false
-            referencedRelation: "v_tai_san_toan_cuc"
-            referencedColumns: ["modelId"]
           },
           {
             foreignKeyName: "model_tai_lieu_model_id_fkey"
@@ -7702,25 +7653,11 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "thiet_bi_loai_thiet_bi_id_fkey"
-            columns: ["loai_thiet_bi_id"]
-            isOneToOne: false
-            referencedRelation: "v_thanh_phan_toan_cuc"
-            referencedColumns: ["modelId"]
-          },
-          {
             foreignKeyName: "thiet_bi_model_id_fkey"
             columns: ["model_id"]
             isOneToOne: false
             referencedRelation: "dm_model"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "thiet_bi_model_id_fkey"
-            columns: ["model_id"]
-            isOneToOne: false
-            referencedRelation: "v_tai_san_toan_cuc"
-            referencedColumns: ["modelId"]
           },
           {
             foreignKeyName: "thiet_bi_model_id_fkey"
@@ -8164,13 +8101,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dm_loai_thiet_bi"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "thiet_bi_khe_linh_kien_loai_thiet_bi_yeu_cau_fkey"
-            columns: ["loai_thiet_bi_yeu_cau"]
-            isOneToOne: false
-            referencedRelation: "v_thanh_phan_toan_cuc"
-            referencedColumns: ["modelId"]
           },
           {
             foreignKeyName: "thiet_bi_khe_linh_kien_thiet_bi_id_fkey"
@@ -8960,13 +8890,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dm_model"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "vat_tu_model_id_fkey"
-            columns: ["model_id"]
-            isOneToOne: false
-            referencedRelation: "v_tai_san_toan_cuc"
-            referencedColumns: ["modelId"]
           },
           {
             foreignKeyName: "vat_tu_model_id_fkey"
@@ -9781,6 +9704,7 @@ export type Database = {
       }
       v_tai_san_toan_cuc: {
         Row: {
+          anomalyScore: number | null
           cheDoKdHc: string | null
           chungLoai: string | null
           danhSachHeThong: string | null
@@ -9801,16 +9725,34 @@ export type Database = {
           nhaSanXuat: string | null
           pN: string | null
           serial: string | null
+          soSuCo90n: number | null
           soThanhPhanDangGan: number | null
           ten: string | null
           tinhTrangKyThuat: string | null
           trangThai: string | null
+          tyLeTuoiTho: number | null
           viTri: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "thiet_bi_model_id_fkey"
+            columns: ["modelId"]
+            isOneToOne: false
+            referencedRelation: "dm_model"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_model_id_fkey"
+            columns: ["modelId"]
+            isOneToOne: false
+            referencedRelation: "view_ton_kho_model"
+            referencedColumns: ["model_id"]
+          },
+        ]
       }
       v_thanh_phan_toan_cuc: {
         Row: {
+          anomalyScore: number | null
           cheDoKdHc: string | null
           chungLoai: string | null
           daLap: boolean | null
@@ -9833,6 +9775,7 @@ export type Database = {
           nhomHeThong: string | null
           phanLoai: string | null
           pN: string | null
+          soThanhPhanCuaTaiSan: number | null
           taiSanDonViQuanLy: string | null
           taiSanTrangThai: string | null
           taiSanViTri: string | null
@@ -9841,7 +9784,8 @@ export type Database = {
           thietBiSerial: string | null
           thietBiTen: string | null
           tinhTrangKyThuat: string | null
-          trang_thai: string | null
+          trangThai: string | null
+          tyLeTuoiTho: number | null
           viTri: string | null
           viTriId: string | null
         }
@@ -9866,6 +9810,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dm_vi_tri"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_model_id_fkey"
+            columns: ["modelId"]
+            isOneToOne: false
+            referencedRelation: "dm_model"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "thiet_bi_model_id_fkey"
+            columns: ["modelId"]
+            isOneToOne: false
+            referencedRelation: "view_ton_kho_model"
+            referencedColumns: ["model_id"]
           },
         ]
       }

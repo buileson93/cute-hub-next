@@ -81,7 +81,7 @@ export function DataTableCore<T>({
   const [calculatedMaxHeight, setCalculatedMaxHeight] = useState<string | number | undefined>(
     initialMaxHeight,
   );
-  const [adaptiveOverscan, setAdaptiveOverscan] = useState(5);
+  const [adaptiveOverscan, setAdaptiveOverscan] = useState(8);
   const lastScrollTime = useRef(0);
   const frameCount = useRef(0);
 
