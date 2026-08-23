@@ -23,8 +23,11 @@ export function PageBody({ children, className, noPadding, density }: Props) {
   return (
     <div
       data-density={density}
+      role="main"
+      tabIndex={0}
+      aria-label="Vùng nội dung chính"
       className={cn(
-        "flex w-full flex-col flex-1 min-h-0 overflow-y-auto mirats-scroll bg-background/50 relative isolation-auto",
+        "flex w-full flex-col flex-1 min-h-0 overflow-y-auto mirats-scroll bg-background/50 relative isolation-auto outline-none focus-visible:ring-1 focus-visible:ring-primary/20 astryx-page-body",
         TYPO.BODY,
         !noPadding && UI_DENSITY.PAGE_PADDING,
         UI_DENSITY.SECTION_GAP,

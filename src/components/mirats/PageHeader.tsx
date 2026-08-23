@@ -99,8 +99,9 @@ export function PageHeader({
   return (
     <header
       data-component="PageHeader"
+      role="banner"
       className={cn(
-        "flex flex-col gap-1 w-full shrink-0 border-b bg-background/50 backdrop-blur-sm sticky top-0 z-20 min-h-[44px] transition-all duration-200",
+        "flex flex-col gap-1 w-full shrink-0 border-b bg-background/50 backdrop-blur-sm sticky top-0 z-20 min-h-[44px] transition-all duration-200 astryx-page-header",
         UI_DENSITY.CARD_HEADER,
         className,
       )}
