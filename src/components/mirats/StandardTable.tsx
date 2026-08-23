@@ -254,8 +254,8 @@ export function StandardTable<T>({
 
   const toggleRow = useCallback(
     (id: string) => {
-      if (!onSelect || !selected) return;
-      const next = new Set(selected);
+      const current = selected || new Set<string>();
+      const next = new Set(current);
       if (next.has(id)) next.delete(id);
       else next.add(id);
       onSelect?.(next);
@@ -265,9 +265,9 @@ export function StandardTable<T>({
   );
 
   const toggleAll = useCallback(() => {
-    if (!onSelect) return;
-    if (selected && selected.size === rows.length && rows.length > 0) {
-      onSelect(new Set());
+    const current = selected || new Set<string>();
+    if (current.size === rows.length && rows.length > 0) {
+      onSelect?.(new Set());
       setSelected?.(new Set());
     } else {
       const next = new Set(rows.map(getRowIdInternal));
@@ -719,7 +719,7 @@ export function StandardTable<T>({
                 {selectable && (
                   <TableHead className="w-[40px] px-2 text-center sticky left-0 z-30 bg-muted/80">
                     <Checkbox
-                      checked={rows.length > 0 && selected?.size === rows.length}
+                      checked={rows.length > 0 && (selected?.size ?? 0) === rows.length}
                       onCheckedChange={toggleAll}
                     />
                   </TableHead>

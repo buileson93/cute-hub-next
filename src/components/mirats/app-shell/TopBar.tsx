@@ -87,7 +87,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
             ben="bottom"
             noiDung={
               <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
-                kiểm tra đã được cuộn vô tận khi cuộn tới cuối trang chưa và ko cần bấm vào nút kiểm tra dữ liệu , thêm vào đó dashboard overview có cuộn đuộc thêm thông tin chưa, chỉ cuộn nội dung ko cuộn thanh bar vả cả trang web,
+                các checkbox select all và select từng dòng ở bảng chưa hoạt động được tìm nguyên nhân và đưa ra kế hoạch chi tiết để khắc phục
               </div>
             }
           >
