@@ -281,7 +281,7 @@ export function AssetTablePanel({
           hideBelow: "lg",
           value: (r) => r.model,
           priority: "secondary",
-          cell: (r) => <ModelCell model={r.model} modelId={r.modelId} registry={modelRegistry} />,
+          cell: (r) => <ModelCell model={r.model} modelId={r.modelId || undefined} registry={modelRegistry} />,
         },
         {
           key: "chungLoai",
