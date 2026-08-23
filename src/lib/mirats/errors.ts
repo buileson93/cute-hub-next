@@ -14,7 +14,7 @@ interface LoiCoTruongMessage {
   status?: number;
 }
 
-function laObject(v: unknown): v is LoiCoTruongMessage {
+function laObject(v: unknown): v is Record<string, any> {
   return !!v && typeof v === "object";
 }
 
@@ -25,12 +25,24 @@ function laObject(v: unknown): v is LoiCoTruongMessage {
 export function thongDiepLoi(loi: unknown, fallback: string): string {
   if (typeof loi === "string" && loi.trim()) return loi;
   if (loi instanceof Error && loi.message) return loi.message;
+  
   if (laObject(loi)) {
+    // 1. PostgrestError hoặc các object có cấu trúc message/details/hint
     const parts = [loi.message, loi.hint, loi.details].filter(
       (x): x is string => typeof x === "string" && x.length > 0,
     );
     if (parts.length) return parts.join(" — ");
+
+    // 2. Mở rộng tìm kiếm thông báo trong các đường dẫn lồng nhau
+    // Thường thấy trong các thư viện fetch hoặc axios
+    const nested = 
+      loi.error?.message || 
+      loi.data?.message || 
+      loi.response?.data?.message;
+      
+    if (typeof nested === "string" && nested.trim()) return nested;
   }
+  
   return fallback;
 }
 

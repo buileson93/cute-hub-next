@@ -3,6 +3,7 @@ import { createRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { routeTree } from "./routeTree.gen";
 import { nenRetry, tinhTreRetry } from "./lib/mirats/ui/retry-policy";
+import { thongDiepLoi } from "./lib/mirats/errors";
 
 /**
  * Quy ước `meta` chuẩn cho MỌI useMutation trong dự án:
@@ -68,9 +69,10 @@ export const getRouter = () => {
         onError: (err, _vars, _ctx, mutation) => {
           const meta = mutation?.meta as MutationMetaLovable | undefined;
           if (meta && !meta.silent) {
+            const detail = thongDiepLoi(err, "Thao tác thất bại");
             const msg = meta.errorMessage
-              ? `${meta.errorMessage}: ${(err as Error).message}`
-              : (err as Error).message;
+              ? `${meta.errorMessage}: ${detail}`
+              : detail;
             toast.error(msg);
           }
         },

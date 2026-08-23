@@ -292,7 +292,7 @@ function KiemDinhPage() {
         requireFilterToShow={false}
         hideReorderToggle
         emptyText="Không có tài sản nào thuộc diện KĐ/HC khớp bộ lọc."
-        trangThai={{ dangTai: isLoading, loi: error ? String(error) : null }}
+        trangThai={{ dangTai: isLoading, loi: error }}
         pagination={{ controls, tong }}
       />
     </div>

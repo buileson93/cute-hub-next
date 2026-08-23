@@ -318,7 +318,7 @@ function DacTinhPage() {
         requireFilterToShow={false}
         hideReorderToggle
         emptyText="Chưa có nhãn tài sản nào khớp bộ lọc."
-        trangThai={{ dangTai: pageQ.isFetching, loi: pageQ.error ? String(pageQ.error) : null }}
+        trangThai={{ dangTai: pageQ.isFetching, loi: pageQ.error }}
         pagination={{ controls, tong }}
       />
 
