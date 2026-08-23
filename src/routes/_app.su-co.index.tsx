@@ -152,6 +152,41 @@ function SuCoPage() {
   const isMobile = useIsMobile();
   const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
 
+  return (
+    <PageFrame density="compact" layout="workspace">
+      <PageHeader
+        icon={AlertTriangle}
+        title="Sự cố kỹ thuật"
+        subtitle="Nhật ký và quản lý sự cố hệ thống"
+        breadcrumbs={[
+          { label: "Vận hành", to: "/he-thong/cay" },
+          { label: "Sự cố kỹ thuật" },
+        ]}
+        actions={
+          <div className="flex items-center gap-2">
+            <Button asChild size="sm">
+              <Link to="/su-co/moi">
+                <Plus className="mr-2 h-4 w-4" />
+                Báo cáo sự cố
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm">
+              <FileDown className="mr-2 h-4 w-4" />
+              Xuất báo cáo
+            </Button>
+          </div>
+        }
+      />
+      <PageBody noPadding className="relative flex flex-col bg-muted/5 overflow-hidden flex-1 min-h-0">
+        <SuCoListContent />
+      </PageBody>
+    </PageFrame>
+  );
+}
+
+function SuCoListContent() {
+  const isMobile = useIsMobile();
+  const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
   const { suCo, loading: isLoading } = useScope();
   const error = null;
   const qc = useQueryClient();
