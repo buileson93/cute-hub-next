@@ -670,7 +670,10 @@ export function StandardTable<T>({
               <TableRow className="hover:bg-transparent border-b">
                 {selectable && (
                   <TableHead className="w-[40px] px-2 text-center sticky left-0 z-30 bg-muted/80">
-                    <Checkbox checked={selected?.size === rows.length && rows.length > 0} onCheckedChange={toggleAll} />
+                    <Checkbox
+                      checked={rows.length > 0 && selected?.size === rows.length}
+                      onCheckedChange={toggleAll}
+                    />
                   </TableHead>
                 )}
                 {shownCols.map(c => (
