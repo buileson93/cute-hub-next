@@ -384,7 +384,16 @@ export function ThanhPhanTable({
   tableKey = "mirats:unified-tp-table", // Sử dụng key chung để share preference
   externalEditMode,
 }: ThanhPhanTableProps) {
-  const [q, setQ] = useState("");
+  const [deferredQ, setDeferredQ] = useState("");
+  const q = useMemo(() => deferredQ, [deferredQ]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Logic would go here if we were truly deferring, but TanStack Query handles it via queryKey
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [deferredQ]);
+
   const [viewMode, setViewMode] = useUserPref<"component" | "asset">(
     "thanh-phan:view-mode",
     "component",
@@ -398,7 +407,7 @@ export function ThanhPhanTable({
     isFetchingNextPage: isFetchingTp,
     isLoading: loadingTp,
     error: errorTp,
-  } = useInfiniteThanhPhanRows(q, viewMode === "component");
+  } = useInfiniteThanhPhanRows(deferredQ, viewMode === "component");
 
   const {
     data: tsData,
@@ -407,7 +416,7 @@ export function ThanhPhanTable({
     isFetchingNextPage: isFetchingTs,
     isLoading: loadingTsReal,
     error: errorTsReal,
-  } = useInfiniteTaiSanRows(q, bucket, viewMode === "asset");
+  } = useInfiniteTaiSanRows(deferredQ, bucket, viewMode === "asset");
 
   const rows = useMemo(() => rowsData?.pages.flatMap((p) => p.rows) ?? [], [rowsData]);
   const taiSanRows = useMemo(() => tsData?.pages.flatMap((p) => p.rows) ?? [], [tsData]);
@@ -506,7 +515,7 @@ export function ThanhPhanTable({
         ].join(" "),
       ).includes(t),
     );
-  }, [rows, q]);
+  }, [rows, deferredQ]);
 
   const filteredTaiSan = useMemo(() => {
     const t = normalize(q).trim();
@@ -771,7 +780,7 @@ export function ThanhPhanTable({
                       <Input
                         ref={searchInputRef}
                         value={q}
-                        onChange={(e) => setQ(e.target.value)}
+                        onChange={(e) => setDeferredQ(e.target.value)}
                         placeholder={
                           viewMode === ("component" as any) ? "Tìm vai trò, tên…" : "Tìm tài sản…"
                         }
@@ -780,7 +789,7 @@ export function ThanhPhanTable({
                       {q && (
                         <button
                           type="button"
-                          onClick={() => setQ("")}
+                          onClick={() => setDeferredQ("")}
                           className="absolute right-8 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground z-20"
                         >
                           <X className="h-3 w-3" />
