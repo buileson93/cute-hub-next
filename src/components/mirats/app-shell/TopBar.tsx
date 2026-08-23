@@ -87,9 +87,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
             ben="bottom"
             noiDung={
               <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
-                Thêm bộ kiểm thử Playwright bao phủ tất cả các route chính của website để xác minh Header/Sidebar luôn cố định và nội dung chỉ trượt trong `PageBody` trên nhiều độ phân giải.{"\n\n"}
-                Tích hợp kiểm tra accessibility (keyboard navigation và focus state) cho `PageFrame`, `PageHeader`, `PageBody` để đảm bảo trải nghiệm đúng khi người dùng cuộn và dùng bàn phím.{"\n"}
-                đã tối ưu cho điện thoại nữa
+                vẫn chưa áp dụng hết cho cả websita bạn đã làm xót ví dụ https://vatm.app/danh-muc/vi-tri không scroll được hãy rà soát lại toàn bộ code và sửa lại hết tất cả menu từng menu một , lên kế hoạch chi tiết và khắc phục hết , và tốt hơn hết là tạo một khung trong code để có thể đồng nhất được không phải menu được menu khác lại không được và sau nay có khai thêm menu giao diện mới , lên kế hoạch chi tiết và phương án khắc phục
               </div>
             }
           >

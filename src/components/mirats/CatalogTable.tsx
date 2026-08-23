@@ -38,7 +38,9 @@ import { toCsv } from "@/lib/mirats/import-config";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
 import { EmptyState } from "@/components/mirats/EmptyState";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
 import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { CodeBadge } from "@/components/mirats/CodeBadge";
 
