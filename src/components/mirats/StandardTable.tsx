@@ -735,9 +735,9 @@ export function StandardTable<T>({
                           <OptimizedCell 
                             key={c.key} 
                             colKey={c.key}
-                            className={cn("px-3 py-2 text-[13px] truncate", c.cellClassName)} 
+                            className={cn("px-3 text-[13px] truncate astryx-table-cell", c.cellClassName)} 
                             style={{ 
-                              width: prefs.widths[c.key] || 150,
+                              height: density === "compact" ? 36 : 44,
                               position: c.sticky ? 'sticky' : 'relative',
                               left: c.sticky ? (selectable ? 40 : 0) : undefined,
                               zIndex: c.sticky ? 10 : 1,
