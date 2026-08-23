@@ -67,8 +67,8 @@ export function ThietBiDetail({
   };
 
   return (
-    <PageBody>
-      <div className="flex flex-col gap-6">
+    <PageBody noPadding className="flex flex-col flex-1 min-h-0 overflow-hidden">
+      <div className="flex flex-col gap-6 p-6 h-full overflow-y-auto mirats-scroll">
         <div className="flex items-center justify-between">
           <PageHeader
             title={asset.ten}
