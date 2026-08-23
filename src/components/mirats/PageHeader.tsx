@@ -97,8 +97,8 @@ export function PageHeader({
   };
 
   return (
-    <div
-      data-testid="page-header"
+    <header
+      data-component="PageHeader"
       className={cn(
         "flex flex-col gap-1 w-full shrink-0 border-b bg-background/50 backdrop-blur-sm sticky top-0 z-20 min-h-[44px] transition-all duration-200",
         UI_DENSITY.CARD_HEADER,
@@ -204,6 +204,6 @@ export function PageHeader({
         {/* 5. Actions */}
         {renderActions()}
       </div>
-    </div>
+    </header>
   );
 }
