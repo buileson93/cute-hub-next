@@ -112,6 +112,8 @@ export function AssetTablePanel({
       countUnit="tài sản"
       maxHeightClass={hideHeader ? "min-h-0 flex-1 overflow-y-auto" : undefined}
       selectable
+      exportable
+      ten="tai-san"
       bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear }) => (
         <>
           <BulkActionButton
@@ -124,21 +126,6 @@ export function AssetTablePanel({
               nutXacNhan: "Sao chép",
             }}
             onRun={() => copyCodes(selectedRows.map((r) => r.ma))}
-          />
-          <TableExportDialog<TaiSanRow>
-            ten="tai-san"
-            countUnit="tài sản"
-            visibleColumns={visibleColumns}
-            allColumns={allColumns}
-            rowsByScope={{ selected: selectedRows, filtered: filteredRows, page: pageRows }}
-            trigger={
-              <AppTooltip noiDung="Xuất dữ liệu ra file CSV">
-                <Button size="sm" variant="outline" className="h-7 w-7 p-0">
-                  <Download className="h-3.5 w-3.5" />
-                  <span className="sr-only">Xuất CSV…</span>
-                </Button>
-              </AppTooltip>
-            }
           />
           <AppTooltip noiDung="Bỏ chọn">
             <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={clear}>
