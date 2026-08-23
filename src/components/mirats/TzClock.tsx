@@ -44,7 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label={`đã rà soát và nâng cấp layout Dashboard, Sự cố và Bảo dưỡng đồng bộ với chuẩn hệ thống; tối ưu chiều rộng cột và cố định scroll rail; biểu mẫu ResponsiveDialog hoạt động ổn định.`}
+          aria-label={`Chạy kiểm thử tự động (visual regression) để kiểm tra đồng nhất UI/UX trên toàn bộ các trang và liệt kê mọi chỗ lệch so với https://vatm.app/he-thong/thanh-phan.\n\nChuẩn hóa cấu trúc PageFrame -> PageHeader -> PageBody cho tất cả các trang còn lại để đảm bảo toàn website thống nhất như chuẩn đã lấy.\n\nThiết lập và áp dụng bộ design tokens cho spacing, typography và kích thước nút để đảm bảo UI trông hiện đại và nhất quán trên mọi màn hình.\n\nTối ưu lại các bảng dữ liệu (column width, overflow, pagination) cho chế độ responsive trên desktop, tablet và mobile để tránh khuất nội dung.`}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">
