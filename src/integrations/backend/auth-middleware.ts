@@ -15,8 +15,8 @@ export const requireSupabaseAuth = createMiddleware({ type: "function" }).server
       const cfg = resolveServerBackend();
       const request = getRequest();
 
-      if (!request?.headers) {
-        return next({
+      const fail = () =>
+        next({
           context: {
             supabase: null as any,
             userId: null as any,
@@ -24,31 +24,14 @@ export const requireSupabaseAuth = createMiddleware({ type: "function" }).server
             unauthenticated: true,
           },
         });
-      }
+
+      if (!request?.headers) return fail();
 
       const authHeader = request.headers.get("authorization");
-      if (!authHeader?.startsWith("Bearer ")) {
-        return next({
-          context: {
-            supabase: null as any,
-            userId: null as any,
-            claims: null as any,
-            unauthenticated: true,
-          },
-        });
-      }
+      if (!authHeader?.startsWith("Bearer ")) return fail();
 
       const token = authHeader.slice("Bearer ".length);
-      if (!token || token.split(".").length !== 3) {
-        return next({
-          context: {
-            supabase: null as any,
-            userId: null as any,
-            claims: null as any,
-            unauthenticated: true,
-          },
-        });
-      }
+      if (!token || token.split(".").length !== 3) return fail();
 
       const supabase = createClient<Database>(cfg.url, cfg.publishableKey, {
         global: {
@@ -58,23 +41,15 @@ export const requireSupabaseAuth = createMiddleware({ type: "function" }).server
         auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
       });
 
-      const { data, error } = await supabase.auth.getClaims(token);
-      if (error || !data?.claims?.sub) {
-        return next({
-          context: {
-            supabase: null as any,
-            userId: null as any,
-            claims: null as any,
-            unauthenticated: true,
-          },
-        });
-      }
+      // Verification of token
+      const { data, error } = await supabase.auth.getUser(token);
+      if (error || !data.user) return fail();
 
       return next({
         context: {
           supabase,
-          userId: data.claims.sub,
-          claims: data.claims,
+          userId: data.user.id,
+          claims: (data.user as any).app_metadata || {},
           unauthenticated: false,
         },
       });
