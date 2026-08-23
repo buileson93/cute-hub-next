@@ -392,12 +392,6 @@ export function ThanhPhanTable({
   const [bucket, setBucket] = useState<"all" | "0" | "1" | "2-3" | ">3">("all");
 
 
-  const [viewMode, setViewMode] = useUserPref<"component" | "asset">(
-    "thanh-phan:view-mode",
-    "component",
-  );
-  const [bucket, setBucket] = useState<"all" | "0" | "1" | "2-3" | ">3">("all");
-
   const {
     data: rowsData,
     fetchNextPage: fetchNextTp,
@@ -405,7 +399,7 @@ export function ThanhPhanTable({
     isFetchingNextPage: isFetchingTp,
     isLoading: loadingTp,
     error: errorTp,
-  } = useInfiniteThanhPhanRows(deferredQ, viewMode === "component");
+  } = useInfiniteThanhPhanRows(q, viewMode === "component");
 
   const {
     data: tsData,
@@ -414,7 +408,7 @@ export function ThanhPhanTable({
     isFetchingNextPage: isFetchingTs,
     isLoading: loadingTsReal,
     error: errorTsReal,
-  } = useInfiniteTaiSanRows(deferredQ, bucket, viewMode === "asset");
+  } = useInfiniteTaiSanRows(q, bucket, viewMode === "asset");
 
   const rows = useMemo(() => rowsData?.pages.flatMap((p) => p.rows) ?? [], [rowsData]);
   const taiSanRows = useMemo(() => tsData?.pages.flatMap((p) => p.rows) ?? [], [tsData]);
@@ -778,7 +772,7 @@ export function ThanhPhanTable({
                       <Input
                         ref={searchInputRef}
                         value={q}
-                        onChange={(e) => setDeferredQ(e.target.value)}
+                        onChange={(e) => setQ(e.target.value)}
                         placeholder={
                           viewMode === ("component" as any) ? "Tìm vai trò, tên…" : "Tìm tài sản…"
                         }
@@ -787,7 +781,7 @@ export function ThanhPhanTable({
                       {q && (
                         <button
                           type="button"
-                          onClick={() => setDeferredQ("")}
+                          onClick={() => setQ("")}
                           className="absolute right-8 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground z-20"
                         >
                           <X className="h-3 w-3" />
