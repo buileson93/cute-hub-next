@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { PageFrame } from "@/components/mirats/PageFrame";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { StandardTable, ColumnDef } from "@/components/mirats/StandardTable";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { fmtNgay } from "@/lib/mirats/format";
+import { fmtNgayGio } from "@/lib/mirats/format";
 import { Shield, User, Activity, Clock, Eye, FilterX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -49,7 +49,7 @@ function AuditLogPage() {
     queryKey: ["audit-logs", filter],
     queryFn: async () => {
       let query = supabase
-        .from("nhat_ky_he_thong" as any)
+        .from("nhat_ky_he_thong")
         .select(`
           *,
           profiles:user_id (
@@ -66,9 +66,7 @@ function AuditLogPage() {
       const { data, error } = await query;
       if (error) throw error;
       
-      // Client-side filtering for user because of complex join if needed, 
-      // but let's stick to basics first.
-      let result = data as AuditLog[];
+      let result = (data as any[]) || [];
       if (filter.user) {
         result = result.filter(log => 
           log.profiles?.ho_ten?.toLowerCase().includes(filter.user.toLowerCase()) ||
@@ -76,7 +74,7 @@ function AuditLogPage() {
         );
       }
       
-      return result;
+      return result as AuditLog[];
     },
   });
 
@@ -88,7 +86,7 @@ function AuditLogPage() {
       render: (r) => (
         <div className="flex items-center gap-2 text-muted-foreground">
           <Clock className="h-3 w-3" />
-          <span>{fmtNgay(r.thoi_gian, "datetime-sec")}</span>
+          <span>{fmtNgayGio(r.thoi_gian)}</span>
         </div>
       ),
     },
@@ -111,10 +109,12 @@ function AuditLogPage() {
       header: "Hành động",
       width: 150,
       render: (r) => {
-        const color = r.hanh_dong === "bulk_delete" ? "destructive" : 
-                      r.hanh_dong === "export_csv" ? "default" : "secondary";
+        let variant: any = "secondary";
+        if (r.hanh_dong === "bulk_delete") variant = "destructive";
+        if (r.hanh_dong === "export_csv") variant = "default";
+        
         return (
-          <Badge variant={color as any} className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0">
+          <Badge variant={variant} className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0">
             {r.hanh_dong}
           </Badge>
         );
@@ -167,8 +167,8 @@ function AuditLogPage() {
     <PageFrame>
       <PageHeader
         title="Nhật ký hệ thống"
-        crumb="Quản trị"
-        icon={<Shield className="h-5 w-5 text-primary" />}
+        supporting="Quản trị"
+        icon={Shield}
         actions={
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => setFilter({ action: "", domain: "", user: "" })} className="h-8 gap-2">
@@ -235,7 +235,7 @@ function AuditLogPage() {
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="space-y-1">
                   <div className="text-muted-foreground text-[11px] uppercase font-bold">Thời gian</div>
-                  <div>{fmtNgay(selectedLog.thoi_gian, "datetime-sec")}</div>
+                  <div>{fmtNgayGio(selectedLog.thoi_gian)}</div>
                 </div>
                 <div className="space-y-1">
                   <div className="text-muted-foreground text-[11px] uppercase font-bold">ID</div>
