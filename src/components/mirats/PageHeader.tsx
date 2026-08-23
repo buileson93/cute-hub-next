@@ -100,7 +100,7 @@ export function PageHeader({
     <div
       data-testid="page-header"
       className={cn(
-        "flex flex-col gap-1 w-full shrink-0 border-b bg-background/50 backdrop-blur-sm sticky top-0 z-20 min-h-[44px]",
+        "flex flex-col gap-1 w-full shrink-0 border-b bg-background/50 backdrop-blur-sm sticky top-0 z-20 min-h-[44px] transition-all duration-200",
         UI_DENSITY.CARD_HEADER,
         className,
       )}
