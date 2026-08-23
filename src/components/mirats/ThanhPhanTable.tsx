@@ -507,7 +507,7 @@ export function ThanhPhanTable({
         ].join(" "),
       ).includes(t),
     );
-  }, [rows, deferredQ]);
+  }, [rows, q]);
 
   const filteredTaiSan = useMemo(() => {
     const t = normalize(q).trim();
