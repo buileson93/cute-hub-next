@@ -317,7 +317,7 @@ export function useModelRegistry() {
   });
 }
 
-function ModelCell({
+export function ModelCell({
   model,
   modelId,
   registry,
