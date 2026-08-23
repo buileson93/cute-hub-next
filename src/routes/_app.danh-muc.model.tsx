@@ -900,7 +900,8 @@ function ModelCatalogPage() {
         onOpenChange={setDacTinhIOOpen}
         canManage={canManage}
       />
-    </div>
+      </div>
+    </PageFrame>
   );
 }
 
