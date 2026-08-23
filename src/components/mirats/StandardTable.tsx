@@ -262,8 +262,8 @@ export function StandardTable<T>({
   );
 
   const toggleAll = useCallback(() => {
-    if (!onSelect || !selected) return;
-    if (selected.size === rows.length) {
+    if (!onSelect) return;
+    if (selected && selected.size === rows.length && rows.length > 0) {
       onSelect(new Set());
       setSelected?.(new Set());
     } else {
