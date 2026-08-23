@@ -46,9 +46,11 @@ import type {
   MoveTarget,
   ViTriChucNangTree,
 } from "./types";
+import { resolveDeviceDisplayIdentity } from "@/lib/mirats/db-taxonomy";
 import { ThanhPhanChiTietDialog } from "../ThanhPhanChiTietDialog";
 import { LEVEL_META } from "./types";
 import { DUNG_KHAI_THAC_TEN, deviceChips } from "./utils";
+
 
 export function TreeView({
   tree,
@@ -121,6 +123,8 @@ export function TreeView({
     const isExpanded = expanded.has(tbId);
     const hasKids = d.children.length > 0;
     const chips = deviceChips(d.tb);
+    const identity = resolveDeviceDisplayIdentity(d.tb);
+
 
     return (
       <div key={d.tb.ma_thiet_bi} className="space-y-1">
@@ -145,7 +149,7 @@ export function TreeView({
           </div>
           <Cpu className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
           <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-            <TruncatedNodeLabel label={tbLabel(d.tb)} code={d.tb.ma_thiet_bi} />
+            <TruncatedNodeLabel label={identity.primaryLabel} code={d.tb.ma_thiet_bi} identity={identity} />
             {chips.map((c, i) => (
               <Badge
                 key={i}

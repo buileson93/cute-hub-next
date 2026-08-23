@@ -112,7 +112,11 @@ export type OverrideMap = Map<string, { ten: string | null; du_lieu: Record<stri
 
 export type MindKind = SearchItem["kind"];
 export type MindNodeType = MindKind;
+import { type NodeDisplayIdentity } from "@/lib/mirats/db-taxonomy";
+
 export type MindData = {
+  identity?: NodeDisplayIdentity;
+
   label: string;
   kind: MindKind;
   ma?: string;

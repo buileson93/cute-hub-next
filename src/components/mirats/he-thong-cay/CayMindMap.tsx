@@ -92,7 +92,9 @@ import type {
   MoveGroupReq,
   MoveDeviceReq,
 } from "./types";
+import { resolveDeviceDisplayIdentity } from "@/lib/mirats/db-taxonomy";
 import { LEVEL_META, STATUS_TONE } from "./types";
+
 import { parseHtSysMa, HT_KHAC } from "@/lib/mirats/phan-loai";
 import { DUNG_KHAI_THAC_TEN, isRealSystemId, NONE_HT, nhMindTone } from "./utils";
 import { toast } from "sonner";
@@ -291,7 +293,7 @@ function MindNode({ data }: { data: MindData }) {
         <Icon className="h-3 w-3 shrink-0 opacity-60" />
 
         <div className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
-          <TruncatedNodeLabel label={data.label} code={data.code} />
+          <TruncatedNodeLabel label={data.label} code={data.code} identity={data.identity} />
         </div>
 
         {data.count !== undefined && (
@@ -655,8 +657,10 @@ export function CayMindMap({
               data: {
                 kind: "tb",
                 ma: d.tb.ma_thiet_bi,
-                label: tbMind(d.tb),
+                label: resolveDeviceDisplayIdentity(d.tb).primaryLabel,
                 code: d.tb.ma_thiet_bi,
+                identity: resolveDeviceDisplayIdentity(d.tb),
+
                 count: hasKids ? d.children.length : undefined,
                 collapsible: hasKids,
                 expanded: expanded.has(tbId),
@@ -664,7 +668,7 @@ export function CayMindMap({
                 toggle: () => toggle(tbId),
                 onRename: (t) => onRename("tb", d.tb.ma_thiet_bi, t),
                 onOpenEditor: () => onOpenEditor("tb", d.tb.ma_thiet_bi),
-                onRecord: () => onRecord("tb", d.tb.ma_thiet_bi, tbMind(d.tb)),
+                onRecord: () => onRecord("tb", d.tb.ma_thiet_bi, resolveDeviceDisplayIdentity(d.tb).primaryLabel),
               },
               children: [],
             };
