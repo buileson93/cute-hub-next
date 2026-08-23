@@ -44,7 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label={`nâng cấp UI UX các form điền nhập liệu đảm báo không bị có nội dung bị che lắp , xem lại các tính năng thêm tài sản thêm thành phần , xoá ... chỉnh sửa đã hoạt động ok chưa áp dụng quy trình https://github.com/obra/superpowers/ để lên kế hoạch test bằng playwright trước khi kết luật , các form mẫu nhập liệu dùng sidebar để tránh gián đoạn chuyển trang , trên máy tính thì từ phải trượt vào , điện thoại tối ưu từ cưới trượt lên`}
+          aria-label={`Hãy kiểm tra toàn bộ giao diện website và đưa ra kế hoạch cải thiện UI/UX với các yêu cầu sau:\n\n1. Giao diện phải **tốt hơn, hiện đại hơn** so với hiện tại.\n2. Đảm bảo **đồng nhất** trên tất cả các trang.\n3. Lấy **https://vatm.app/he-thong/thanh-phan** làm chuẩn.\n\nTôi muốn xem kế hoạch trước khi thực hiện.`}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">
