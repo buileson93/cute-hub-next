@@ -201,7 +201,7 @@ export type ThanhPhanRow = {
   anomalyScore: number | null;
 };
 
-const TT_LABEL: Record<string, string> = { hoat_dong: "Hoạt động", ngung: "Đã ngừng" };
+export const TT_LABEL: Record<string, string> = { hoat_dong: "Hoạt động", ngung: "Đã ngừng" };
 
 export function useInfiniteThanhPhanRows(q: string = "", enabled: boolean = true) {
   return useInfiniteQuery({
