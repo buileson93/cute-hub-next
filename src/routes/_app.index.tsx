@@ -83,7 +83,7 @@ function Dashboard() {
   }
 
   return (
-    <PageFrame density="compact" layout="workspace">
+    <PageFrame density="compact">
       <PageHeader
         title={`Chào mừng, ${typeof profile?.ho_ten === "string" ? profile.ho_ten : (profile?.email?.split("@")[0] ?? "Bui Le Son")}`.trim()}
         subtitle={`MIRATS — Hệ thống quản lý tài sản kỹ thuật.`}
@@ -146,7 +146,7 @@ function Dashboard() {
         }
       />
 
-      <PageBody className="bg-background min-h-screen">
+      <PageBody className="bg-background min-h-0 flex-1">
         <div className="mb-6 p-1 astryx-surface overflow-hidden">
           <HeartBeatStrip />
         </div>
