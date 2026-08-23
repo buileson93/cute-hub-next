@@ -1,40 +1,27 @@
-# Kế hoạch Tối ưu hóa Hiệu năng & Scroll Bảng (Phase 10Z+)
+# Phase 10Z+: Advanced Virtualization & Layout Stability (Inventory)
 
-Chúng tôi tập trung vào việc giải quyết tình trạng giật lag khi cuộn bảng lớn (Infinite Scroll) và đảm bảo cấu trúc hình học của trang (Page Geometry) luôn ổn định, đặc biệt là trên các thiết bị cấu hình yếu.
+Tập trung vào tối ưu hóa hiệu năng chuyên sâu cho các bảng danh mục Thành phần & Tài sản, đảm bảo mượt mà trên thiết bị yếu và duy trì cấu trúc giao diện ổn định.
 
-## Mục tiêu
-- **Một Scroll Owner duy nhất**: Chỉ vùng nội dung bảng được cuộn, Header và Toolbar luôn cố định.
-- **Tối ưu hóa GPU**: Sử dụng hardware acceleration để giảm tải cho CPU khi render hàng ngàn ô dữ liệu.
-- **Mount-on-Demand**: Chỉ tải dữ liệu và chạy logic cho Tab đang hiển thị để tiết kiệm tài nguyên.
-- **Duy trì Trạng thái**: Giữ nguyên lựa chọn cột và vị trí cuộn khi chuyển đổi giữa các tab.
+## Tối ưu hình học và cuộn (Geometry & Scroll Ownership)
 
-## Các bước thực hiện
+1.  **Lock Scroll Chain**: Khóa chiều cao `AppShell` và `PageFrame` để đảm bảo bảng virtualized luôn có container height xác định.
+2.  **Sticky Header & Horizontal Rail**: Cố định tiêu đề bảng và đảm bảo thanh cuộn ngang luôn xuất hiện ở đáy vùng hiển thị (viewport), không phải ở đáy toàn bộ tập dữ liệu.
+3.  **Layout Isolation**: Áp dụng `contain: content` và `will-change: transform` để GPU hardware acceleration xử lý việc cuộn.
 
-### Giai đoạn 1: Chuẩn hóa Hình học & Scroll Ownership
-- [x] **PageFrame**: Thay thế `min-h-screen` bằng `h-full` để ngăn trang bị đẩy ra ngoài vùng nhìn thấy.
-- [x] **AppShell**: Khóa `overflow` của container chính, nhường quyền cuộn cho Workspace.
-- [x] **StandardTable**: Thiết lập container cuộn chuyên dụng với `will-change: transform` và `translate3d`.
-- [x] **CSS Scroll Rail**: Tùy chỉnh thanh cuộn ngang luôn hiển thị ở đáy vùng nhìn thấy.
+## Tối ưu nạp dữ liệu (Data Loading Optimization)
 
-### Giai đoạn 2: Tối ưu hóa Rendering (Mount-on-Demand)
-- [ ] **ThanhPhanTable Refactor**: 
-    - Chia tách thành 2 panel độc lập: `ComponentTablePanel` và `AssetTablePanel`.
-    - Chỉ mount panel tương ứng với `viewMode` hiện tại.
-    - Tự động hủy (Abort) các request cũ khi người dùng chuyển tab nhanh.
-- [ ] **Adaptive Virtualization**:
-    - Điều chỉnh `overscan` dựa trên tốc độ cuộn thực tế.
-    - Memoization cho `OptimizedCell` để tránh render lại không cần thiết.
+1.  **Mount-on-Demand (Stage 1)**: Tách `ThanhPhanTable.tsx` thành các sub-panels (`ThanhPhanTablePanel`, `TaiSanTablePanel`). Chỉ mount và chạy các hook nạp dữ liệu của tab hiện tại để tránh lãng phí request và CPU.
+2.  **Server-side Filtering**: Chuyển logic search và lọc `bucket` sang server-side trong `fetchKeyset` để giảm tải cho client.
+3.  **Keyset Abort Signal**: Hỗ trợ `AbortSignal` để hủy các request cũ ngay lập tức khi người dùng đổi tab hoặc gõ tìm kiếm nhanh.
 
-### Giai đoạn 3: Server-side Filtering & Paging
-- [x] **fetchKeyset**: Tích hợp `AbortSignal` và server-side filters (`q`, `bucket`).
-- [x] **Query Hooks**: Chuyển logic tìm kiếm từ client lên server để giảm kích thước payload.
+## Tối ưu Render (Rendering Performance)
 
-### Giai đoạn 4: Kiểm tra & Xác nhận
-- [ ] Chạy Playwright test đo FPS khi cuộn sâu (> 500 dòng).
-- [ ] Kiểm tra rò rỉ bộ nhớ (Memory Leak) sau 5 phút thao tác liên tục.
-- [ ] Xác nhận Header/Tabs không bị trôi khi cuộn dọc.
+1.  **Adaptive Virtualization**: Tự động điều chỉnh `overscan` (4-15 hàng) dựa trên FPS thực tế để cân bằng giữa độ mượt và tài nguyên CPU/Memory.
+2.  **Registry Lazy Loading**: Chỉ tải danh mục `dm_model` khi cần thiết (ví dụ: khi hover hoặc mở modal chi tiết), thay vì tải toàn bộ registry lúc bảng mới mount.
+3.  **Memoized OptimizedCell**: Sử dụng `dataHash` để so sánh sâu dữ liệu ô, ngăn chặn việc render lại không cần thiết khi cuộn.
 
-## Chi tiết kỹ thuật
-- **GPU Acceleration**: `contain: content` và `transform: translate3d(0,0,0)`.
-- **Keyset Pagination**: Sử dụng cursor-based paging để đảm bảo hiệu năng không đổi bất kể độ sâu của dữ liệu.
-- **AbortController**: Ngăn chặn tình trạng "race condition" khi cập nhật UI.
+## Kỹ thuật chi tiết
+
+- **ThanhPhanTable.tsx**: Tách component chính thành các sub-component nhỏ hơn để dễ quản lý và tối ưu.
+- **DataTableCore.tsx**: Nâng cấp thuật toán adaptive overscan.
+- **keyset-supabase.ts**: Thêm hỗ trợ abort signal và server filters.
