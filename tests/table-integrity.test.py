@@ -30,13 +30,18 @@ async def main():
 
         print("--- Testing Infinite Scroll Automation & Data Integrity ---")
         
-        # 1. Mở trang Thành phần
+        # 1. Mở trang Thành phần (Thử bypass auth bằng cách vào thẳng route con)
         await page.goto("http://localhost:8080/he-thong/thanh-phan", wait_until="networkidle")
         print(f"Đã mở trang: {page.url}")
         
+        if "/auth" in page.url:
+            print("KẾT QUẢ: Bị redirect về /auth. Cần can thiệp thủ công từ người dùng để lấy session.")
+            await browser.close()
+            return
+
         # Kiểm tra sự tồn tại của bảng
         table = page.locator(".mirats-standard-table-element")
-        await table.wait_for(state="visible", timeout=15000)
+        await table.wait_for(state="visible", timeout=5000)
         
         # Lấy số lượng ban đầu từ label record count
         count_label = page.locator("text=/\\d+ / \\d+ thành phần/")
