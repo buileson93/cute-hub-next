@@ -44,7 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label={`Đã tải 100 / 108 thành phần vì sao thành phần bị giảm sút mạnh vậy  Đã tải 100 / 339 tài sản tài sản cũng vậy thành phần phải trên 1000+ , bảng thiển thị tên thành phần đã chiếm hết diện tích bảng nghiên cứu lý do và chỉnh lý lại`}
+          aria-label={`bạn hãy lên kế hoạch khắc phục \n\nĐã tải 100 / 108 thành phần vì sao thành phần bị giảm sút mạnh vậy  Đã tải 100 / 339 tài sản tài sản cũng vậy thành phần phải trên 1000+ , bảng thiển thị tên thành phần đã chiếm hết diện tích bảng nghiên cứu lý do và chỉnh lý lại , cột thông tin cũng đang không có khắc phục về hiển thị và load trong database , đưa ra kế hoạch cụ thể để khắc phục khồi sửa đổi text gì cả`}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">
