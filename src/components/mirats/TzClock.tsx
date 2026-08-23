@@ -44,7 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label="Cập nhật lại toàn bộ microcopy và nhãn hiển thị để khớp đúng với cơ chế cuộn vô tận (pageSize 100) và không còn gây hiểu nhầm về giới hạn 500 trong bảng của tôi.&#10;&#10;Tối ưu cơ chế tải khi cuộn để giảm giật lag bằng cách thêm điều kiện khóa tải trùng và nâng cấp loading/empty/error states rõ ràng cho từng bảng. lên kế hoạch chi tiết và khắc phục"
+          aria-label="không thể làm tự động tải thêm dữ liệu khi cuộn tới cuối trang à mà phải  bấm nút , tôi muốn việc này thành tự động để tạo cảm giác không có điểm cuối , nhưng vẫn đảm bảo hiệu năng về render ảo hoá , đưa ra phương pháp phù hợp&#10;&#10;Triển khai virtualization cho các bảng cuộn vô tận của tôi để giảm lag khi dữ liệu tăng nhanh.&#10;&#10;Viết và chạy E2E với Playwright để kiểm tra cuộn vô tận pageSize 100 luôn tải đúng tập dữ liệu và không bị trùng khi cuộn liên tục.&#10;đưa ra kế hoạch chi tiết để triển khai"
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">

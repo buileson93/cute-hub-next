@@ -420,14 +420,13 @@ export function StandardTable<T>({
     
     const lastItem = virtualItems[virtualItems.length - 1];
     
-    // Tối ưu điểm kích hoạt tải trang tiếp theo: 
-    // Khi người dùng cuộn đến gần cuối (còn khoảng 15 dòng hoặc 20% danh sách hiện tại)
-    const threshold = Math.min(15, Math.floor(display.length * 0.2));
+    // Tải tự động khi người dùng cuộn đến gần cuối (còn khoảng 15 dòng)
+    const threshold = 15;
     if (lastItem.index >= display.length - threshold) { 
-      // Gọi fetchNextPage với khóa bảo vệ bổ sung
+      // Gọi fetchNextPage
       infiniteScroll.fetchNextPage();
     }
-  }, [rowVirtualizer, infiniteScroll?.hasNextPage, infiniteScroll?.isFetchingNextPage, trangThai.dangTai, display.length, infiniteScroll]);
+  }, [rowVirtualizer.getVirtualItems(), infiniteScroll, trangThai.dangTai, display.length]);
 
   const isClient = typeof window !== "undefined";
   const useIsomorphicLayoutEffect = isClient ? React.useLayoutEffect : useEffect;
@@ -724,7 +723,8 @@ export function StandardTable<T>({
                     return (
                       <TableRow 
                         key={rid} 
-                        className={cn("group transition-colors border-b", rowClassName?.(r))} 
+                        data-key={rid}
+                        className={cn("group transition-colors border-b astryx-table-row", rowClassName?.(r))} 
                         onClick={() => onRowClick?.(r)}
                         style={{
                           willChange: 'transform',
@@ -780,18 +780,7 @@ export function StandardTable<T>({
             </div>
           )}
           
-          {!infiniteScroll?.isFetchingNextPage && infiniteScroll?.hasNextPage && (
-            <div className="flex items-center justify-center py-2 border-t bg-muted/5 gap-4">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-8 text-[11px] font-semibold text-primary/70 hover:text-primary hover:bg-primary/5"
-                onClick={() => infiniteScroll.fetchNextPage()}
-              >
-                Tải thêm dữ liệu
-              </Button>
-            </div>
-          )}
+          {/* Nút Tải thêm dữ liệu đã được gỡ bỏ để chuyển sang tải tự động hoàn toàn khi cuộn */}
           
           {fullDisplay.length > 0 && <HorizontalScrollRail containerRef={scrollContainerRef} />}
         </div>
