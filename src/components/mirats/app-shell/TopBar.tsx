@@ -87,20 +87,13 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
             ben="bottom"
             noiDung={
               <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
-                Thêm e2e test Playwright để kiểm tra selection (select all và từng dòng) và keyset
-                pagination hoạt động đúng trên desktop, tablet và mobile.
+                Khắc phục lỗi CssSyntaxError trong styles.css để build:dev chạy thành công trở lại.
                 {"\n\n"}
-                Bổ sung loading/empty states rõ ràng cho bảng (khi tải, khi rỗng, khi lỗi) để tránh
-                trải nghiệm giật lag và người dùng không biết dữ liệu đang được lấy.
+                Thêm nút “Tải hết dữ liệu” cho bảng để người dùng xem toàn bộ kết quả mà không phải cuộn đến cuối.
                 {"\n\n"}
-                Tối ưu cơ chế search/filter của các bảng để chỉ gọi API khi người dùng dừng nhập
-                (debounce) và đồng bộ với pagination 100/all để luôn tải đúng kết quả.
+                Triển khai debounce cho search/filter và đồng bộ chính xác với keyset pagination ở cả chế độ 100 và all để luôn trả đúng tập kết quả.
                 {"\n\n"}
-                Thêm theo dõi hiệu năng cho API của các bảng (thời gian phản hồi, số bản ghi trả về,
-                lỗi pagination) để nhanh chóng phát hiện nguyên nhân khi không tải đủ 100/all.
-                {"\n"}
-                còn nếu vậy kích thước chỉ max 500 thôi à nếu tôi muốn nhìn hết thì phải làm sao ,
-                nghiên cứu nguyên nhân và khắc phục đưa ra plan cụ thể
+                Lên kế hoạch cụ thể và khắc phục , và cũng đồng thời nghiên cứu khi bấm vào bảng loading khá lâu mới hiện nổi bảng và CÂY PHÂN CẤP có phương pháp kỹ thuật nào để đánh lừa hiển thị liền rồi loading dần dần ko
               </div>
             }
           >

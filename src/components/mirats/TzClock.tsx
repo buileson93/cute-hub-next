@@ -44,7 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label={`Thêm e2e test Playwright để kiểm tra selection (select all và từng dòng) và keyset pagination hoạt động đúng trên desktop, tablet và mobile.\n\nBổ sung loading/empty states rõ ràng cho bảng (khi tải, khi rỗng, khi lỗi) để tránh trải nghiệm giật lag và người dùng không biết dữ liệu đang được lấy.\n\nTối ưu cơ chế search/filter của các bảng để chỉ gọi API khi người dùng dừng nhập (debounce) và đồng bộ với pagination 100/all để luôn tải đúng kết quả.\n\nThêm theo dõi hiệu năng cho API của các bảng (thời gian phản hồi, số bản ghi trả về, lỗi pagination) để nhanh chóng phát hiện nguyên nhân khi không tải đủ 100/all.\ncòn nếu vậy kích thước chỉ max 500 thôi à nếu tôi muốn nhìn hết thì phải làm sao , nghiên cứu nguyên nhân và khắc phục đưa ra plan cụ thể`}
+          aria-label={`Khắc phục lỗi CssSyntaxError trong styles.css để build:dev chạy thành công trở lại.\n\nThêm nút “Tải hết dữ liệu” cho bảng để người dùng xem toàn bộ kết quả mà không phải cuộn đến cuối.\n\nTriển khai debounce cho search/filter và đồng bộ chính xác với keyset pagination ở cả chế độ 100 và all để luôn trả đúng tập kết quả.\n\nLên kế hoạch cụ thể và khắc phục , và cũng đồng thời nghiên cứu khi bấm vào bảng loading khá lâu mới hiện nổi bảng và CÂY PHÂN CẤP có phương pháp kỹ thuật nào để đánh lừa hiển thị liền rồi loading dần dần ko`}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">
