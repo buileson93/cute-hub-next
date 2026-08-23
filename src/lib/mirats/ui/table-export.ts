@@ -91,12 +91,13 @@ export function taiFileCsv(tenFile: string, noiDung: string) {
 }
 
 /** Xuất nhanh không qua hộp thoại (dùng cho nút "Xuất CSV" 1 chạm). */
-export function xuatCsv<T>(
+export async function xuatCsv<T>(
   ten: string,
   rows: readonly T[],
   cols: readonly ExportCol<T>[],
   sep = ";",
 ) {
   const ngay = new Date().toISOString().slice(0, 10);
-  taiFileCsv(`${slugTen(ten)}-${ngay}-${rows.length}-dong.csv`, buildCsv(rows, cols, sep));
+  const csv = await buildCsv(rows, cols, sep);
+  taiFileCsv(`${slugTen(ten)}-${ngay}-${rows.length}-dong.csv`, csv);
 }
