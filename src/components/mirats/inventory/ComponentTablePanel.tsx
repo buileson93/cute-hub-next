@@ -271,7 +271,9 @@ export function ComponentTablePanel({
               )}
             </div>
             <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground bg-muted/20 px-2 py-0.5 rounded-md border">
-              <span className="tabular-nums">Đã tải {rows.length} / {totalTp.toLocaleString("vi-VN")} thành phần</span>
+              <span className="tabular-nums">
+                {rows.length} / {totalTp > 0 ? totalTp.toLocaleString("vi-VN") : "—"} thành phần
+              </span>
             </div>
           </div>
         }

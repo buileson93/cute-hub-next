@@ -202,7 +202,7 @@ export function AssetTablePanel({
           </Select>
           <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground bg-muted/20 px-2 py-0.5 rounded-md border border-border/50">
             <span className="tabular-nums">
-              Đã tải {taiSanRows.length} {totalTs > 0 ? `/ ${totalTs.toLocaleString("vi-VN")}` : ""} tài sản
+              {taiSanRows.length} / {totalTs > 0 ? totalTs.toLocaleString("vi-VN") : "—"} tài sản
             </span>
           </div>
         </div>

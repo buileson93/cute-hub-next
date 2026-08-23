@@ -87,7 +87,9 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
             ben="bottom"
             noiDung={
               <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
-                việc tải dữ liệu bạn giới hạn ở 100 thôi như khi cuộn xuống đấy rồi tải thêm ko phải giới hạn như bây giờ là 500 rồi có nút tải thêm lên phương án tối ưu đảm bảo không làm giật lag và và người dùng tối ưu hơn
+                Cập nhật lại toàn bộ microcopy và nhãn hiển thị để khớp đúng với cơ chế cuộn vô tận (pageSize 100) và không còn gây hiểu nhầm về giới hạn 500 trong bảng của tôi.
+
+Tối ưu cơ chế tải khi cuộn để giảm giật lag bằng cách thêm điều kiện khóa tải trùng và nâng cấp loading/empty/error states rõ ràng cho từng bảng. lên kế hoạch chi tiết và khắc phục
               </div>
             }
           >

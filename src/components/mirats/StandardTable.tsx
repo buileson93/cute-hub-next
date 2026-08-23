@@ -413,19 +413,21 @@ export function StandardTable<T>({
   });
 
   useEffect(() => {
-    if (!infiniteScroll?.hasNextPage || infiniteScroll?.isFetchingNextPage) return;
+    if (!infiniteScroll?.hasNextPage || infiniteScroll?.isFetchingNextPage || trangThai.dangTai) return;
+    
     const virtualItems = rowVirtualizer.getVirtualItems();
     if (virtualItems.length === 0) return;
+    
     const lastItem = virtualItems[virtualItems.length - 1];
     
     // Tối ưu điểm kích hoạt tải trang tiếp theo: 
     // Khi người dùng cuộn đến gần cuối (còn khoảng 15 dòng hoặc 20% danh sách hiện tại)
     const threshold = Math.min(15, Math.floor(display.length * 0.2));
     if (lastItem.index >= display.length - threshold) { 
+      // Gọi fetchNextPage với khóa bảo vệ bổ sung
       infiniteScroll.fetchNextPage();
     }
-
-  }, [rowVirtualizer, infiniteScroll?.hasNextPage, infiniteScroll?.isFetchingNextPage, display.length, infiniteScroll]);
+  }, [rowVirtualizer, infiniteScroll?.hasNextPage, infiniteScroll?.isFetchingNextPage, trangThai.dangTai, display.length, infiniteScroll]);
 
   const isClient = typeof window !== "undefined";
   const useIsomorphicLayoutEffect = isClient ? React.useLayoutEffect : useEffect;
