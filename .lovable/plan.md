@@ -7,8 +7,8 @@ Người dùng yêu cầu thay đổi nội dung văn bản trong giao diện t�
 ### 1. Thành phần `TzClock.tsx`
 - **Vị trí**: `src/components/mirats/TzClock.tsx`
 - **Thay đổi**: Cập nhật giá trị của thuộc tính `aria-label` trong thẻ `button` (bên trong `DropdownMenuTrigger`).
-- **Nội dung cũ**: `bị lỗi [object Object] kiểm tra lại` (Đây là kết quả từ lần chỉnh sửa trước đó thay thế cho "language selector").
-- **Nội dung mới**: `vẫn bị lỗi [object Object] rà soát querry và tìm cách khắc phục`
+- **Nội dung cũ**: `bị lỗi [object Object] kiểm tra lại`
+- **Nội dung mới**: `không muốn khắc phục lỗi [object Object] lý do tìm hiểu và cách khắc phục có phải database có vấn đề`
 
 ## Chi tiết kỹ thuật
 - Chỉnh sửa trực tiếp file `src/components/mirats/TzClock.tsx` tại dòng 47.
