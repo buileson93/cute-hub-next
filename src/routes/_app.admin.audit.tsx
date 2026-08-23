@@ -164,7 +164,7 @@ function AuditLogPage() {
   ], []);
 
   return (
-    <PageFrame>
+    <PageFrame density="compact">
       <PageHeader
         title="Nhật ký hệ thống"
         supporting="Quản trị"
@@ -180,7 +180,7 @@ function AuditLogPage() {
           </div>
         }
       />
-      <PageBody className="flex flex-col gap-4 overflow-hidden p-4">
+      <PageBody className="flex flex-col gap-4 overflow-hidden min-h-0 flex-1">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 shrink-0">
           <div className="space-y-1">
             <label className="text-[10px] uppercase font-bold text-muted-foreground ml-1">Người dùng</label>
