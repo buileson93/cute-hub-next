@@ -948,7 +948,8 @@ export function CatalogTable({
           onClose={() => setUsageRow(null)}
         />
       )}
-    </div>
+      </PageBody>
+    </PageFrame>
   );
 }
 
@@ -1873,7 +1874,5 @@ function MergePickDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-      </PageBody>
-    </PageFrame>
   );
 }
