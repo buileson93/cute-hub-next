@@ -44,7 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label={`lên kế hoạch chi tiết khắc phục cụ thể cái này chứ không đổi visual text gì cả tối ưu sao cho  hiển thị có công nghệ hiển thị 100k thành phần thì hiệu năng cũng không đổi vì ảo hoá sao phần nào được nhìn thấy mới render có lại bị ẩn đi thì ko render mới đám bảo hiệu năng , test lại khi kéo xuống load hết không bị làm cho sidebar trược của appshell giảm fps  đó là kế hoạch test`}
+          aria-label={`**Simplified Prompt:**\n\nCreate a detailed plan to optimize performance for displaying 100,000 components **without changing the visual text**. The goal is to keep performance stable using virtualization—only rendering visible components and unloading hidden ones.\n\n**Key Tasks:**\n1. Implement virtualization to render only visible components.\n2. Ensure hidden components are not rendered to maintain performance.\n3. Test scrolling to confirm smooth loading (no lag or FPS drop).\n4. Verify that the app shell’s sidebar remains stable (no FPS reduction).\n\n**Testing Plan:**\n- Check performance while scrolling through all 100,000 components.\n- Confirm no FPS drop in the sidebar.`}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">
