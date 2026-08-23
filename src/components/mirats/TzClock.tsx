@@ -44,7 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label={`file excel all in one đang bị lỗi khi mở bằng microsoffice bạn kiểm tra sau khi sửa các database như hiện tại việc import hàng loạt có còn hoạt động không tôi rất nghi ngờ test ước khi kết luận , đưa ra kế hoạch phù hợp để khắc phục`}
+          aria-label={`đã rà soát logic import - cơ chế runBulkImport dùng base tables (snake_case) nên an toàn; view v_tai_san_toan_cuc đã khớp CamelCase; file excel all-in-one dùng export-config làm nguồn sự thật và mapRowToCells hỗ trợ cột ảo (col field) - hoạt động tốt`}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">
