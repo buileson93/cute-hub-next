@@ -702,10 +702,12 @@ function SuCoListContent() {
               </PageSection>
             )}
 
-            <PageSection>
+            <PageSection className="flex-1 overflow-hidden p-0">
               <DataState state={state} onRetry={refetch}>
                 <StandardTable<SuCo>
                   tableKey="su_co_nhat_ky"
+                  className="astryx-table"
+                  maxHeightClass="h-full overflow-y-auto"
                   columns={logColumns.filter((c) => visibleKeys.includes(c.key))}
                   rows={rows}
                   getRowId={(s) => s.ma_su_co}
@@ -736,8 +738,8 @@ function SuCoListContent() {
               </DataState>
             </PageSection>
           </div>
-        </PageBody>
-      </PageFrame>
+        </div>
+
 
       <ResponsiveDialog
         open={!!closing}
