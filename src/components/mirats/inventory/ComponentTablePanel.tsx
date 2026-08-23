@@ -322,7 +322,8 @@ export function ComponentTablePanel({
           {
             key: "thietBi",
             label: "Tài sản lắp",
-            minW: "min-w-[240px]",
+            minW: "min-w-[180px]",
+            cellClassName: "max-w-[240px]",
             cell: (r) => (
               editMode && allowEdit ? (
                 <InlineTaiSanEdit row={r} onChanged={() => qc.invalidateQueries({ queryKey: ["thanh-phan-infinite"] })} />
