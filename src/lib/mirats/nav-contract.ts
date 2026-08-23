@@ -280,7 +280,7 @@ export const workspaces: Workspace[] = [
 
           { to: "/admin/users", label: "Quản lý tài khoản", icon: UserCog, roles: ADMIN_ONLY },
           { to: "/admin/nhan-vien", label: "Quản lý nhân viên", icon: Users, roles: MANAGER_ROLES },
-          { to: "/admin/audit", label: "Nhật ký hệ thống", icon: Lock, roles: ADMIN_ONLY },
+          { to: "/admin/audit", label: "Nhật ký hệ thống", icon: ShieldCheck, roles: ADMIN_ONLY },
 
           {
             to: "/admin/schema",
