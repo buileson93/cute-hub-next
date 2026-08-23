@@ -442,7 +442,7 @@ export function CatalogTable({
   const tong = rows?.length ?? 0;
 
   return (
-    <div className={`space-y-4 ${UI_DENSITY.PAGE_PADDING}`}>
+    <PageFrame>
       <PageHeader
         icon={Icon}
         title={title}
@@ -476,7 +476,8 @@ export function CatalogTable({
         }
       />
 
-      <div className="flex flex-wrap items-center gap-2">
+      <PageBody>
+        <div className="flex flex-wrap items-center gap-2 mb-4">
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
