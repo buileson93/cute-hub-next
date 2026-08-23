@@ -625,7 +625,7 @@ export function StandardTable<T>({
         </div>
       ) : (
         <div 
-          className="relative min-h-0 border rounded-md shadow-none bg-background astryx-table-container flex flex-col h-full overflow-auto mirats-scroll" 
+          className="relative min-h-0 border rounded-md shadow-none bg-background astryx-table-container flex flex-col h-full overflow-auto mirats-scroll mirats-table-scroll-container" 
           ref={scrollContainerRef}
           style={{
             overflowX: 'auto',
