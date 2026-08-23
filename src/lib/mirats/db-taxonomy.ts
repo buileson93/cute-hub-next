@@ -349,19 +349,19 @@ export function resolveDeviceDisplayIdentity(d: DbDevice, overrides?: Map<string
   let source: NodeDisplayIdentity["source"] = "missing";
 
   if (isMeaningfulName(override)) {
-    primaryLabel = override.trim();
+    primaryLabel = (override as string).trim();
     source = "asset"; 
   } else if (isMeaningfulName(componentName)) {
-    primaryLabel = componentName.trim();
+    primaryLabel = (componentName as string).trim();
     source = "component";
   } else if (isMeaningfulName(assetName)) {
-    primaryLabel = assetName.trim();
+    primaryLabel = (assetName as string).trim();
     source = "asset";
   } else if (isMeaningfulName(modelName)) {
-    primaryLabel = modelName.trim();
+    primaryLabel = (modelName as string).trim();
     source = "model";
   } else if (isMeaningfulName(typeName)) {
-    primaryLabel = typeName.trim();
+    primaryLabel = (typeName as string).trim();
     source = "type";
   }
 
@@ -376,6 +376,7 @@ export function resolveDeviceDisplayIdentity(d: DbDevice, overrides?: Map<string
     source,
   };
 }
+
 
 
 export function resolveThietBi(d: DbDevice, overrides?: Map<string, any>): TaxonomyResolved {
