@@ -83,7 +83,26 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
         <NotificationBell />
 
         <div className="hidden md:block">
-          <TzClock />
+          <AppTooltip
+            ben="bottom"
+            noiDung={
+              <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
+                Chạy kiểm thử tự động (visual regression) để kiểm tra đồng nhất UI/UX trên toàn bộ các
+                trang và liệt kê mọi chỗ lệch so với https://vatm.app/he-thong/thanh-phan.
+                {"\n\n"}
+                Chuẩn hóa cấu trúc PageFrame {"->"} PageHeader {"->"} PageBody cho tất cả các trang
+                còn lại để đảm bảo toàn website thống nhất như chuẩn đã lấy.
+                {"\n\n"}
+                Thiết lập và áp dụng bộ design tokens cho spacing, typography và kích thước nút để
+                đảm bảo UI trông hiện đại và nhất quán trên mọi màn hình.
+                {"\n\n"}
+                Tối ưu lại các bảng dữ liệu (column width, overflow, pagination) cho chế độ
+                responsive trên desktop, tablet và mobile để tránh khuất nội dung.
+              </div>
+            }
+          >
+            <TzClock />
+          </AppTooltip>
         </div>
       </div>
 
