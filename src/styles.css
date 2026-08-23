@@ -546,6 +546,33 @@
   gap: 0.75rem;
 }
 
+
+/* MIRATS Table Horizontal Scroll Rail */
+.mirats-table-scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.mirats-table-scroll-container::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.mirats-table-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mirats-table-scroll-container::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.mirats-table-scroll-container::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-muted-foreground);
+}
+
 #lovable-badge {
   display: none !important;
   visibility: hidden !important;
