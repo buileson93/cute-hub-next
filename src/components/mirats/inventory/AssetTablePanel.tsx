@@ -5,6 +5,7 @@ import {
   Search, X, Cpu, ExternalLink, Copy, Download, X as XIcon, Unplug, Wrench, PackageOpen, Loader2, Check, XCircle
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { useDebounce } from "use-debounce";
 import { cn } from "@/lib/utils";
 import { thongDiepLoi } from "@/lib/mirats/errors";
@@ -95,7 +96,6 @@ export function AssetTablePanel({
 
   async function deleteTaiSan(ids: string[]) {
     if (ids.length === 0) return;
-    const { supabase } = await import("@/integrations/backend/client");
     const { error: e } = await supabase
       .from("thiet_bi")
       .delete()
