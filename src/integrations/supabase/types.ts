@@ -5831,6 +5831,36 @@ export type Database = {
         }
         Relationships: []
       }
+      nhat_ky_he_thong: {
+        Row: {
+          chi_tiet: Json | null
+          doi_tuong: string
+          doi_tuong_ids: string[] | null
+          hanh_dong: string
+          id: string
+          thoi_gian: string | null
+          user_id: string | null
+        }
+        Insert: {
+          chi_tiet?: Json | null
+          doi_tuong: string
+          doi_tuong_ids?: string[] | null
+          hanh_dong: string
+          id?: string
+          thoi_gian?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          chi_tiet?: Json | null
+          doi_tuong?: string
+          doi_tuong_ids?: string[] | null
+          hanh_dong?: string
+          id?: string
+          thoi_gian?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       nhiem_vu_nhap_lieu: {
         Row: {
           created_at: string | null
