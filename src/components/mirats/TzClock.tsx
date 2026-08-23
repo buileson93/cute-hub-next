@@ -44,7 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label="không thể làm tự động tải thêm dữ liệu khi cuộn tới cuối trang à mà phải  bấm nút , tôi muốn việc này thành tự động để tạo cảm giác không có điểm cuối , nhưng vẫn đảm bảo hiệu năng về render ảo hoá , đưa ra phương pháp phù hợp&#10;&#10;Triển khai virtualization cho các bảng cuộn vô tận của tôi để giảm lag khi dữ liệu tăng nhanh.&#10;&#10;Viết và chạy E2E với Playwright để kiểm tra cuộn vô tận pageSize 100 luôn tải đúng tập dữ liệu và không bị trùng khi cuộn liên tục.&#10;đưa ra kế hoạch chi tiết để triển khai"
+          aria-label="Thêm bài kiểm thử tải dữ liệu tăng nhanh để đo lag và xác nhận virtualization giữ 60fps hoặc giảm dropped frames khi record tăng lên nhiều lần.&#10;&#10;Triển khai lưu và khôi phục vị trí cuộn khi người dùng đổi tab/bộ lọc/sắp xếp để không nhảy vị trí và vẫn tiếp tục tải đúng trang kế tiếp.&#10;&#10;Bổ sung cơ chế tự động phát hiện và tự sửa khi phát hiện fetchNextPage trả về trùng bản ghi (dedupe theo cursor/id) và hiển thị Error state rõ ràng khi có lỗi mạng.&#10;&#10;Viết và chạy bộ E2E Playwright kiểm tra cuộn vô tận tự động pageSize 100 tải đúng tập dữ liệu và không bị trùng khi cuộn liên tục trong thời gian dài.&#10;lên kế hoạch chi tiết để thực hiện"
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">

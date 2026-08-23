@@ -87,12 +87,14 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
             ben="bottom"
             noiDung={
               <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
-                không thể làm tự động tải thêm dữ liệu khi cuộn tới cuối trang à mà phải  bấm nút , tôi muốn việc này thành tự động để tạo cảm giác không có điểm cuối , nhưng vẫn đảm bảo hiệu năng về render ảo hoá , đưa ra phương pháp phù hợp
+                Thêm bài kiểm thử tải dữ liệu tăng nhanh để đo lag và xác nhận virtualization giữ 60fps hoặc giảm dropped frames khi record tăng lên nhiều lần.
 
-Triển khai virtualization cho các bảng cuộn vô tận của tôi để giảm lag khi dữ liệu tăng nhanh.
+Triển khai lưu và khôi phục vị trí cuộn khi người dùng đổi tab/bộ lọc/sắp xếp để không nhảy vị trí và vẫn tiếp tục tải đúng trang kế tiếp.
 
-Viết và chạy E2E với Playwright để kiểm tra cuộn vô tận pageSize 100 luôn tải đúng tập dữ liệu và không bị trùng khi cuộn liên tục.
-đưa ra kế hoạch chi tiết để triển khai
+Bổ sung cơ chế tự động phát hiện và tự sửa khi phát hiện fetchNextPage trả về trùng bản ghi (dedupe theo cursor/id) và hiển thị Error state rõ ràng khi có lỗi mạng.
+
+Viết và chạy bộ E2E Playwright kiểm tra cuộn vô tận tự động pageSize 100 tải đúng tập dữ liệu và không bị trùng khi cuộn liên tục trong thời gian dài.
+lên kế hoạch chi tiết để thực hiện
               </div>
             }
           >
