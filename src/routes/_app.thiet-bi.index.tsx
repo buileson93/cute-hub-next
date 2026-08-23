@@ -484,7 +484,7 @@ function ThietBiPage() {
         }
       />
 
-      <div className="flex-1 overflow-hidden">
+      <PageBody noPadding className="bg-background/30 flex-1 min-h-0 overflow-hidden">
         <DataState
           state={state}
           loadingType="table"
