@@ -1,3 +1,4 @@
+import { thongDiepLoi } from "@/lib/mirats/errors";
 // ============================================================================
 // Bảng danh mục dùng chung cho các bảng dm_* đơn giản (ma / ten / mo_ta /
 // thu_tu / active). Cung cấp: tìm kiếm, thêm, sửa, xoá và đếm số tài sản đang
@@ -359,7 +360,7 @@ export function CatalogTable({
       invalidateTaxonomy(qc);
       toast.success(`Đã xoá ${singular.toLowerCase()}.`);
     },
-    onError: (e) => toast.error((e as Error).message),
+    onError: (e) => toast.error(thongDiepLoi(e, "Thao tác thất bại")),
   });
 
   // Xoá hàng loạt các mục đã tích chọn (bỏ qua mục còn tài sản đang dùng).
@@ -398,7 +399,7 @@ export function CatalogTable({
         `Đã xoá ${deleted} ${singular.toLowerCase()}${blocked > 0 ? ` · bỏ qua ${blocked} mục còn tài sản đang dùng` : ""}.`,
       );
     },
-    onError: (e) => toast.error((e as Error).message),
+    onError: (e) => toast.error(thongDiepLoi(e, "Thao tác thất bại")),
   });
 
   // Gộp các mục đã chọn vào một mục đích. Ưu tiên RPC chung `merge_danh_muc`
@@ -433,7 +434,7 @@ export function CatalogTable({
         `Đã gộp ${n} ${singular.toLowerCase()} vào mục giữ lại. Có thể hoàn tác trong 24 giờ.`,
       );
     },
-    onError: (e) => toast.error((e as Error).message),
+    onError: (e) => toast.error(thongDiepLoi(e, "Thao tác thất bại")),
   });
 
   const tong = rows?.length ?? 0;

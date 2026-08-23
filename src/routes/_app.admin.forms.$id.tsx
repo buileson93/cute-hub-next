@@ -1,3 +1,4 @@
+import { thongDiepLoi } from "@/lib/mirats/errors";
 // ============================================================================
 // _app.admin.forms.$id.tsx — FORM DESIGNER 2.0 (P2, 3-pane).
 //
@@ -299,7 +300,7 @@ function FormEditor() {
         setSavingAuto(true);
         await doPersist();
       } catch (e) {
-        toast.error("Autosave thất bại: " + (e as Error).message);
+        toast.error(thongDiepLoi(e, "Autosave thất bại: "));
       } finally {
         setSavingAuto(false);
       }
@@ -324,7 +325,7 @@ function FormEditor() {
       setDirty(true);
       toast.success(`Đã nạp bundle (${bundle.fields.length} trường). Nhấn Lưu để ghi xuống DB.`);
     } catch (e) {
-      toast.error("Không đọc được JSON: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Không đọc được JSON: "));
     }
   };
 
@@ -411,7 +412,7 @@ function FormEditor() {
       toast.success("Đã lưu bảng kiểm");
       qc.invalidateQueries({ queryKey: ["form-template-checklist", id] });
     } catch (e) {
-      toast.error("Lưu thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Lưu thất bại: "));
     } finally {
       setChkSaving(false);
     }

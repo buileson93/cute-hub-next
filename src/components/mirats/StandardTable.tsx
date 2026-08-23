@@ -56,6 +56,8 @@ import { CompletenessRing } from "@/components/mirats/CompletenessRing";
 import { calculateCompleteness } from "@/lib/mirats/completeness";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 
+import { thongDiepLoi } from "@/lib/mirats/errors";
+
 export type ColumnType =
   | "id"
   | "status"
@@ -132,7 +134,7 @@ interface StandardTableProps<T> {
   errorContent?: React.ReactNode;
   trangThai?: {
     dangTai?: boolean;
-    loi?: any;
+    loi?: unknown;
   };
   infiniteScroll?: {
     hasNextPage?: boolean;
@@ -473,10 +475,17 @@ export function StandardTable<T>({
     if (trangThai.loi) {
       const err = trangThai.loi;
       if (errorContent) return errorContent;
+      
+      const errorMessage = thongDiepLoi(err, "Không tải được dữ liệu");
+      
+      // Type guard để lấy callback retry an toàn
+      const hasRetry = (e: unknown): e is { retry: () => void } => 
+        !!e && typeof e === "object" && "retry" in e && typeof (e as any).retry === "function";
+
       const errorInner = (
         <div className="py-20 flex flex-col items-center justify-center text-center gap-4 border rounded-lg bg-card">
-          <div className="text-sm text-destructive font-medium">{String(err)}</div>
-          {err.retry && (
+          <div className="text-sm text-destructive font-medium">{errorMessage}</div>
+          {hasRetry(err) && (
             <Button variant="outline" size="sm" onClick={err.retry}>
               Thử lại
             </Button>

@@ -1,3 +1,4 @@
+import { thongDiepLoi } from "@/lib/mirats/errors";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -150,7 +151,7 @@ function OcrAdminPage() {
       toast.success(`Đã bắt đầu xử lý hàng loạt ${itemsToProcess.length} tài liệu`);
       setActiveTab("processing");
     } catch (e) {
-      toast.error("Khởi tạo tiến trình xử lý thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Khởi tạo tiến trình xử lý thất bại: "));
     }
   };
 

@@ -1,3 +1,4 @@
+import { thongDiepLoi } from "@/lib/mirats/errors";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
@@ -1210,7 +1211,7 @@ function BaoCaoTab({
               await exportWord({ dotId, dotName, kpi, perDv, grouped });
               toast.success("Đã xuất báo cáo Word thành công");
             } catch (e) {
-              toast.error("Xuất Word thất bại: " + (e as Error).message);
+              toast.error(thongDiepLoi(e, "Xuất Word thất bại: "));
             } finally {
               setExporting(false);
             }

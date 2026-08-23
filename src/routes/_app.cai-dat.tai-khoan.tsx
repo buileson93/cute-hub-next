@@ -1,3 +1,4 @@
+import { thongDiepLoi } from "@/lib/mirats/errors";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { ArrowLeft, Upload, Trash2, Loader2, Save, User } from "lucide-react";
@@ -75,7 +76,7 @@ function AccountPage() {
       toast.success("Đã cập nhật ảnh đại diện");
       refresh();
     } catch (e) {
-      toast.error("Tải ảnh thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Tải ảnh thất bại: "));
     } finally {
       setUploading(false);
     }
@@ -94,7 +95,7 @@ function AccountPage() {
       toast.success("Đã xoá ảnh đại diện");
       refresh();
     } catch (e) {
-      toast.error("Xoá thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Xoá thất bại: "));
     } finally {
       setUploading(false);
     }
@@ -117,7 +118,7 @@ function AccountPage() {
       toast.success("Đã lưu họ tên");
       refresh();
     } catch (e) {
-      toast.error("Lưu thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Lưu thất bại: "));
     } finally {
       setSavingName(false);
     }

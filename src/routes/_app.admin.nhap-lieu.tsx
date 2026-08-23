@@ -1,3 +1,4 @@
+import { thongDiepLoi } from "@/lib/mirats/errors";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -459,7 +460,7 @@ function NhapLieuPage() {
             : "Đã tải mẫu all-in-one trống",
       );
     } catch (e) {
-      toast.error("Xuất Excel thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Xuất Excel thất bại: "));
 
     } finally {
       setBusy(false);
@@ -514,7 +515,7 @@ function NhapLieuPage() {
       download(`${table}_export.csv`, toCsv(headers, rows));
       toast.success(`Đã xuất ${rows.length} dòng (đã giải mã liên kết về mã)`);
     } catch (e) {
-      toast.error("Xuất dữ liệu thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Xuất dữ liệu thất bại: "));
 
     } finally {
       setBusy(false);
@@ -581,7 +582,7 @@ function NhapLieuPage() {
         );
       }
     } catch (e) {
-      toast.error("Nhập dữ liệu thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Nhập dữ liệu thất bại: "));
     } finally {
       setBusy(false);
     }

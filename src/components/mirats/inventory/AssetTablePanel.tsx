@@ -7,6 +7,7 @@ import {
 import { toast } from "sonner";
 import { useDebounce } from "use-debounce";
 import { cn } from "@/lib/utils";
+import { thongDiepLoi } from "@/lib/mirats/errors";
 import { StandardTable } from "@/components/mirats/StandardTable";
 import { CodeBadge } from "@/components/mirats/CodeBadge";
 import { Badge } from "@/components/ui/badge";
@@ -87,7 +88,7 @@ export function AssetTablePanel({
       await navigator.clipboard.writeText(text);
       toast.success(`Đã sao chép ${codes.length} mã tài sản.`);
     } catch (err) {
-      toast.error("Không thể sao chép vào bộ nhớ tạm.");
+      toast.error(thongDiepLoi(err, "Không thể sao chép vào bộ nhớ tạm."));
     }
   }
 

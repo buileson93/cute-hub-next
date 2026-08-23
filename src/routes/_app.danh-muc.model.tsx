@@ -1,3 +1,4 @@
+import { thongDiepLoi } from "@/lib/mirats/errors";
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -373,7 +374,7 @@ function ModelCatalogPage() {
       invalidateTaxonomy(qc);
       toast.success("Đã xoá model.");
     },
-    onError: (e) => toast.error((e as Error).message),
+    onError: (e) => toast.error(thongDiepLoi(e, "Thao tác thất bại")),
   });
 
   // Xoá hàng loạt các mẫu đã tích chọn (bỏ qua mẫu còn tài sản đang dùng).
@@ -401,7 +402,7 @@ function ModelCatalogPage() {
         `Đã xoá ${deleted} model${blocked > 0 ? ` · bỏ qua ${blocked} mẫu còn tài sản đang dùng` : ""}.`,
       );
     },
-    onError: (e) => toast.error((e as Error).message),
+    onError: (e) => toast.error(thongDiepLoi(e, "Thao tác thất bại")),
   });
 
   // Gộp các mẫu đã chọn thành một mẫu đích (giữ liên kết tài sản qua RPC gop_model).
@@ -430,7 +431,7 @@ function ModelCatalogPage() {
         `Đã gộp ${n} mẫu vào mẫu đích. Tài sản liên quan đã được chuyển sang mẫu đích.`,
       );
     },
-    onError: (e) => toast.error((e as Error).message),
+    onError: (e) => toast.error(thongDiepLoi(e, "Thao tác thất bại")),
   });
 
   return (

@@ -1,3 +1,4 @@
+import { thongDiepLoi } from "@/lib/mirats/errors";
 // ============================================================================
 // Công cụ quản lý danh mục Nhà sản xuất: gộp bản trùng (an toàn, giữ liên kết
 // tài sản/mẫu) và nhập/xuất CSV hàng loạt. Dùng kèm <CatalogTable> qua prop
@@ -297,7 +298,7 @@ export function NhaSanXuatTools() {
         },
       });
     } catch (e) {
-      toast.error("Nhập thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Nhập thất bại: "));
     } finally {
       setImporting(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -468,7 +469,7 @@ function MergeDialog({
       );
       onDone();
     } catch (e) {
-      toast.error("Gộp thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Gộp thất bại: "));
     } finally {
       setSaving(false);
     }

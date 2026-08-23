@@ -1,3 +1,4 @@
+import { thongDiepLoi } from "@/lib/mirats/errors";
 // ============================================================================
 // Hộp thoại XEM TRƯỚC dạng bảng (tableview) cho các nút "Nhập CSV" rải rác
 // (danh mục nền, nhà sản xuất…). Thống nhất trải nghiệm với Nhập/Xuất hàng loạt:
@@ -136,7 +137,7 @@ export function ImportPreviewDialog({
       await onCommit();
       onClose();
     } catch (e) {
-      toast.error("Ghi thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Ghi thất bại: "));
     } finally {
       setSaving(false);
     }

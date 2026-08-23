@@ -1,5 +1,6 @@
 // Bóc tách chi tiết lỗi PostgREST/Supabase khi gọi RPC — đặc biệt là trường hợp
 // hàm không tồn tại (PGRST202) — để hiển thị đủ: mã lỗi, tên hàm, payload đã gửi.
+import { thongDiepLoi } from "./errors";
 
 export type PostgrestLikeError = {
   code?: string | null;
@@ -99,7 +100,7 @@ function replacer(key: string, value: unknown) {
 
 /** Tách lỗi RPC thành tiêu đề + mô tả chi tiết để hiện toast. */
 export function rpcErrorToast(error: unknown): { title: string; description?: string } {
-  const msg = error instanceof Error ? error.message : String(error);
+  const msg = thongDiepLoi(error, "Gọi chức năng cơ sở dữ liệu thất bại");
   const [first, ...rest] = msg.split("\n");
   const description = rest.join("\n").trim();
   return { title: first, description: description || undefined };

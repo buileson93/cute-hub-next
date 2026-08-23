@@ -1,3 +1,4 @@
+import { thongDiepLoi } from "@/lib/mirats/errors";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -122,7 +123,7 @@ function HeThongPage() {
         `Đã xoá ${deleted} hệ thống${blocked ? ` · bỏ qua ${blocked} còn tài sản` : ""}.`,
       );
     },
-    onError: (e) => toast.error("Xoá thất bại: " + (e as Error).message),
+    onError: (e) => toast.error(thongDiepLoi(e, "Xoá thất bại: ")),
   });
 
 
@@ -142,7 +143,7 @@ function HeThongPage() {
       invalidateTaxonomy(qc);
       toast.success(`Đã ${vars.active ? "kích hoạt" : "tạm dừng"} ${n} hệ thống.`);
     },
-    onError: (e) => toast.error("Thao tác thất bại: " + (e as Error).message),
+    onError: (e) => toast.error(thongDiepLoi(e, "Thao tác thất bại: ")),
   });
 
 
@@ -425,7 +426,7 @@ function HeThongDialog({ row, onClose }: { row: Row; onClose: () => void }) {
       qc.invalidateQueries({ queryKey: ["db_taxonomy"] });
       onClose();
     } catch (e) {
-      toast.error("Lưu thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Lưu thất bại: "));
     } finally {
       setSaving(false);
     }

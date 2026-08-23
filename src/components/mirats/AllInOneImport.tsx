@@ -1,3 +1,4 @@
+import { thongDiepLoi } from "@/lib/mirats/errors";
 // ============================================================================
 // NHẬP FILE ALL-IN-ONE (.xlsx): đọc mọi sheet → Xem trước tất cả các lớp →
 // Ghi theo đúng thứ tự phụ thuộc (cha trước, con sau) bằng chính động cơ
@@ -183,11 +184,11 @@ export function AllInOneImport() {
             toast.warning(`File này đã từng được nhập trước đó (${res.duplicate.fileName}).`);
           }
         } catch (e) {
-          toast.error("Không lưu được bản nháp staging: " + (e as Error).message);
+          toast.error(thongDiepLoi(e, "Không lưu được bản nháp staging: "));
         }
       }
     } catch (e) {
-      toast.error("Không đọc được file: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Không đọc được file: "));
     } finally {
       setBusy(false);
     }

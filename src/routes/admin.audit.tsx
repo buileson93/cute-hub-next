@@ -1,3 +1,4 @@
+import { thongDiepLoi } from "@/lib/mirats/errors";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -379,7 +380,7 @@ function AdminAuditPage() {
       queryClient.invalidateQueries({ queryKey: ["audit_log"] });
     },
     onError: (e: unknown) => {
-      toast.error(e instanceof Error ? e.message : "Hoàn tác thất bại");
+      toast.error(thongDiepLoi(e, "Hoàn tác thất bại"));
     },
   });
 

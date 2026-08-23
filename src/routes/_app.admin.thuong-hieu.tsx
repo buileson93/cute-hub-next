@@ -1,3 +1,4 @@
+import { thongDiepLoi } from "@/lib/mirats/errors";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -91,7 +92,7 @@ function ThuongHieuContent() {
       await qc.invalidateQueries({ queryKey: ["app-branding"] });
       toast.success("Đã cập nhật logo. Áp dụng ngay trên toàn hệ thống.");
     } catch (e) {
-      toast.error("Lưu logo thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Lưu logo thất bại: "));
     } finally {
       setSaving(null);
     }
@@ -105,7 +106,7 @@ function ThuongHieuContent() {
       await qc.invalidateQueries({ queryKey: ["app-branding"] });
       toast.success("Đã khôi phục logo mặc định.");
     } catch (e) {
-      toast.error("Khôi phục thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Khôi phục thất bại: "));
     } finally {
       setSaving(null);
     }
