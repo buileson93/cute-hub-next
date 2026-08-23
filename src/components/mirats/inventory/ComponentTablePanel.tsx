@@ -89,6 +89,20 @@ export function ComponentTablePanel({
     qc.invalidateQueries({ queryKey: ["thanh-phan-infinite"] });
   }
 
+  async function deleteThanhPhan(ids: string[]) {
+    if (ids.length === 0) return;
+    const { error: e } = await supabase
+      .from("he_thong_thanh_phan")
+      .delete()
+      .in("id", ids);
+    if (e) {
+      toast.error(thongDiepLoi(e, "Không thể xóa hàng loạt."));
+      return;
+    }
+    toast.success(`Đã xóa ${ids.length} thành phần.`);
+    qc.invalidateQueries({ queryKey: ["thanh-phan-infinite"] });
+  }
+
   async function saveField(id: string, field: "ten" | "trang_thai", value: string) {
     try {
       if (field === "ten") {
@@ -142,6 +156,8 @@ export function ComponentTablePanel({
         presets={THANH_PHAN_PRESETS}
         exportable
         ten="thanh-phan"
+        allowBulkDelete={allowEdit}
+        onBulkDelete={async (ids) => deleteThanhPhan(Array.from(ids))}
         bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear }) => (
           <>
             <BulkActionButton
