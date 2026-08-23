@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import * as LucideIcons from "lucide-react";
@@ -108,4 +108,5 @@ export const Sidebar = React.memo(function Sidebar({
         );
       })}
     </div>
+  );
 });
