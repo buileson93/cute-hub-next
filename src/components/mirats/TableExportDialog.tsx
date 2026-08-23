@@ -5,7 +5,8 @@
 //  • Xem trước số dòng/số cột trước khi tải — tránh xuất nhầm.
 // ============================================================================
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { logAudit } from "@/lib/mirats/audit";
 import { Download } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,8 @@ type Props<T> = {
   defaultScope?: ExportScope;
   countUnit?: string;
   trigger?: React.ReactNode;
+  tableKey?: string;
+  domain?: string;
 };
 
 export function TableExportDialog<T>({
@@ -54,8 +57,30 @@ export function TableExportDialog<T>({
   defaultScope,
   countUnit = "dòng",
   trigger,
+  tableKey,
+  domain,
 }: Props<T>) {
   const [open, setOpen] = useState(false);
+  const [saveConfig, setSaveConfig] = useState(false);
+  const storageKey = tableKey ? `mirats:table-export-cols:${tableKey}` : null;
+
+  useEffect(() => {
+    if (storageKey && open) {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        try {
+          const keys = JSON.parse(saved);
+          if (Array.isArray(keys)) {
+            setCotChon(keys);
+            setCheDoCot("custom");
+            setSaveConfig(true);
+          }
+        } catch (e) {
+          console.error("Failed to parse saved export config", e);
+        }
+      }
+    }
+  }, [open, storageKey]);
   const coChon = rowsByScope.selected.length > 0;
   const [scope, setScope] = useState<ExportScope>(
     defaultScope ?? (coChon ? "selected" : "filtered"),
@@ -80,7 +105,27 @@ export function TableExportDialog<T>({
 
   const xuat = () => {
     if (!sanSang) return;
+    
+    if (saveConfig && storageKey) {
+      localStorage.setItem(storageKey, JSON.stringify(cols.map(c => c.key)));
+    } else if (storageKey) {
+      localStorage.removeItem(storageKey);
+    }
+
     taiFileCsv(`${slugTen(tenFile)}.csv`, buildCsv(rows, cols, sep));
+    
+    logAudit({
+      action: "export_csv",
+      domain: domain || "unknown",
+      details: {
+        filename: tenFile,
+        scope,
+        rowCount: rows.length,
+        colCount: cols.length,
+        columns: cols.map(c => c.key)
+      }
+    });
+
     toast.success(
       `Đã xuất ${rows.length.toLocaleString("vi-VN")} ${countUnit} × ${cols.length} cột ra CSV.`,
     );
@@ -251,6 +296,19 @@ export function TableExportDialog<T>({
             Sẽ xuất <b>{rows.length.toLocaleString("vi-VN")}</b> {countUnit} × <b>{cols.length}</b>{" "}
             cột.
           </p>
+
+          {storageKey && (
+            <div className="flex items-center gap-2">
+              <Checkbox 
+                id="save-export-config" 
+                checked={saveConfig} 
+                onCheckedChange={(v) => setSaveConfig(!!v)} 
+              />
+              <Label htmlFor="save-export-config" className="text-xs font-normal">
+                Lưu cấu hình cột cho lần sau
+              </Label>
+            </div>
+          )}
         </div>
 
         <DialogFooter>

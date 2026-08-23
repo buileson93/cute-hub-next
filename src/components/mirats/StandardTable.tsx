@@ -17,15 +17,18 @@ import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 import { MobileRecordCard } from "@/components/mirats/ui/MobileRecordCard";
 import { BulkActionBar } from "@/components/mirats/BulkActionBar";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
+import { type Domain } from "@/lib/mirats/quyen";
 
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { useDensity } from "@/components/mirats/DensityToggle";
-import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2, XCircle, Trash2, Download } from "lucide-react";
+import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2, XCircle, Trash2, Download, RotateCcw } from "lucide-react";
 import { ColumnVisibilityMenu } from "./ColumnVisibilityMenu";
 import { HorizontalScrollRail } from "./HorizontalScrollRail";
 import { BulkActionButton } from "./BulkActionButton";
 import { TableExportDialog } from "./TableExportDialog";
+import { toast } from "sonner";
+import { logAudit } from "@/lib/mirats/audit";
 
 import { normalize } from "@/lib/mirats/global-search";
 import { parseMinW, calculateOptimalWidths } from "@/lib/mirats/ui/table-geometry";
@@ -174,6 +177,7 @@ interface StandardTableProps<T> {
   allowBulkDelete?: boolean;
   exportable?: boolean;
   ten?: string;
+  domain?: Domain;
 }
 
 export function StandardTable<T>({
@@ -214,6 +218,7 @@ export function StandardTable<T>({
   allowBulkDelete,
   exportable,
   ten,
+  domain,
 }: StandardTableProps<T>) {
   const [textFilters, setTextFilters] = useState<Record<string, string>>({});
   const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
@@ -221,6 +226,12 @@ export function StandardTable<T>({
   const frameCount = useRef(0);
   const lastTime = useRef(performance.now());
   const [isDeleting, setIsDeleting] = useState(false);
+  const deleteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [localRows, setLocalRows] = useState<T[]>([]);
+
+  useEffect(() => {
+    setLocalRows(rows);
+  }, [rows]);
 
   useEffect(() => {
     let frameId: number;
@@ -372,13 +383,13 @@ export function StandardTable<T>({
 
   const dedupedRows = useMemo(() => {
     const seen = new Set<string>();
-    return rows.filter((r) => {
+    return localRows.filter((r) => {
       const id = getRowIdInternal(r);
       if (seen.has(id)) return false;
       seen.add(id);
       return true;
     });
-  }, [rows, getRowIdInternal]);
+  }, [localRows, getRowIdInternal]);
 
   const filtered = useMemo(() => dedupedRows.filter((r) => matchesFilters(r)), [dedupedRows, matchesFilters]);
 
@@ -595,7 +606,13 @@ export function StandardTable<T>({
       return emptyContent || (
         <EmptyState 
           title={hasFilter ? "Không tìm thấy kết quả" : (emptyText || "Không có dữ liệu")} 
-          description={hasFilter ? "Hãy thử thay đổi từ khóa tìm kiếm hoặc bộ lọc." : undefined}
+          description={
+            hasFilter 
+              ? "Hãy thử thay đổi từ khóa tìm kiếm hoặc bộ lọc." 
+              : selected?.size === 0 && rows.length > 0 
+                ? `Chọn ${countUnit || "dòng"} để thực hiện hành động.` 
+                : undefined
+          }
           live="polite"
           action={hasFilter ? (
             <Button variant="outline" size="sm" onClick={clearAllFilters} className="h-8">
@@ -607,7 +624,7 @@ export function StandardTable<T>({
     }
 
     return null;
-  }, [trangThai, fullDisplay.length, errorContent, emptyContent, loadingContent, emptyText, columns.length, hasFilter, clearAllFilters]);
+  }, [trangThai, fullDisplay.length, errorContent, emptyContent, loadingContent, emptyText, columns.length, hasFilter, clearAllFilters, countUnit]);
 
   const isMobile = isClient && window.innerWidth < BP_PX.md;
   const shownCols = useMemo(() => columns.filter(c => !prefs.hidden.has(c.key)), [columns, prefs.hidden]);
@@ -685,6 +702,8 @@ export function StandardTable<T>({
                 visibleColumns={shownCols}
                 allColumns={exportCols}
                 rowsByScope={{ selected: selectedRows, filtered: fullDisplay, page: display }}
+                tableKey={tableKeyEffective}
+                domain={domain}
                 trigger={
                   <AppTooltip noiDung="Xuất dữ liệu ra file CSV">
                     <Button size="sm" variant="outline" className="h-8 w-8 p-0">
@@ -708,13 +727,51 @@ export function StandardTable<T>({
                   nguyHiem: true,
                 }}
                 onRun={async () => {
-                  setIsDeleting(true);
-                  try {
-                    await onBulkDelete(new Set(selectedRows.map(getRowIdInternal)));
-                    clearSelection();
-                  } finally {
-                    setIsDeleting(false);
-                  }
+                  const idsToDelete = new Set(selectedRows.map(getRowIdInternal));
+                  const rowsBeforeDelete = [...localRows];
+                  
+                  // 1. Remove from local state immediately
+                  setLocalRows(prev => prev.filter(r => !idsToDelete.has(getRowIdInternal(r))));
+                  const count = idsToDelete.size;
+                  clearSelection();
+
+                  // 2. Show toast with Undo
+                  toast.success(`Đã xóa ${count} ${countUnit || "dòng"}`, {
+                    description: "Bạn có 10 giây để hoàn tác hành động này.",
+                    action: {
+                      label: "Hoàn tác",
+                      onClick: () => {
+                        if (deleteTimerRef.current) {
+                          clearTimeout(deleteTimerRef.current);
+                          deleteTimerRef.current = null;
+                        }
+                        setLocalRows(rowsBeforeDelete);
+                        toast.info("Đã hoàn tác hành động xóa");
+                      }
+                    },
+                    duration: 10000,
+                  });
+
+                  // 3. Start timer for actual deletion
+                  if (deleteTimerRef.current) clearTimeout(deleteTimerRef.current);
+                  deleteTimerRef.current = setTimeout(async () => {
+                    setIsDeleting(true);
+                    try {
+                      await onBulkDelete(idsToDelete);
+                      logAudit({
+                        action: "bulk_delete",
+                        domain: domain || "unknown",
+                        entity_ids: Array.from(idsToDelete),
+                        details: { count }
+                      });
+                    } catch (err) {
+                      setLocalRows(rowsBeforeDelete);
+                      toast.error("Lỗi khi xóa dữ liệu: " + thongDiepLoi(err, ""));
+                    } finally {
+                      setIsDeleting(false);
+                      deleteTimerRef.current = null;
+                    }
+                  }, 10000);
                 }}
               />
             )}
@@ -926,9 +983,12 @@ export function StandardTable<T>({
           </Table>
           
           {infiniteScroll?.isFetchingNextPage && (
-            <div className="flex items-center justify-center py-4 gap-2 text-muted-foreground bg-muted/5 border-t">
-              <Loader2 className="h-4 w-4 animate-spin text-primary" />
-              <span className="text-[11px] font-medium uppercase tracking-wider">Đang tải thêm dữ liệu...</span>
+            <div className="flex items-center justify-center py-6 gap-3 text-muted-foreground bg-background/50 border-t backdrop-blur-sm sticky bottom-0 z-20">
+              <div className="relative h-5 w-5">
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                <div className="absolute inset-0 bg-primary/20 rounded-full blur-sm animate-pulse" />
+              </div>
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary/80">Đang tải thêm...</span>
             </div>
           )}
           
