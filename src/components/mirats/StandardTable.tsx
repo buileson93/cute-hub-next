@@ -553,7 +553,7 @@ export function StandardTable<T>({
   const sortedColumns = shownCols;
 
   return (
-    <div className={cn("flex flex-col gap-3 min-h-0 w-full overflow-hidden flex-1", className, maxHeightClass)}>
+    <div className={cn("flex flex-col gap-3 h-full w-full overflow-hidden", className)}>
       {(toolbar || toolbarRight || toolbarLeft) && (
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-1 shrink-0">
           <div className="flex items-center gap-2 flex-1 w-full sm:w-auto">
