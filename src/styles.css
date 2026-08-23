@@ -293,13 +293,14 @@
 
 @utility mirats-scroll {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in oklab, var(--color-muted-foreground) 20%, transparent) transparent;
+  scrollbar-color: var(--color-primary) transparent;
   &::-webkit-scrollbar {
-    height: 4px; /* Mỏng tinh tế cho cuộn ngang */
-    width: 6px;
+    height: 8px; /* Tăng lên một chút để dễ kéo trên mobile/desktop */
+    width: 8px;
   }
   &::-webkit-scrollbar-thumb {
-    background-color: color-mix(in oklab, var(--color-muted-foreground) 20%, transparent);
+    background-color: var(--color-primary);
+    opacity: 0.5;
     border-radius: 999px;
     border: 1px solid transparent;
     background-clip: padding-box;
