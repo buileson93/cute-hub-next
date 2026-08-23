@@ -50,7 +50,7 @@ function ThietBiListPage() {
 
 
   return (
-    <PageBody className="flex flex-col">
+    <PageBody noPadding className="flex flex-col flex-1 min-h-0 overflow-hidden">
       <PageHeader
         title="Danh sách thiết bị"
         subtitle="Quản lý tập trung toàn bộ tài sản thiết bị"
