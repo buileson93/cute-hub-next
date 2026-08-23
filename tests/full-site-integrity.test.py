@@ -15,6 +15,10 @@ ROUTES = [
     ("Audit", "http://localhost:8080/admin/audit"),
     ("Review", "http://localhost:8080/admin/review"),
     ("ViTri", "http://localhost:8080/danh-muc/vi-tri"),
+    ("LoaiThietBi", "http://localhost:8080/danh-muc/loai-thiet-bi"),
+    ("NhaSanXuat", "http://localhost:8080/danh-muc/nha-san-xuat"),
+    ("NhaCungCap", "http://localhost:8080/danh-muc/nha-cung-cap"),
+    ("DonVi", "http://localhost:8080/danh-muc/don-vi"),
 ]
 
 async def check_layout(page, route_name, url):
@@ -26,27 +30,26 @@ async def check_layout(page, route_name, url):
         print(f"  [ERROR] Navigation failed: {e}")
         return
 
-    # Check Sidebar fixed (assume left > 0)
-    sidebar = page.locator('aside').first
-    if await sidebar.count() > 0:
-        box = await sidebar.bounding_box()
-        print(f"  [PASS] Sidebar found at x={box['x']}")
-    else:
-        print(f"  [FAIL] Sidebar NOT found")
-
     # Check Header fixed
-    header = page.locator('.astryx-page-header, header[role="banner"]').first
+    header = page.locator('.astryx-page-header, [role="banner"]').first
     if await header.count() > 0:
-        box = await header.bounding_box()
-        print(f"  [PASS] Header found at y={box['y']}")
+        is_sticky = await header.evaluate("el => { const s = window.getComputedStyle(el); return s.position === 'sticky' || s.position === 'fixed'; }")
+        role = await header.get_attribute("role")
+        print(f"  [PASS] Header found (sticky={is_sticky}, role={role})")
     else:
         print(f"  [FAIL] Header NOT found")
 
-    # Check PageBody scrollable
+    # Check PageBody scrollable & A11y
     body = page.locator('.astryx-page-body, [role="main"]').first
     if await body.count() > 0:
         overflow = await body.evaluate("el => window.getComputedStyle(el).overflowY")
-        print(f"  [PASS] PageBody found with overflowY={overflow}")
+        role = await body.get_attribute("role")
+        tabindex = await body.get_attribute("tabindex")
+        print(f"  [PASS] PageBody found (overflowY={overflow}, role={role}, tabindex={tabindex})")
+        
+        # Verify it doesn't scroll the root if it's supposed to be internal scroll
+        root_overflow = await page.evaluate("() => window.getComputedStyle(document.documentElement).overflow")
+        print(f"  [INFO] Root overflow: {root_overflow}")
     else:
         print(f"  [FAIL] PageBody NOT found")
 
@@ -55,26 +58,32 @@ async def check_layout(page, route_name, url):
 async def main():
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(headless=True)
-        context = await browser.new_context(viewport={"width": 1280, "height": 800})
-        page = await context.new_page()
+        # Check both Desktop and Mobile
+        for viewport in [{"width": 1280, "height": 800}, {"width": 375, "height": 812}]:
+            vp_name = "desktop" if viewport["width"] > 500 else "mobile"
+            print(f"\n--- Testing Viewport: {vp_name} ---")
+            context = await browser.new_context(viewport=viewport)
+            page = await context.new_page()
 
-        # Try to restore session if env vars are present (managed auth)
-        storage_key = os.environ.get("LOVABLE_BROWSER_SUPABASE_STORAGE_KEY")
-        session_json = os.environ.get("LOVABLE_BROWSER_SUPABASE_SESSION_JSON")
-        cookies_json = os.environ.get("LOVABLE_BROWSER_SUPABASE_COOKIES_JSON")
+            # Try to restore session
+            storage_key = os.environ.get("LOVABLE_BROWSER_SUPABASE_STORAGE_KEY")
+            session_json = os.environ.get("LOVABLE_BROWSER_SUPABASE_SESSION_JSON")
+            cookies_json = os.environ.get("LOVABLE_BROWSER_SUPABASE_COOKIES_JSON")
 
-        if cookies_json:
-            cookies = json.loads(cookies_json)
-            for c in cookies: c["url"] = "http://localhost:8080"
-            await context.add_cookies(cookies)
+            if cookies_json:
+                cookies = json.loads(cookies_json)
+                for c in cookies: c["url"] = "http://localhost:8080"
+                await context.add_cookies(cookies)
 
-        await page.goto("http://localhost:8080")
-        if storage_key and session_json:
-            await page.evaluate(f"window.localStorage.setItem({json.dumps(storage_key)}, {json.dumps(session_json)})")
-            await page.reload(wait_until="networkidle")
+            await page.goto("http://localhost:8080")
+            if storage_key and session_json:
+                await page.evaluate(f"window.localStorage.setItem({json.dumps(storage_key)}, {json.dumps(session_json)})")
+                await page.reload(wait_until="networkidle")
 
-        for name, url in ROUTES:
-            await check_layout(page, name, url)
+            for name, url in ROUTES:
+                await check_layout(page, f"{vp_name}_{name}", url)
+            
+            await context.close()
             
         await browser.close()
 

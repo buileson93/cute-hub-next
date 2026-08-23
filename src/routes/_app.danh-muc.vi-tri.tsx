@@ -4,6 +4,7 @@ import { MapPin, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CatalogTable } from "@/components/mirats/CatalogTable";
 import { ViTriMediaViewer } from "@/components/mirats/ViTriMediaViewer";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
 
 export const Route = createFileRoute("/_app/danh-muc/vi-tri")({
   head: () => ({
@@ -24,9 +25,8 @@ function ViTriPage() {
   const [media, setMedia] = useState<{ ma: string; ten: string } | null>(null);
 
   return (
-    <>
+    <PageFrame>
       <CatalogTable
-
         table="dm_vi_tri"
         usageColumn="vi_tri_id"
         title="Vị trí"
@@ -55,6 +55,6 @@ function ViTriPage() {
         viTriMa={media?.ma ?? ""}
         viTriTen={media?.ten ?? ""}
       />
-    </>
+    </PageFrame>
   );
 }

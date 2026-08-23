@@ -22,6 +22,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { ResponsiveDialog } from "@/components/mirats/ResponsiveDialog";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
+import { PageBody } from "@/components/mirats/PageBody";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -148,7 +150,8 @@ function HeThongPage() {
 
 
   return (
-    <div className={`space-y-4 ${UI_DENSITY.PAGE_PADDING}`}>
+    <PageFrame>
+      <div className={`space-y-4 ${UI_DENSITY.PAGE_PADDING}`}>
       <PageHeader
         icon={Network}
         title="Danh mục hệ thống"
@@ -376,7 +379,8 @@ function HeThongPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+      </div>
+    </PageFrame>
   );
 }
 

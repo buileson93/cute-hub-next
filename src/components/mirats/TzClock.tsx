@@ -44,7 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label={"Thêm bộ kiểm thử Playwright bao phủ tất cả các route chính của website để xác minh Header/Sidebar luôn cố định và nội dung chỉ trượt trong PageBody trên nhiều độ phân giải.\n\nTích hợp kiểm tra accessibility (keyboard navigation và focus state) cho PageFrame, PageHeader, PageBody để đảm bảo trải nghiệm đúng khi người dùng cuộn và dùng bàn phím.\nđã tối ưu cho điện thoại nữa"}
+          aria-label={"Mở rộng test Playwright full-site để chạy E2E cho tất cả các menu danh mục (Loại thiết bị, Nhà sản xuất, Nhà cung cấp, Đơn vị, Vị trí) và tự động xác minh tiêu đề cố định khi cuộn.\n\nTriển khai một component khung layout dùng chung (PageFrame -> PageHeader -> PageBody) và bắt buộc mọi route menu đều dùng component này để tránh menu nào đó lệch layout.\n\nThêm kiểm tra tự động trong test để phát hiện thiếu các role ARIA và thuộc tính tabIndex liên quan đến role=\"banner\" và role=\"main\" trên toàn các trang menu.\n\nKiểm tra và sửa ngay lỗi không scroll được ở route https://vatm.app/danh-muc/vi-tri, đảm bảo PageBody cuộn độc lập đúng trên cả desktop và mobile.\nlên kế hoạch chi tiết để làm"}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">

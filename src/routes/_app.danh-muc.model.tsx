@@ -54,6 +54,8 @@ import { CatalogTools } from "@/components/mirats/CatalogTools";
 import { ModelTaiLieu } from "@/components/mirats/ModelTaiLieu";
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
+import { PageBody } from "@/components/mirats/PageBody";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 
 import { ImageCropDialog } from "@/components/mirats/ImageCropDialog";
@@ -435,7 +437,8 @@ function ModelCatalogPage() {
   });
 
   return (
-    <div className={`space-y-4 ${UI_DENSITY.PAGE_PADDING}`}>
+    <PageFrame>
+      <div className={`space-y-4 ${UI_DENSITY.PAGE_PADDING}`}>
       <PageHeader
         icon={Package}
         title="Model"
@@ -899,7 +902,8 @@ function ModelCatalogPage() {
         onOpenChange={setDacTinhIOOpen}
         canManage={canManage}
       />
-    </div>
+      </div>
+    </PageFrame>
   );
 }
 
