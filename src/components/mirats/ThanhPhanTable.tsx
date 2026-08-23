@@ -313,35 +313,6 @@ export function useModelRegistry() {
   });
 }
 
-export function ModelCell({
-  model,
-  modelId,
-  registry,
-}: {
-  model: string;
-  modelId: string | null;
-  registry: ModelRegistry;
-}) {
-  if (!model) return <span className="text-xs text-muted-foreground">—</span>;
-
-  const modelData = modelId ? registry[modelId] : null;
-
-  if (!modelData) {
-    return (
-      <span title={model} className="line-clamp-2 break-words text-[12px] leading-snug">
-        {model}
-      </span>
-    );
-  }
-
-  return (
-    <EntityHoverCard loai="dm_model" row={modelData}>
-      <span className="line-clamp-2 cursor-pointer break-words text-[12px] leading-snug text-primary underline-offset-4 decoration-primary/30 hover:underline">
-        {model}
-      </span>
-    </EntityHoverCard>
-  );
-}
 
 /** Lý do hiển thị khi vai trò hiện tại không được sửa dữ liệu hệ thống kỹ thuật. */
 export const LY_DO_KHOA =
