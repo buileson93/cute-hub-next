@@ -422,6 +422,10 @@ export function StandardTable<T>({
 
   const totalSize = rowVirtualizer.getTotalSize();
   const virtualRows = rowVirtualizer.getVirtualItems();
+
+  // Systematic Rail: Sync horizontal scroll to a fixed rail if needed.
+  // We use the native scrollbar of the container, but style it via .mirats-table-scroll-container
+
   const paddingTop = virtualRows.length > 0 ? virtualRows[0]?.start || 0 : 0;
   const paddingBottom = virtualRows.length > 0 ? totalSize - (virtualRows[virtualRows.length - 1]?.end || 0) : 0;
 
