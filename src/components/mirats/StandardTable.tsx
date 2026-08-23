@@ -203,6 +203,28 @@ export function StandardTable<T>({
 }: StandardTableProps<T>) {
   const [textFilters, setTextFilters] = useState<Record<string, string>>({});
   const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
+  const [adaptiveOverscan, setAdaptiveOverscan] = useState(8);
+  const frameCount = useRef(0);
+  const lastTime = useRef(performance.now());
+
+  useEffect(() => {
+    let frameId: number;
+    const checkFps = () => {
+      frameCount.current++;
+      const now = performance.now();
+      if (now - lastTime.current > 1000) {
+        const fps = frameCount.current;
+        if (fps < 40) setAdaptiveOverscan((prev) => Math.max(4, prev - 1));
+        else if (fps > 55) setAdaptiveOverscan((prev) => Math.min(15, prev + 1));
+        frameCount.current = 0;
+        lastTime.current = now;
+      }
+      frameId = requestAnimationFrame(checkFps);
+    };
+    frameId = requestAnimationFrame(checkFps);
+    return () => cancelAnimationFrame(frameId);
+  }, []);
+
   const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" } | null>(null);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
@@ -372,7 +394,7 @@ export function StandardTable<T>({
     count: display.length,
     getScrollElement: () => scrollContainerRef.current,
     estimateSize: () => (density === "compact" ? 36 : 44),
-    overscan: 8,
+    overscan: adaptiveOverscan, // Sử dụng adaptive overscan tương tự DataTableCore
     getItemKey: (index) => {
       const row = display[index];
       return row ? getRowIdInternal(row) : `row-${index}`;

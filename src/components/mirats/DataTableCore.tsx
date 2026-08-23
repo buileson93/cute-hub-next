@@ -211,9 +211,11 @@ export function DataTableCore<T>({
       style={{
         overflowX: 'auto',
         overflowY: 'auto',
+        position: 'relative',
         // Tối ưu hóa layout isolation: contain giúp trình duyệt không phải tính toán lại toàn trang khi bảng thay đổi
         contain: 'content', 
         WebkitOverflowScrolling: 'touch',
+        scrollbarWidth: 'thin',
       }}
     >
       <Table
@@ -224,7 +226,7 @@ export function DataTableCore<T>({
           minWidth: '100%'
         }}
       >
-        <TableHeader className="sticky top-0 z-40 bg-muted/95 backdrop-blur-[4px] flex flex-col">
+        <TableHeader className="sticky top-0 z-50 bg-muted/95 backdrop-blur-[4px] flex flex-col shadow-sm">
           <TableRow className="bg-transparent border-b-0 border-t-0 astryx-table-row hover:bg-transparent flex items-stretch">
             {selectable && (
               <TableHead 
