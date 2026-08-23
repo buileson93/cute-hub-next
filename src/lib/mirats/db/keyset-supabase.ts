@@ -83,6 +83,13 @@ export async function fetchKeyset<T extends Record<string, unknown>>(
     console.warn(`[KeysetFetch] Cảnh báo: Bảng ${cfg.bang} có ${count} bản ghi nhưng trả về 0 dòng.`);
   }
 
+  if (rows.length > 0 && cfg.cursor) {
+    const isDuplicate = rows.some(r => String(r.id) === cfg.cursor?.lastId);
+    if (isDuplicate) {
+      console.error(`[KeysetFetch] PHÁT HIỆN TRÙNG LẶP: Dòng đầu tiên của trang mới trùng với cursor.lastId: ${cfg.cursor.lastId}. Bảng: ${cfg.bang}`);
+    }
+  }
+
   console.log(`[KeysetFetch] ${cfg.bang}: Tải ${rows.length}/${count || 'unknown'} dòng trong ${duration}ms (cursor: ${!!cfg.cursor})`);
 
   return {

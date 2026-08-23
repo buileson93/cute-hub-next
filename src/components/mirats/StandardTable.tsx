@@ -234,7 +234,9 @@ export function StandardTable<T>({
 
   const densityData = useDensity();
   const density = typeof densityData === "string" ? densityData : densityData[0];
-  const prefs = useColumnPrefs(tableKey || prefKey || "standard-table", columns.map(c => c.key));
+  const tableKeyEffective = tableKey || prefKey || "standard-table";
+  const prefs = useColumnPrefs(tableKeyEffective, columns.map(c => c.key));
+  const scrollOffsetKey = `scroll-offset:${tableKeyEffective}`;
 
   const getRowIdInternal = useCallback(
     (r: T) => {
@@ -368,7 +370,17 @@ export function StandardTable<T>({
     [columns, catFilters, textFilters, colText],
   );
 
-  const filtered = useMemo(() => rows.filter((r) => matchesFilters(r)), [rows, matchesFilters]);
+  const dedupedRows = useMemo(() => {
+    const seen = new Set<string>();
+    return rows.filter((r) => {
+      const id = getRowIdInternal(r);
+      if (seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    });
+  }, [rows, getRowIdInternal]);
+
+  const filtered = useMemo(() => dedupedRows.filter((r) => matchesFilters(r)), [dedupedRows, matchesFilters]);
 
   const hasFilter = useMemo(() => {
     return columns.some((c) =>
@@ -408,8 +420,18 @@ export function StandardTable<T>({
       const row = display[index];
       return row ? getRowIdInternal(row) : `row-${index}`;
     },
+    initialOffset: (() => {
+      if (typeof window === "undefined") return 0;
+      const cached = sessionStorage.getItem(scrollOffsetKey);
+      return cached ? parseInt(cached, 10) : 0;
+    })(),
     paddingStart: 0,
     paddingEnd: 0,
+    onOffsetChange: (offset) => {
+      if (offset > 0) {
+        sessionStorage.setItem(scrollOffsetKey, String(offset));
+      }
+    }
   });
 
   useEffect(() => {
@@ -425,6 +447,11 @@ export function StandardTable<T>({
     if (lastItem.index >= display.length - threshold) { 
       // Gọi fetchNextPage
       infiniteScroll.fetchNextPage();
+      
+      // Telemetry detection for potential infinite loop or duplicates
+      if (display.length > 5000) {
+        console.warn(`[StandardTable] Excessive rows detected: ${display.length}. Potential fetch loop.`);
+      }
     }
   }, [rowVirtualizer.getVirtualItems(), infiniteScroll, trangThai.dangTai, display.length]);
 
