@@ -44,7 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label={`Để ngoài nhiệt độ phòng:\u00a0Trứng đã luộc chín chỉ để được tối đa khoảng 2 tiếng. Sau thời gian này, vi khuẩn dễ xâm nhập qua lớp màng bảo vệ đã mất khi luộc.\u00a0[1,\u00a02,\u00a03]`}
+          aria-label={`Chỉ điều tra lỗi FPS khi đóng/mở sidebar sau khi bảng đã load. Chưa đổi lại pagination.\n\nDùng Chrome Performance và React Profiler so sánh:\n\n1. bảng chưa load;\n\n2. bảng đã load 100 rows;\n\n3. bảng đã load nhiều batch;\n\n4. thay bảng bằng skeleton;\n\n5. tắt sidebar width transition.\n\nGhi FPS, React render count, ResizeObserver callback count, Layout time và số DOM rows. Kiểm tra StandardTable/rows/cells có render theo từng frame sidebar không.\n\nNếu nguyên nhân là resize: chuyển animation sidebar sang transform hoặc chỉ resize main khi transition kết thúc. Cô lập sidebar state khỏi bảng, memo hóa columns/rows và gom ResizeObserver bằng requestAnimationFrame. Không bỏ virtualization và không đưa pagination trở lại nếu chưa có bằng chứng.\n\nKẾT QUẢ CẦN ĐẠT: sidebar giữ FPS ổn định; bảng không render lại mỗi frame; virtual DOM rows vẫn trong giới hạn; infinite loading tiếp tục theo batch.`}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">
