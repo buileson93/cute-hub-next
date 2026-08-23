@@ -324,7 +324,7 @@ export function ComponentTablePanel({
                 <InlineTaiSanEdit row={r} onChanged={() => qc.invalidateQueries({ queryKey: ["thanh-phan-infinite"] })} />
               ) : r.daLap ? (
                 <div className="flex items-start gap-1.5">
-                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.thietBiMa }} className="flex-1 hover:text-primary">
+                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.thietBiMa }} search={{ tab: "tong-quan" }} className="flex-1 hover:text-primary">
                     <span className="line-clamp-2 text-[12px] font-bold">{r.thietBiTen || "—"}</span>
                     <div className="flex items-center gap-1.5">
                       <CodeBadge code={r.thietBiMa} />
