@@ -10,7 +10,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { Badge } from "@/components/ui/badge";
 
-export function Sidebar({
+export const Sidebar = React.memo(function Sidebar({
   onNavigate,
   collapsed,
   activeWsId,
@@ -108,5 +108,4 @@ export function Sidebar({
         );
       })}
     </div>
-  );
-}
+});
