@@ -544,7 +544,9 @@ function ThietBiPage() {
               ))}
             </div>
           ) : (
-            <TreeView tree={tree} total={filtered.length} />
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <TreeView tree={tree} total={filtered.length} />
+            </div>
           )}
         </DataState>
       </div>
