@@ -505,14 +505,6 @@
     outline-offset: -2px;
   }
 
-  &[data-state="selected"] {
-    background-color: var(--table-row-selected);
-    
-    &:hover {
-      background-color: var(--table-row-selected-hover);
-    }
-  }
-}
   &[data-state="selected"],
   &.selected,
   &.expanded {
