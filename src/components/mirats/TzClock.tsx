@@ -44,21 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label={`IMPLEMENTATION MODE — THÀNH PHẦN & TÀI SẢN DATA MODE ONLY.
-
-Thực hiện sau Prompt 10N và 10Q. Dùng systematic-debugging + TDD + verification-before-completion.
-
-Mục tiêu:
-- Bỏ phân trang thủ công ở màn hình “Thành phần & Tài sản”;
-- Cuộn liên tục trong một viewport (Infinite Scroll);
-- Nạp dữ liệu server từng batch (100-300 dòng);
-- Sử dụng Keyset Cursor cho dữ liệu lớn.
-
-KẾT QUẢ CẦN ĐẠT SAU PROMPT 10R
-- Màn hình không còn lựa chọn page size, nút trang hoặc “Trang X/Y”.
-- Người dùng cuộn liên tục qua toàn bộ kết quả mà không chuyển trang.
-- Chỉ batch đầu được tải lúc mở; batch sau tải khi gần cuối.
-- DOM luôn bị giới hạn bởi virtualization.`}
+          aria-label={`Để ngoài nhiệt độ phòng:\u00a0Trứng đã luộc chín chỉ để được tối đa khoảng 2 tiếng. Sau thời gian này, vi khuẩn dễ xâm nhập qua lớp màng bảo vệ đã mất khi luộc.\u00a0[1,\u00a02,\u00a03]`}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">
