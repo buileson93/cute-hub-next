@@ -98,7 +98,10 @@ export const analyzeReviewQueue = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => AnalyzeInput.parse(d))
   .handler(async ({ data, context }) => {
     const started = Date.now();
-    const { supabase, userId } = context as any;
+    const { supabase, userId, unauthenticated } = context as any;
+    if (unauthenticated || !supabase || !userId) {
+      throw new Error("Unauthorized: Vui lòng đăng nhập lại");
+    }
     await assertAdmin(supabase, userId);
 
     // 1) Lô đang mở (chưa commit/discard).

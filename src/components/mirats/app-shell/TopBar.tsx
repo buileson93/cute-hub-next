@@ -1,7 +1,5 @@
 import { ReactNode, useEffect, useState, Suspense, lazy } from "react";
 import { Search, Activity, Wifi, WifiOff, Loader2, Command as CommandIcon } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useRouterState } from "@tanstack/react-router";
 import { NotificationBell } from "../NotificationBell";
 import { CommandPaletteButton } from "../CommandPaletteButton";
@@ -18,7 +16,6 @@ const PowerSearch = lazy(() =>
 
 export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
   const [isMac, setIsMac] = useState(false);
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
     setIsMac(/Mac|iPhone|iPad/i.test(navigator.platform));
@@ -87,9 +84,8 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
             ben="bottom"
             noiDung={
               <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
-                {"Mở rộng test Playwright full-site để chạy E2E cho tất cả các menu danh mục (Loại thiết bị, Nhà sản xuất, Nhà cung cấp, Đơn vị, Vị trí) và tự động xác minh tiêu đề cố định khi cuộn.\n\nTriển khai một component khung layout dùng chung (PageFrame -> PageHeader -> PageBody) và bắt buộc mọi route menu đều dùng component này để tránh menu nào đó lệch layout.\n\nThêm kiểm tra tự động trong test để phát hiện thiếu các role ARIA và thuộc tính tabIndex liên quan đến role=\"banner\" và role=\"main\" trên toàn các trang menu.\n\nKiểm tra và sửa ngay lỗi không scroll được ở route https://vatm.app/danh-muc/vi-tri, đảm bảo PageBody cuộn độc lập đúng trên cả desktop và mobile.\nlên kế hoạch chi tiết để làm"}
+                {"For the code present, I get the error below.\n\nPlease think step-by-step in order to resolve it.\n```\nTypeError: Cannot read properties of null (reading 'rpc')\n\n{\n  \"timestamp\": 1787483161643,\n  \"error_type\": \"RUNTIME_ERROR\",\n  \"filename\": \"http://localhost:8080/_serverFn/eyJmaWxlIjoiL3NyYy9saWIvbWlyYXRzL2RhdGEtcXVhbGl0eS5mdW5jdGlvbnMudHM_dHNzLXNlcnZlcmZuLXNwbGl0IiwiZXhwb3J0IjoiYW5hbHl6ZVJldmlld1F1ZXVlX2NyZWF0ZVNlcnZlckZuX2hhbmRsZXIifQ\",\n  \"lineno\": 0,\n  \"colno\": 0,\n  \"stack\": \"TypeError: Cannot read properties of null (reading 'rpc')\\n    at assertAdmin (/dev-server/src/lib/mirats/data-quality.functions.ts:25:42)\\n    at Object.missingRequired (/dev-server/src/lib/mirats/data-quality.functions.ts:102:11)\\n    at server (/dev-server/node_modules/@tanstack/start-client-core/src/createServerFn.ts:944:38)\\n    at callNextMiddleware (/dev-server/node_modules/@tanstack/start-client-core/src/createServerFn.ts:322:30)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\\n    at async userNext (/dev-server/node_modules/@tanstack/start-client-core/src/createServerFn.ts:312:26)\",\n  \"has_blank_screen\": true\n}\n```\n"}
               </div>
-
             }
           >
             <TzClock />
