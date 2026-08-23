@@ -2169,7 +2169,7 @@ function InlineTaiSanEdit({ row, onChanged }: { row: ThanhPhanRow; onChanged: ()
 }
 
 // Ô có nội dung dài: bấm để mở modal xem đầy đủ
-function CellPreview({
+export function CellPreview({
   title,
   content,
   className,
