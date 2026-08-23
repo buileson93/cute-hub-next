@@ -408,9 +408,12 @@ export function StandardTable<T>({
     const virtualItems = rowVirtualizer.getVirtualItems();
     if (virtualItems.length === 0) return;
     const lastItem = virtualItems[virtualItems.length - 1];
-    if (lastItem.index >= display.length - 5) { // Load sớm hơn (5 dòng cuối thay vì 20)
+    
+    // Adaptive overscan/loading: Increase buffer slightly for smoother fast scrolling
+    if (lastItem.index >= display.length - 8) { 
       infiniteScroll.fetchNextPage();
     }
+
   }, [rowVirtualizer, infiniteScroll?.hasNextPage, infiniteScroll?.isFetchingNextPage, display.length, infiniteScroll]);
 
   const isClient = typeof window !== "undefined";
@@ -422,6 +425,10 @@ export function StandardTable<T>({
 
   const totalSize = rowVirtualizer.getTotalSize();
   const virtualRows = rowVirtualizer.getVirtualItems();
+
+  // Systematic Rail: Sync horizontal scroll to a fixed rail if needed.
+  // We use the native scrollbar of the container, but style it via .mirats-table-scroll-container
+
   const paddingTop = virtualRows.length > 0 ? virtualRows[0]?.start || 0 : 0;
   const paddingBottom = virtualRows.length > 0 ? totalSize - (virtualRows[virtualRows.length - 1]?.end || 0) : 0;
 
@@ -553,7 +560,7 @@ export function StandardTable<T>({
   const sortedColumns = shownCols;
 
   return (
-    <div className={cn("flex flex-col gap-3 min-h-0 w-full overflow-hidden flex-1", className, maxHeightClass)}>
+    <div className={cn("flex flex-col gap-3 min-h-0 h-full w-full overflow-hidden", className)}>
       {(toolbar || toolbarRight || toolbarLeft) && (
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-1 shrink-0">
           <div className="flex items-center gap-2 flex-1 w-full sm:w-auto">
@@ -625,15 +632,17 @@ export function StandardTable<T>({
         </div>
       ) : (
         <div 
-          className="relative min-h-0 border rounded-md shadow-none bg-background astryx-table-container flex flex-col h-full overflow-auto mirats-scroll" 
+          className="relative min-h-0 border rounded-md shadow-none bg-background astryx-table-container flex flex-col h-full overflow-auto mirats-scroll mirats-table-scroll-container will-change-transform" 
           ref={scrollContainerRef}
           style={{
             overflowX: 'auto',
             overflowY: 'auto',
             contain: 'content',
-            WebkitOverflowScrolling: 'touch'
+            WebkitOverflowScrolling: 'touch',
+            transform: 'translate3d(0,0,0)'
           }}
         >
+
           <Table 
             className="border-collapse border-separate border-spacing-0 w-full mirats-standard-table-element"
             style={{

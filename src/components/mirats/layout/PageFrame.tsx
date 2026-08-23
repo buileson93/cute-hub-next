@@ -18,7 +18,7 @@ export function PageFrame({ children, className, density = "compact" }: PageFram
     <div
       data-density={density}
       className={cn(
-        "flex min-h-screen w-full flex-col bg-background transition-colors duration-300",
+        "flex min-h-0 h-full w-full flex-col bg-background transition-colors duration-300",
         TYPO.BODY,
         className,
       )}

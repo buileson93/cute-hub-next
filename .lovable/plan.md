@@ -1,49 +1,40 @@
-# Phác thảo Kế hoạch: Tối ưu hóa Hiệu năng & Hình học Bảng (Phase 10Z+)
+# Kế hoạch Tối ưu hóa Hiệu năng & Scroll Bảng (Phase 10Z+)
 
-Tập trung vào việc giải quyết các vấn đề về hiệu năng, cuộn vô tận và tính toàn vẹn của giao diện trong tab "Thành phần & Tài sản".
+Chúng tôi tập trung vào việc giải quyết tình trạng giật lag khi cuộn bảng lớn (Infinite Scroll) và đảm bảo cấu trúc hình học của trang (Page Geometry) luôn ổn định, đặc biệt là trên các thiết bị cấu hình yếu.
 
-## Các vấn đề cốt lõi (Root Causes)
-1. **Xung đột Scroll**: `PageFrame` dùng `min-h-screen` gây tràn trang; `StandardTable` thiếu ràng buộc chiều cao từ cha.
-2. **Dữ liệu dư thừa**: Hai hook infinite mount đồng thời, nạp registry quá sớm.
-3. **Logic lọc sai**: `filteredTaiSan` được tính nhưng không được dùng trong bảng.
-4. **Hiệu năng Render**: File `ThanhPhanTable.tsx` quá lớn (>2200 dòng), Virtualization chưa tối ưu cho máy yếu.
-5. **Thiếu Horizontal Rail**: Thanh cuộn ngang khó tiếp cận khi dữ liệu dài.
+## Mục tiêu
+- **Một Scroll Owner duy nhất**: Chỉ vùng nội dung bảng được cuộn, Header và Toolbar luôn cố định.
+- **Tối ưu hóa GPU**: Sử dụng hardware acceleration để giảm tải cho CPU khi render hàng ngàn ô dữ liệu.
+- **Mount-on-Demand**: Chỉ tải dữ liệu và chạy logic cho Tab đang hiển thị để tiết kiệm tài nguyên.
+- **Duy trì Trạng thái**: Giữ nguyên lựa chọn cột và vị trí cuộn khi chuyển đổi giữa các tab.
 
-## Kế hoạch triển khai
+## Các bước thực hiện
 
-### Giai đoạn 0: Chuẩn bị & Chẩn đoán
-- Thiết lập kịch bản kiểm thử TDD để xác nhận lỗi geometry (cuộn trang vs cuộn bảng).
-- Kiểm tra số lượng request và bytes khi chuyển đổi giữa các mode.
+### Giai đoạn 1: Chuẩn hóa Hình học & Scroll Ownership
+- [x] **PageFrame**: Thay thế `min-h-screen` bằng `h-full` để ngăn trang bị đẩy ra ngoài vùng nhìn thấy.
+- [x] **AppShell**: Khóa `overflow` của container chính, nhường quyền cuộn cho Workspace.
+- [x] **StandardTable**: Thiết lập container cuộn chuyên dụng với `will-change: transform` và `translate3d`.
+- [x] **CSS Scroll Rail**: Tùy chỉnh thanh cuộn ngang luôn hiển thị ở đáy vùng nhìn thấy.
 
-### Giai đoạn 1: Tách Panel & Tối ưu hóa Hook (Mount-on-Demand)
-- Tách `ThanhPhanTable.tsx` thành các component nhỏ:
-    - `ThanhPhanTablePanel`: Chứa logic `useInfiniteThanhPhanRows`.
-    - `TaiSanTablePanel`: Chứa logic `useInfiniteTaiSanRows`.
-- Đảm bảo chỉ mount Panel tương ứng với `viewMode` hiện tại.
-- Sử dụng `AbortSignal` để hủy request cũ khi người dùng đổi tab nhanh.
+### Giai đoạn 2: Tối ưu hóa Rendering (Mount-on-Demand)
+- [ ] **ThanhPhanTable Refactor**: 
+    - Chia tách thành 2 panel độc lập: `ComponentTablePanel` và `AssetTablePanel`.
+    - Chỉ mount panel tương ứng với `viewMode` hiện tại.
+    - Tự động hủy (Abort) các request cũ khi người dùng chuyển tab nhanh.
+- [ ] **Adaptive Virtualization**:
+    - Điều chỉnh `overscan` dựa trên tốc độ cuộn thực tế.
+    - Memoization cho `OptimizedCell` để tránh render lại không cần thiết.
 
-### Giai đoạn 2: Khóa Hình học Bảng (Scroll Ownership)
-- **PageFrame**: Loại bỏ `min-h-screen` để tránh scroll trang không mong muốn.
-- **AppShell/PageBody**: Đảm bảo chuỗi CSS `height: 100%` hoặc `flex-1 min-h-0` được áp dụng xuyên suốt để bảng có thể xác định chiều cao viewport.
-- **StandardTable**: Triển khai "Horizontal Scroll Rail" luôn hiển thị ở đáy vùng nhìn thấy (không phải đáy toàn bộ dữ liệu).
+### Giai đoạn 3: Server-side Filtering & Paging
+- [x] **fetchKeyset**: Tích hợp `AbortSignal` và server-side filters (`q`, `bucket`).
+- [x] **Query Hooks**: Chuyển logic tìm kiếm từ client lên server để giảm kích thước payload.
 
-### Giai đoạn 3: Tối ưu hóa Truy vấn & Lọc
-- Chuyển search `q` và `bucket` vào server-side filter trong `fetchKeyset`.
-- Sửa lỗi mapping: Đảm bảo bảng "Theo tài sản" sử dụng đúng `filteredTaiSan`.
-- Cấu hình `staleTime` và `gcTime` hợp lý để giữ cache mà không gây lag khi đổi tab.
-
-### Giai đoạn 4: Tối ưu hóa Virtualization & Render
-- **Registry Lazy Loading**: Chỉ tải `modelRegistry` và `multiRoleMap` khi cần thiết (ví dụ: khi mở drawer hoặc hover).
-- **Cell Optimization**: Đơn giản hóa các cell trong `StandardTable` khi đang cuộn nhanh.
-- **Adaptive Overscan**: Điều chỉnh `overscan` từ 4-15 hàng dựa trên tốc độ phản hồi của thiết bị.
+### Giai đoạn 4: Kiểm tra & Xác nhận
+- [ ] Chạy Playwright test đo FPS khi cuộn sâu (> 500 dòng).
+- [ ] Kiểm tra rò rỉ bộ nhớ (Memory Leak) sau 5 phút thao tác liên tục.
+- [ ] Xác nhận Header/Tabs không bị trôi khi cuộn dọc.
 
 ## Chi tiết kỹ thuật
-- **Tệp tin ảnh hưởng**:
-    - `src/components/mirats/layout/PageFrame.tsx`
-    - `src/components/mirats/ThanhPhanTable.tsx`
-    - `src/components/mirats/StandardTable.tsx`
-    - `src/lib/mirats/db/keyset-supabase.ts`
-- **Công cụ xác nhận**: Playwright script đo FPS và kiểm tra geometry (scroll position).
-
----
-*Lưu ý: Không thay đổi thư viện bảng hiện tại, chỉ tối ưu hóa cách sử dụng.*
+- **GPU Acceleration**: `contain: content` và `transform: translate3d(0,0,0)`.
+- **Keyset Pagination**: Sử dụng cursor-based paging để đảm bảo hiệu năng không đổi bất kể độ sâu của dữ liệu.
+- **AbortController**: Ngăn chặn tình trạng "race condition" khi cập nhật UI.

@@ -114,7 +114,7 @@ export function useInfiniteTaiSanRows(q: string = "", bucket: string = "all", en
     enabled,
     staleTime: 60_000,
     initialPageParam: null as KeysetCursor | null,
-    queryFn: async ({ pageParam }) => {
+    queryFn: async ({ pageParam, signal }) => {
       const { fetchKeyset } = await import("@/lib/mirats/db/keyset-supabase");
       const res = await fetchKeyset<TaiSanRow>(supabase, {
         bang: "v_tai_san_toan_cuc",
@@ -129,6 +129,20 @@ export function useInfiniteTaiSanRows(q: string = "", bucket: string = "all", en
         dir: "asc",
         cursor: pageParam,
         kichThuoc: 100,
+        signal,
+        filters: (query) => {
+          let qry = query;
+          if (q) {
+            qry = qry.or(`ma.ilike.%${q}%,ten.ilike.%${q}%,serial.ilike.%${q}%,model.ilike.%${q}%`);
+          }
+          if (bucket !== "all") {
+            if (bucket === "0") qry = qry.eq("soThanhPhanDangGan", 0);
+            else if (bucket === "1") qry = qry.eq("soThanhPhanDangGan", 1);
+            else if (bucket === "2-3") qry = qry.gte("soThanhPhanDangGan", 2).lte("soThanhPhanDangGan", 3);
+            else if (bucket === ">3") qry = qry.gt("soThanhPhanDangGan", 3);
+          }
+          return qry;
+        }
       });
       return res;
     },
@@ -195,7 +209,7 @@ export function useInfiniteThanhPhanRows(q: string = "", enabled: boolean = true
     enabled,
     staleTime: 60_000,
     initialPageParam: null as KeysetCursor | null,
-    queryFn: async ({ pageParam }) => {
+    queryFn: async ({ pageParam, signal }) => {
       const { fetchKeyset } = await import("@/lib/mirats/db/keyset-supabase");
       const res = await fetchKeyset<ThanhPhanRow>(supabase, {
         bang: "v_thanh_phan_toan_cuc",
@@ -212,6 +226,13 @@ export function useInfiniteThanhPhanRows(q: string = "", enabled: boolean = true
         dir: "asc",
         cursor: pageParam,
         kichThuoc: 100,
+        signal,
+        filters: (query) => {
+          if (q) {
+            return query.or(`ma.ilike.%${q}%,ten.ilike.%${q}%,thietBiMa.ilike.%${q}%,thietBiSerial.ilike.%${q}%`);
+          }
+          return query;
+        }
       });
       return res;
     },
@@ -370,6 +391,7 @@ export function ThanhPhanTable({
   );
   const [bucket, setBucket] = useState<"all" | "0" | "1" | "2-3" | ">3">("all");
 
+
   const {
     data: rowsData,
     fetchNextPage: fetchNextTp,
@@ -391,8 +413,10 @@ export function ThanhPhanTable({
   const rows = useMemo(() => rowsData?.pages.flatMap((p) => p.rows) ?? [], [rowsData]);
   const taiSanRows = useMemo(() => tsData?.pages.flatMap((p) => p.rows) ?? [], [tsData]);
 
-  const isLoading = loadingTp || loadingTsReal;
-  const error = errorTp || errorTsReal;
+  // Combined loading/error only for global indicator; sub-panels handle their own granular states
+  const isLoading = viewMode === "component" ? loadingTp : loadingTsReal;
+  const error = viewMode === "component" ? errorTp : errorTsReal;
+
 
   const { data: multiRoleMap } = useMultiRoleMap();
   const [internalEditMode, setInternalEditMode] = useState(false);
@@ -583,14 +607,8 @@ export function ThanhPhanTable({
 
   return (
     <div className={cn("flex h-full min-h-0 flex-col gap-1.5", !hideHeader && "p-2")}>
-      {isLoading && (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" /> Đang tải dữ liệu…
-        </div>
-      )}
-      {error && (
-        <div className="text-sm text-destructive">Lỗi tải dữ liệu: {(error as Error).message}</div>
-      )}
+      {/* Global loading indicators removed to prevent layout flicker, moved into table states */}
+
 
       {!isLoading && !error && viewMode === "component" && (
         <>
@@ -1398,7 +1416,7 @@ export function ThanhPhanTable({
 
         <StandardTable<TaiSanRow>
           tableKey={`${tableKey}:tai-san`}
-          rows={taiSanRows}
+          rows={filteredTaiSan}
           trangThai={{ dangTai: loadingTsReal, loi: errorTsReal }}
           infiniteScroll={{
             hasNextPage: hasNextTs,
