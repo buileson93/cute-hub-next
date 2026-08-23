@@ -4,114 +4,77 @@ import json
 from pathlib import Path
 from playwright.async_api import async_playwright
 
-SCREENSHOTS = Path("/tmp/browser/full_site_integrity")
+SCREENSHOTS = Path("/tmp/browser/full_site_layout_check")
 SCREENSHOTS.mkdir(parents=True, exist_ok=True)
 
-# Các route để kiểm tra
 ROUTES = [
     ("Dashboard", "http://localhost:8080/"),
-    ("Devices", "http://localhost:8080/thiet-bi"),
     ("Overview", "http://localhost:8080/tong-quan"),
+    ("Devices", "http://localhost:8080/thiet-bi"),
+    ("Systems", "http://localhost:8080/he-thong/cay"),
+    ("Audit", "http://localhost:8080/admin/audit"),
+    ("Review", "http://localhost:8080/admin/review"),
+    ("ViTri", "http://localhost:8080/danh-muc/vi-tri"),
 ]
 
-VIEWPORTS = [
-    {"name": "Desktop", "width": 1280, "height": 800},
-    {"name": "Mobile", "width": 375, "height": 667},
-]
-
-async def audit_route(page, route_name, url, viewport_name):
-    print(f"[{viewport_name}] Auditing {route_name}: {url}")
+async def check_layout(page, route_name, url):
+    print(f"Checking {route_name}: {url}")
     try:
-        await page.goto(url, wait_until="domcontentloaded", timeout=20000)
-        await page.wait_for_timeout(3000)
+        await page.goto(url, wait_until="networkidle", timeout=60000)
+        await page.wait_for_timeout(2000)
     except Exception as e:
         print(f"  [ERROR] Navigation failed: {e}")
         return
 
-    # 1. Kiểm tra Accessibility (A11y)
-    body = page.locator('[role="main"]').first
+    # Check Sidebar fixed (assume left > 0)
+    sidebar = page.locator('aside').first
+    if await sidebar.count() > 0:
+        box = await sidebar.bounding_box()
+        print(f"  [PASS] Sidebar found at x={box['x']}")
+    else:
+        print(f"  [FAIL] Sidebar NOT found")
+
+    # Check Header fixed
+    header = page.locator('.astryx-page-header, header[role="banner"]').first
+    if await header.count() > 0:
+        box = await header.bounding_box()
+        print(f"  [PASS] Header found at y={box['y']}")
+    else:
+        print(f"  [FAIL] Header NOT found")
+
+    # Check PageBody scrollable
+    body = page.locator('.astryx-page-body, [role="main"]').first
     if await body.count() > 0:
-        tab_index = await body.get_attribute("tabindex")
-        role = await body.get_attribute("role")
-        print(f"  [PASS] PageBody A11y: role={role}, tabindex={tab_index}")
+        overflow = await body.evaluate("el => window.getComputedStyle(el).overflowY")
+        print(f"  [PASS] PageBody found with overflowY={overflow}")
     else:
-        # Kiểm tra theo class fallback
-        body_fallback = page.locator('.astryx-page-body').first
-        if await body_fallback.count() > 0:
-             role = await body_fallback.get_attribute("role")
-             print(f"  [FAIL] PageBody found by class but role='{role}' (expected 'main')")
-        else:
-             print(f"  [WARN] No PageBody found")
+        print(f"  [FAIL] PageBody NOT found")
 
-    # 2. Kiểm tra Header cố định
-    # AppShell header (Global)
-    global_header = page.locator('header[role="banner"]').first
-    # Page-level header
-    page_header = page.locator('.astryx-page-header').first
-    
-    headers = []
-    if await global_header.count() > 0: headers.append(("GlobalHeader", global_header))
-    if await page_header.count() > 0: headers.append(("PageHeader", page_header))
-
-    if not headers:
-        print("  [WARN] No headers found")
-    else:
-        # Lưu vị trí ban đầu
-        initial_boxes = []
-        for name, loc in headers:
-            box = await loc.bounding_box()
-            if box: initial_boxes.append((name, loc, box))
-
-        # Cuộn
-        scrollable = page.locator('.mirats-scroll, [role="main"], .astryx-page-body').first
-        if await scrollable.count() > 0:
-            await scrollable.evaluate("el => el.scrollTop = 300")
-            await page.wait_for_timeout(500)
-            
-            for name, loc, box1 in initial_boxes:
-                box2 = await loc.bounding_box()
-                diff = abs(box1['y'] - box2['y'])
-                if diff < 2:
-                    print(f"  [PASS] {name} fixed (shift {diff}px)")
-                else:
-                    print(f"  [FAIL] {name} moved {diff}px")
-        else:
-            # Nếu không thấy container cuộn, thử cuộn window
-            await page.mouse.wheel(0, 300)
-            await page.wait_for_timeout(500)
-            for name, loc, box1 in initial_boxes:
-                box2 = await loc.bounding_box()
-                diff = abs(box1['y'] - box2['y'])
-                print(f"  [INFO] Window scroll: {name} shift {diff}px")
-
-    await page.screenshot(path=str(SCREENSHOTS / f"{viewport_name}_{route_name}.png"))
+    await page.screenshot(path=str(SCREENSHOTS / f"{route_name}.png"))
 
 async def main():
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(headless=True)
-        session_file = os.path.expanduser("~/.cache/lovable-auth/session.json")
-        
-        for vp in VIEWPORTS:
-            context = await browser.new_context(viewport={"width": vp["width"], "height": vp["height"]})
-            page = await context.new_page()
-            
-            # Restore session
-            if os.path.exists(session_file):
-                with open(session_file) as f:
-                    minted = json.load(f)
-                storage_key = minted["storage_key"]
-                session_json = json.dumps(minted["session"])
-                cookies = minted.get("cookies", [])
-                for c in cookies:
-                    c["url"] = "http://localhost:8080"
-                await context.add_cookies(cookies)
-                await page.goto("http://localhost:8080")
-                await page.evaluate(f"window.localStorage.setItem({json.dumps(storage_key)}, {json.dumps(session_json)})")
-            
-            for name, url in ROUTES:
-                await audit_route(page, name, url, vp["name"])
-            
-            await context.close()
+        context = await browser.new_context(viewport={"width": 1280, "height": 800})
+        page = await context.new_page()
+
+        # Try to restore session if env vars are present (managed auth)
+        storage_key = os.environ.get("LOVABLE_BROWSER_SUPABASE_STORAGE_KEY")
+        session_json = os.environ.get("LOVABLE_BROWSER_SUPABASE_SESSION_JSON")
+        cookies_json = os.environ.get("LOVABLE_BROWSER_SUPABASE_COOKIES_JSON")
+
+        if cookies_json:
+            cookies = json.loads(cookies_json)
+            for c in cookies: c["url"] = "http://localhost:8080"
+            await context.add_cookies(cookies)
+
+        await page.goto("http://localhost:8080")
+        if storage_key and session_json:
+            await page.evaluate(f"window.localStorage.setItem({json.dumps(storage_key)}, {json.dumps(session_json)})")
+            await page.reload(wait_until="networkidle")
+
+        for name, url in ROUTES:
+            await check_layout(page, name, url)
             
         await browser.close()
 

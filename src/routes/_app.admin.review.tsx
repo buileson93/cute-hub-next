@@ -24,7 +24,9 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Combobox, type ComboOption } from "@/components/mirats/Combobox";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
 import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
 import { analyzeReviewQueue, type ReviewRowOut } from "@/lib/mirats/data-quality.functions";
 import {
   CATEGORY_LABELS,
@@ -246,7 +248,7 @@ function ReviewConsole() {
   const m = data?.metrics;
 
   return (
-    <div className="space-y-6">
+    <PageFrame>
       <PageHeader
         icon={ShieldCheck}
         title="Trung tâm rà soát dữ liệu"
@@ -265,6 +267,9 @@ function ReviewConsole() {
           </Button>
         }
       />
+      <PageBody>
+        <div className="space-y-6">
+
 
       {/* Bộ lọc */}
       <Card>
@@ -395,7 +400,9 @@ function ReviewConsole() {
         emptyText={busy ? "Đang rà soát…" : "Không có dòng nào trong nhóm này."}
         countUnit="dòng"
       />
-    </div>
+        </div>
+      </PageBody>
+    </PageFrame>
   );
 }
 
