@@ -291,7 +291,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </header>
             <main
               className={cn(
-                "flex-1 min-w-0 overflow-y-auto md:pb-0 [@container] relative h-full",
+                "flex-1 min-w-0 flex flex-col min-h-0 overflow-hidden md:pb-0 [@container] relative h-full",
                 UI_DENSITY.MAIN_PB_MOBILE,
               )}
             >
