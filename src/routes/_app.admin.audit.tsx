@@ -180,9 +180,9 @@ function AuditLogPage() {
           </div>
         }
       />
-      <PageBody noPadding className="flex flex-col flex-1 min-h-0 overflow-hidden">
-        <div className="flex flex-col gap-4 p-4 h-full overflow-y-auto mirats-scroll">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 shrink-0">
+      <PageBody noPadding className="flex flex-col flex-1 min-h-0 overflow-hidden relative">
+        <div className="flex flex-col gap-4 p-4 flex-1 min-h-0 overflow-hidden relative">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 shrink-0 bg-background/50 p-2 rounded-lg border border-border/50">
           <div className="space-y-1">
             <label className="text-[10px] uppercase font-bold text-muted-foreground ml-1">Người dùng</label>
             <Input 

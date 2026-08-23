@@ -20,6 +20,7 @@ import {
   Monitor,
 } from "lucide-react";
 import { PageBody } from "@/components/mirats/PageBody";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
 
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -365,7 +366,7 @@ function ThietBiPage() {
   }, [tree]);
 
   return (
-    <PageBody noPadding className="bg-background/30 flex-1 min-h-0 overflow-hidden">
+    <PageFrame density="compact">
       <PageHeader
         title="Sổ lý lịch"
         supporting="MIRATS"
@@ -549,7 +550,7 @@ function ThietBiPage() {
             </div>
           )}
         </DataState>
-      </div>
-    </PageBody>
+      </PageBody>
+    </PageFrame>
   );
 }

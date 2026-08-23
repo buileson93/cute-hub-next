@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { useUnifiedDashboardStats } from "@/lib/mirats/use-dashboard-unified";
 import { getCompletenessStats, getCompletenessOverview } from "@/lib/mirats/completeness.functions";
@@ -81,7 +82,8 @@ function OverviewReport() {
   }
 
   return (
-    <PageBody className="h-full overflow-hidden flex flex-col">
+    <PageFrame density="compact">
+      <PageBody className="h-full overflow-hidden flex flex-col">
       <div className="flex flex-col shrink-0 px-6 pt-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
           <PageHeader title="Báo cáo Tổng quan KPI" icon="entity.chart" className="border-b-0 p-0 bg-transparent backdrop-blur-none sticky-none" />
@@ -155,6 +157,7 @@ function OverviewReport() {
       <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-6 mirats-scroll">
         <DashboardGrid page="overview" isEditing={isEditing} />
       </div>
-    </PageBody>
+      </PageBody>
+    </PageFrame>
   );
 }
