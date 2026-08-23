@@ -87,13 +87,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
             ben="bottom"
             noiDung={
               <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
-                Thêm trang hoặc modal quản trị để xem audit log thao tác xóa/xuất, có bộ lọc theo người dùng, loại thao tác và khoảng thời gian.
-                {"\n\n"}
-                Bổ sung testcase Playwright xác nhận cơ chế hoàn tác (undo) sau xóa hàng loạt hoạt động đúng và các vai trò người dùng không được phép bị chặn khi xóa/xuất CSV.
-                {"\n\n"}
-                Triển khai hiển thị tiến trình và trạng thái (đang tạo, thành công, thất bại) khi xuất CSV cho dữ liệu lớn để người dùng không bị đơ trang.
-                {"\n\n"}
-                Làm cho nút hoàn tác vẫn khả dụng ngay cả khi người dùng tải lại trang trong thời gian 10 giây của lệnh xóa hàng loạt.
+                về cách để chỉ cuộn nội dung không cần trượt sidebar bạn xem xét kỹ thuật ở trang https://vatm.app/he-thong/ áp dụng cho toàn cả website , nên lấy đó làm khung áp cho cho tất cả hiện nay có đang làm như vậy không nếu vậy thì làm mạnh mẽ hơn cho tất cả lên kế hoạch chi tiết và kiểm thử để đạt goal
               </div>
             }
           >
