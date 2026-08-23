@@ -502,29 +502,36 @@ export function StandardTable<T>({
       return errorInner;
     }
 
-    if (trangThai.dangTai) {
+    if (trangThai.dangTai && fullDisplay.length === 0) {
       if (loadingContent) return loadingContent;
-      const loadingInner = (
-        <div className="p-4 border rounded-lg bg-card">
-          <TableSkeleton cols={columns.length} rows={6} />
+      return (
+        <div className="p-4 border rounded-lg bg-card space-y-4">
+          <div className="flex items-center gap-2 text-primary font-medium text-sm animate-pulse">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Đang tải dữ liệu ban đầu...
+          </div>
+          <TableSkeleton cols={columns.length} rows={8} />
         </div>
       );
-      return loadingInner;
     }
 
     if (fullDisplay.length === 0 && !trangThai.dangTai) {
-      const emptyInner = emptyContent ?? (
-        <div className="text-sm text-muted-foreground italic">
-          {hasFilter ? "Không có dòng nào khớp bộ lọc" : (emptyText || "Không có dữ liệu")}
+      if (emptyContent) return emptyContent;
+      return (
+        <div className="py-20 border rounded-lg bg-card text-center flex flex-col items-center gap-4">
+          <div className="p-3 rounded-full bg-muted/50">
+            <XIcon className="h-6 w-6 text-muted-foreground/50" />
+          </div>
+          <div className="text-sm text-muted-foreground italic">
+            {hasFilter ? "Không có dòng nào khớp bộ lọc" : (emptyText || "Không có dữ liệu")}
+          </div>
+          {hasFilter && (
+            <Button variant="outline" size="sm" onClick={clearAllFilters} className="h-8">
+              Xóa tất cả bộ lọc
+            </Button>
+          )}
         </div>
       );
-      
-      const emptyContainer = (
-        <div className="py-20 border rounded-lg bg-card text-center">
-          {emptyInner}
-        </div>
-      );
-      return emptyContainer;
     }
 
     return <div className="hidden" aria-hidden="true" />;
