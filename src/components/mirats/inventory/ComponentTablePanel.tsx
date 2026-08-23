@@ -140,6 +140,8 @@ export function ComponentTablePanel({
         selectable
         editMode={editMode}
         presets={THANH_PHAN_PRESETS}
+        exportable
+        ten="thanh-phan"
         bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear }) => (
           <>
             <BulkActionButton
@@ -193,20 +195,6 @@ export function ComponentTablePanel({
                 navigator.clipboard.writeText(codes.join("\n"));
                 toast.success(`Đã sao chép ${codes.length} mã.`);
               }}
-            />
-            <TableExportDialog<ThanhPhanRow>
-              ten="thanh-phan"
-              countUnit="thành phần"
-              visibleColumns={visibleColumns}
-              allColumns={allColumns}
-              rowsByScope={{ selected: selectedRows, filtered: filteredRows, page: pageRows }}
-              trigger={
-                <AppTooltip noiDung="Xuất dữ liệu ra file CSV">
-                  <Button size="sm" variant="outline" className="h-7 w-7 p-0">
-                    <Download className="h-3.5 w-3.5" />
-                  </Button>
-                </AppTooltip>
-              }
             />
             <AppTooltip noiDung="Bỏ chọn tất cả">
               <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={clear}>
