@@ -350,7 +350,7 @@ export function resolveDeviceDisplayIdentity(d: DbDevice, overrides?: Map<string
 
   if (isMeaningfulName(override)) {
     primaryLabel = override.trim();
-    source = "asset"; // Or registry if we had one
+    source = "asset"; 
   } else if (isMeaningfulName(componentName)) {
     primaryLabel = componentName.trim();
     source = "component";
@@ -367,8 +367,8 @@ export function resolveDeviceDisplayIdentity(d: DbDevice, overrides?: Map<string
 
   return {
     primaryLabel,
-    componentName: isMeaningfulName(componentName) ? componentName.trim() : undefined,
-    assetName: isMeaningfulName(assetName) ? assetName.trim() : undefined,
+    componentName: isMeaningfulName(componentName) ? (componentName as string).trim() : undefined,
+    assetName: isMeaningfulName(assetName) ? (assetName as string).trim() : undefined,
     componentCode: d._thanhPhanMa || undefined,
     assetCode: d.ma_thiet_bi,
     canonicalComponentId: d._thanhPhanId || undefined,
@@ -376,6 +376,7 @@ export function resolveDeviceDisplayIdentity(d: DbDevice, overrides?: Map<string
     source,
   };
 }
+
 
 export function resolveThietBi(d: DbDevice, overrides?: Map<string, any>): TaxonomyResolved {
   const identity = resolveDeviceDisplayIdentity(d, overrides);
