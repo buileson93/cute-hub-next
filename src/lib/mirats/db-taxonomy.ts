@@ -315,8 +315,71 @@ export function resolveHeThong(ref: string | null | undefined, taxonomy: DbTaxon
 
 }
 
-export function resolveThietBi(d: DbDevice, overrides?: Map<string, any>): TaxonomyResolved {
-  const label = overrides?.get(`tb:${d.ma_thiet_bi}`)?.ten || d.ten || d.ma_thiet_bi;
-  return { id: d.id, ma: d.ma_thiet_bi, label };
+export interface NodeDisplayIdentity {
+  primaryLabel: string;
+  componentName?: string;
+  assetName?: string;
+  componentCode?: string;
+  assetCode?: string;
+  canonicalComponentId?: string;
+  canonicalAssetId: string;
+  source: "component" | "registry" | "asset" | "model" | "type" | "missing";
 }
+
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isMeaningfulName(name: string | null | undefined): boolean {
+  if (!name) return false;
+  const trimmed = name.trim();
+  if (!trimmed) return false;
+  // Ignore if it's just a UUID
+  if (UUID_PATTERN.test(trimmed)) return false;
+  return true;
+}
+
+export function resolveDeviceDisplayIdentity(d: DbDevice, overrides?: Map<string, any>): NodeDisplayIdentity {
+  const override = overrides?.get(`tb:${d.ma_thiet_bi}`)?.ten;
+  
+  const componentName = d._thanhPhanTen;
+  const assetName = d.ten;
+  const modelName = d._modelTen;
+  const typeName = d._loaiTbTen;
+
+  let primaryLabel = "Chưa có tên";
+  let source: NodeDisplayIdentity["source"] = "missing";
+
+  if (isMeaningfulName(override)) {
+    primaryLabel = override.trim();
+    source = "asset"; // Or registry if we had one
+  } else if (isMeaningfulName(componentName)) {
+    primaryLabel = componentName.trim();
+    source = "component";
+  } else if (isMeaningfulName(assetName)) {
+    primaryLabel = assetName.trim();
+    source = "asset";
+  } else if (isMeaningfulName(modelName)) {
+    primaryLabel = modelName.trim();
+    source = "model";
+  } else if (isMeaningfulName(typeName)) {
+    primaryLabel = typeName.trim();
+    source = "type";
+  }
+
+  return {
+    primaryLabel,
+    componentName: isMeaningfulName(componentName) ? componentName.trim() : undefined,
+    assetName: isMeaningfulName(assetName) ? assetName.trim() : undefined,
+    componentCode: d._thanhPhanMa || undefined,
+    assetCode: d.ma_thiet_bi,
+    canonicalComponentId: d._thanhPhanId || undefined,
+    canonicalAssetId: d.id,
+    source,
+  };
+}
+
+export function resolveThietBi(d: DbDevice, overrides?: Map<string, any>): TaxonomyResolved {
+  const identity = resolveDeviceDisplayIdentity(d, overrides);
+  return { id: d.id, ma: d.ma_thiet_bi, label: identity.primaryLabel };
+}
+
 
