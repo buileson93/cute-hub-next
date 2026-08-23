@@ -61,7 +61,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         {isDev && (
           <div className="mt-4 p-4 bg-red-50 dark:bg-red-950/20 rounded-lg text-left overflow-auto max-h-[300px] border border-red-200 dark:border-red-900">
             <p className="text-xs font-mono text-red-600 dark:text-red-400 font-bold mb-1">
-              [71 slice/limit inventory, server paging pilot, remove global eager loads, TTFB/memory benchmarks]: {error.message}
+              tôi vẫn không thấy thanh scroll ngang , giao diên như ở desktop như này tôi muốn cứng cuộn fix ở khung hiển thị này ko cuộn xuống làm ẩn các nút , ẩn cả row đầu hiển thị thông tin cột và làm hiệu năng hiển thị bảng chưa tối ưu lag giật tốn phần cứng thiết bị: {error.message}
             </p>
             <pre className="text-[10px] font-mono text-muted-foreground whitespace-pre-wrap">
               {error.stack}
@@ -161,11 +161,7 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       {/* 
-        Implement overscan và windowing tự thích nghi theo tốc độ khung hình và loại thiết bị để cuộn vô tận mượt hơn trên máy yếu.
-
-        Ensure trạng thái column visibility và thứ tự cột không đổi khi mình chuyển tab Theo tài sản/Thành phần hoặc khi mình thay đổi dataset.
-
-        Improve DataTable cell rendering bằng cách memo hóa theo dữ liệu và chuẩn hóa props để hạn chế render lại khi cuộn nhanh.
+        tôi vẫn không thấy thanh scroll ngang , giao diên như ở desktop như này tôi muốn cứng cuộn fix ở khung hiển thị này ko cuộn xuống làm ẩn các nút , ẩn cả row đầu hiển thị thông tin cột và làm hiệu năng hiển thị bảng chưa tối ưu lag giật tốn phần cứng thiết bị
       */}
       <head>
         <HeadContent />
