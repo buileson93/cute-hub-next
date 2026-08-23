@@ -435,7 +435,8 @@ function ModelCatalogPage() {
   });
 
   return (
-    <div className={`space-y-4 ${UI_DENSITY.PAGE_PADDING}`}>
+    <PageFrame>
+      <div className={`space-y-4 ${UI_DENSITY.PAGE_PADDING}`}>
       <PageHeader
         icon={Package}
         title="Model"

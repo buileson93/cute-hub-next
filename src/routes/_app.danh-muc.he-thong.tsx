@@ -148,7 +148,8 @@ function HeThongPage() {
 
 
   return (
-    <div className={`space-y-4 ${UI_DENSITY.PAGE_PADDING}`}>
+    <PageFrame>
+      <div className={`space-y-4 ${UI_DENSITY.PAGE_PADDING}`}>
       <PageHeader
         icon={Network}
         title="Danh mục hệ thống"
@@ -376,7 +377,8 @@ function HeThongPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+      </div>
+    </PageFrame>
   );
 }
 
