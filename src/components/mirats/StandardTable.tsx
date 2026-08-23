@@ -395,7 +395,7 @@ export function StandardTable<T>({
     count: display.length,
     getScrollElement: () => scrollContainerRef.current,
     estimateSize: () => (density === "compact" ? 36 : 44),
-    overscan: adaptiveOverscan, // Sử dụng adaptive overscan tương tự DataTableCore
+    overscan: adaptiveOverscan > 0 ? adaptiveOverscan : 8, // Ensure a stable fallback for overscan
     getItemKey: (index) => {
       const row = display[index];
       return row ? getRowIdInternal(row) : `row-${index}`;

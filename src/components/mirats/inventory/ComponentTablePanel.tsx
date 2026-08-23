@@ -121,7 +121,7 @@ export function ComponentTablePanel({
         className="astryx-table"
         tableKey={tableKey}
         rows={rows}
-        trangThai={{ dangTai: isLoading, loi: error }}
+        trangThai={{ dangTai: isLoading || isFetchingNextPage, loi: error }}
         infiniteScroll={{
           hasNextPage,
           fetchNextPage,

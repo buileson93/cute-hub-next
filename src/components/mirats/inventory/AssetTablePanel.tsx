@@ -95,7 +95,7 @@ export function AssetTablePanel({
     <StandardTable<TaiSanRow>
       tableKey={`${tableKey}:tai-san`}
       rows={filteredTaiSan}
-      trangThai={{ dangTai: loadingTsReal, loi: errorTsReal }}
+      trangThai={{ dangTai: loadingTsReal || isFetchingTs, loi: errorTsReal }}
       infiniteScroll={{
         hasNextPage: hasNextTs,
         fetchNextPage: fetchNextTs,
