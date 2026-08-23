@@ -309,13 +309,13 @@ function HeThongCayPage() {
   });
 
   const {
-    data: devices,
+    data: devices = EMPTY_ROWS,
     isLoading: loadingDevices,
     refetch: refetchDevices,
-    placeholderData: (prev) => prev,
   } = useQuery({
     queryKey: ["thiet_bi_cay"],
     staleTime: 5 * 60_000,
+    placeholderData: (prev: any) => prev,
     queryFn: async () => {
       const pageSize = 1000;
       let from = 0;
