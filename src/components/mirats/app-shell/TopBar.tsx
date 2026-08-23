@@ -87,11 +87,15 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
             ben="bottom"
             noiDung={
               <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
-                Chạy lại toàn bộ Playwright cho trang /tong-quan với nhiều kích thước màn hình và đảm bảo test vẫn pass.
+                Implement tính năng hoàn tác (undo) ngay sau khi xóa hàng loạt để người dùng có thể khôi phục dữ liệu trong một khoảng thời gian ngắn.
                 {"\n\n"}
-                Thêm testcase Playwright xác nhận DashboardGrid cuộn độc lập trong khi thanh tiêu đề và HeartBeat giữ cố định trên trang /tong-quan.
+                Add chức năng xuất CSV có tùy chọn cột hiển thị (chọn/ẩn cột) và lưu lại cấu hình xuất cho lần sau.
                 {"\n\n"}
-                Kiểm tra responsive để đảm bảo bố cục cuộn độc lập vẫn hoạt động đúng khi thay đổi chiều rộng màn hình và khi zoom trình duyệt.
+                Implement ghi nhận lịch sử thao tác xóa/xuất hàng loạt (audit log) hiển thị trong một trang hoặc modal để người quản trị kiểm tra.
+                {"\n\n"}
+                Improve trạng thái rỗng và trạng thái loading cho StandardTable khi đang tải dữ liệu và khi không có dòng nào được chọn.
+                {"\n\n"}
+                Verify quyền truy cập cho các hành động xóa hàng loạt và xuất CSV theo vai trò người dùng để chỉ những người được phép mới thực hiện được.
               </div>
             }
           >

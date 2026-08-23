@@ -44,7 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label="Chạy lại toàn bộ Playwright cho trang /tong-quan với nhiều kích thước màn hình và đảm bảo test vẫn pass. Thêm testcase Playwright xác nhận DashboardGrid cuộn độc lập trong khi thanh tiêu đề và HeartBeat giữ cố định trên trang /tong-quan. Kiểm tra responsive để đảm bảo bố cục cuộn độc lập vẫn hoạt động đúng khi thay đổi chiều rộng màn hình và khi zoom trình duyệt."
+          aria-label="Implement tính năng hoàn tác (undo) ngay sau khi xóa hàng loạt để người dùng có thể khôi phục dữ liệu trong một khoảng thời gian ngắn. Add chức năng xuất CSV có tùy chọn cột hiển thị (chọn/ẩn cột) và lưu lại cấu hình xuất cho lần sau. Implement ghi nhận lịch sử thao tác xóa/xuất hàng loạt (audit log) hiển thị trong một trang hoặc modal để người quản trị kiểm tra. Improve trạng thái rỗng và trạng thái loading cho StandardTable khi đang tải dữ liệu và khi không có dòng nào được chọn. Verify quyền truy cập cho các hành động xóa hàng loạt và xuất CSV theo vai trò người dùng để chỉ những người được phép mới thực hiện được."
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">
