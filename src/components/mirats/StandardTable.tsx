@@ -260,6 +260,64 @@ export function StandardTable<T>({
   const densityData = useDensity();
   const density = typeof densityData === "string" ? densityData : densityData[0];
   const tableKeyEffective = tableKey || prefKey || "standard-table";
+
+  const performActualDeletion = useCallback(async (ids: Set<string>, delDomain?: Domain) => {
+    if (!onBulkDelete) return;
+    setIsDeleting(true);
+    try {
+      await onBulkDelete(ids);
+      await logAudit({
+        action: "bulk_delete",
+        domain: delDomain || domain || "unknown",
+        entity_ids: Array.from(ids),
+        details: { count: ids.size }
+      });
+      toast.success(`Đã xóa ${ids.size} ${countUnit || "dòng"} thành công.`);
+    } catch (error) {
+      toast.error(thongDiepLoi(error, "Xóa hàng loạt thất bại"));
+    } finally {
+      setIsDeleting(false);
+      setPendingDeletion(null);
+      if (tableKeyEffective) {
+        localStorage.removeItem(`pending-deletion:${tableKeyEffective}`);
+      }
+    }
+  }, [onBulkDelete, domain, countUnit, tableKeyEffective]);
+
+  useEffect(() => {
+    setLocalRows(rows);
+    
+    // Resume persistent undo from localStorage
+    if (tableKeyEffective) {
+      const saved = localStorage.getItem(`pending-deletion:${tableKeyEffective}`);
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          const now = Date.now();
+          if (data.expiry > now) {
+            setPendingDeletion({
+              ids: new Set(data.ids),
+              ten: data.ten,
+              expiry: data.expiry,
+              domain: data.domain
+            });
+            
+            // Re-schedule actual deletion
+            const remaining = data.expiry - now;
+            deleteTimerRef.current = setTimeout(() => {
+              performActualDeletion(new Set(data.ids), data.domain);
+            }, remaining);
+          } else {
+            // Already expired while page was closed, cleanup
+            localStorage.removeItem(`pending-deletion:${tableKeyEffective}`);
+          }
+        } catch (e) {
+          console.error("Failed to resume persistent deletion", e);
+        }
+      }
+    }
+  }, [rows, tableKeyEffective, performActualDeletion]);
+
   const prefs = useColumnPrefs(tableKeyEffective, columns.map(c => c.key));
   const scrollOffsetKey = `scroll-offset:${tableKeyEffective}`;
 
