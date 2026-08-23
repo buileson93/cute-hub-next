@@ -127,7 +127,7 @@ export function useInfiniteTaiSanRows(q: string = "", bucket: string = "all", en
         sortField: "ma",
         dir: "asc",
         cursor: pageParam,
-        kichThuoc: 500,
+        kichThuoc: 100,
         signal,
         filters: (query) => {
           let qry = query;
@@ -148,17 +148,7 @@ export function useInfiniteTaiSanRows(q: string = "", bucket: string = "all", en
     getNextPageParam: (lastPage) => (lastPage.ket ? undefined : lastPage.cursor),
   });
 
-  const fetchAll = useCallback(async () => {
-    let currentCursor = query.data?.pages[query.data.pages.length - 1]?.cursor;
-    let hasMore = query.hasNextPage;
-    
-    while (hasMore) {
-      const result = await query.fetchNextPage();
-      if (!result.hasNextPage) break;
-    }
-  }, [query]);
-
-  return { ...query, fetchAll };
+  return { ...query };
 }
 
 /** @deprecated dùng useInfiniteTaiSanRows */
@@ -238,7 +228,7 @@ export function useInfiniteThanhPhanRows(q: string = "", enabled: boolean = true
         sortField: "ma",
         dir: "asc",
         cursor: pageParam,
-        kichThuoc: 500,
+        kichThuoc: 100,
         signal,
         filters: (query) => {
           if (q) {
@@ -252,13 +242,7 @@ export function useInfiniteThanhPhanRows(q: string = "", enabled: boolean = true
     getNextPageParam: (lastPage) => (lastPage.ket ? undefined : lastPage.cursor),
   });
 
-  const fetchAll = useCallback(async () => {
-    while (query.hasNextPage) {
-      await query.fetchNextPage();
-    }
-  }, [query]);
-
-  return { ...query, fetchAll };
+  return { ...query };
 }
 
 /** @deprecated dùng useInfiniteThanhPhanRows */

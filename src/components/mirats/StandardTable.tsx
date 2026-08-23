@@ -140,7 +140,7 @@ interface StandardTableProps<T> {
     hasNextPage?: boolean;
     isFetchingNextPage?: boolean;
     fetchNextPage: () => void;
-    fetchAll?: () => void;
+    // fetchAll đã bị loại bỏ để chuyển sang infinite scroll 100%
     totalCount?: number;
   };
   prefKey?: string;
@@ -798,16 +798,6 @@ export function StandardTable<T>({
               >
                 Tải thêm dữ liệu
               </Button>
-              {infiniteScroll.fetchAll && (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="h-8 text-[11px] font-bold border-primary/20 text-primary hover:bg-primary/5"
-                  onClick={() => infiniteScroll.fetchAll?.()}
-                >
-                  Tải hết tất cả
-                </Button>
-              )}
             </div>
           )}
           
