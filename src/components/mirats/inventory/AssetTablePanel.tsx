@@ -50,6 +50,7 @@ export function AssetTablePanel({
   const {
     data: tsData,
     fetchNextPage: fetchNextTs,
+    fetchAll: fetchAllTs,
     hasNextPage: hasNextTs,
     isFetchingNextPage: isFetchingTs,
     isLoading: loadingTsReal,
@@ -100,6 +101,7 @@ export function AssetTablePanel({
       infiniteScroll={{
         hasNextPage: hasNextTs,
         fetchNextPage: fetchNextTs,
+        fetchAll: fetchAllTs,
         isFetchingNextPage: isFetchingTs,
         totalCount: totalTs,
       }}
