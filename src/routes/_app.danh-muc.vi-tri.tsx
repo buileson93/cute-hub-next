@@ -26,6 +26,7 @@ function ViTriPage() {
   return (
     <>
       <CatalogTable
+
         table="dm_vi_tri"
         usageColumn="vi_tri_id"
         title="Vị trí"

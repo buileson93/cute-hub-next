@@ -30,4 +30,5 @@ export const Route = createFileRoute("/_app/danh-muc/nha-san-xuat")({
       headerActions={<NhaSanXuatTools />}
     />
   ),
+
 });

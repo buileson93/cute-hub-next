@@ -44,7 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label={"Thêm bộ kiểm thử Playwright bao phủ tất cả các route chính của website để xác minh Header/Sidebar luôn cố định và nội dung chỉ trượt trong `PageBody` trên nhiều độ phân giải.\n\nTích hợp kiểm tra accessibility (keyboard navigation và focus state) cho `PageFrame`, `PageHeader`, `PageBody` để đảm bảo trải nghiệm đúng khi người dùng cuộn và dùng bàn phím.\nđã tối ưu cho điện thoại nữa"}
+          aria-label={"Thêm bộ kiểm thử Playwright bao phủ tất cả các route chính của website để xác minh Header/Sidebar luôn cố định và nội dung chỉ trượt trong PageBody trên nhiều độ phân giải.\n\nTích hợp kiểm tra accessibility (keyboard navigation và focus state) cho PageFrame, PageHeader, PageBody để đảm bảo trải nghiệm đúng khi người dùng cuộn và dùng bàn phím.\nđã tối ưu cho điện thoại nữa"}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">

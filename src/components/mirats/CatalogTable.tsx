@@ -38,7 +38,9 @@ import { toCsv } from "@/lib/mirats/import-config";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
 import { EmptyState } from "@/components/mirats/EmptyState";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
 import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { CodeBadge } from "@/components/mirats/CodeBadge";
 
@@ -440,7 +442,7 @@ export function CatalogTable({
   const tong = rows?.length ?? 0;
 
   return (
-    <div className={`space-y-4 ${UI_DENSITY.PAGE_PADDING}`}>
+    <PageFrame>
       <PageHeader
         icon={Icon}
         title={title}
@@ -474,7 +476,8 @@ export function CatalogTable({
         }
       />
 
-      <div className="flex flex-wrap items-center gap-2">
+      <PageBody>
+        <div className="flex flex-wrap items-center gap-2 mb-4">
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -945,7 +948,8 @@ export function CatalogTable({
           onClose={() => setUsageRow(null)}
         />
       )}
-    </div>
+      </PageBody>
+    </PageFrame>
   );
 }
 

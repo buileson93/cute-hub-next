@@ -13,7 +13,9 @@ import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable
 import { ListToolbar } from "@/components/mirats/ListToolbar";
 import { FormDialog } from "@/components/mirats/FormDialog";
 import { ConfirmDialog } from "@/components/mirats/ConfirmDialog";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
 import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageBody } from "@/components/mirats/PageBody";
 
 import { useListControls } from "@/lib/mirats/ui/use-list-controls";
 import { supabase } from "@/integrations/backend/client";
@@ -294,7 +296,7 @@ function DacTinhPage() {
   const tong = pageQ.data?.tong ?? 0;
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-4 md:p-6">
+    <PageFrame>
       <PageHeader
         icon={Sparkles}
         title="Nhãn tài sản"
@@ -308,7 +310,8 @@ function DacTinhPage() {
         }
       />
 
-      <ListToolbar controls={controls} filters={[]} placeholder="Tìm theo mã / tên / mô tả…" />
+      <PageBody>
+        <ListToolbar controls={controls} filters={[]} placeholder="Tìm theo mã / tên / mô tả…" />
 
       <StandardTable<Row>
         tableKey="dm_dac_tinh"
@@ -430,7 +433,8 @@ function DacTinhPage() {
         }}
         successMessage="Đã xoá nhãn tài sản"
       />
-    </div>
+      </PageBody>
+    </PageFrame>
   );
 }
 

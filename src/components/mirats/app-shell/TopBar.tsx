@@ -87,10 +87,12 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
             ben="bottom"
             noiDung={
               <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
-                Thêm bộ kiểm thử Playwright bao phủ tất cả các route chính của website để xác minh Header/Sidebar luôn cố định và nội dung chỉ trượt trong `PageBody` trên nhiều độ phân giải.{"\n\n"}
-                Tích hợp kiểm tra accessibility (keyboard navigation và focus state) cho `PageFrame`, `PageHeader`, `PageBody` để đảm bảo trải nghiệm đúng khi người dùng cuộn và dùng bàn phím.{"\n"}
-                đã tối ưu cho điện thoại nữa
+                Thêm bộ kiểm thử Playwright bao phủ tất cả các route chính của website để xác minh Header/Sidebar luôn cố định và nội dung chỉ trượt trong PageBody trên nhiều độ phân giải.
+
+Tích hợp kiểm tra accessibility (keyboard navigation và focus state) cho PageFrame, PageHeader, PageBody để đảm bảo trải nghiệm đúng khi người dùng cuộn và dùng bàn phím.
+đã tối ưu cho điện thoại nữa
               </div>
+
             }
           >
             <TzClock />
