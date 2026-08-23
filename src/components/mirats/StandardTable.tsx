@@ -21,11 +21,13 @@ import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { useDensity } from "@/components/mirats/DensityToggle";
-import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2, XCircle, Trash2, Download } from "lucide-react";
+import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2, XCircle, Trash2, Download, RotateCcw } from "lucide-react";
 import { ColumnVisibilityMenu } from "./ColumnVisibilityMenu";
 import { HorizontalScrollRail } from "./HorizontalScrollRail";
 import { BulkActionButton } from "./BulkActionButton";
 import { TableExportDialog } from "./TableExportDialog";
+import { toast } from "sonner";
+import { logAudit } from "@/lib/mirats/audit";
 
 import { normalize } from "@/lib/mirats/global-search";
 import { parseMinW, calculateOptimalWidths } from "@/lib/mirats/ui/table-geometry";
@@ -174,6 +176,7 @@ interface StandardTableProps<T> {
   allowBulkDelete?: boolean;
   exportable?: boolean;
   ten?: string;
+  domain?: Domain;
 }
 
 export function StandardTable<T>({
@@ -214,6 +217,7 @@ export function StandardTable<T>({
   allowBulkDelete,
   exportable,
   ten,
+  domain,
 }: StandardTableProps<T>) {
   const [textFilters, setTextFilters] = useState<Record<string, string>>({});
   const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
@@ -221,6 +225,12 @@ export function StandardTable<T>({
   const frameCount = useRef(0);
   const lastTime = useRef(performance.now());
   const [isDeleting, setIsDeleting] = useState(false);
+  const deleteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [localRows, setLocalRows] = useState<T[]>([]);
+
+  useEffect(() => {
+    setLocalRows(rows);
+  }, [rows]);
 
   useEffect(() => {
     let frameId: number;
@@ -372,13 +382,13 @@ export function StandardTable<T>({
 
   const dedupedRows = useMemo(() => {
     const seen = new Set<string>();
-    return rows.filter((r) => {
+    return localRows.filter((r) => {
       const id = getRowIdInternal(r);
       if (seen.has(id)) return false;
       seen.add(id);
       return true;
     });
-  }, [rows, getRowIdInternal]);
+  }, [localRows, getRowIdInternal]);
 
   const filtered = useMemo(() => dedupedRows.filter((r) => matchesFilters(r)), [dedupedRows, matchesFilters]);
 
@@ -685,6 +695,8 @@ export function StandardTable<T>({
                 visibleColumns={shownCols}
                 allColumns={exportCols}
                 rowsByScope={{ selected: selectedRows, filtered: fullDisplay, page: display }}
+                tableKey={tableKeyEffective}
+                domain={domain}
                 trigger={
                   <AppTooltip noiDung="Xuất dữ liệu ra file CSV">
                     <Button size="sm" variant="outline" className="h-8 w-8 p-0">
@@ -708,13 +720,51 @@ export function StandardTable<T>({
                   nguyHiem: true,
                 }}
                 onRun={async () => {
-                  setIsDeleting(true);
-                  try {
-                    await onBulkDelete(new Set(selectedRows.map(getRowIdInternal)));
-                    clearSelection();
-                  } finally {
-                    setIsDeleting(false);
-                  }
+                  const idsToDelete = new Set(selectedRows.map(getRowIdInternal));
+                  const rowsBeforeDelete = [...localRows];
+                  
+                  // 1. Remove from local state immediately
+                  setLocalRows(prev => prev.filter(r => !idsToDelete.has(getRowIdInternal(r))));
+                  const count = idsToDelete.size;
+                  clearSelection();
+
+                  // 2. Show toast with Undo
+                  toast.success(`Đã xóa ${count} ${countUnit || "dòng"}`, {
+                    description: "Bạn có 10 giây để hoàn tác hành động này.",
+                    action: {
+                      label: "Hoàn tác",
+                      onClick: () => {
+                        if (deleteTimerRef.current) {
+                          clearTimeout(deleteTimerRef.current);
+                          deleteTimerRef.current = null;
+                        }
+                        setLocalRows(rowsBeforeDelete);
+                        toast.info("Đã hoàn tác hành động xóa");
+                      }
+                    },
+                    duration: 10000,
+                  });
+
+                  // 3. Start timer for actual deletion
+                  if (deleteTimerRef.current) clearTimeout(deleteTimerRef.current);
+                  deleteTimerRef.current = setTimeout(async () => {
+                    setIsDeleting(true);
+                    try {
+                      await onBulkDelete(idsToDelete);
+                      logAudit({
+                        action: "bulk_delete",
+                        domain: domain || "unknown",
+                        entity_ids: Array.from(idsToDelete),
+                        details: { count }
+                      });
+                    } catch (err) {
+                      setLocalRows(rowsBeforeDelete);
+                      toast.error("Lỗi khi xóa dữ liệu: " + thongDiepLoi(err, ""));
+                    } finally {
+                      setIsDeleting(false);
+                      deleteTimerRef.current = null;
+                    }
+                  }, 10000);
                 }}
               />
             )}
