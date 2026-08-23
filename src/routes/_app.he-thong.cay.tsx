@@ -549,7 +549,7 @@ function HeThongCayPage() {
   }, [taxonomy]);
 
   return (
-    <PageFrame density="compact" className="flex flex-col overflow-hidden h-screen">
+    <PageFrame density="compact">
       <PageHeader
         icon={GitFork}
         title="Cấu trúc & Sơ đồ"
@@ -685,8 +685,8 @@ function HeThongCayPage() {
       </PageSection>
 
       <PageBody
-        density="compact"
-        className="flex-1 min-h-[500px] h-full relative overflow-hidden p-0 bg-muted/5"
+        noPadding
+        className="flex-1 min-h-0 relative overflow-hidden bg-muted/5"
       >
         <DataState
           state={state}
@@ -695,7 +695,7 @@ function HeThongCayPage() {
         >
           <div className="absolute inset-0 flex flex-col">
             {display === "tree" && (
-              <ScrollArea className="flex-1 p-4">
+              <ScrollArea className="flex-1 h-full p-4 mirats-scroll">
                 <TreeView
                   tree={viewTree as any}
                   plLabel={plMind}
