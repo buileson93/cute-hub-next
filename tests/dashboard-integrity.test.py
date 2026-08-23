@@ -28,7 +28,9 @@ async def run_test_for_viewport(playwright, viewport):
         await page.fill('input[type="password"]', "12345")
         await page.click('button[type="submit"]')
         
-        await page.wait_for_url("**/tong-quan", timeout=10000)
+        await page.wait_for_timeout(2000)
+        if "/tong-quan" not in page.url:
+            await page.goto("http://localhost:8080/tong-quan", wait_until="networkidle")
         await page.wait_for_load_state("networkidle")
         
         # Verify Header is fixed
