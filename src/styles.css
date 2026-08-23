@@ -294,9 +294,13 @@
 @utility mirats-scroll {
   scrollbar-width: thin;
   scrollbar-color: var(--color-primary) transparent;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  
   &::-webkit-scrollbar {
-    height: 8px; /* Tăng lên một chút để dễ kéo trên mobile/desktop */
-    width: 8px;
+    height: 6px;
+    width: 6px;
   }
   &::-webkit-scrollbar-thumb {
     background-color: var(--color-primary);

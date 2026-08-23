@@ -365,7 +365,7 @@ function ThietBiPage() {
   }, [tree]);
 
   return (
-    <PageBody className="bg-background/30">
+    <PageBody noPadding className="bg-background/30 flex-1 min-h-0 overflow-hidden">
       <PageHeader
         title="Sổ lý lịch"
         supporting="MIRATS"
@@ -544,7 +544,9 @@ function ThietBiPage() {
               ))}
             </div>
           ) : (
-            <TreeView tree={tree} total={filtered.length} />
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <TreeView tree={tree} total={filtered.length} />
+            </div>
           )}
         </DataState>
       </div>

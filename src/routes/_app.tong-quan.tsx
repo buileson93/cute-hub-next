@@ -81,10 +81,10 @@ function OverviewReport() {
   }
 
   return (
-    <PageBody className="h-full overflow-hidden">
-      <div className="flex flex-col shrink-0">
+    <PageBody className="h-full overflow-hidden flex flex-col">
+      <div className="flex flex-col shrink-0 px-6 pt-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-          <PageHeader title="Báo cáo Tổng quan KPI" icon="entity.chart" />
+          <PageHeader title="Báo cáo Tổng quan KPI" icon="entity.chart" className="border-b-0 p-0 bg-transparent backdrop-blur-none sticky-none" />
           <div className="flex items-center gap-2">
             {isEditing && (
               <>
@@ -147,12 +147,12 @@ function OverviewReport() {
           </div>
         </div>
 
-        <div className="mt-2 -mx-6 mb-4">
+        <div className="mt-2 mb-4">
           <HeartBeatStrip />
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto pr-2 mirats-scroll">
+      <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-6 mirats-scroll">
         <DashboardGrid page="overview" isEditing={isEditing} />
       </div>
     </PageBody>

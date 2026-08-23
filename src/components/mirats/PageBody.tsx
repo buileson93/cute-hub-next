@@ -24,7 +24,7 @@ export function PageBody({ children, className, noPadding, density }: Props) {
     <div
       data-density={density}
       className={cn(
-        "flex w-full flex-col flex-1 overflow-hidden bg-background/50",
+        "flex w-full flex-col flex-1 min-h-0 overflow-y-auto mirats-scroll bg-background/50 relative isolation-auto",
         TYPO.BODY,
         !noPadding && UI_DENSITY.PAGE_PADDING,
         UI_DENSITY.SECTION_GAP,
