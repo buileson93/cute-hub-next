@@ -140,7 +140,7 @@ interface StandardTableProps<T> {
     hasNextPage?: boolean;
     isFetchingNextPage?: boolean;
     fetchNextPage: () => void;
-    fetchAll?: () => void;
+    // fetchAll đã bị loại bỏ để chuyển sang infinite scroll 100%
     totalCount?: number;
   };
   prefKey?: string;
