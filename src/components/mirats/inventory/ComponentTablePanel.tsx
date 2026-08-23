@@ -8,7 +8,7 @@ import {
   Search, X, Copy, Download, X as XIcon, Check, Pencil, ExternalLink, 
   Unplug, Wrench, PackageOpen, LayoutGrid, Loader2, Cpu, XCircle 
 } from "lucide-react";
-import { supabase } from "@/integrations/backend/client";
+import { supabase } from "@/integrations/supabase/client";
 import { thongDiepLoi } from "@/lib/mirats/errors";
 import { useSession } from "@/hooks/use-session";
 import { canWrite } from "@/lib/mirats/quyen";
