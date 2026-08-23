@@ -4,35 +4,26 @@ import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 
-import { AlertTriangle as AlertTriangleIcon2 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { PageFrame } from "@/components/mirats/layout/PageFrame";
 import { PageSection } from "@/components/mirats/layout/PageSection";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Search,
-  FilePlus2,
   FileDown,
   AlertTriangle,
   Clock,
   Activity,
   Network,
-  ChevronDown,
-  Flame,
-  CheckCircle2,
-  Loader2,
-  HardDrive,
-  Filter,
   RotateCcw,
-  LayoutGrid,
   Plus,
+  Filter,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/mirats/StatusBadge";
-import { statuses, normalizeLegacy } from "@/lib/mirats/trang-thai";
+import { normalizeLegacy } from "@/lib/mirats/trang-thai";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -40,20 +31,8 @@ import { useListControls } from "@/lib/mirats/ui/use-list-controls";
 import { MobileListControlsSheet } from "@/components/mirats/ui/MobileListControlsSheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { locVaSapXep } from "@/lib/mirats/ui/list-controls";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
 import { DataState } from "@/components/mirats/DataState";
-import { EmptyState } from "@/components/mirats/EmptyState";
-import { ContextualToolbar } from "@/components/mirats/ContextualToolbar";
-import { FileDown as FileDownIcon, XCircle } from "lucide-react";
-
 import {
   Select,
   SelectContent,
@@ -61,14 +40,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { DialogFooter } from "@/components/ui/dialog";
 import { ResponsiveDialog } from "@/components/mirats/ResponsiveDialog";
 import { supabase } from "@/integrations/backend/client";
 import { fmtDowntime } from "@/lib/mirats/format";
@@ -79,7 +51,6 @@ import { useThietBiList } from "@/lib/mirats/db-thiet-bi";
 import type { SuCo } from "@/lib/mirats/types";
 import {
   OPEN_STATES,
-  isOpenState,
   canManageSuCoState,
   canFinalize,
 } from "@/lib/mirats/su-co-state";
@@ -105,8 +76,6 @@ export const Route = createFileRoute("/_app/su-co/")({
   component: SuCoPage,
 });
 
-import { getMucDoSuCoToken } from "@/lib/mirats/ui/status-tokens";
-
 interface OngoingGroup {
   key: string;
   ma_nhom_bc: string | null;
@@ -118,40 +87,61 @@ interface OngoingGroup {
   devices: string[];
 }
 
-/* ---------- Tiện ích thời gian & CSV ---------- */
 function startOfWeek(d: Date) {
   const x = new Date(d);
-  const day = (x.getDay() + 6) % 7; // Thứ 2 = 0
+  const day = (x.getDay() + 6) % 7;
   x.setDate(x.getDate() - day);
   x.setHours(0, 0, 0, 0);
   return x;
 }
+
 function startOfMonth(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), 1);
 }
+
 function parseDate(s: string | null | undefined) {
   if (!s) return null;
   const t = Date.parse(s);
   return Number.isNaN(t) ? null : new Date(t);
 }
-function csv(v: unknown) {
-  const s = v == null ? "" : String(v);
-  return `"${s.replace(/"/g, '""')}"`;
-}
-function downloadCsv(name: string, content: string) {
-  const blob = new Blob(["\uFEFF" + content], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = name;
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 function SuCoPage() {
+  return (
+    <PageFrame density="compact" layout="workspace">
+      <PageHeader
+        icon={AlertTriangle}
+        title="Sự cố kỹ thuật"
+        subtitle="Nhật ký và quản lý sự cố hệ thống"
+        breadcrumbs={[
+          { label: "Vận hành", to: "/he-thong/cay" },
+          { label: "Sự cố kỹ thuật" },
+        ]}
+        actions={
+          <div className="flex items-center gap-2">
+            <WeeklyReportImportDialog />
+            <Button asChild size="sm">
+              <Link to="/su-co/moi">
+                <Plus className="mr-2 h-4 w-4" />
+                Báo cáo sự cố
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm">
+              <FileDown className="mr-2 h-4 w-4" />
+              Xuất báo cáo
+            </Button>
+          </div>
+        }
+      />
+      <PageBody noPadding className="relative flex flex-col bg-muted/5 overflow-hidden flex-1 min-h-0">
+        <SuCoListContent />
+      </PageBody>
+    </PageFrame>
+  );
+}
+
+function SuCoListContent() {
   const isMobile = useIsMobile();
   const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
-
   const { suCo, loading: isLoading } = useScope();
   const error = null;
   const qc = useQueryClient();
@@ -159,29 +149,26 @@ function SuCoPage() {
   const { roles } = useSession();
   const canManageState = canManageSuCoState(roles);
   const { data: taxo } = useDbTaxonomy();
-  // TỐI ƯU 10H: Fetch data paged thay cho eager full taxonomy
-  const { data: pagedData } = useThietBiList(0, 1000); 
-
+  const { data: pagedData } = useThietBiList(0, 1000);
 
   const {
     state: controls,
     setQ,
     setFilter,
-    setSort,
     reset,
   } = useListControls({
-    kichThuoc: 1000, // Show all for now or large amount
+    kichThuoc: 1000,
   });
 
   const query = controls.q;
   const tt = (controls.filters.tt as string) || "all";
   const period = (controls.filters.period as "all" | "week" | "month") || "all";
-  const [showAll, setShowAll] = useState(false);
 
   const devByMa = useMemo(
     () => new Map((pagedData?.rows ?? []).map((d) => [d.ma_thiet_bi, d])),
     [pagedData],
   );
+
   const htNameOf = useCallback(
     (s: SuCo) =>
       taxo?.htNameMap.get(s.he_thong) ||
@@ -189,10 +176,6 @@ function SuCoPage() {
       s.he_thong ||
       "(Chưa gán hệ thống)",
     [taxo, devByMa],
-  );
-  const htKeyOf = useCallback(
-    (s: SuCo) => s.he_thong || devByMa.get(s.thiet_bi)?._htId || htNameOf(s),
-    [devByMa, htNameOf],
   );
 
   function inPeriod(s: SuCo, p: "all" | "week" | "month") {
@@ -309,7 +292,6 @@ function SuCoPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-
   const restoreM = useMutation({
     mutationFn: async (maSuCo: string) => {
       const { error } = await supabase
@@ -329,76 +311,6 @@ function SuCoPage() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
-
-  const resolvedAwaitingFinalize = useMemo<SuCo[]>(
-    () => suCo.filter((s) => canFinalize(s, roles)),
-    [suCo, roles],
-  );
-
-  const finalizeM = useMutation({
-    mutationFn: async (maSuCo: string) => {
-      const { error } = await supabase
-        .from("su_co")
-        .update({ trang_thai: "Đóng" })
-        .eq("ma_su_co", maSuCo);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success("Đã đóng hồ sơ sự cố");
-      qc.invalidateQueries({ queryKey: ["operations_data"] });
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-
-  const bySystem = useMemo(() => {
-    const m = new Map<string, any>();
-    for (const s of filtered) {
-      const key = htKeyOf(s);
-      let row = m.get(key);
-      if (!row) {
-        row = { key, ten: htNameOf(s), count: 0, open: 0, severe: 0, downtime: 0, devs: new Map() };
-        m.set(key, row);
-      }
-      row.count++;
-      if (OPEN_STATES.has(s.trang_thai)) row.open++;
-      if (s.muc_do === "Nghiêm trọng") row.severe++;
-      row.downtime += s.thoi_gian_gian_doan ?? 0;
-      const devName = devByMa.get(s.thiet_bi)?.ten || s.thiet_bi;
-      row.devs.set(devName, (row.devs.get(devName) ?? 0) + 1);
-    }
-    return Array.from(m.values())
-      .map((r) => {
-        const entries = Array.from(r.devs.entries()) as [string, number][];
-        const worst = entries.sort((a, b) => b[1] - a[1])[0];
-        return { ...r, worst: worst ? { ten: worst[0], count: worst[1] } : null };
-      })
-      .sort((a, b) => b.count - a.count || b.downtime - a.downtime);
-  }, [filtered, devByMa, htKeyOf, htNameOf]);
-
-  const byDevice = useMemo(() => {
-    const m = new Map<string, any>();
-    for (const s of filtered) {
-      const dev = devByMa.get(s.thiet_bi);
-      let row = m.get(s.thiet_bi);
-      if (!row) {
-        row = {
-          ma: s.thiet_bi,
-          ten: dev?.ten || s.thiet_bi,
-          ht: htNameOf(s),
-          count: 0,
-          downtime: 0,
-        };
-        m.set(s.thiet_bi, row);
-      }
-      row.count++;
-      row.downtime += s.thoi_gian_gian_doan ?? 0;
-    }
-    return Array.from(m.values())
-      .sort((a, b) => b.count - a.count || b.downtime - a.downtime)
-      .slice(0, 10);
-  }, [filtered, devByMa, htNameOf]);
-
-  const rows = showAll ? filtered : filtered.slice(0, 40);
 
   const logColumns: StdColumn<SuCo>[] = useMemo(
     () => [
@@ -506,203 +418,109 @@ function SuCoPage() {
 
   const [visibleKeys, setVisibleKeys] = useState<string[]>(logColumns.map((c) => c.key));
 
-  function exportList(list: SuCo[], label: string) {
-    if (list.length === 0) return;
-    const now = new Date();
-    const lines: string[] = [];
-    lines.push([csv(`BÁO CÁO SỰ CỐ KỸ THUẬT — ${label}`)].join(","));
-    lines.push([csv("Ngày xuất"), csv(now.toLocaleString("vi-VN"))].join(","));
-    lines.push("");
-    lines.push(
-      [
-        "Mã SC",
-        "Ngày phát hiện",
-        "Tài sản",
-        "Hệ thống",
-        "Hiện tượng",
-        "Mức độ",
-        "Downtime (phút)",
-        "Trạng thái",
-      ]
-        .map(csv)
-        .join(","),
-    );
-    list.forEach((s) => {
-      const dev = devByMa.get(s.thiet_bi);
-      lines.push(
-        [
-          csv(s.ma_su_co),
-          csv(s.ngay_phat_hien),
-          csv(dev?.ten || s.thiet_bi),
-          csv(htNameOf(s)),
-          csv(s.hien_tuong),
-          csv(s.muc_do),
-          csv(s.thoi_gian_gian_doan ?? 0),
-          csv(s.trang_thai),
-        ].join(","),
-      );
-    });
-    downloadCsv(`bao-cao-su-co-${label}-${now.getTime()}.csv`, lines.join("\r\n"));
-  }
-
   return (
-    <>
-      <PageFrame density="compact" className="max-w-full overflow-hidden">
-        <PageHeader
-          icon={AlertTriangle}
-          title="Sự cố kỹ thuật"
-          help="Theo dõi sự cố theo hệ thống để đánh giá chất lượng hệ thống & thành phần hay hư hỏng."
-          actions={
-            <div className="flex gap-1 items-center">
-              <WeeklyReportImportDialog />
-              <Button
-                asChild
-                size="icon"
-                variant="outline"
-                className="h-8 w-8"
-                tooltip="Lịch sử nhập báo cáo"
-              >
-                <Link to="/su-co/import-history">
-                  <Clock className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild size="sm" className="gap-2 h-8">
-                <Link to="/su-co/moi">
-                  <Plus className="h-4 w-4" />
-                  <span>BÁO CÁO MỚI</span>
-                </Link>
-              </Button>
-            </div>
-          }
+    <div className="flex flex-col h-full gap-4 p-4 overflow-hidden">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border bg-card px-2 py-1.5 text-[11px]">
+        <Stat icon={AlertTriangle} label="SC" value={stats.total} />
+        <Stat icon={Activity} label="Mở" value={stats.open} tone="text-amber-600" />
+        <Stat
+          icon={Clock}
+          label="MTTR"
+          value={formatKpiValue(stats.mttr, fmtDowntime)}
+          tone="text-sky-600"
         />
 
-        <PageBody>
-          <div className="space-y-4">
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border bg-card px-2 py-1.5 text-[11px]">
-              <Stat icon={AlertTriangle} label="SC" value={stats.total} />
-              <Stat icon={Activity} label="Mở" value={stats.open} tone="text-amber-600" />
-              <Stat
-                icon={Clock}
-                label="MTTR"
-                value={formatKpiValue(stats.mttr, fmtDowntime)}
-                tone="text-sky-600"
-              />
+        <div className="ml-auto flex items-center gap-1">
+          {isMobile ? (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1.5"
+              onClick={() => setMobileSheetOpen(true)}
+            >
+              <Filter className="h-3.5 w-3.5" />
+              Bộ lọc
+            </Button>
+          ) : (
+            <Select value={period} onValueChange={(v: any) => setFilter("period", v)}>
+              <SelectTrigger className="h-8 w-[150px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tất cả</SelectItem>
+                <SelectItem value="week">Tuần này</SelectItem>
+                <SelectItem value="month">Tháng này</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+      </div>
 
-              {canManageState && (
-                <div className="ml-2 flex items-center gap-1 border-l pl-2">
-                  <AppTooltip noiDung="Tùy chỉnh các tham số hiển thị cho riêng bạn">
-                    <Button variant="ghost" size="sm" className="h-6 gap-1 px-2 text-[10px]">
-                      <StatusBadge domain="su_co" code="PERSONALIZATION" dotOnly />
-                      <span>Cá nhân hóa</span>
-                    </Button>
-                  </AppTooltip>
-                  <AppTooltip noiDung="Khôi phục các thiết lập mặc định của trang">
-                    <Button variant="ghost" size="sm" className="h-6 gap-1 px-2 text-[10px]">
-                      <StatusBadge domain="su_co" code="RESTORE" dotOnly />
-                      <span>Khôi phục</span>
-                    </Button>
-                  </AppTooltip>
-                </div>
-              )}
-
-
-              <div className="ml-auto flex items-center gap-1">
-                {isMobile ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 gap-1.5"
-                    onClick={() => setMobileSheetOpen(true)}
-                  >
-                    <Filter className="h-3.5 w-3.5" />
-                    Bộ lọc
-                    {Object.keys(controls.filters).length + (controls.q.trim() ? 1 : 0) > 0 && (
-                      <Badge variant="secondary" className="h-4 min-w-4 px-1 text-[10px]">
-                        {Object.keys(controls.filters).length + (controls.q.trim() ? 1 : 0)}
-                      </Badge>
-                    )}
+      {ongoing.length > 0 && (
+        <PageSection className="p-0">
+          <Card className="border-orange-300 bg-orange-50/40">
+            <CardHeader className="py-2 px-3">
+              <CardTitle className="text-xs font-semibold text-orange-800 uppercase tracking-wider">
+                Sự cố đang xảy ra ({ongoing.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-3 pb-3 space-y-2">
+              {ongoing.map((g) => (
+                <div
+                  key={g.key}
+                  className="flex items-center justify-between rounded-md border border-orange-200 bg-card p-2"
+                >
+                  <div className="min-w-0 flex-1 mr-4">
+                    <div className="font-medium text-xs truncate">{g.hien_tuong}</div>
+                    <div className="text-[10px] text-muted-foreground truncate">
+                      {g.ht} · {g.ngay_phat_hien.replace("T", " ")}
+                    </div>
+                  </div>
+                  <Button size="sm" className="h-7 text-xs px-3" onClick={() => openClose(g)}>
+                    Kết thúc
                   </Button>
-                ) : (
-                  <Select value={period} onValueChange={(v: any) => setFilter("period", v)}>
-                    <SelectTrigger className="h-8 w-[150px]">
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </PageSection>
+      )}
+
+      <PageSection className="flex-1 overflow-hidden p-0 border rounded-lg bg-card">
+        <DataState state={state} onRetry={refetch}>
+          <StandardTable<SuCo>
+            tableKey="su_co_nhat_ky"
+            className="astryx-table h-full"
+            maxHeightClass="h-full overflow-y-auto"
+            columns={logColumns.filter((c) => visibleKeys.includes(c.key))}
+            rows={filtered}
+            getRowId={(s) => s.ma_su_co}
+            toolbarLeft={
+              !isMobile && (
+                <div className="flex items-center gap-2">
+                  <Input
+                    placeholder="Tìm sự cố..."
+                    value={query}
+                    onChange={(e) => setQ(e.target.value)}
+                    className="h-8 w-64"
+                  />
+                  <Select value={tt} onValueChange={(v) => setFilter("tt", v)}>
+                    <SelectTrigger className="h-8 w-[120px]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Tất cả</SelectItem>
-                      <SelectItem value="week">Tuần này</SelectItem>
-                      <SelectItem value="month">Tháng này</SelectItem>
+                      <SelectItem value="all">Mọi trạng thái</SelectItem>
+                      <SelectItem value="Đang xử lý">Đang xử lý</SelectItem>
+                      <SelectItem value="Đã khắc phục">Đã khắc phục</SelectItem>
+                      <SelectItem value="Đóng">Đóng</SelectItem>
                     </SelectContent>
                   </Select>
-                )}
-              </div>
-            </div>
-
-            {ongoing.length > 0 && (
-              <PageSection>
-                <Card className="border-orange-300 bg-orange-50/40">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-orange-800">
-                      Sự cố đang xảy ra ({ongoing.length})
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    {ongoing.map((g) => (
-                      <div
-                        key={g.key}
-                        className="flex items-center justify-between rounded-md border border-orange-200 bg-card p-3"
-                      >
-                        <div>
-                          <div className="font-medium text-sm">{g.hien_tuong}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {g.ht} · {g.ngay_phat_hien}
-                          </div>
-                        </div>
-                        <Button size="sm" onClick={() => openClose(g)}>
-                          Kết thúc
-                        </Button>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              </PageSection>
-            )}
-
-            <PageSection>
-              <DataState state={state} onRetry={refetch}>
-                <StandardTable<SuCo>
-                  tableKey="su_co_nhat_ky"
-                  columns={logColumns.filter((c) => visibleKeys.includes(c.key))}
-                  rows={rows}
-                  getRowId={(s) => s.ma_su_co}
-                  toolbarLeft={
-                    !isMobile && (
-                      <div className="flex items-center gap-2">
-                        <Input
-                          placeholder="Tìm sự cố..."
-                          value={query}
-                          onChange={(e) => setQ(e.target.value)}
-                          className="h-8 w-64"
-                        />
-                        <Select value={tt} onValueChange={(v) => setFilter("tt", v)}>
-                          <SelectTrigger className="h-8 w-[120px]">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">Mọi trạng thái</SelectItem>
-                            <SelectItem value="Đang xử lý">Đang xử lý</SelectItem>
-                            <SelectItem value="Đã khắc phục">Đã khắc phục</SelectItem>
-                            <SelectItem value="Đóng">Đóng</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )
-                  }
-                />
-              </DataState>
-            </PageSection>
-          </div>
-        </PageBody>
-      </PageFrame>
+                </div>
+              )
+            }
+          />
+        </DataState>
+      </PageSection>
 
       <ResponsiveDialog
         open={!!closing}
@@ -720,22 +538,38 @@ function SuCoPage() {
           </div>
           <div className="space-y-2">
             <Label>Nội dung xử lý</Label>
-            <Textarea value={tinhHinh} onChange={(e) => setTinhHinh(e.target.value)} />
+            <Textarea 
+              value={tinhHinh} 
+              onChange={(e) => setTinhHinh(e.target.value)}
+              placeholder="Nhập nội dung đã xử lý..."
+              rows={4}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Thời gian gián đoạn (phút)</Label>
+            <Input
+              type="number"
+              value={downtimeValue}
+              onChange={(e) => setDowntimeValue(e.target.value)}
+              placeholder="0"
+            />
           </div>
         </div>
         <DialogFooter>
-          <Button className="w-full sm:w-auto" onClick={() => closeM.mutate()}>
+          <Button variant="outline" onClick={() => setClosing(null)}>Hủy</Button>
+          <Button onClick={() => closeM.mutate()} loading={closeM.isPending}>
             Xác nhận
           </Button>
         </DialogFooter>
       </ResponsiveDialog>
+
       <MobileListControlsSheet
         open={mobileSheetOpen}
         onOpenChange={setMobileSheetOpen}
         state={controls}
         setQ={setQ}
         setFilter={setFilter}
-        setSort={setSort}
+        setSort={() => {}}
         reset={reset}
         filters={[
           {
@@ -766,7 +600,7 @@ function SuCoPage() {
         visibleColumns={visibleKeys}
         onVisibleColumnsChange={setVisibleKeys}
       />
-    </>
+    </div>
   );
 }
 

@@ -44,7 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label={`nâng cấp UI UX các form điền nhập liệu đảm báo không bị có nội dung bị che lắp , xem lại các tính năng thêm tài sản thêm thành phần , xoá ... chỉnh sửa đã hoạt động ok chưa áp dụng quy trình https://github.com/obra/superpowers/ để lên kế hoạch test bằng playwright trước khi kết luật , các form mẫu nhập liệu dùng sidebar để tránh gián đoạn chuyển trang , trên máy tính thì từ phải trượt vào , điện thoại tối ưu từ cưới trượt lên`}
+          aria-label={`đã rà soát và nâng cấp layout Dashboard, Sự cố và Bảo dưỡng đồng bộ với chuẩn hệ thống; tối ưu chiều rộng cột và cố định scroll rail; biểu mẫu ResponsiveDialog hoạt động ổn định.`}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">

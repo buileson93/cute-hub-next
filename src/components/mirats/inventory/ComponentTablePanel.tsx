@@ -270,8 +270,8 @@ export function ComponentTablePanel({
           {
             key: "ten",
             label: "Thành phần & Mã",
-            minW: "min-w-[240px]",
-            cellClassName: "max-w-[320px]",
+            minW: "min-w-[180px]",
+            cellClassName: "max-w-[240px]",
             sticky: true,
             priority: "primary",
             cell: (r) => (
@@ -285,7 +285,7 @@ export function ComponentTablePanel({
               </div>
             ),
           },
-          { key: "heThong", label: "Hệ thống", minW: "min-w-[200px]", cell: (r) => <span className="text-[12px]">{r.heThong}</span> },
+          { key: "heThong", label: "Hệ thống", minW: "min-w-[160px]", cellClassName: "max-w-[200px]", cell: (r) => <span className="text-[12px]">{r.heThong}</span> },
           { key: "nhomHeThong", label: "Nhóm hệ thống", minW: "min-w-[160px]", hideBelow: "md" },
           { key: "phanLoai", label: "Phân loại", minW: "min-w-[160px]", hideBelow: "md" },
           { key: "ma", label: "Mã TP", minW: "min-w-[140px]", defaultHidden: true, cell: (r) => <CodeBadge code={r.ma} /> },
@@ -322,7 +322,8 @@ export function ComponentTablePanel({
           {
             key: "thietBi",
             label: "Tài sản lắp",
-            minW: "min-w-[240px]",
+            minW: "min-w-[180px]",
+            cellClassName: "max-w-[240px]",
             cell: (r) => (
               editMode && allowEdit ? (
                 <InlineTaiSanEdit row={r} onChanged={() => qc.invalidateQueries({ queryKey: ["thanh-phan-infinite"] })} />

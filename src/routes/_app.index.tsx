@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { useSession } from "@/hooks/use-session";
 import { useUnifiedDashboardStats } from "@/lib/mirats/use-dashboard-unified";
@@ -82,7 +83,7 @@ function Dashboard() {
   }
 
   return (
-    <PageBody className="bg-background min-h-screen">
+    <PageFrame density="compact" layout="workspace">
       <PageHeader
         title={`Chào mừng, ${typeof profile?.ho_ten === "string" ? profile.ho_ten : (profile?.email?.split("@")[0] ?? "Bui Le Son")}`.trim()}
         subtitle={`MIRATS — Hệ thống quản lý tài sản kỹ thuật.`}
@@ -145,13 +146,15 @@ function Dashboard() {
         }
       />
 
-      <div className="mb-8 p-1 astryx-surface overflow-hidden">
-        <HeartBeatStrip />
-      </div>
+      <PageBody className="bg-background min-h-screen">
+        <div className="mb-6 p-1 astryx-surface overflow-hidden">
+          <HeartBeatStrip />
+        </div>
 
-      <div className="mt-6">
-        <DashboardGrid page="home" isEditing={isEditing} />
-      </div>
-    </PageBody>
+        <div className="mt-6">
+          <DashboardGrid page="home" isEditing={isEditing} />
+        </div>
+      </PageBody>
+    </PageFrame>
   );
 }

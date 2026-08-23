@@ -403,7 +403,7 @@ export function ThanhPhanTable({
   );
 
   return (
-    <div className={cn("flex h-full min-h-0 flex-col gap-1.5", !hideHeader && "p-2")}>
+    <div className={cn("flex h-full min-h-0 flex-col gap-1.5 overflow-hidden", !hideHeader && "p-2")}>
       {viewMode === "component" ? (
         <ComponentTablePanel 
           tableKey={tableKey} 

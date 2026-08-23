@@ -212,8 +212,8 @@ export function AssetTablePanel({
         {
           key: "ten",
           label: "Tên tài sản",
-          minW: "min-w-[220px]",
-          cellClassName: "max-w-[280px]",
+          minW: "min-w-[180px]",
+          cellClassName: "max-w-[240px]",
           filter: "text",
           sticky: true,
           value: (r) => r.ten,
@@ -249,8 +249,8 @@ export function AssetTablePanel({
         {
           key: "danhSachHeThong",
           label: "Hệ thống đang lắp",
-          minW: "min-w-[200px]",
-          cellClassName: "max-w-[240px]",
+          minW: "min-w-[160px]",
+          cellClassName: "max-w-[200px]",
           filter: "text",
           value: (r) => r.danhSachHeThong,
           cell: (r) => <CellPreview title={`Hệ thống đang lắp — ${r.ma}`} content={r.danhSachHeThong} className="line-clamp-3 break-words text-[12px] leading-snug" />,
@@ -258,8 +258,8 @@ export function AssetTablePanel({
         {
           key: "danhSachThanhPhan",
           label: "Thành phần đang lắp",
-          minW: "min-w-[260px]",
-          cellClassName: "max-w-[320px]",
+          minW: "min-w-[180px]",
+          cellClassName: "max-w-[240px]",
           filter: "text",
           value: (r) => r.danhSachThanhPhan,
           cell: (r) => <CellPreview title={`Thành phần đang lắp — ${r.ma}`} content={r.danhSachThanhPhan} preformatted className="whitespace-pre-line break-words text-xs leading-relaxed line-clamp-4" />,
