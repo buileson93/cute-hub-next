@@ -694,7 +694,7 @@ function HeThongCayPage() {
         >
           <div className="absolute inset-0 flex flex-col">
             {display === "tree" && (
-              <ScrollArea className="flex-1 p-4">
+              <div className="flex-1 overflow-auto mirats-scroll p-4">
                 <TreeView
                   tree={viewTree as any}
                   plLabel={plMind}
@@ -710,7 +710,6 @@ function HeThongCayPage() {
                   onMaint={onMaint}
                   onRecord={onRecord}
                   canManageNodes={canManageNodes}
-
 
                   onRename={async (kind, ma, ten) =>
                     renameEntity.mutateAsync({ kind, id: ma, ten, userRoles: roles })
@@ -730,7 +729,7 @@ function HeThongCayPage() {
                   }
                   posByHt={posByHt || new Map()}
                 />
-              </ScrollArea>
+              </div>
             )}
             {display === "mindmap" && (
               <div className="flex-1 relative">
