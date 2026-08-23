@@ -156,6 +156,7 @@ export function ComponentTablePanel({
         presets={THANH_PHAN_PRESETS}
         exportable
         ten="thanh-phan"
+        domain="he_thong"
         allowBulkDelete={allowEdit}
         onBulkDelete={async (ids) => deleteThanhPhan(Array.from(ids))}
         bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear }) => (

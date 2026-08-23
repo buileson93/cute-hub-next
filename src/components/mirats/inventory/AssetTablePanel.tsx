@@ -129,6 +129,7 @@ export function AssetTablePanel({
       selectable
       exportable
       ten="tai-san"
+      domain="thiet_bi"
       allowBulkDelete={allowEdit}
       onBulkDelete={async (ids) => deleteTaiSan(Array.from(ids))}
       bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear }) => (

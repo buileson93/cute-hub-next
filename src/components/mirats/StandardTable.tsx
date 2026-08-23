@@ -606,7 +606,13 @@ export function StandardTable<T>({
       return emptyContent || (
         <EmptyState 
           title={hasFilter ? "Không tìm thấy kết quả" : (emptyText || "Không có dữ liệu")} 
-          description={hasFilter ? "Hãy thử thay đổi từ khóa tìm kiếm hoặc bộ lọc." : undefined}
+          description={
+            hasFilter 
+              ? "Hãy thử thay đổi từ khóa tìm kiếm hoặc bộ lọc." 
+              : selected?.size === 0 && rows.length > 0 
+                ? `Chọn ${countUnit || "dòng"} để thực hiện hành động.` 
+                : undefined
+          }
           live="polite"
           action={hasFilter ? (
             <Button variant="outline" size="sm" onClick={clearAllFilters} className="h-8">
@@ -618,7 +624,7 @@ export function StandardTable<T>({
     }
 
     return null;
-  }, [trangThai, fullDisplay.length, errorContent, emptyContent, loadingContent, emptyText, columns.length, hasFilter, clearAllFilters]);
+  }, [trangThai, fullDisplay.length, errorContent, emptyContent, loadingContent, emptyText, columns.length, hasFilter, clearAllFilters, countUnit]);
 
   const isMobile = isClient && window.innerWidth < BP_PX.md;
   const shownCols = useMemo(() => columns.filter(c => !prefs.hidden.has(c.key)), [columns, prefs.hidden]);
