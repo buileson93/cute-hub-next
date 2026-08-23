@@ -180,7 +180,8 @@ function AuditLogPage() {
           </div>
         }
       />
-      <PageBody className="flex flex-col gap-4 overflow-hidden min-h-0 flex-1">
+      <PageBody noPadding className="flex flex-col flex-1 min-h-0 overflow-hidden">
+        <div className="flex flex-col gap-4 p-4 h-full overflow-y-auto mirats-scroll">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 shrink-0">
           <div className="space-y-1">
             <label className="text-[10px] uppercase font-bold text-muted-foreground ml-1">Người dùng</label>
@@ -219,6 +220,7 @@ function AuditLogPage() {
             trangThai={{ dangTai: isLoading, loi: error as any }}
             countUnit="nhật ký"
           />
+        </div>
         </div>
       </PageBody>
 
