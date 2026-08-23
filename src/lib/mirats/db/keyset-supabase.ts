@@ -66,9 +66,25 @@ export async function fetchKeyset<T extends Record<string, unknown>>(
     }
   }
 
+  const start = performance.now();
   const { data, count, error } = await q;
-  if (error) throw error;
+  const end = performance.now();
+  
+  if (error) {
+    console.error(`[KeysetFetch] Lỗi tải bảng ${cfg.bang}:`, error);
+    throw error;
+  }
+  
   const rows = (data ?? []) as unknown as T[];
+  const duration = Math.round(end - start);
+  
+  // Telemetry logging để phát hiện nguyên nhân không tải đủ dữ liệu
+  if (rows.length === 0 && count && count > 0 && !cfg.cursor) {
+    console.warn(`[KeysetFetch] Cảnh báo: Bảng ${cfg.bang} có ${count} bản ghi nhưng trả về 0 dòng.`);
+  }
+
+  console.log(`[KeysetFetch] ${cfg.bang}: Tải ${rows.length}/${count || 'unknown'} dòng trong ${duration}ms (cursor: ${!!cfg.cursor})`);
+
   return {
     rows,
     cursor: nextCursor(rows, cfg.sortField),

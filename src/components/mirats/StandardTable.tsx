@@ -417,8 +417,10 @@ export function StandardTable<T>({
     if (virtualItems.length === 0) return;
     const lastItem = virtualItems[virtualItems.length - 1];
     
-    // Adaptive overscan/loading: Increase buffer slightly for smoother fast scrolling
-    if (lastItem.index >= display.length - 8) { 
+    // Tối ưu điểm kích hoạt tải trang tiếp theo: 
+    // Khi người dùng cuộn đến gần cuối (còn khoảng 15 dòng hoặc 20% danh sách hiện tại)
+    const threshold = Math.min(15, Math.floor(display.length * 0.2));
+    if (lastItem.index >= display.length - threshold) { 
       infiniteScroll.fetchNextPage();
     }
 
