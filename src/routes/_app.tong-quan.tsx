@@ -150,7 +150,7 @@ function OverviewReport() {
         <HeartBeatStrip />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 flex-1 min-h-0 overflow-y-auto pr-2 mirats-scroll">
         <DashboardGrid page="overview" isEditing={isEditing} />
       </div>
     </PageBody>

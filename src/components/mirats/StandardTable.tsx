@@ -442,7 +442,7 @@ export function StandardTable<T>({
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = container;
       // Trigger when 100px from bottom
-      if (scrollHeight - scrollTop - clientHeight < 100) {
+      if (scrollHeight - scrollTop - clientHeight < 250) {
         infiniteScroll.fetchNextPage();
       }
     };

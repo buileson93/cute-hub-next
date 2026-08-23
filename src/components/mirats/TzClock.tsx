@@ -44,7 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label="Thêm bài kiểm thử tải dữ liệu tăng nhanh để đo lag và xác nhận virtualization giữ 60fps hoặc giảm dropped frames khi record tăng lên nhiều lần.&#10;&#10;Triển khai lưu và khôi phục vị trí cuộn khi người dùng đổi tab/bộ lọc/sắp xếp để không nhảy vị trí và vẫn tiếp tục tải đúng trang kế tiếp.&#10;&#10;Bổ sung cơ chế tự động phát hiện và tự sửa khi phát hiện fetchNextPage trả về trùng bản ghi (dedupe theo cursor/id) và hiển thị Error state rõ ràng khi có lỗi mạng.&#10;&#10;thứ 2 vấn đề nút tải thêm dữ liệu của bảng vẫn còn chưa tự động load thêm khi ở cuối trang"
+          aria-label="kiểm tra đã được cuộn vô tận khi cuộn tới cuối trang chưa và ko cần bấm vào nút kiểm tra dữ liệu , thêm vào đó dashboard overview có cuộn đuộc thêm thông tin chưa, chỉ cuộn nội dung ko cuộn thanh bar vả cả trang web,"
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">
