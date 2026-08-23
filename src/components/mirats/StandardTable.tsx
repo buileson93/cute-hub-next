@@ -731,12 +731,15 @@ export function StandardTable<T>({
                         }}
                       >
                         {selectable && (
-                          <OptimizedCell 
-                            colKey="selection" 
-                            className="px-2 text-center w-[40px] sticky left-0 z-10 bg-inherit" 
+                          <OptimizedCell
+                            colKey="selection"
+                            className="px-2 text-center w-[40px] sticky left-0 z-10 bg-inherit"
                             onClick={(e: React.MouseEvent) => e.stopPropagation()}
                           >
-                            <Checkbox checked={selected?.has(rid)} onCheckedChange={() => toggleRow(rid)} />
+                            <Checkbox
+                              checked={selected?.has(rid) || false}
+                              onCheckedChange={() => toggleRow(rid)}
+                            />
                           </OptimizedCell>
                         )}
                         {shownCols.map(c => (
