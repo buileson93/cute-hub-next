@@ -723,7 +723,8 @@ export function StandardTable<T>({
                     return (
                       <TableRow 
                         key={rid} 
-                        className={cn("group transition-colors border-b", rowClassName?.(r))} 
+                        data-key={rid}
+                        className={cn("group transition-colors border-b astryx-table-row", rowClassName?.(r))} 
                         onClick={() => onRowClick?.(r)}
                         style={{
                           willChange: 'transform',
