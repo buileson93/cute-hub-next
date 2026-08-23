@@ -430,8 +430,8 @@ export function StandardTable<T>({
   // Systematic Rail: Sync horizontal scroll to a fixed rail if needed.
   // We use the native scrollbar of the container, but style it via .mirats-table-scroll-container
 
-  const paddingTop = virtualRows.length > 0 ? virtualRows[0]?.start || 0 : 0;
-  const paddingBottom = virtualRows.length > 0 ? totalSize - (virtualRows[virtualRows.length - 1]?.end || 0) : 0;
+  const paddingTop = virtualRows.length > 0 ? (virtualRows[0]?.start ?? 0) : 0;
+  const paddingBottom = virtualRows.length > 0 ? totalSize - (virtualRows[virtualRows.length - 1]?.end ?? 0) : 0;
 
   const isDragging = useRef<string | null>(null);
   const startX = useRef(0);
@@ -633,7 +633,7 @@ export function StandardTable<T>({
         </div>
       ) : (
         <div 
-          className="relative min-h-0 border rounded-md shadow-none bg-background astryx-table-container flex flex-col h-full overflow-auto mirats-scroll mirats-table-scroll-container will-change-transform" 
+          className="relative min-h-0 border rounded-md shadow-none bg-background astryx-table-container flex flex-col flex-1 overflow-auto mirats-scroll mirats-table-scroll-container will-change-transform" 
           ref={scrollContainerRef}
           style={{
             overflowX: 'auto',
@@ -751,7 +751,7 @@ export function StandardTable<T>({
             </TableBody>
           </Table>
           
-          <HorizontalScrollRail containerRef={scrollContainerRef} />
+          {fullDisplay.length > 0 && <HorizontalScrollRail containerRef={scrollContainerRef} />}
         </div>
       )}
     </div>
