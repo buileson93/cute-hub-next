@@ -87,13 +87,47 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
             ben="bottom"
             noiDung={
               <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
-                Khắc phục lỗi CssSyntaxError trong styles.css để build:dev chạy thành công trở lại.
+                For the code present, I get the error below.
                 {"\n\n"}
-                Thêm nút “Tải hết dữ liệu” cho bảng để người dùng xem toàn bộ kết quả mà không phải cuộn đến cuối.
+                Please think step-by-step in order to resolve it.
+                {"\n"}
+                ```
+                {"\n"}
+                build failed with exit status 1: Build failed with 1 error:
                 {"\n\n"}
-                Triển khai debounce cho search/filter và đồng bộ chính xác với keyset pagination ở cả chế độ 100 và all để luôn trả đúng tập kết quả.
+                [plugin @tailwindcss/vite:generate:build] /dev-server/src/styles.css?transform-only
+                {"\n"}
+                CssSyntaxError: Missing opening {"{"}
+                {"\n"}
+                at Te (file:///dev-server/node_modules/tailwindcss/dist/chunk-3IR7ZFJX.mjs:1:3079)
+                {"\n"}
+                at Rf (file:///dev-server/node_modules/tailwindcss/dist/chunk-3IR7ZFJX.mjs:38:1384)
+                {"\n"}
+                at hu (file:///dev-server/node_modules/@tailwindcss/node/dist/index.mjs:10:…
                 {"\n\n"}
-                Lên kế hoạch cụ thể và khắc phục , và cũng đồng thời nghiên cứu khi bấm vào bảng loading khá lâu mới hiện nổi bảng và CÂY PHÂN CẤP có phương pháp kỹ thuật nào để đánh lừa hiển thị liền rồi loading dần dần ko
+                stderr:
+                {"\n"}
+                ject.buildApp (file:///dev-server/node_modules/@tanstack/start-plugin-core/dist/esm/vite/plugin.js:113:8)
+                {"\n"}
+                at async Object.buildApp (file:///dev-server/node_modules/vite/dist/node/chunks/node.js:33667:6)
+                {"\n"}
+                at async CAC.{"<anonymous>"} (file:///dev-server/node_modules/vite/dist/node/cli.js:777:3) {"{"}
+                {"\n"}
+                errors: [Getter/Setter]
+                {"\n"}
+                {"}"}
+                {"\n"}
+                error: script "build:dev" exited with code 1
+                {"\n\n"}
+                stdout:
+                {"\n"}
+                vite v8.0.16 building client environment for development...
+                {"\n\r"}
+                transforming...✓ 6963 modules transformed.
+                {"\n\n"}
+                If these errors do not contain enough detail to identify the fix, run lovable build diagnostics br_e766382a-5547-4d60-bf25-36bdc93479f4 --json with code--exec.
+                {"\n"}
+                ```
               </div>
             }
           >
