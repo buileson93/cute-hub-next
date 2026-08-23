@@ -657,8 +657,10 @@ export function CayMindMap({
               data: {
                 kind: "tb",
                 ma: d.tb.ma_thiet_bi,
-                label: tbMind(d.tb),
+                label: resolveDeviceDisplayIdentity(d.tb).primaryLabel,
                 code: d.tb.ma_thiet_bi,
+                identity: resolveDeviceDisplayIdentity(d.tb),
+
                 count: hasKids ? d.children.length : undefined,
                 collapsible: hasKids,
                 expanded: expanded.has(tbId),
@@ -666,7 +668,7 @@ export function CayMindMap({
                 toggle: () => toggle(tbId),
                 onRename: (t) => onRename("tb", d.tb.ma_thiet_bi, t),
                 onOpenEditor: () => onOpenEditor("tb", d.tb.ma_thiet_bi),
-                onRecord: () => onRecord("tb", d.tb.ma_thiet_bi, tbMind(d.tb)),
+                onRecord: () => onRecord("tb", d.tb.ma_thiet_bi, resolveDeviceDisplayIdentity(d.tb).primaryLabel),
               },
               children: [],
             };
