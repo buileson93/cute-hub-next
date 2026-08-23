@@ -775,7 +775,7 @@ export function StandardTable<T>({
               />
             )}
 
-            {allowBulkDelete && onBulkDelete && selectedRows.length > 0 && (
+            {allowBulkDelete && onBulkDelete && (selectedRows.length > 0 || pendingDeletion) && (
               <BulkActionButton
                 label="Xóa hàng loạt"
                 icon={<Trash2 className="h-3.5 w-3.5" />}
@@ -787,53 +787,7 @@ export function StandardTable<T>({
                   nutXacNhan: "Xác nhận xóa",
                   nguyHiem: true,
                 }}
-                onRun={async () => {
-                  const idsToDelete = new Set(selectedRows.map(getRowIdInternal));
-                  const rowsBeforeDelete = [...localRows];
-                  
-                  // 1. Remove from local state immediately
-                  setLocalRows(prev => prev.filter(r => !idsToDelete.has(getRowIdInternal(r))));
-                  const count = idsToDelete.size;
-                  clearSelection();
-
-                  // 2. Show toast with Undo
-                  toast.success(`Đã xóa ${count} ${countUnit || "dòng"}`, {
-                    description: "Bạn có 10 giây để hoàn tác hành động này.",
-                    action: {
-                      label: "Hoàn tác",
-                      onClick: () => {
-                        if (deleteTimerRef.current) {
-                          clearTimeout(deleteTimerRef.current);
-                          deleteTimerRef.current = null;
-                        }
-                        setLocalRows(rowsBeforeDelete);
-                        toast.info("Đã hoàn tác hành động xóa");
-                      }
-                    },
-                    duration: 10000,
-                  });
-
-                  // 3. Start timer for actual deletion
-                  if (deleteTimerRef.current) clearTimeout(deleteTimerRef.current);
-                  deleteTimerRef.current = setTimeout(async () => {
-                    setIsDeleting(true);
-                    try {
-                      await onBulkDelete(idsToDelete);
-                      logAudit({
-                        action: "bulk_delete",
-                        domain: domain || "unknown",
-                        entity_ids: Array.from(idsToDelete),
-                        details: { count }
-                      });
-                    } catch (err) {
-                      setLocalRows(rowsBeforeDelete);
-                      toast.error("Lỗi khi xóa dữ liệu: " + thongDiepLoi(err, ""));
-                    } finally {
-                      setIsDeleting(false);
-                      deleteTimerRef.current = null;
-                    }
-                  }, 10000);
-                }}
+                onRun={bulkDelete}
               />
             )}
 
