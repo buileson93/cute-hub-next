@@ -63,7 +63,6 @@ export function ComponentTablePanel({
   const {
     data: rowsData,
     fetchNextPage,
-    fetchAll,
     hasNextPage,
     isFetchingNextPage,
     isLoading,
@@ -127,7 +126,7 @@ export function ComponentTablePanel({
         infiniteScroll={{
           hasNextPage,
           fetchNextPage,
-          fetchAll,
+          
           isFetchingNextPage,
           totalCount: totalTp,
         }}
