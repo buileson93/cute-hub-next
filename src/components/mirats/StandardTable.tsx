@@ -23,6 +23,7 @@ import { Icon } from "@/components/mirats/ui/Icon";
 import { useDensity } from "@/components/mirats/DensityToggle";
 import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2 } from "lucide-react";
 import { ColumnVisibilityMenu } from "./ColumnVisibilityMenu";
+import { HorizontalScrollRail } from "./HorizontalScrollRail";
 
 import { normalize } from "@/lib/mirats/global-search";
 import { parseMinW, calculateOptimalWidths } from "@/lib/mirats/ui/table-geometry";
@@ -708,7 +709,8 @@ export function StandardTable<T>({
                         onClick={() => onRowClick?.(r)}
                         style={{
                           willChange: 'transform',
-                          contain: 'layout inline-size'
+                          contain: 'layout inline-size',
+                          transform: 'translate3d(0,0,0)'
                         }}
                       >
                         {selectable && (
@@ -748,6 +750,8 @@ export function StandardTable<T>({
               )}
             </TableBody>
           </Table>
+          
+          <HorizontalScrollRail containerRef={scrollContainerRef} />
         </div>
       )}
     </div>

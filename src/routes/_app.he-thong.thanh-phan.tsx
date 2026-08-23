@@ -47,7 +47,7 @@ function ThanhPhanListPage() {
   };
 
   return (
-    <PageFrame density="compact">
+    <PageFrame density="compact" layout="workspace">
       <PageHeader
         icon={GitFork}
         title="Thành phần & Tài sản"

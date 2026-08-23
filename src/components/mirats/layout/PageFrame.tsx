@@ -7,18 +7,25 @@ interface PageFrameProps {
   children: ReactNode;
   className?: string;
   density?: "compact" | "comfortable" | "spacious";
+  layout?: "default" | "workspace";
 }
 
 /**
  * Root container for a MIRATS page.
  * Manages global density context and layout structure.
  */
-export function PageFrame({ children, className, density = "compact" }: PageFrameProps) {
+export function PageFrame({ 
+  children, 
+  className, 
+  density = "compact",
+  layout = "default" 
+}: PageFrameProps) {
   return (
     <div
       data-density={density}
       className={cn(
-        "flex min-h-0 h-full w-full flex-col bg-background transition-colors duration-300",
+        "flex w-full flex-col bg-background transition-colors duration-300",
+        layout === "workspace" ? "h-full min-h-0 overflow-hidden" : "min-h-0 h-full",
         TYPO.BODY,
         className,
       )}

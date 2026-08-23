@@ -1,8 +1,9 @@
-import React, { useMemo, useState, useRef, useEffect } from "react";
+import React, { useMemo, useState, useRef, useEffect, useCallback } from "react";
 import { useQuery, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useDebounce } from "use-debounce";
 import { 
   Search, X, Copy, Download, X as XIcon, Check, Pencil, ExternalLink, 
   Unplug, Wrench, PackageOpen, LayoutGrid, Loader2, Cpu, XCircle 
@@ -46,6 +47,7 @@ export function ComponentTablePanel({
   ModeToggle: React.ReactNode;
 }) {
   const [q, setQ] = useState("");
+  const [debouncedQ] = useDebounce(q, 300);
   const [searchExpanded, setSearchExpanded] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -64,7 +66,7 @@ export function ComponentTablePanel({
     isFetchingNextPage,
     isLoading,
     error,
-  } = useInfiniteThanhPhanRows(q, true);
+  } = useInfiniteThanhPhanRows(debouncedQ, true);
 
   const rows = useMemo(() => rowsData?.pages.flatMap((p) => p.rows) ?? [], [rowsData]);
   const totalTp = rowsData?.pages[0]?.totalCount ?? 0;
