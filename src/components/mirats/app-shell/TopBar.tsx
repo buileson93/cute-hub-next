@@ -87,15 +87,11 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
             ben="bottom"
             noiDung={
               <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
-                Add chức năng xóa hàng loạt cho các dòng đã chọn trong StandardTable, kèm xác nhận và thông báo kết quả.
+                Chạy lại toàn bộ Playwright cho trang /tong-quan với nhiều kích thước màn hình và đảm bảo test vẫn pass.
                 {"\n\n"}
-                Implement xuất dữ liệu CSV cho các dòng đang được chọn hoặc toàn bộ kết quả bảng trong StandardTable.
-                {"\n\n"}
-                Add điều khiển chọn nhiều dòng bằng bàn phím (Shift/Ctrl, Space) để người dùng chọn nhanh mà không cần chuột.
+                Thêm testcase Playwright xác nhận DashboardGrid cuộn độc lập trong khi thanh tiêu đề và HeartBeat giữ cố định trên trang /tong-quan.
                 {"\n\n"}
                 Kiểm tra responsive để đảm bảo bố cục cuộn độc lập vẫn hoạt động đúng khi thay đổi chiều rộng màn hình và khi zoom trình duyệt.
-                {"\n"}
-                lên kế hoạch chi tiết để làm
               </div>
             }
           >
