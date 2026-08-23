@@ -25,7 +25,7 @@ export function PageFrame({
       data-density={density}
       className={cn(
         "flex w-full flex-col bg-background transition-colors duration-300",
-        layout === "workspace" ? "h-full min-h-0 overflow-hidden" : "min-h-0 h-full",
+        layout === "workspace" ? "h-full min-h-0 overflow-hidden" : "h-full min-h-0",
         TYPO.BODY,
         className,
       )}
