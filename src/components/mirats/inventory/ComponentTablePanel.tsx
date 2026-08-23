@@ -28,7 +28,7 @@ import { OperationDialog } from "@/components/mirats/OperationDialog";
 import { Combobox } from "@/components/mirats/Combobox";
 import { EntityHoverCard } from "@/components/mirats/EntityHoverCard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { useInfiniteThanhPhanRows, type ThanhPhanRow, TT_LABEL, LY_DO_KHOA } from "./ThanhPhanTable";
+import { useInfiniteThanhPhanRows, type ThanhPhanRow, TT_LABEL, LY_DO_KHOA } from "../ThanhPhanTable";
 
 export function ComponentTablePanel({
   tableKey,
