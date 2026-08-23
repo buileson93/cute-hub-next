@@ -140,6 +140,7 @@ interface StandardTableProps<T> {
     hasNextPage?: boolean;
     isFetchingNextPage?: boolean;
     fetchNextPage: () => void;
+    fetchAll?: () => void;
     totalCount?: number;
   };
   prefKey?: string;
@@ -788,7 +789,7 @@ export function StandardTable<T>({
           )}
           
           {!infiniteScroll?.isFetchingNextPage && infiniteScroll?.hasNextPage && (
-            <div className="flex items-center justify-center py-2 border-t bg-muted/5">
+            <div className="flex items-center justify-center py-2 border-t bg-muted/5 gap-4">
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -797,6 +798,16 @@ export function StandardTable<T>({
               >
                 Tải thêm dữ liệu
               </Button>
+              {infiniteScroll.fetchAll && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-8 text-[11px] font-bold border-primary/20 text-primary hover:bg-primary/5"
+                  onClick={() => infiniteScroll.fetchAll?.()}
+                >
+                  Tải hết tất cả
+                </Button>
+              )}
             </div>
           )}
           
