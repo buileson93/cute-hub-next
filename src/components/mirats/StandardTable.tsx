@@ -239,7 +239,12 @@ export function StandardTable<T>({
     (r: T) => {
       if (getRowId) return getRowId(r);
       const anyR = r as any;
-      return anyR.id || anyR.uuid || String(Math.random());
+      const id = anyR.id || anyR.uuid || anyR.ma;
+      if (!id) {
+        console.warn("StandardTable: Row missing unique ID", r);
+        return `row-${Math.random().toString(36).substr(2, 9)}`;
+      }
+      return String(id);
     },
     [getRowId],
   );
