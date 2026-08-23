@@ -703,7 +703,7 @@ export function StandardTable<T>({
                     const r = display[v.index];
                     const rid = getRowIdInternal(r);
                     return (
-                      <TableRow 
+                      <MemoizedTableRow 
                         key={rid} 
                         className={cn("group transition-colors border-b", rowClassName?.(r))} 
                         onClick={() => onRowClick?.(r)}
@@ -726,6 +726,8 @@ export function StandardTable<T>({
                           <OptimizedCell 
                             key={c.key} 
                             colKey={c.key}
+                            rowId={rid}
+                            dataHash={String(colText(c, r))}
                             className={cn("px-3 py-2 text-[13px] truncate", c.cellClassName)} 
                             style={{ 
                               width: prefs.widths[c.key] || 150,
@@ -738,7 +740,7 @@ export function StandardTable<T>({
                             {renderCellContent(c, r)}
                           </OptimizedCell>
                         ))}
-                      </TableRow>
+                      </MemoizedTableRow>
                     );
                   })}
                   {paddingBottom > 0 && (
