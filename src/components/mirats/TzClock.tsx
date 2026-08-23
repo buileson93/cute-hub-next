@@ -44,7 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label={`Chỉ điều tra lỗi FPS khi đóng/mở sidebar sau khi bảng đã load. Chưa đổi lại pagination.\n\nDùng Chrome Performance và React Profiler so sánh:\n\n1. bảng chưa load;\n\n2. bảng đã load 100 rows;\n\n3. bảng đã load nhiều batch;\n\n4. thay bảng bằng skeleton;\n\n5. tắt sidebar width transition.\n\nGhi FPS, React render count, ResizeObserver callback count, Layout time và số DOM rows. Kiểm tra StandardTable/rows/cells có render theo từng frame sidebar không.\n\nNếu nguyên nhân là resize: chuyển animation sidebar sang transform hoặc chỉ resize main khi transition kết thúc. Cô lập sidebar state khỏi bảng, memo hóa columns/rows và gom ResizeObserver bằng requestAnimationFrame. Không bỏ virtualization và không đưa pagination trở lại nếu chưa có bằng chứng.\n\nKẾT QUẢ CẦN ĐẠT: sidebar giữ FPS ổn định; bảng không render lại mỗi frame; virtual DOM rows vẫn trong giới hạn; infinite loading tiếp tục theo batch.`}
+          aria-label={`bảng theo thành phần đang bị vấn đề , bảng theo tài sản đang tốt bạn xem lý do là gì sao bị giảm sút số liệu như vậy thành phần đang có 1000+ tài sảng cũng hơn như vậy`}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">
