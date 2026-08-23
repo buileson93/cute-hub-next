@@ -513,7 +513,6 @@
     }
   }
 }
-
   &[data-state="selected"],
   &.selected,
   &.expanded {
@@ -523,7 +522,6 @@
       background-color: var(--table-row-selected-hover);
     }
   }
-
 
   &:focus-visible {
     outline: 2px solid var(--table-row-focus-ring);
