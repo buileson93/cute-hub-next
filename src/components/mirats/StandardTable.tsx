@@ -220,7 +220,6 @@ export function StandardTable<T>({
   const [adaptiveOverscan, setAdaptiveOverscan] = useState(8);
   const frameCount = useRef(0);
   const lastTime = useRef(performance.now());
-  const lastSelectedIndex = useRef<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
@@ -264,36 +263,6 @@ export function StandardTable<T>({
     [getRowId],
   );
 
-  const toggleRow = useCallback(
-    (id: string, index?: number, event?: React.MouseEvent | React.KeyboardEvent) => {
-      const current = selected || new Set<string>();
-      const next = new Set(current);
-
-      if (event?.shiftKey && lastSelectedIndex.current !== null && index !== undefined) {
-        const start = Math.min(lastSelectedIndex.current, index);
-        const end = Math.max(lastSelectedIndex.current, index);
-        const rangeIds = display.slice(start, end + 1).map(getRowIdInternal);
-        
-        const allSelectedInRange = rangeIds.every(rid => current.has(rid));
-        if (allSelectedInRange) {
-          rangeIds.forEach(rid => next.delete(rid));
-        } else {
-          rangeIds.forEach(rid => next.add(rid));
-        }
-      } else {
-        if (next.has(id)) next.delete(id);
-        else next.add(id);
-      }
-
-      if (index !== undefined) {
-        lastSelectedIndex.current = index;
-      }
-      
-      onSelect?.(next);
-      setSelected?.(next);
-    },
-    [onSelect, selected, setSelected, display, getRowIdInternal],
-  );
 
   const toggleAll = useCallback(() => {
     const current = selected || new Set<string>();
@@ -440,6 +409,39 @@ export function StandardTable<T>({
 
   const display = sorted;
   const fullDisplay = display;
+
+  const lastSelectedIndex = useRef<number | null>(null);
+  
+  const toggleRow = useCallback(
+    (id: string, index?: number, event?: any) => {
+      const current = selected || new Set<string>();
+      const next = new Set(current);
+
+      if (event?.shiftKey && lastSelectedIndex.current !== null && index !== undefined) {
+        const start = Math.min(lastSelectedIndex.current, index);
+        const end = Math.max(lastSelectedIndex.current, index);
+        const rangeIds = display.slice(start, end + 1).map(getRowIdInternal);
+        
+        const allSelectedInRange = rangeIds.every(rid => current.has(rid));
+        if (allSelectedInRange) {
+          rangeIds.forEach(rid => next.delete(rid));
+        } else {
+          rangeIds.forEach(rid => next.add(rid));
+        }
+      } else {
+        if (next.has(id)) next.delete(id);
+        else next.add(id);
+      }
+
+      if (index !== undefined) {
+        lastSelectedIndex.current = index;
+      }
+      
+      onSelect?.(next);
+      setSelected?.(next);
+    },
+    [onSelect, selected, setSelected, display, getRowIdInternal],
+  );
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const rowVirtualizer = useVirtualizer({
