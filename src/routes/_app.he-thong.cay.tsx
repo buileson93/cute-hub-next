@@ -309,9 +309,10 @@ function HeThongCayPage() {
   });
 
   const {
-    data: devices = EMPTY_ROWS,
+    data: devices,
     isLoading: loadingDevices,
     refetch: refetchDevices,
+    placeholderData: (prev) => prev,
   } = useQuery({
     queryKey: ["thiet_bi_cay"],
     staleTime: 5 * 60_000,
@@ -424,7 +425,7 @@ function HeThongCayPage() {
     setViewTree(viewTree as any);
   }, [viewTree, setViewTree]);
 
-  const isLoading = loadingOverrides || loadingTaxo || loadingDevices;
+  const isLoading = loadingOverrides || loadingTaxo || (loadingDevices && !devices?.length);
   const state = isLoading ? "loading" : viewTree.length === 0 ? "empty" : "success";
   const isFiltering = searchQuery.trim() !== "" || badgeFilterActive(badgeFilter);
 
