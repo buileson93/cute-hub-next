@@ -1,3 +1,4 @@
+import { thongDiepLoi } from "@/lib/mirats/errors";
 // ============================================================================
 // PhotoUpload.tsx — Upload nhiều tệp (ảnh/tệp bất kỳ) vào bucket
 // `form-attachments`, hiển thị preview + nút xoá. Giá trị lưu là mảng

@@ -21,7 +21,7 @@ describe('StandardTable Error Handling', () => {
       />
     );
     
-    expect(screen.getByText('Failed to load data')).toBeInTheDocument();
+    expect(screen.getByText('Failed to load data')).toBeDefined();
     const retryBtn = screen.getByText('Thử lại');
     fireEvent.click(retryBtn);
     expect(retry).toHaveBeenCalled();

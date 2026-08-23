@@ -1,3 +1,4 @@
+import { thongDiepLoi } from "@/lib/mirats/errors";
 // ============================================================================
 // Bảng danh mục dùng chung cho các bảng dm_* đơn giản (ma / ten / mo_ta /
 // thu_tu / active). Cung cấp: tìm kiếm, thêm, sửa, xoá và đếm số tài sản đang
