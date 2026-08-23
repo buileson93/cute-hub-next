@@ -37,7 +37,7 @@ export function AssetTablePanel({
   ModeToggle: React.ReactNode;
 }) {
   const [q, setQ] = useState("");
-  const [debouncedQ] = useDebounce(q, 300);
+  const [debouncedQ] = useDebounce(q, 500);
   const [bucket, setBucket] = useState<"all" | "0" | "1" | "2-3" | ">3">("all");
   const [searchExpanded, setSearchExpanded] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);

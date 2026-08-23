@@ -47,7 +47,7 @@ export function ComponentTablePanel({
   ModeToggle: React.ReactNode;
 }) {
   const [q, setQ] = useState("");
-  const [debouncedQ] = useDebounce(q, 300);
+  const [debouncedQ] = useDebounce(q, 500);
   const [searchExpanded, setSearchExpanded] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -270,6 +270,7 @@ export function ComponentTablePanel({
             key: "ten",
             label: "Thành phần & Mã",
             minW: "min-w-[240px]",
+            cellClassName: "max-w-[320px]",
             sticky: true,
             priority: "primary",
             cell: (r) => (

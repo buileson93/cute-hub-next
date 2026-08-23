@@ -38,7 +38,7 @@ export async function fetchKeyset<T extends Record<string, unknown>>(
 
   let q = client
     .from(cfg.bang)
-    .select(cot.join(","), { count: "planned" });
+    .select(cot.join(","), { count: "exact" });
 
   if (cfg.filters) {
     q = cfg.filters(q);
