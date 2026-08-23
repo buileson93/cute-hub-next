@@ -949,7 +949,7 @@ export function CatalogTable({
         />
       )}
       </PageBody>
-    </PageFrame>
+    </div>
   );
 }
 
