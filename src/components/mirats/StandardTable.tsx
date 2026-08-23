@@ -417,8 +417,10 @@ export function StandardTable<T>({
     if (virtualItems.length === 0) return;
     const lastItem = virtualItems[virtualItems.length - 1];
     
-    // Adaptive overscan/loading: Increase buffer slightly for smoother fast scrolling
-    if (lastItem.index >= display.length - 8) { 
+    // Tối ưu điểm kích hoạt tải trang tiếp theo: 
+    // Khi người dùng cuộn đến gần cuối (còn khoảng 15 dòng hoặc 20% danh sách hiện tại)
+    const threshold = Math.min(15, Math.floor(display.length * 0.2));
+    if (lastItem.index >= display.length - threshold) { 
       infiniteScroll.fetchNextPage();
     }
 
@@ -500,29 +502,36 @@ export function StandardTable<T>({
       return errorInner;
     }
 
-    if (trangThai.dangTai) {
+    if (trangThai.dangTai && fullDisplay.length === 0) {
       if (loadingContent) return loadingContent;
-      const loadingInner = (
-        <div className="p-4 border rounded-lg bg-card">
-          <TableSkeleton cols={columns.length} rows={6} />
+      return (
+        <div className="p-4 border rounded-lg bg-card space-y-4">
+          <div className="flex items-center gap-2 text-primary font-medium text-sm animate-pulse">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Đang tải dữ liệu ban đầu...
+          </div>
+          <TableSkeleton cols={columns.length} rows={8} />
         </div>
       );
-      return loadingInner;
     }
 
     if (fullDisplay.length === 0 && !trangThai.dangTai) {
-      const emptyInner = emptyContent ?? (
-        <div className="text-sm text-muted-foreground italic">
-          {hasFilter ? "Không có dòng nào khớp bộ lọc" : (emptyText || "Không có dữ liệu")}
+      if (emptyContent) return emptyContent;
+      return (
+        <div className="py-20 border rounded-lg bg-card text-center flex flex-col items-center gap-4">
+          <div className="p-3 rounded-full bg-muted/50">
+            <XIcon className="h-6 w-6 text-muted-foreground/50" />
+          </div>
+          <div className="text-sm text-muted-foreground italic">
+            {hasFilter ? "Không có dòng nào khớp bộ lọc" : (emptyText || "Không có dữ liệu")}
+          </div>
+          {hasFilter && (
+            <Button variant="outline" size="sm" onClick={clearAllFilters} className="h-8">
+              Xóa tất cả bộ lọc
+            </Button>
+          )}
         </div>
       );
-      
-      const emptyContainer = (
-        <div className="py-20 border rounded-lg bg-card text-center">
-          {emptyInner}
-        </div>
-      );
-      return emptyContainer;
     }
 
     return <div className="hidden" aria-hidden="true" />;
@@ -770,6 +779,26 @@ export function StandardTable<T>({
               )}
             </TableBody>
           </Table>
+          
+          {infiniteScroll?.isFetchingNextPage && (
+            <div className="flex items-center justify-center py-4 gap-2 text-muted-foreground bg-muted/5 border-t">
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+              <span className="text-[11px] font-medium uppercase tracking-wider">Đang tải thêm dữ liệu...</span>
+            </div>
+          )}
+          
+          {!infiniteScroll?.isFetchingNextPage && infiniteScroll?.hasNextPage && (
+            <div className="flex items-center justify-center py-2 border-t bg-muted/5">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8 text-[11px] font-semibold text-primary/70 hover:text-primary hover:bg-primary/5"
+                onClick={() => infiniteScroll.fetchNextPage()}
+              >
+                Tải thêm dữ liệu
+              </Button>
+            </div>
+          )}
           
           {fullDisplay.length > 0 && <HorizontalScrollRail containerRef={scrollContainerRef} />}
         </div>

@@ -163,14 +163,22 @@ export function AssetTablePanel({
               <Search className="h-3.5 w-3.5" />
             </Button>
             {(searchExpanded || q) && (
-              <div className="flex items-center">
+              <div className="flex items-center group relative">
                 <Input
                   ref={searchInputRef}
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
                   placeholder="Tìm tài sản…"
-                  className="h-7 w-[180px] bg-background text-xs shadow-sm ml-1 pr-7"
+                  className={cn(
+                    "h-7 w-[180px] bg-background text-xs shadow-sm ml-1 pr-7 transition-all",
+                    loadingTsReal && "border-primary/50"
+                  )}
                 />
+                {loadingTsReal && (
+                  <div className="absolute right-7 top-1/2 -translate-y-1/2">
+                    <Loader2 className="h-3 w-3 animate-spin text-primary/50" />
+                  </div>
+                )}
                 {q && (
                   <button type="button" onClick={() => setQ("")} className="absolute right-8 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground z-20">
                     <X className="h-3 w-3" />

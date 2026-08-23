@@ -87,14 +87,20 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
             ben="bottom"
             noiDung={
               <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
-                Refactor các bảng dữ liệu để tối ưu column width, overflow và pagination cho
-                desktop, tablet và mobile, đồng thời tránh tình trạng bị khuất nội dung.
+                Thêm e2e test Playwright để kiểm tra selection (select all và từng dòng) và keyset
+                pagination hoạt động đúng trên desktop, tablet và mobile.
                 {"\n\n"}
-                Áp dụng bộ design tokens cho toàn bộ spacing, typography và kích thước nút trên
-                tất cả component, đồng thời rà soát lại các trạng thái hover/focus/disabled.
-                {"\n\n\n"}
-                Các bảng đang không select all và selec từng dòng được , và đang không tải hết được
-                các dữ liệu tải xong 100/all là dừng nghiên cứu lý do và đưa kế hoạch khắc phục
+                Bổ sung loading/empty states rõ ràng cho bảng (khi tải, khi rỗng, khi lỗi) để tránh
+                trải nghiệm giật lag và người dùng không biết dữ liệu đang được lấy.
+                {"\n\n"}
+                Tối ưu cơ chế search/filter của các bảng để chỉ gọi API khi người dùng dừng nhập
+                (debounce) và đồng bộ với pagination 100/all để luôn tải đúng kết quả.
+                {"\n\n"}
+                Thêm theo dõi hiệu năng cho API của các bảng (thời gian phản hồi, số bản ghi trả về,
+                lỗi pagination) để nhanh chóng phát hiện nguyên nhân khi không tải đủ 100/all.
+                {"\n"}
+                còn nếu vậy kích thước chỉ max 500 thôi à nếu tôi muốn nhìn hết thì phải làm sao ,
+                nghiên cứu nguyên nhân và khắc phục đưa ra plan cụ thể
               </div>
             }
           >
