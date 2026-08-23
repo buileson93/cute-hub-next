@@ -17,8 +17,11 @@ import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 import { MobileRecordCard } from "@/components/mirats/ui/MobileRecordCard";
 import { BulkActionBar } from "@/components/mirats/BulkActionBar";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
-
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { memo } from "react";
+
+const MemoizedTableRow = memo(TableRow);
+
 import { Icon } from "@/components/mirats/ui/Icon";
 import { useDensity } from "@/components/mirats/DensityToggle";
 import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2 } from "lucide-react";
