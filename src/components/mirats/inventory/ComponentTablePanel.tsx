@@ -369,7 +369,7 @@ export function ComponentTablePanel({
           heThongId={selectedTp.heThongId}
           canManage={allowEdit}
           onClose={() => setSelectedTp(null)}
-          onOpenDevice={(ma) => navigate({ to: "/thiet-bi/$maThietBi", params: { maThietBi: ma } })}
+          onOpenDevice={(ma) => navigate({ to: "/thiet-bi/$maThietBi", params: { maThietBi: ma }, search: { tab: "tong-quan", doc: undefined, q: undefined } })}
         />
       )}
     </>
