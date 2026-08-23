@@ -1261,7 +1261,7 @@ export interface MultiRoleMap {
   byId: Map<string, MultiRoleInfo>;
   byMa: Map<string, MultiRoleInfo>;
 }
-export export function useMultiRoleMap() {
+export function useMultiRoleMap() {
   return useQuery({
     queryKey: ["thiet-bi-multi-role"] as const,
     staleTime: 60_000,
