@@ -5,6 +5,7 @@ import {
   Search, X, Cpu, ExternalLink, Copy, Download, X as XIcon, Unplug, Wrench, PackageOpen, Loader2, Check, XCircle
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { useDebounce } from "use-debounce";
 import { cn } from "@/lib/utils";
 import { thongDiepLoi } from "@/lib/mirats/errors";
@@ -44,6 +45,7 @@ export function AssetTablePanel({
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const { data: multiRoleMap } = useMultiRoleMap();
   const { data: modelRegistry = {} } = useModelRegistry();
 
@@ -92,6 +94,20 @@ export function AssetTablePanel({
     }
   }
 
+  async function deleteTaiSan(ids: string[]) {
+    if (ids.length === 0) return;
+    const { error: e } = await supabase
+      .from("thiet_bi")
+      .delete()
+      .in("id", ids);
+    if (e) {
+      toast.error(thongDiepLoi(e, "Không thể xóa hàng loạt."));
+      return;
+    }
+    toast.success(`Đã xóa ${ids.length} tài sản.`);
+    qc.invalidateQueries({ queryKey: ["tai-san-infinite"] });
+  }
+
   return (
     <StandardTable<TaiSanRow>
       tableKey={`${tableKey}:tai-san`}
@@ -100,7 +116,6 @@ export function AssetTablePanel({
       infiniteScroll={{
         hasNextPage: hasNextTs,
         fetchNextPage: fetchNextTs,
-        
         isFetchingNextPage: isFetchingTs,
         totalCount: totalTs,
       }}
@@ -112,6 +127,10 @@ export function AssetTablePanel({
       countUnit="tài sản"
       maxHeightClass={hideHeader ? "min-h-0 flex-1 overflow-y-auto" : undefined}
       selectable
+      exportable
+      ten="tai-san"
+      allowBulkDelete={allowEdit}
+      onBulkDelete={async (ids) => deleteTaiSan(Array.from(ids))}
       bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear }) => (
         <>
           <BulkActionButton
@@ -124,21 +143,6 @@ export function AssetTablePanel({
               nutXacNhan: "Sao chép",
             }}
             onRun={() => copyCodes(selectedRows.map((r) => r.ma))}
-          />
-          <TableExportDialog<TaiSanRow>
-            ten="tai-san"
-            countUnit="tài sản"
-            visibleColumns={visibleColumns}
-            allColumns={allColumns}
-            rowsByScope={{ selected: selectedRows, filtered: filteredRows, page: pageRows }}
-            trigger={
-              <AppTooltip noiDung="Xuất dữ liệu ra file CSV">
-                <Button size="sm" variant="outline" className="h-7 w-7 p-0">
-                  <Download className="h-3.5 w-3.5" />
-                  <span className="sr-only">Xuất CSV…</span>
-                </Button>
-              </AppTooltip>
-            }
           />
           <AppTooltip noiDung="Bỏ chọn">
             <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={clear}>

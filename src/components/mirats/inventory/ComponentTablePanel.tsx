@@ -8,7 +8,7 @@ import {
   Search, X, Copy, Download, X as XIcon, Check, Pencil, ExternalLink, 
   Unplug, Wrench, PackageOpen, LayoutGrid, Loader2, Cpu, XCircle 
 } from "lucide-react";
-import { supabase } from "@/integrations/backend/client";
+import { supabase } from "@/integrations/supabase/client";
 import { thongDiepLoi } from "@/lib/mirats/errors";
 import { useSession } from "@/hooks/use-session";
 import { canWrite } from "@/lib/mirats/quyen";
@@ -89,6 +89,20 @@ export function ComponentTablePanel({
     qc.invalidateQueries({ queryKey: ["thanh-phan-infinite"] });
   }
 
+  async function deleteThanhPhan(ids: string[]) {
+    if (ids.length === 0) return;
+    const { error: e } = await supabase
+      .from("he_thong_thanh_phan")
+      .delete()
+      .in("id", ids);
+    if (e) {
+      toast.error(thongDiepLoi(e, "Không thể xóa hàng loạt."));
+      return;
+    }
+    toast.success(`Đã xóa ${ids.length} thành phần.`);
+    qc.invalidateQueries({ queryKey: ["thanh-phan-infinite"] });
+  }
+
   async function saveField(id: string, field: "ten" | "trang_thai", value: string) {
     try {
       if (field === "ten") {
@@ -140,6 +154,10 @@ export function ComponentTablePanel({
         selectable
         editMode={editMode}
         presets={THANH_PHAN_PRESETS}
+        exportable
+        ten="thanh-phan"
+        allowBulkDelete={allowEdit}
+        onBulkDelete={async (ids) => deleteThanhPhan(Array.from(ids))}
         bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear }) => (
           <>
             <BulkActionButton
@@ -193,20 +211,6 @@ export function ComponentTablePanel({
                 navigator.clipboard.writeText(codes.join("\n"));
                 toast.success(`Đã sao chép ${codes.length} mã.`);
               }}
-            />
-            <TableExportDialog<ThanhPhanRow>
-              ten="thanh-phan"
-              countUnit="thành phần"
-              visibleColumns={visibleColumns}
-              allColumns={allColumns}
-              rowsByScope={{ selected: selectedRows, filtered: filteredRows, page: pageRows }}
-              trigger={
-                <AppTooltip noiDung="Xuất dữ liệu ra file CSV">
-                  <Button size="sm" variant="outline" className="h-7 w-7 p-0">
-                    <Download className="h-3.5 w-3.5" />
-                  </Button>
-                </AppTooltip>
-              }
             />
             <AppTooltip noiDung="Bỏ chọn tất cả">
               <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={clear}>

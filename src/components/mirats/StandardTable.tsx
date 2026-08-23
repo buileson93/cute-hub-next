@@ -21,9 +21,11 @@ import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { useDensity } from "@/components/mirats/DensityToggle";
-import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2, XCircle } from "lucide-react";
+import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2, XCircle, Trash2, Download } from "lucide-react";
 import { ColumnVisibilityMenu } from "./ColumnVisibilityMenu";
 import { HorizontalScrollRail } from "./HorizontalScrollRail";
+import { BulkActionButton } from "./BulkActionButton";
+import { TableExportDialog } from "./TableExportDialog";
 
 import { normalize } from "@/lib/mirats/global-search";
 import { parseMinW, calculateOptimalWidths } from "@/lib/mirats/ui/table-geometry";
@@ -168,6 +170,10 @@ interface StandardTableProps<T> {
   virtualizerOptions?: any;
   maxHeightClass?: string;
   editMode?: boolean;
+  onBulkDelete?: (ids: Set<string>) => Promise<void>;
+  allowBulkDelete?: boolean;
+  exportable?: boolean;
+  ten?: string;
 }
 
 export function StandardTable<T>({
@@ -204,12 +210,17 @@ export function StandardTable<T>({
   virtualizerOptions,
   maxHeightClass,
   editMode,
+  onBulkDelete,
+  allowBulkDelete,
+  exportable,
+  ten,
 }: StandardTableProps<T>) {
   const [textFilters, setTextFilters] = useState<Record<string, string>>({});
   const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
   const [adaptiveOverscan, setAdaptiveOverscan] = useState(8);
   const frameCount = useRef(0);
   const lastTime = useRef(performance.now());
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     let frameId: number;
@@ -252,17 +263,6 @@ export function StandardTable<T>({
     [getRowId],
   );
 
-  const toggleRow = useCallback(
-    (id: string) => {
-      const current = selected || new Set<string>();
-      const next = new Set(current);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      onSelect?.(next);
-      setSelected?.(next);
-    },
-    [onSelect, selected, setSelected],
-  );
 
   const toggleAll = useCallback(() => {
     const current = selected || new Set<string>();
@@ -409,6 +409,39 @@ export function StandardTable<T>({
 
   const display = sorted;
   const fullDisplay = display;
+
+  const lastSelectedIndex = useRef<number | null>(null);
+  
+  const toggleRow = useCallback(
+    (id: string, index?: number, event?: any) => {
+      const current = selected || new Set<string>();
+      const next = new Set(current);
+
+      if (event?.shiftKey && lastSelectedIndex.current !== null && index !== undefined) {
+        const start = Math.min(lastSelectedIndex.current, index);
+        const end = Math.max(lastSelectedIndex.current, index);
+        const rangeIds = display.slice(start, end + 1).map(getRowIdInternal);
+        
+        const allSelectedInRange = rangeIds.every(rid => current.has(rid));
+        if (allSelectedInRange) {
+          rangeIds.forEach(rid => next.delete(rid));
+        } else {
+          rangeIds.forEach(rid => next.add(rid));
+        }
+      } else {
+        if (next.has(id)) next.delete(id);
+        else next.add(id);
+      }
+
+      if (index !== undefined) {
+        lastSelectedIndex.current = index;
+      }
+      
+      onSelect?.(next);
+      setSelected?.(next);
+    },
+    [onSelect, selected, setSelected, display, getRowIdInternal],
+  );
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const rowVirtualizer = useVirtualizer({
@@ -645,6 +678,47 @@ export function StandardTable<T>({
               reset={prefs.reset}
             />
 
+            {exportable && (
+              <TableExportDialog<T>
+                ten={ten || tableKeyEffective}
+                countUnit={countUnit || "dòng"}
+                visibleColumns={shownCols}
+                allColumns={exportCols}
+                rowsByScope={{ selected: selectedRows, filtered: fullDisplay, page: display }}
+                trigger={
+                  <AppTooltip noiDung="Xuất dữ liệu ra file CSV">
+                    <Button size="sm" variant="outline" className="h-8 w-8 p-0">
+                      <Download className="h-3.5 w-3.5" />
+                    </Button>
+                  </AppTooltip>
+                }
+              />
+            )}
+
+            {allowBulkDelete && onBulkDelete && selectedRows.length > 0 && (
+              <BulkActionButton
+                label="Xóa hàng loạt"
+                icon={<Trash2 className="h-3.5 w-3.5" />}
+                variant="destructive"
+                busy={isDeleting}
+                xacNhan={{
+                  tieuDe: `Xóa ${selectedRows.length} ${countUnit || "dòng"} đã chọn?`,
+                  moTa: `Hành động này không thể hoàn tác. Bạn có chắc chắn muốn xóa ${selectedRows.length} ${countUnit || "dòng"} này không?`,
+                  nutXacNhan: "Xác nhận xóa",
+                  nguyHiem: true,
+                }}
+                onRun={async () => {
+                  setIsDeleting(true);
+                  try {
+                    await onBulkDelete(new Set(selectedRows.map(getRowIdInternal)));
+                    clearSelection();
+                  } finally {
+                    setIsDeleting(false);
+                  }
+                }}
+              />
+            )}
+
             {bulkActions && renderToolbar(bulkActions, {
               filteredRows: fullDisplay,
               visibleColumns: shownCols,
@@ -771,12 +845,32 @@ export function StandardTable<T>({
                       <TableRow 
                         key={rid} 
                         data-key={rid}
-                        className={cn("group transition-colors border-b astryx-table-row", rowClassName?.(r))} 
-                        onClick={() => onRowClick?.(r)}
+                        className={cn("group transition-colors border-b astryx-table-row outline-none", rowClassName?.(r))} 
+                        onClick={(e) => {
+                          if (selectable && (e.shiftKey || e.ctrlKey || e.metaKey)) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleRow(rid, v.index, e);
+                          } else {
+                            onRowClick?.(r);
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === " " || e.key === "Enter") {
+                            if (selectable) {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              toggleRow(rid, v.index, e);
+                            } else if (e.key === "Enter") {
+                              onRowClick?.(r);
+                            }
+                          }
+                        }}
+                        tabIndex={0}
                         style={{
                           willChange: 'transform',
                           contain: 'layout inline-size',
-                          transform: 'translate3d(0,0,0)'
+                          transform: 'translate3d(0,0,0)',
                         }}
                       >
                         {selectable && (
@@ -787,7 +881,18 @@ export function StandardTable<T>({
                           >
                             <Checkbox
                               checked={selected?.has(rid) || false}
-                              onCheckedChange={() => toggleRow(rid)}
+                              onCheckedChange={(checked) => {
+                                // Standard checkboxes don't pass the MouseEvent to onCheckedChange
+                                // But since we fixed toggleRow to handle undefined event, it works.
+                                toggleRow(rid, v.index);
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (e.shiftKey) {
+                                  e.preventDefault();
+                                  toggleRow(rid, v.index, e);
+                                }
+                              }}
                             />
                           </OptimizedCell>
                         )}
