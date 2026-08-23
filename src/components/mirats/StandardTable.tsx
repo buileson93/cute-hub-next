@@ -227,11 +227,14 @@ export function StandardTable<T>({
   const lastTime = useRef(performance.now());
   const [isDeleting, setIsDeleting] = useState(false);
   const deleteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [pendingDeletion, setPendingDeletion] = useState<{
+    ids: Set<string>;
+    ten?: string;
+    expiry: number;
+    domain?: Domain;
+  } | null>(null);
   const [localRows, setLocalRows] = useState<T[]>([]);
 
-  useEffect(() => {
-    setLocalRows(rows);
-  }, [rows]);
 
   useEffect(() => {
     let frameId: number;
@@ -257,6 +260,64 @@ export function StandardTable<T>({
   const densityData = useDensity();
   const density = typeof densityData === "string" ? densityData : densityData[0];
   const tableKeyEffective = tableKey || prefKey || "standard-table";
+
+  const performActualDeletion = useCallback(async (ids: Set<string>, delDomain?: Domain) => {
+    if (!onBulkDelete) return;
+    setIsDeleting(true);
+    try {
+      await onBulkDelete(ids);
+      await logAudit({
+        action: "bulk_delete",
+        domain: delDomain || domain || "unknown",
+        entity_ids: Array.from(ids),
+        details: { count: ids.size }
+      });
+      toast.success(`Đã xóa ${ids.size} ${countUnit || "dòng"} thành công.`);
+    } catch (error) {
+      toast.error(thongDiepLoi(error, "Xóa hàng loạt thất bại"));
+    } finally {
+      setIsDeleting(false);
+      setPendingDeletion(null);
+      if (tableKeyEffective) {
+        localStorage.removeItem(`pending-deletion:${tableKeyEffective}`);
+      }
+    }
+  }, [onBulkDelete, domain, countUnit, tableKeyEffective]);
+
+  useEffect(() => {
+    setLocalRows(rows);
+    
+    // Resume persistent undo from localStorage
+    if (tableKeyEffective) {
+      const saved = localStorage.getItem(`pending-deletion:${tableKeyEffective}`);
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          const now = Date.now();
+          if (data.expiry > now) {
+            setPendingDeletion({
+              ids: new Set(data.ids),
+              ten: data.ten,
+              expiry: data.expiry,
+              domain: data.domain
+            });
+            
+            // Re-schedule actual deletion
+            const remaining = data.expiry - now;
+            deleteTimerRef.current = setTimeout(() => {
+              performActualDeletion(new Set(data.ids), data.domain);
+            }, remaining);
+          } else {
+            // Already expired while page was closed, cleanup
+            localStorage.removeItem(`pending-deletion:${tableKeyEffective}`);
+          }
+        } catch (e) {
+          console.error("Failed to resume persistent deletion", e);
+        }
+      }
+    }
+  }, [rows, tableKeyEffective, performActualDeletion]);
+
   const prefs = useColumnPrefs(tableKeyEffective, columns.map(c => c.key));
   const scrollOffsetKey = `scroll-offset:${tableKeyEffective}`;
 
@@ -453,6 +514,51 @@ export function StandardTable<T>({
     },
     [onSelect, selected, setSelected, display, getRowIdInternal],
   );
+
+  const bulkDelete = useCallback(async () => {
+    if ((!selected || selected.size === 0) && !pendingDeletion) return;
+    if (!onBulkDelete) return;
+    
+    const idsToDelete = selected ? new Set(selected) : new Set<string>();
+    const expiry = Date.now() + 10000;
+    
+    setPendingDeletion({ 
+      ids: idsToDelete, 
+      ten: ten || tableKeyEffective, 
+      expiry,
+      domain 
+    });
+    
+    if (tableKeyEffective) {
+      localStorage.setItem(`pending-deletion:${tableKeyEffective}`, JSON.stringify({
+        ids: Array.from(idsToDelete),
+        ten: ten || tableKeyEffective,
+        expiry,
+        domain
+      }));
+    }
+    
+    clearSelection();
+
+    toast.info(`Sẽ xóa ${idsToDelete.size} ${countUnit || "dòng"} trong 10 giây...`, {
+      action: {
+        label: "Hoàn tác",
+        onClick: () => {
+          if (deleteTimerRef.current) clearTimeout(deleteTimerRef.current);
+          setPendingDeletion(null);
+          if (tableKeyEffective) {
+            localStorage.removeItem(`pending-deletion:${tableKeyEffective}`);
+          }
+          toast.success("Đã hoàn tác lệnh xóa.");
+        },
+      },
+      duration: 10000,
+    });
+
+    deleteTimerRef.current = setTimeout(() => {
+      performActualDeletion(idsToDelete, domain);
+    }, 10000);
+  }, [selected, pendingDeletion, onBulkDelete, ten, tableKeyEffective, domain, countUnit, clearSelection, performActualDeletion]);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const rowVirtualizer = useVirtualizer({
@@ -714,7 +820,7 @@ export function StandardTable<T>({
               />
             )}
 
-            {allowBulkDelete && onBulkDelete && selectedRows.length > 0 && (
+            {allowBulkDelete && onBulkDelete && (selectedRows.length > 0 || pendingDeletion) && (
               <BulkActionButton
                 label="Xóa hàng loạt"
                 icon={<Trash2 className="h-3.5 w-3.5" />}
@@ -726,53 +832,7 @@ export function StandardTable<T>({
                   nutXacNhan: "Xác nhận xóa",
                   nguyHiem: true,
                 }}
-                onRun={async () => {
-                  const idsToDelete = new Set(selectedRows.map(getRowIdInternal));
-                  const rowsBeforeDelete = [...localRows];
-                  
-                  // 1. Remove from local state immediately
-                  setLocalRows(prev => prev.filter(r => !idsToDelete.has(getRowIdInternal(r))));
-                  const count = idsToDelete.size;
-                  clearSelection();
-
-                  // 2. Show toast with Undo
-                  toast.success(`Đã xóa ${count} ${countUnit || "dòng"}`, {
-                    description: "Bạn có 10 giây để hoàn tác hành động này.",
-                    action: {
-                      label: "Hoàn tác",
-                      onClick: () => {
-                        if (deleteTimerRef.current) {
-                          clearTimeout(deleteTimerRef.current);
-                          deleteTimerRef.current = null;
-                        }
-                        setLocalRows(rowsBeforeDelete);
-                        toast.info("Đã hoàn tác hành động xóa");
-                      }
-                    },
-                    duration: 10000,
-                  });
-
-                  // 3. Start timer for actual deletion
-                  if (deleteTimerRef.current) clearTimeout(deleteTimerRef.current);
-                  deleteTimerRef.current = setTimeout(async () => {
-                    setIsDeleting(true);
-                    try {
-                      await onBulkDelete(idsToDelete);
-                      logAudit({
-                        action: "bulk_delete",
-                        domain: domain || "unknown",
-                        entity_ids: Array.from(idsToDelete),
-                        details: { count }
-                      });
-                    } catch (err) {
-                      setLocalRows(rowsBeforeDelete);
-                      toast.error("Lỗi khi xóa dữ liệu: " + thongDiepLoi(err, ""));
-                    } finally {
-                      setIsDeleting(false);
-                      deleteTimerRef.current = null;
-                    }
-                  }, 10000);
-                }}
+                onRun={bulkDelete}
               />
             )}
 

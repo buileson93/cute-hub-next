@@ -7,9 +7,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { logAudit } from "@/lib/mirats/audit";
-import { Download } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -103,33 +104,48 @@ export function TableExportDialog<T>({
   const rows = rowsByScope[scope] ?? [];
   const sanSang = rows.length > 0 && cols.length > 0;
 
-  const xuat = () => {
-    if (!sanSang) return;
-    
-    if (saveConfig && storageKey) {
-      localStorage.setItem(storageKey, JSON.stringify(cols.map(c => c.key)));
-    } else if (storageKey) {
-      localStorage.removeItem(storageKey);
-    }
+  const [isExporting, setIsExporting] = useState(false);
+  const [progress, setProgress] = useState(0);
 
-    taiFileCsv(`${slugTen(tenFile)}.csv`, buildCsv(rows, cols, sep));
+  const xuat = async () => {
+    if (!sanSang || isExporting) return;
     
-    logAudit({
-      action: "export_csv",
-      domain: domain || "unknown",
-      details: {
-        filename: tenFile,
-        scope,
-        rowCount: rows.length,
-        colCount: cols.length,
-        columns: cols.map(c => c.key)
+    setIsExporting(true);
+    setProgress(0);
+    
+    try {
+      if (saveConfig && storageKey) {
+        localStorage.setItem(storageKey, JSON.stringify(cols.map(c => c.key)));
+      } else if (storageKey) {
+        localStorage.removeItem(storageKey);
       }
-    });
 
-    toast.success(
-      `Đã xuất ${rows.length.toLocaleString("vi-VN")} ${countUnit} × ${cols.length} cột ra CSV.`,
-    );
-    setOpen(false);
+      const csv = await buildCsv(rows, cols, sep, (p) => setProgress(p));
+      taiFileCsv(`${slugTen(tenFile)}.csv`, csv);
+      
+      logAudit({
+        action: "export_csv",
+        domain: domain || "unknown",
+        details: {
+          filename: tenFile,
+          scope,
+          rowCount: rows.length,
+          colCount: cols.length,
+          columns: cols.map(c => c.key)
+        }
+      });
+
+      toast.success(
+        `Đã xuất ${rows.length.toLocaleString("vi-VN")} ${countUnit} × ${cols.length} cột ra CSV.`,
+      );
+      setOpen(false);
+    } catch (error) {
+      console.error("Export failed", error);
+      toast.error("Xuất CSV thất bại. Vui lòng thử lại.");
+    } finally {
+      setIsExporting(false);
+      setProgress(0);
+    }
   };
 
   return (
@@ -311,13 +327,33 @@ export function TableExportDialog<T>({
           )}
         </div>
 
-        <DialogFooter>
-          <Button variant="ghost" onClick={() => setOpen(false)}>
-            Huỷ
-          </Button>
-          <Button onClick={xuat} disabled={!sanSang} className="gap-1.5">
-            <Download className="h-4 w-4" /> Tải file CSV
-          </Button>
+        <DialogFooter className="flex-col sm:flex-row gap-2">
+          {isExporting && (
+            <div className="flex-1 w-full space-y-1.5 py-2">
+              <div className="flex justify-between text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                <span>Đang tạo file...</span>
+                <span>{progress}%</span>
+              </div>
+              <Progress value={progress} className="h-1" />
+            </div>
+          )}
+          <div className="flex gap-2 justify-end w-full sm:w-auto">
+            <Button variant="ghost" onClick={() => setOpen(false)} disabled={isExporting}>
+              Huỷ
+            </Button>
+            <Button onClick={xuat} disabled={!sanSang || isExporting} className="gap-1.5 min-w-[120px]">
+              {isExporting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Đang xuất...
+                </>
+              ) : (
+                <>
+                  <Download className="h-4 w-4" /> Tải file CSV
+                </>
+              )}
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

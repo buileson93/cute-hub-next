@@ -44,7 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label="Implement tính năng hoàn tác (undo) ngay sau khi xóa hàng loạt để người dùng có thể khôi phục dữ liệu trong một khoảng thời gian ngắn. Add chức năng xuất CSV có tùy chọn cột hiển thị (chọn/ẩn cột) và lưu lại cấu hình xuất cho lần sau. Implement ghi nhận lịch sử thao tác xóa/xuất hàng loạt (audit log) hiển thị trong một trang hoặc modal để người quản trị kiểm tra. Improve trạng thái rỗng và trạng thái loading cho StandardTable khi đang tải dữ liệu và khi không có dòng nào được chọn. Verify quyền truy cập cho các hành động xóa hàng loạt và xuất CSV theo vai trò người dùng để chỉ những người được phép mới thực hiện được."
+          aria-label="Thêm trang hoặc modal quản trị để xem audit log thao tác xóa/xuất, có bộ lọc theo người dùng, loại thao tác và khoảng thời gian. Bổ sung testcase Playwright xác nhận cơ chế hoàn tác (undo) sau xóa hàng loạt hoạt động đúng và các vai trò người dùng không được phép bị chặn khi xóa/xuất CSV. Triển khai hiển thị tiến trình và trạng thái (đang tạo, thành công, thất bại) khi xuất CSV cho dữ liệu lớn để người dùng không bị đơ trang. Làm cho nút hoàn tác vẫn khả dụng ngay cả khi người dùng tải lại trang trong thời gian 10 giây của lệnh xóa hàng loạt."
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">

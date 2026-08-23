@@ -118,6 +118,7 @@ import { Route as AppAdminKiemTraSoLieuRouteImport } from './routes/_app.admin.k
 import { Route as AppAdminKiemTraLayoutRouteImport } from './routes/_app.admin.kiem-tra-layout'
 import { Route as AppAdminFormsRouteImport } from './routes/_app.admin.forms'
 import { Route as AppAdminBaoTriChinhSachRouteImport } from './routes/_app.admin.bao-tri-chinh-sach'
+import { Route as AppAdminAuditRouteImport } from './routes/_app.admin.audit'
 import { Route as AppAdminAiRouteImport } from './routes/_app.admin.ai'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -687,6 +688,11 @@ const AppAdminBaoTriChinhSachRoute = AppAdminBaoTriChinhSachRouteImport.update({
   path: '/admin/bao-tri-chinh-sach',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminAuditRoute = AppAdminAuditRouteImport.update({
+  id: '/admin/audit',
+  path: '/admin/audit',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAdminAiRoute = AppAdminAiRouteImport.update({
   id: '/admin/ai',
   path: '/admin/ai',
@@ -841,7 +847,7 @@ export interface FileRoutesByFullPath {
   '/tuoi-tho': typeof AppTuoiThoRoute
   '/van-de': typeof AppVanDeRoute
   '/vat-tu': typeof AppVatTuRoute
-  '/admin/audit': typeof AdminAuditRouteWithChildren
+  '/admin/audit': typeof AppAdminAuditRoute
   '/admin/backup': typeof AdminBackupRoute
   '/admin/schema': typeof AdminSchemaRoute
   '/admin/supabase-ngoai': typeof AdminSupabaseNgoaiRoute
@@ -966,7 +972,7 @@ export interface FileRoutesByTo {
   '/tuoi-tho': typeof AppTuoiThoRoute
   '/van-de': typeof AppVanDeRoute
   '/vat-tu': typeof AppVatTuRoute
-  '/admin/audit': typeof AdminAuditRouteWithChildren
+  '/admin/audit': typeof AppAdminAuditRoute
   '/admin/backup': typeof AdminBackupRoute
   '/admin/schema': typeof AdminSchemaRoute
   '/admin/supabase-ngoai': typeof AdminSupabaseNgoaiRoute
@@ -1112,6 +1118,7 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_app/admin/ai': typeof AppAdminAiRoute
+  '/_app/admin/audit': typeof AppAdminAuditRoute
   '/_app/admin/bao-tri-chinh-sach': typeof AppAdminBaoTriChinhSachRoute
   '/_app/admin/forms': typeof AppAdminFormsRouteWithChildren
   '/_app/admin/kiem-tra-layout': typeof AppAdminKiemTraLayoutRoute
@@ -1501,6 +1508,7 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/_app/admin/ai'
+    | '/_app/admin/audit'
     | '/_app/admin/bao-tri-chinh-sach'
     | '/_app/admin/forms'
     | '/_app/admin/kiem-tra-layout'
@@ -2379,6 +2387,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminBaoTriChinhSachRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/admin/audit': {
+      id: '/_app/admin/audit'
+      path: '/admin/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AppAdminAuditRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/admin/ai': {
       id: '/_app/admin/ai'
       path: '/admin/ai'
@@ -2746,6 +2761,7 @@ interface AppRouteChildren {
   AppVatTuRoute: typeof AppVatTuRoute
   AppIndexRoute: typeof AppIndexRoute
   AppAdminAiRoute: typeof AppAdminAiRoute
+  AppAdminAuditRoute: typeof AppAdminAuditRoute
   AppAdminBaoTriChinhSachRoute: typeof AppAdminBaoTriChinhSachRoute
   AppAdminFormsRoute: typeof AppAdminFormsRouteWithChildren
   AppAdminKiemTraLayoutRoute: typeof AppAdminKiemTraLayoutRoute
@@ -2814,6 +2830,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppVatTuRoute: AppVatTuRoute,
   AppIndexRoute: AppIndexRoute,
   AppAdminAiRoute: AppAdminAiRoute,
+  AppAdminAuditRoute: AppAdminAuditRoute,
   AppAdminBaoTriChinhSachRoute: AppAdminBaoTriChinhSachRoute,
   AppAdminFormsRoute: AppAdminFormsRouteWithChildren,
   AppAdminKiemTraLayoutRoute: AppAdminKiemTraLayoutRoute,

@@ -87,15 +87,13 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
             ben="bottom"
             noiDung={
               <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
-                Implement tính năng hoàn tác (undo) ngay sau khi xóa hàng loạt để người dùng có thể khôi phục dữ liệu trong một khoảng thời gian ngắn.
+                Thêm trang hoặc modal quản trị để xem audit log thao tác xóa/xuất, có bộ lọc theo người dùng, loại thao tác và khoảng thời gian.
                 {"\n\n"}
-                Add chức năng xuất CSV có tùy chọn cột hiển thị (chọn/ẩn cột) và lưu lại cấu hình xuất cho lần sau.
+                Bổ sung testcase Playwright xác nhận cơ chế hoàn tác (undo) sau xóa hàng loạt hoạt động đúng và các vai trò người dùng không được phép bị chặn khi xóa/xuất CSV.
                 {"\n\n"}
-                Implement ghi nhận lịch sử thao tác xóa/xuất hàng loạt (audit log) hiển thị trong một trang hoặc modal để người quản trị kiểm tra.
+                Triển khai hiển thị tiến trình và trạng thái (đang tạo, thành công, thất bại) khi xuất CSV cho dữ liệu lớn để người dùng không bị đơ trang.
                 {"\n\n"}
-                Improve trạng thái rỗng và trạng thái loading cho StandardTable khi đang tải dữ liệu và khi không có dòng nào được chọn.
-                {"\n\n"}
-                Verify quyền truy cập cho các hành động xóa hàng loạt và xuất CSV theo vai trò người dùng để chỉ những người được phép mới thực hiện được.
+                Làm cho nút hoàn tác vẫn khả dụng ngay cả khi người dùng tải lại trang trong thời gian 10 giây của lệnh xóa hàng loạt.
               </div>
             }
           >
