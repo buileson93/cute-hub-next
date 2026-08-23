@@ -442,7 +442,7 @@ export function CatalogTable({
   const tong = rows?.length ?? 0;
 
   return (
-    <PageFrame>
+    <div className="flex flex-col flex-1 min-h-0 w-full">
       <PageHeader
         icon={Icon}
         title={title}
