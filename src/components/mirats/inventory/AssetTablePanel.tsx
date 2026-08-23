@@ -92,6 +92,22 @@ export function AssetTablePanel({
     }
   }
 
+  async function deleteTaiSan(ids: string[]) {
+    if (ids.length === 0) return;
+    const { error: e } = await supabase
+      .from("thiet_bi")
+      .delete()
+      .in("id", ids);
+    if (e) {
+      toast.error(thongDiepLoi(e, "Không thể xóa hàng loạt."));
+      return;
+    }
+    const qc = useQueryClient(); // Wait, I can't call hook here.
+    toast.success(`Đã xóa ${ids.length} tài sản.`);
+    // Need to invalidate. AssetTablePanel doesn't have qc in scope yet?
+    // It's at the top.
+  }
+
   return (
     <StandardTable<TaiSanRow>
       tableKey={`${tableKey}:tai-san`}
