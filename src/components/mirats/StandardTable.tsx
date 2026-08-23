@@ -515,6 +515,51 @@ export function StandardTable<T>({
     [onSelect, selected, setSelected, display, getRowIdInternal],
   );
 
+  const bulkDelete = useCallback(async () => {
+    if ((!selected || selected.size === 0) && !pendingDeletion) return;
+    if (!onBulkDelete) return;
+    
+    const idsToDelete = selected ? new Set(selected) : new Set<string>();
+    const expiry = Date.now() + 10000;
+    
+    setPendingDeletion({ 
+      ids: idsToDelete, 
+      ten: ten || tableKeyEffective, 
+      expiry,
+      domain 
+    });
+    
+    if (tableKeyEffective) {
+      localStorage.setItem(`pending-deletion:${tableKeyEffective}`, JSON.stringify({
+        ids: Array.from(idsToDelete),
+        ten: ten || tableKeyEffective,
+        expiry,
+        domain
+      }));
+    }
+    
+    clearSelection();
+
+    toast.info(`Sẽ xóa ${idsToDelete.size} ${countUnit || "dòng"} trong 10 giây...`, {
+      action: {
+        label: "Hoàn tác",
+        onClick: () => {
+          if (deleteTimerRef.current) clearTimeout(deleteTimerRef.current);
+          setPendingDeletion(null);
+          if (tableKeyEffective) {
+            localStorage.removeItem(`pending-deletion:${tableKeyEffective}`);
+          }
+          toast.success("Đã hoàn tác lệnh xóa.");
+        },
+      },
+      duration: 10000,
+    });
+
+    deleteTimerRef.current = setTimeout(() => {
+      performActualDeletion(idsToDelete, domain);
+    }, 10000);
+  }, [selected, pendingDeletion, onBulkDelete, ten, tableKeyEffective, domain, countUnit, clearSelection, performActualDeletion]);
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const rowVirtualizer = useVirtualizer({
     count: display.length,
