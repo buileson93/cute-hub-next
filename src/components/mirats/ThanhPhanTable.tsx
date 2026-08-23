@@ -281,7 +281,7 @@ type ModelRegistry = Record<
 >;
 
 /** Hook lấy toàn bộ danh mục model để dùng cho hover card */
-function useModelRegistry() {
+export function useModelRegistry() {
   return useQuery({
     queryKey: ["dm_model_registry"],
     queryFn: async (): Promise<ModelRegistry> => {
