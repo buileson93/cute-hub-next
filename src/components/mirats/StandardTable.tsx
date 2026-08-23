@@ -429,7 +429,7 @@ export function StandardTable<T>({
     paddingEnd: 0,
     onChange: (instance) => {
       const offset = instance.scrollOffset;
-      if (offset > 0) {
+      if (offset && offset > 0) {
         sessionStorage.setItem(scrollOffsetKey, String(offset));
       }
     }
