@@ -94,6 +94,7 @@ export function AssetTablePanel({
 
   async function deleteTaiSan(ids: string[]) {
     if (ids.length === 0) return;
+    const { supabase } = await import("@/integrations/backend/client");
     const { error: e } = await supabase
       .from("thiet_bi")
       .delete()
@@ -102,10 +103,8 @@ export function AssetTablePanel({
       toast.error(thongDiepLoi(e, "Không thể xóa hàng loạt."));
       return;
     }
-    const qc = useQueryClient(); // Wait, I can't call hook here.
     toast.success(`Đã xóa ${ids.length} tài sản.`);
-    // Need to invalidate. AssetTablePanel doesn't have qc in scope yet?
-    // It's at the top.
+    qc.invalidateQueries({ queryKey: ["tai-san-infinite"] });
   }
 
   return (
@@ -116,7 +115,6 @@ export function AssetTablePanel({
       infiniteScroll={{
         hasNextPage: hasNextTs,
         fetchNextPage: fetchNextTs,
-        
         isFetchingNextPage: isFetchingTs,
         totalCount: totalTs,
       }}
@@ -130,6 +128,8 @@ export function AssetTablePanel({
       selectable
       exportable
       ten="tai-san"
+      allowBulkDelete={allowEdit}
+      onBulkDelete={async (ids) => deleteTaiSan(Array.from(ids))}
       bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear }) => (
         <>
           <BulkActionButton
