@@ -83,7 +83,7 @@ function OverviewReport() {
 
   return (
     <PageFrame density="compact">
-      <PageBody className="h-full overflow-hidden flex flex-col">
+      <PageBody className="flex flex-col flex-1 min-h-0 overflow-hidden">
       <div className="flex flex-col shrink-0 px-6 pt-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
           <PageHeader title="Báo cáo Tổng quan KPI" icon="entity.chart" className="border-b-0 p-0 bg-transparent backdrop-blur-none sticky-none" />
