@@ -212,8 +212,8 @@ export function AssetTablePanel({
         {
           key: "ten",
           label: "Tên tài sản",
-          minW: "min-w-[180px]",
-          cellClassName: "max-w-[240px]",
+          minW: "min-w-[280px]",
+          cellClassName: "max-w-[400px]",
           filter: "text",
           sticky: true,
           value: (r) => r.ten,

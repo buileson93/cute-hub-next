@@ -124,7 +124,7 @@ export function useInfiniteTaiSanRows(q: string = "", bucket: string = "all", en
         sortField: "ma",
         dir: "asc",
         cursor: pageParam,
-        kichThuoc: 100,
+        kichThuoc: 500,
         signal,
         filters: (query) => {
           let qry = query;
@@ -221,7 +221,7 @@ export function useInfiniteThanhPhanRows(q: string = "", enabled: boolean = true
         sortField: "ma",
         dir: "asc",
         cursor: pageParam,
-        kichThuoc: 100,
+        kichThuoc: 500,
         signal,
         filters: (query) => {
           if (q) {
