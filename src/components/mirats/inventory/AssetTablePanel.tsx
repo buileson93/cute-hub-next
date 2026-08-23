@@ -249,8 +249,8 @@ export function AssetTablePanel({
         {
           key: "danhSachHeThong",
           label: "Hệ thống đang lắp",
-          minW: "min-w-[200px]",
-          cellClassName: "max-w-[240px]",
+          minW: "min-w-[160px]",
+          cellClassName: "max-w-[200px]",
           filter: "text",
           value: (r) => r.danhSachHeThong,
           cell: (r) => <CellPreview title={`Hệ thống đang lắp — ${r.ma}`} content={r.danhSachHeThong} className="line-clamp-3 break-words text-[12px] leading-snug" />,
