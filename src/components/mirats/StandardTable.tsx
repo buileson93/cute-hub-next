@@ -881,8 +881,18 @@ export function StandardTable<T>({
                           >
                             <Checkbox
                               checked={selected?.has(rid) || false}
-                               onCheckedChange={() => toggleRow(rid, v.index)}
-                               onClick={(e) => e.stopPropagation()}
+                              onCheckedChange={(checked) => {
+                                // Standard checkboxes don't pass the MouseEvent to onCheckedChange
+                                // But since we fixed toggleRow to handle undefined event, it works.
+                                toggleRow(rid, v.index);
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (e.shiftKey) {
+                                  e.preventDefault();
+                                  toggleRow(rid, v.index, e);
+                                }
+                              }}
                             />
                           </OptimizedCell>
                         )}
