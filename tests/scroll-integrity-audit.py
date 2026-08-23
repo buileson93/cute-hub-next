@@ -1,5 +1,6 @@
 import asyncio
 import os
+import json
 from pathlib import Path
 from playwright.async_api import async_playwright
 
@@ -10,36 +11,38 @@ async def check_route(page, route_path, name):
     print(f"Checking {route_path}...")
     await page.goto(f"http://localhost:8080{route_path}")
     # Wait for content
-    await page.wait_for_timeout(2000)
+    await page.wait_for_timeout(3000)
     
-    # 1. Take initial screenshot
+    # Take initial screenshot
     await page.screenshot(path=str(SCREENSHOTS / f"{name}_1_top.png"))
     
-    # 2. Get Header Y position
-    header_selector = '[data-component="PageHeader"]'
-    header = page.locator(header_selector)
+    # Detect header by semantic tag or component marker
+    header = page.locator('header[data-component="PageHeader"], header.sticky, header').first
     if await header.count() == 0:
-        print(f"Warning: No PageHeader found on {route_path}")
+        print(f"Warning: No Header found on {route_path}")
         return
         
     box1 = await header.bounding_box()
+    if not box1:
+        print(f"Warning: Header has no bounding box on {route_path}")
+        return
     y1 = box1['y']
     
-    # 3. Try to scroll content
-    # Look for mirats-scroll or scrollable PageBody
+    # Try to scroll content
     scrollable = page.locator('.mirats-scroll, .overflow-y-auto').first
     if await scrollable.count() > 0:
+        print(f"Scrolling container on {name}...")
         await scrollable.evaluate("el => el.scrollTop = 500")
-        await page.wait_for_timeout(500)
+        await page.wait_for_timeout(1000)
     else:
-        # Fallback scroll page
+        print(f"Scrolling page on {name}...")
         await page.mouse.wheel(0, 500)
-        await page.wait_for_timeout(500)
+        await page.wait_for_timeout(1000)
         
-    # 4. Take scrolled screenshot
+    # Take scrolled screenshot
     await page.screenshot(path=str(SCREENSHOTS / f"{name}_2_scrolled.png"))
     
-    # 5. Get Header Y position again
+    # Get Header Y position again
     box2 = await header.bounding_box()
     y2 = box2['y']
     
@@ -54,21 +57,30 @@ async def check_route(page, route_path, name):
 async def main():
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(headless=True)
-        # Auth injection if available
         context = await browser.new_context(viewport={"width": 1280, "height": 1800})
         
-        # Check if auth exists
+        # Determine if we can inject session
+        auth_status = os.environ.get("LOVABLE_BROWSER_AUTH_STATUS")
         storage_key = os.environ.get("LOVABLE_BROWSER_SUPABASE_STORAGE_KEY")
         session_json = os.environ.get("LOVABLE_BROWSER_SUPABASE_SESSION_JSON")
-        
+        cookies_json = os.environ.get("LOVABLE_BROWSER_SUPABASE_COOKIES_JSON")
+
         page = await context.new_page()
-        
-        if storage_key and session_json:
+
+        if auth_status == "injected" and storage_key and session_json:
+            if cookies_json:
+                cookies = json.loads(cookies_json)
+                for c in cookies:
+                    c["url"] = "http://localhost:8080"
+                await context.add_cookies(cookies)
+            
             await page.goto("http://localhost:8080")
             await page.evaluate(
-                f"window.localStorage.setItem('{storage_key}', '{session_json}')"
+                f"window.localStorage.setItem({json.dumps(storage_key)}, {json.dumps(session_json)})"
             )
             print("Auth session injected.")
+        else:
+            print(f"Auth injection skipped (Status: {auth_status})")
 
         routes = [
             ("/", "dashboard"),
