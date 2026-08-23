@@ -87,17 +87,14 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
             ben="bottom"
             noiDung={
               <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
-                Chạy kiểm thử tự động (visual regression) để kiểm tra đồng nhất UI/UX trên toàn bộ các
-                trang và liệt kê mọi chỗ lệch so với https://vatm.app/he-thong/thanh-phan.
+                Refactor các bảng dữ liệu để tối ưu column width, overflow và pagination cho
+                desktop, tablet và mobile, đồng thời tránh tình trạng bị khuất nội dung.
                 {"\n\n"}
-                Chuẩn hóa cấu trúc PageFrame {"->"} PageHeader {"->"} PageBody cho tất cả các trang
-                còn lại để đảm bảo toàn website thống nhất như chuẩn đã lấy.
-                {"\n\n"}
-                Thiết lập và áp dụng bộ design tokens cho spacing, typography và kích thước nút để
-                đảm bảo UI trông hiện đại và nhất quán trên mọi màn hình.
-                {"\n\n"}
-                Tối ưu lại các bảng dữ liệu (column width, overflow, pagination) cho chế độ
-                responsive trên desktop, tablet và mobile để tránh khuất nội dung.
+                Áp dụng bộ design tokens cho toàn bộ spacing, typography và kích thước nút trên
+                tất cả component, đồng thời rà soát lại các trạng thái hover/focus/disabled.
+                {"\n\n\n"}
+                Các bảng đang không select all và selec từng dòng được , và đang không tải hết được
+                các dữ liệu tải xong 100/all là dừng nghiên cứu lý do và đưa kế hoạch khắc phục
               </div>
             }
           >

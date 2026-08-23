@@ -270,8 +270,8 @@ export function ComponentTablePanel({
           {
             key: "ten",
             label: "Thành phần & Mã",
-            minW: "min-w-[180px]",
-            cellClassName: "max-w-[240px]",
+            minW: "min-w-[280px]",
+            cellClassName: "max-w-[400px]",
             sticky: true,
             priority: "primary",
             cell: (r) => (
@@ -285,9 +285,9 @@ export function ComponentTablePanel({
               </div>
             ),
           },
-          { key: "heThong", label: "Hệ thống", minW: "min-w-[160px]", cellClassName: "max-w-[200px]", cell: (r) => <span className="text-[12px]">{r.heThong}</span> },
-          { key: "nhomHeThong", label: "Nhóm hệ thống", minW: "min-w-[160px]", hideBelow: "md" },
-          { key: "phanLoai", label: "Phân loại", minW: "min-w-[160px]", hideBelow: "md" },
+          { key: "heThong", label: "Hệ thống", minW: "min-w-[140px]", cellClassName: "max-w-[180px]", cell: (r) => <span className="text-[12px]">{r.heThong}</span> },
+          { key: "nhomHeThong", label: "Nhóm hệ thống", minW: "min-w-[140px]", cellClassName: "max-w-[180px]", hideBelow: "md" },
+          { key: "phanLoai", label: "Phân loại", minW: "min-w-[140px]", cellClassName: "max-w-[180px]", hideBelow: "md" },
           { key: "ma", label: "Mã TP", minW: "min-w-[140px]", defaultHidden: true, cell: (r) => <CodeBadge code={r.ma} /> },
           {
             key: "viTri",

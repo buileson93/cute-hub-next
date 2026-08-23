@@ -500,6 +500,21 @@
     box-shadow: none !important;
   }
 
+  &:focus-within {
+    outline: 2px solid var(--table-row-focus-ring);
+    outline-offset: -2px;
+  }
+
+  &[data-state="selected"] {
+    background-color: var(--table-row-selected);
+    
+    &:hover {
+      background-color: var(--table-row-selected-hover);
+    }
+  }
+}
+  }
+
   &[data-state="selected"],
   &.selected,
   &.expanded {

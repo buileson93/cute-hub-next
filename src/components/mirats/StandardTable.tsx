@@ -239,7 +239,12 @@ export function StandardTable<T>({
     (r: T) => {
       if (getRowId) return getRowId(r);
       const anyR = r as any;
-      return anyR.id || anyR.uuid || String(Math.random());
+      const id = anyR.id || anyR.uuid || anyR.ma;
+      if (!id) {
+        console.warn("StandardTable: Row missing unique ID", r);
+        return `row-${Math.random().toString(36).substr(2, 9)}`;
+      }
+      return String(id);
     },
     [getRowId],
   );
@@ -257,8 +262,8 @@ export function StandardTable<T>({
   );
 
   const toggleAll = useCallback(() => {
-    if (!onSelect || !selected) return;
-    if (selected.size === rows.length) {
+    if (!onSelect) return;
+    if (selected && selected.size === rows.length && rows.length > 0) {
       onSelect(new Set());
       setSelected?.(new Set());
     } else {
@@ -665,7 +670,10 @@ export function StandardTable<T>({
               <TableRow className="hover:bg-transparent border-b">
                 {selectable && (
                   <TableHead className="w-[40px] px-2 text-center sticky left-0 z-30 bg-muted/80">
-                    <Checkbox checked={selected?.size === rows.length && rows.length > 0} onCheckedChange={toggleAll} />
+                    <Checkbox
+                      checked={rows.length > 0 && selected?.size === rows.length}
+                      onCheckedChange={toggleAll}
+                    />
                   </TableHead>
                 )}
                 {shownCols.map(c => (
@@ -723,12 +731,15 @@ export function StandardTable<T>({
                         }}
                       >
                         {selectable && (
-                          <OptimizedCell 
-                            colKey="selection" 
-                            className="px-2 text-center w-[40px] sticky left-0 z-10 bg-inherit" 
+                          <OptimizedCell
+                            colKey="selection"
+                            className="px-2 text-center w-[40px] sticky left-0 z-10 bg-inherit"
                             onClick={(e: React.MouseEvent) => e.stopPropagation()}
                           >
-                            <Checkbox checked={selected?.has(rid)} onCheckedChange={() => toggleRow(rid)} />
+                            <Checkbox
+                              checked={selected?.has(rid) || false}
+                              onCheckedChange={() => toggleRow(rid)}
+                            />
                           </OptimizedCell>
                         )}
                         {shownCols.map(c => (
