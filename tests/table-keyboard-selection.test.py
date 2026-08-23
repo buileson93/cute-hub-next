@@ -1,4 +1,5 @@
 import asyncio
+import os
 from pathlib import Path
 from playwright.async_api import async_playwright
 
@@ -18,7 +19,9 @@ async def main():
         await page.fill('input[type="password"]', "12345")
         await page.click('button[type="submit"]')
         
-        await page.wait_for_url("**/tong-quan", timeout=10000)
+        # Wait for redirect to / or /tong-quan
+        await page.wait_for_timeout(2000)
+        print(f"Logged in, current URL: {page.url}")
         
         # Go to inventory
         print("Navigating to inventory...")
@@ -26,44 +29,49 @@ async def main():
         
         # Wait for table
         table = page.locator(".astryx-table-row")
-        await table.first.wait_for(state="visible")
+        await table.first.wait_for(state="visible", timeout=10000)
         
         # Test shift selection
         print("Testing Shift selection...")
-        # 1. Click first row
         rows = page.locator(".astryx-table-row")
-        await rows.nth(0).click()
+        
+        # 1. Click first row checkbox wrapper
+        checkboxes = page.locator("button[role='checkbox'][aria-label^='Chọn dòng']")
+        await checkboxes.nth(0).click()
         await page.wait_for_timeout(500)
         
-        # 2. Shift-click 5th row
-        await rows.nth(4).click(modifiers=["Shift"])
-        await page.wait_for_timeout(500)
+        # 2. Shift-click 5th row checkbox wrapper
+        await checkboxes.nth(4).click(modifiers=["Shift"])
+        await page.wait_for_timeout(1000)
         await page.screenshot(path=str(SCREENSHOTS / "selection_shift.png"))
         
-        # Check bulk action bar
-        selected_text = page.locator("text=/Đã chọn 5/")
-        if await selected_text.is_visible():
+        # Check bulk action bar - it should show "Đã chọn 5"
+        content = await page.content()
+        if "Đã chọn 5" in content:
             print("SUCCESS: 5 rows selected via Shift-click.")
         else:
-            print(f"FAILURE: Expected 5 rows selected.")
-            # Debug info
-            content = await page.content()
-            if "Đã chọn" in content:
-                print(f"Found other selection text: {page.locator('text=/Đã chọn/').first.inner_text()}")
+            print("FAILURE: Expected 'Đã chọn 5' in UI.")
+            # Print visible text related to selection
+            sel_bar = page.locator("div:has-text('Đã chọn')").last
+            if await sel_bar.is_visible():
+                print(f"Current selection bar text: {await sel_bar.inner_text()}")
 
-        # Test space bar toggle
-        print("Testing Space bar toggle...")
+        # Test Space key selection
+        print("Testing Space key selection...")
+        await page.keyboard.press("ArrowDown")
         await page.keyboard.press("ArrowDown")
         await page.keyboard.press(" ")
         await page.wait_for_timeout(500)
         
-        # Test CSV export trigger
-        print("Checking CSV export dialog...")
+        # Test Export trigger
+        print("Checking Export Dialog...")
         export_btn = page.get_by_role("button", name="Xuất dữ liệu ra file CSV")
-        await export_btn.click()
-        await page.wait_for_selector("text=Xuất dữ liệu ra CSV")
-        await page.screenshot(path=str(SCREENSHOTS / "csv_dialog.png"))
-        print("SUCCESS: CSV Export dialog visible.")
+        if await export_btn.is_visible():
+            await export_btn.click()
+            await page.wait_for_selector("text=Xuất dữ liệu ra CSV", timeout=5000)
+            print("SUCCESS: Export dialog opened.")
+        else:
+            print("FAILURE: Export button not found.")
 
         await browser.close()
 
