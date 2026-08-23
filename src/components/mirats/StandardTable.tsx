@@ -227,11 +227,47 @@ export function StandardTable<T>({
   const lastTime = useRef(performance.now());
   const [isDeleting, setIsDeleting] = useState(false);
   const deleteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [pendingDeletion, setPendingDeletion] = useState<{
+    ids: Set<string>;
+    ten?: string;
+    expiry: number;
+    domain?: Domain;
+  } | null>(null);
   const [localRows, setLocalRows] = useState<T[]>([]);
 
   useEffect(() => {
     setLocalRows(rows);
-  }, [rows]);
+    
+    // Resume persistent undo from localStorage
+    if (tableKeyEffective) {
+      const saved = localStorage.getItem(`pending-deletion:${tableKeyEffective}`);
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          const now = Date.now();
+          if (data.expiry > now) {
+            setPendingDeletion({
+              ids: new Set(data.ids),
+              ten: data.ten,
+              expiry: data.expiry,
+              domain: data.domain
+            });
+            
+            // Re-schedule actual deletion
+            const remaining = data.expiry - now;
+            deleteTimerRef.current = setTimeout(() => {
+              performActualDeletion(new Set(data.ids), data.domain);
+            }, remaining);
+          } else {
+            // Already expired while page was closed, cleanup
+            localStorage.removeItem(`pending-deletion:${tableKeyEffective}`);
+          }
+        } catch (e) {
+          console.error("Failed to resume persistent deletion", e);
+        }
+      }
+    }
+  }, [rows, tableKeyEffective]);
 
   useEffect(() => {
     let frameId: number;
