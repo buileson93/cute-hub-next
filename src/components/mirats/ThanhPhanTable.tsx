@@ -384,15 +384,13 @@ export function ThanhPhanTable({
   tableKey = "mirats:unified-tp-table", // Sử dụng key chung để share preference
   externalEditMode,
 }: ThanhPhanTableProps) {
-  const [deferredQ, setDeferredQ] = useState("");
-  const q = useMemo(() => deferredQ, [deferredQ]);
+  const [q, setQ] = useState("");
+  const [viewMode, setViewMode] = useUserPref<"component" | "asset">(
+    "thanh-phan:view-mode",
+    "component",
+  );
+  const [bucket, setBucket] = useState<"all" | "0" | "1" | "2-3" | ">3">("all");
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // Logic would go here if we were truly deferring, but TanStack Query handles it via queryKey
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [deferredQ]);
 
   const [viewMode, setViewMode] = useUserPref<"component" | "asset">(
     "thanh-phan:view-mode",
