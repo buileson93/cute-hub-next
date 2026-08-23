@@ -109,7 +109,7 @@ export function AssetTablePanel({
       requireFilterToShow={false}
       emptyText="Không có tài sản phù hợp."
       countUnit="tài sản"
-      maxHeightClass={hideHeader ? "min-h-0 flex-1" : undefined}
+      maxHeightClass={hideHeader ? "min-h-0 flex-1 overflow-y-auto" : undefined}
       selectable
       bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear }) => (
         <>

@@ -157,7 +157,7 @@ export function ThanhPhanChiTietDialog({
 
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()}>
-      <SheetContent side="right" className="flex w-full flex-col gap-0 overflow-y-auto sm:max-w-md">
+      <SheetContent side="right" className="flex w-full flex-col gap-0 overflow-y-auto sm:max-w-md lg:max-w-lg">
         <SheetHeader>
           <SheetTitle className="flex flex-wrap items-center gap-2">
             <Plug className="h-4 w-4 shrink-0 text-sky-600" />

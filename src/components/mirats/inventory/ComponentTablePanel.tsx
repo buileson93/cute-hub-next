@@ -135,7 +135,7 @@ export function ComponentTablePanel({
         requireFilterToShow={false}
         emptyText="Không có thành phần hệ thống phù hợp."
         countUnit="thành phần"
-        maxHeightClass={hideHeader ? "min-h-0 flex-1" : undefined}
+        maxHeightClass={hideHeader ? "min-h-0 flex-1 overflow-y-auto" : undefined}
         selectable
         editMode={editMode}
         presets={THANH_PHAN_PRESETS}
