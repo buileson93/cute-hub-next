@@ -270,8 +270,8 @@ export function ComponentTablePanel({
           {
             key: "ten",
             label: "Thành phần & Mã",
-            minW: "min-w-[240px]",
-            cellClassName: "max-w-[320px]",
+            minW: "min-w-[180px]",
+            cellClassName: "max-w-[240px]",
             sticky: true,
             priority: "primary",
             cell: (r) => (
