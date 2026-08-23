@@ -436,6 +436,27 @@ export function StandardTable<T>({
   });
 
   useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container || !infiniteScroll?.hasNextPage || infiniteScroll?.isFetchingNextPage || trangThai.dangTai) return;
+    
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      // Trigger when 100px from bottom
+      if (scrollHeight - scrollTop - clientHeight < 100) {
+        infiniteScroll.fetchNextPage();
+      }
+    };
+
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    
+    // Initial check in case content is small
+    handleScroll();
+
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [infiniteScroll, trangThai.dangTai]);
+
+  useEffect(() => {
+    // Virtualization backup trigger
     if (!infiniteScroll?.hasNextPage || infiniteScroll?.isFetchingNextPage || trangThai.dangTai) return;
     
     const virtualItems = rowVirtualizer.getVirtualItems();
@@ -446,10 +467,8 @@ export function StandardTable<T>({
     // Tải tự động khi người dùng cuộn đến gần cuối (còn khoảng 15 dòng)
     const threshold = 15;
     if (lastItem.index >= display.length - threshold) { 
-      // Gọi fetchNextPage
       infiniteScroll.fetchNextPage();
       
-      // Telemetry detection for potential infinite loop or duplicates
       if (display.length > 5000) {
         console.warn(`[StandardTable] Excessive rows detected: ${display.length}. Potential fetch loop.`);
       }

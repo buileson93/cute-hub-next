@@ -93,8 +93,7 @@ Triển khai lưu và khôi phục vị trí cuộn khi người dùng đổi ta
 
 Bổ sung cơ chế tự động phát hiện và tự sửa khi phát hiện fetchNextPage trả về trùng bản ghi (dedupe theo cursor/id) và hiển thị Error state rõ ràng khi có lỗi mạng.
 
-Viết và chạy bộ E2E Playwright kiểm tra cuộn vô tận tự động pageSize 100 tải đúng tập dữ liệu và không bị trùng khi cuộn liên tục trong thời gian dài.
-lên kế hoạch chi tiết để thực hiện
+thứ 2 vấn đề nút tải thêm dữ liệu của bảng vẫn còn chưa tự động load thêm khi ở cuối trang
               </div>
             }
           >
