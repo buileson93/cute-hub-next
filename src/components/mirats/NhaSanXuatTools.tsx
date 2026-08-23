@@ -297,7 +297,7 @@ export function NhaSanXuatTools() {
         },
       });
     } catch (e) {
-      toast.error("Nhập thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Nhập thất bại: "));
     } finally {
       setImporting(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -468,7 +468,7 @@ function MergeDialog({
       );
       onDone();
     } catch (e) {
-      toast.error("Gộp thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Gộp thất bại: "));
     } finally {
       setSaving(false);
     }

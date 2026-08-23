@@ -207,7 +207,7 @@ export function CongVanSheet({
       }
       onDone();
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(thongDiepLoi(e, "Thao tác thất bại"));
     } finally {
       setSaving(false);
     }
@@ -266,7 +266,7 @@ export function CongVanSheet({
       toast.success("Đã đính kèm bản scan");
       onDone();
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(thongDiepLoi(e, "Thao tác thất bại"));
     } finally {
       setUploading(false);
     }

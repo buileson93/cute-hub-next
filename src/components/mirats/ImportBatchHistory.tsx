@@ -94,7 +94,7 @@ export function ImportBatchHistory() {
       const res = await list();
       setBatches((res.batches ?? []) as Batch[]);
     } catch (e) {
-      toast.error("Không tải được lịch sử: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Không tải được lịch sử: "));
     } finally {
       setBusy(false);
     }
@@ -113,7 +113,7 @@ export function ImportBatchHistory() {
       const res = await getOne({ data: { id } });
       setItems((res.items ?? []) as Array<Record<string, unknown>>);
     } catch (e) {
-      toast.error("Không mở được lô: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Không mở được lô: "));
     }
   }
 
@@ -128,7 +128,7 @@ export function ImportBatchHistory() {
       }
       void refresh();
     } catch (e) {
-      toast.error("Không xóa được: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Không xóa được: "));
     }
   }
 
@@ -148,7 +148,7 @@ export function ImportBatchHistory() {
       );
       void refresh();
     } catch (e) {
-      toast.error("Áp dụng thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Áp dụng thất bại: "));
     } finally {
       setActingId(null);
     }
@@ -161,7 +161,7 @@ export function ImportBatchHistory() {
       setRbSummary(summarizeRollbackPreview((res.preview ?? null) as RollbackPreview | null));
       setRbId(id);
     } catch (e) {
-      toast.error("Không xem trước được: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Không xem trước được: "));
     } finally {
       setActingId(null);
     }
@@ -181,7 +181,7 @@ export function ImportBatchHistory() {
       setRbSummary(null);
       void refresh();
     } catch (e) {
-      toast.error("Hoàn tác thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Hoàn tác thất bại: "));
     } finally {
       setActingId(null);
     }

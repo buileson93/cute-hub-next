@@ -161,7 +161,7 @@ export function PhotoUpload({
         if (att.dedup) toast.success(`"${file.name}" đã tồn tại — dùng lại bản cũ.`);
         return att;
       } catch (e) {
-        toast.error(`Upload thất bại: ${(e as Error).message}`);
+        toast.error(thongDiepLoi(e, "Upload thất bại"));
         return null;
       }
     });

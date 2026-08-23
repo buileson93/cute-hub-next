@@ -288,7 +288,7 @@ function SystemPicker({
       setTen("");
       setPloai("");
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(thongDiepLoi(e, "Thao tác thất bại"));
     } finally {
       setBusy(false);
     }
@@ -466,7 +466,7 @@ function ModelPicker({
       setPn("");
       setNsxId("");
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(thongDiepLoi(e, "Thao tác thất bại"));
     } finally {
       setBusy(false);
     }

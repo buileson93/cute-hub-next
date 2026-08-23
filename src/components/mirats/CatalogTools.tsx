@@ -247,7 +247,7 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
       });
       toast.success("Đã xuất mẫu XLSX (có dropdown).");
     } catch (e) {
-      toast.error("Xuất mẫu XLSX thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Xuất mẫu XLSX thất bại: "));
     } finally {
       setExportingXlsx(false);
     }
@@ -352,7 +352,7 @@ export function CatalogTools({ config }: { config: CatalogToolsConfig }) {
         `Đã xuất ${childList.length} ${ce.childLabel} kèm ${config.labelSingular} ra CSV.`,
       );
     } catch (e) {
-      toast.error("Xuất thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Xuất thất bại: "));
     } finally {
       setExportingChild(false);
     }
@@ -969,7 +969,7 @@ function MergeDialog({
       );
       onDone();
     } catch (e) {
-      toast.error("Gộp thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Gộp thất bại: "));
     } finally {
       setSaving(false);
     }

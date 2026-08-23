@@ -379,7 +379,7 @@ function AdminAuditPage() {
       queryClient.invalidateQueries({ queryKey: ["audit_log"] });
     },
     onError: (e: unknown) => {
-      toast.error(e instanceof Error ? e.message : "Hoàn tác thất bại");
+      toast.error(thongDiepLoi(e, "Hoàn tác thất bại"));
     },
   });
 

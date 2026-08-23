@@ -158,7 +158,7 @@ function BanGiaoMoiPage() {
       qc.invalidateQueries({ queryKey: ["operations_data"] });
       navigate({ to: "/ban-giao" });
     } catch (e) {
-      toast.error(`Lưu thất bại: ${(e as Error).message}`);
+      toast.error(thongDiepLoi(e, "Lưu thất bại"));
     } finally {
       setSaving(false);
     }

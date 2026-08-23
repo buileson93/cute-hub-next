@@ -136,7 +136,7 @@ export function ImportPreviewDialog({
       await onCommit();
       onClose();
     } catch (e) {
-      toast.error("Ghi thất bại: " + (e as Error).message);
+      toast.error(thongDiepLoi(e, "Ghi thất bại: "));
     } finally {
       setSaving(false);
     }

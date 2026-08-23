@@ -9,6 +9,7 @@ import {
   Unplug, Wrench, PackageOpen, LayoutGrid, Loader2, Cpu, XCircle 
 } from "lucide-react";
 import { supabase } from "@/integrations/backend/client";
+import { thongDiepLoi } from "@/lib/mirats/errors";
 import { useSession } from "@/hooks/use-session";
 import { canWrite } from "@/lib/mirats/quyen";
 import { StandardTable } from "@/components/mirats/StandardTable";
@@ -109,8 +110,8 @@ export function ComponentTablePanel({
         toast.success("Đã cập nhật trạng thái");
       }
       qc.invalidateQueries({ queryKey: ["thanh-phan-infinite"] });
-    } catch (error: any) {
-      toast.error(error.message || "Không lưu được thay đổi");
+    } catch (error: unknown) {
+      toast.error(thongDiepLoi(error, "Không lưu được thay đổi"));
       throw error;
     }
   }

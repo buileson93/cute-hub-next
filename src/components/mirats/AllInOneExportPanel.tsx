@@ -44,7 +44,7 @@ export function AllInOneExportPanel() {
         for (const l of d) init[l.table] = { mode: "all", ids: new Set() };
         setPicks(init);
       } catch (e) {
-        toast.error("Không nạp được danh sách: " + (e as Error).message);
+        toast.error(thongDiepLoi(e, "Không nạp được danh sách: "));
       } finally {
         setLoading(false);
       }
@@ -99,7 +99,7 @@ export function AllInOneExportPanel() {
           : "Đã tải file all-in-one theo phạm vi đã chọn",
       );
     } catch (e) {
-      toast.error((e as Error).message);
+      toast.error(thongDiepLoi(e, "Thao tác thất bại"));
     } finally {
       setBusy(false);
     }
