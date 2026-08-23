@@ -21,7 +21,7 @@ import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Icon } from "@/components/mirats/ui/Icon";
 import { useDensity } from "@/components/mirats/DensityToggle";
-import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2 } from "lucide-react";
+import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2, XCircle } from "lucide-react";
 import { ColumnVisibilityMenu } from "./ColumnVisibilityMenu";
 import { HorizontalScrollRail } from "./HorizontalScrollRail";
 
@@ -413,19 +413,21 @@ export function StandardTable<T>({
   });
 
   useEffect(() => {
-    if (!infiniteScroll?.hasNextPage || infiniteScroll?.isFetchingNextPage) return;
+    if (!infiniteScroll?.hasNextPage || infiniteScroll?.isFetchingNextPage || trangThai.dangTai) return;
+    
     const virtualItems = rowVirtualizer.getVirtualItems();
     if (virtualItems.length === 0) return;
+    
     const lastItem = virtualItems[virtualItems.length - 1];
     
     // Tối ưu điểm kích hoạt tải trang tiếp theo: 
     // Khi người dùng cuộn đến gần cuối (còn khoảng 15 dòng hoặc 20% danh sách hiện tại)
     const threshold = Math.min(15, Math.floor(display.length * 0.2));
     if (lastItem.index >= display.length - threshold) { 
+      // Gọi fetchNextPage với khóa bảo vệ bổ sung
       infiniteScroll.fetchNextPage();
     }
-
-  }, [rowVirtualizer, infiniteScroll?.hasNextPage, infiniteScroll?.isFetchingNextPage, display.length, infiniteScroll]);
+  }, [rowVirtualizer, infiniteScroll?.hasNextPage, infiniteScroll?.isFetchingNextPage, trangThai.dangTai, display.length, infiniteScroll]);
 
   const isClient = typeof window !== "undefined";
   const useIsomorphicLayoutEffect = isClient ? React.useLayoutEffect : useEffect;
@@ -486,57 +488,47 @@ export function StandardTable<T>({
       
       const errorMessage = thongDiepLoi(err, "Không tải được dữ liệu");
       
-      // Type guard để lấy callback retry an toàn
       const hasRetry = (e: unknown): e is { retry: () => void } => 
         !!e && typeof e === "object" && "retry" in e && typeof (e as any).retry === "function";
 
-      const errorInner = (
-        <div className="py-20 flex flex-col items-center justify-center text-center gap-4 border rounded-lg bg-card">
-          <div className="text-sm text-destructive font-medium">{errorMessage}</div>
-          {hasRetry(err) && (
-            <Button variant="outline" size="sm" onClick={err.retry}>
-              Thử lại
-            </Button>
-          )}
-        </div>
+      return (
+        <EmptyState
+          title="Đã xảy ra lỗi"
+          description={errorMessage}
+          icon={XCircle}
+          live="polite"
+          action={
+            hasRetry(err) ? (
+              <Button variant="outline" size="sm" onClick={err.retry}>
+                Thử lại
+              </Button>
+            ) : undefined
+          }
+        />
       );
-      return errorInner;
     }
 
     if (trangThai.dangTai && fullDisplay.length === 0) {
-      if (loadingContent) return loadingContent;
-      return (
-        <div className="p-4 border rounded-lg bg-card space-y-4">
-          <div className="flex items-center gap-2 text-primary font-medium text-sm animate-pulse">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Đang tải dữ liệu ban đầu...
-          </div>
-          <TableSkeleton cols={columns.length} rows={8} />
-        </div>
-      );
+      return loadingContent || <TableSkeleton rows={8} cols={columns.length} />;
     }
 
-    if (fullDisplay.length === 0 && !trangThai.dangTai) {
-      if (emptyContent) return emptyContent;
-      return (
-        <div className="py-20 border rounded-lg bg-card text-center flex flex-col items-center gap-4">
-          <div className="p-3 rounded-full bg-muted/50">
-            <XIcon className="h-6 w-6 text-muted-foreground/50" />
-          </div>
-          <div className="text-sm text-muted-foreground italic">
-            {hasFilter ? "Không có dòng nào khớp bộ lọc" : (emptyText || "Không có dữ liệu")}
-          </div>
-          {hasFilter && (
+    if (!trangThai.dangTai && fullDisplay.length === 0) {
+      return emptyContent || (
+        <EmptyState 
+          title={hasFilter ? "Không tìm thấy kết quả" : (emptyText || "Không có dữ liệu")} 
+          description={hasFilter ? "Hãy thử thay đổi từ khóa tìm kiếm hoặc bộ lọc." : undefined}
+          live="polite"
+          action={hasFilter ? (
             <Button variant="outline" size="sm" onClick={clearAllFilters} className="h-8">
               Xóa tất cả bộ lọc
             </Button>
-          )}
-        </div>
+          ) : undefined}
+        />
       );
     }
 
-    return <div className="hidden" aria-hidden="true" />;
-  }, [trangThai.loi, trangThai.dangTai, errorContent, loadingContent, columns.length, fullDisplay.length, emptyContent, hasFilter, emptyText]);
+    return null;
+  }, [trangThai, fullDisplay.length, errorContent, emptyContent, loadingContent, emptyText, columns.length, hasFilter, clearAllFilters]);
 
   const isMobile = isClient && window.innerWidth < BP_PX.md;
   const shownCols = useMemo(() => columns.filter(c => !prefs.hidden.has(c.key)), [columns, prefs.hidden]);
