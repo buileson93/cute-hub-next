@@ -10,14 +10,23 @@ async def main():
         context = await browser.new_context(viewport={"width": 1280, "height": 1800})
         page = await context.new_page()
 
-        # Giả lập auth nếu có
-        auth_status = os.environ.get("LOVABLE_BROWSER_AUTH_STATUS")
-        if auth_status == "injected":
-            storage_key = os.environ.get("LOVABLE_BROWSER_SUPABASE_STORAGE_KEY")
-            session_json = os.environ.get("LOVABLE_BROWSER_SUPABASE_SESSION_JSON")
-            if storage_key and session_json:
-                await page.goto("http://localhost:8080")
-                await page.evaluate(f"window.localStorage.setItem('{storage_key}', '{session_json}')")
+        # Phục hồi session từ file nếu được tạo bởi lovable auth-session
+        session_file = os.path.expanduser("~/.cache/lovable-auth/session.json")
+        if os.path.exists(session_file):
+            with open(session_file) as f:
+                minted = json.load(f)
+            storage_key = minted["storage_key"]
+            session_json = json.dumps(minted["session"])
+            cookies = minted.get("cookies", [])
+            
+            for c in cookies:
+                c["url"] = "http://localhost:8080"
+            await context.add_cookies(cookies)
+
+            await page.goto("http://localhost:8080")
+            await page.evaluate(f"window.localStorage.setItem('{storage_key}', '{session_json}')")
+        else:
+            print("CẢNH BÁO: Không tìm thấy session minted. Đang chạy ở chế độ public.")
 
         print("--- Testing Infinite Scroll Automation & Data Integrity ---")
         
