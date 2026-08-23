@@ -1,30 +1,22 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
-import React, { useMemo, useState, useEffect, useRef, useCallback } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-  Component,
   Loader2,
   Search,
   X,
   Cpu,
-  Eye,
-  Network,
   ExternalLink,
   Pencil,
   Check,
   XCircle,
-  Lock,
-  ChevronLeft,
-  ChevronRight,
   Unplug,
   Package,
   LayoutGrid,
   Copy,
   Download,
-  SlidersHorizontal,
-  Info,
   Wrench,
   PackageOpen,
   X as XIcon,
@@ -33,7 +25,7 @@ import { EntityHoverCard } from "@/components/mirats/EntityHoverCard";
 
 import { AnomalyBadge } from "@/components/mirats/AnomalyBadge";
 import { useUserPref } from "@/hooks/use-user-pref";
-import { StandardTable, type ColumnDef as StdColumn } from "@/components/mirats/StandardTable";
+import { StandardTable } from "@/components/mirats/StandardTable";
 import { CodeBadge } from "@/components/mirats/CodeBadge";
 import { Combobox } from "@/components/mirats/Combobox";
 import { Badge } from "@/components/ui/badge";
@@ -58,21 +50,24 @@ import { useRealtimeTaxonomy } from "@/hooks/use-realtime-taxonomy";
 import { normalize } from "@/lib/mirats/global-search";
 import { useSession } from "@/hooks/use-session";
 import { canWrite } from "@/lib/mirats/quyen";
-import { useThietBiChon, useLapThietBi } from "@/lib/mirats/he-thong-thanh-phan";
 import { useMultiRoleMap } from "@/lib/mirats/he-thong-thanh-phan";
 export { useMultiRoleMap };
 import { MultiRoleBadge } from "@/components/mirats/MultiRoleBadge";
+export { MultiRoleBadge };
 import { BulkActionButton } from "@/components/mirats/BulkActionButton";
 import { TableExportDialog } from "@/components/mirats/TableExportDialog";
-import { THANH_PHAN_PRESETS, type TP_PRESET_ID } from "@/lib/mirats/ui/tp-presets";
-import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
+import { THANH_PHAN_PRESETS } from "@/lib/mirats/ui/tp-presets";
 
 import { OperationDialog } from "@/components/mirats/OperationDialog";
+export { OperationDialog };
 import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDialog";
+export { ThanhPhanChiTietDialog };
 
 import { KhaiThemCumButtons } from "@/components/mirats/KhaiThemDialogs";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import type { KeysetCursor } from "@/lib/mirats/db/keyset";
+import { ComponentTablePanel } from "./inventory/ComponentTablePanel";
+import { AssetTablePanel } from "./inventory/AssetTablePanel";
 
 
 // ---- Kiểu dữ liệu 1 dòng ở chế độ "Theo tài sản": 1 TÀI SẢN + tổng hợp thành phần đang lắp
