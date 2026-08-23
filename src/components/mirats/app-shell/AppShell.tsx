@@ -247,6 +247,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           {/* Main content area */}
           <div className="flex min-w-0 flex-1 flex-col h-full">
             <header
+              role="banner"
               className={cn(
                 "sticky top-0 z-10 flex items-center justify-between gap-3 px-4 border-b border-[#0074e2]/10 bg-background/95 backdrop-blur-md",
                 UI_DENSITY.APP_HEADER_H,

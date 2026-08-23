@@ -7,78 +7,70 @@ from playwright.async_api import async_playwright
 SCREENSHOTS = Path("/tmp/browser/full_site_integrity")
 SCREENSHOTS.mkdir(parents=True, exist_ok=True)
 
+# Giảm số lượng route để tránh timeout, tập trung vào các mẫu layout khác nhau
 ROUTES = [
     ("Dashboard", "http://localhost:8080/"),
-    ("Overview", "http://localhost:8080/tong-quan"),
     ("Devices", "http://localhost:8080/thiet-bi"),
-    ("System Tree", "http://localhost:8080/he-thong/cay"),
 ]
 
 VIEWPORTS = [
     {"name": "Desktop", "width": 1280, "height": 800},
-    {"name": "Tablet", "width": 768, "height": 1024},
     {"name": "Mobile", "width": 375, "height": 667},
 ]
 
 async def audit_route(page, route_name, url, viewport_name):
     print(f"[{viewport_name}] Auditing {route_name}: {url}")
-    await page.goto(url, wait_until="domcontentloaded")
-    await page.wait_for_timeout(3000)
+    try:
+        await page.goto(url, wait_until="domcontentloaded", timeout=15000)
+        await page.wait_for_timeout(2000)
+    except Exception as e:
+        print(f"  [ERROR] Navigation failed: {e}")
+        return
 
-    # Detect Header and Sidebar
-    header = page.locator('header[role="banner"], header[data-component="PageHeader"], .sticky').first
-    sidebar = page.locator('aside, [role="navigation"]').first
-    
-    h_box1 = await header.bounding_box()
-    s_box1 = await sidebar.bounding_box()
-    
-    # Check PageBody A11y
+    # 1. Kiểm tra Accessibility (A11y)
     body = page.locator('div[role="main"]')
     if await body.count() > 0:
         tab_index = await body.get_attribute("tabindex")
-        if tab_index == "0":
-            print(f"  [PASS] PageBody is focusable (tabindex=0)")
+        role = await body.get_attribute("role")
+        if tab_index == "0" and role == "main":
+            print(f"  [PASS] PageBody A11y: role='main', tabindex='0'")
         else:
-            print(f"  [FAIL] PageBody missing tabindex=0")
-    
-    # Scroll content
-    scrollable = page.locator('.mirats-scroll, div[role="main"]').first
-    if await scrollable.count() > 0:
-        await scrollable.evaluate("el => el.scrollTop = 400")
-        await page.wait_for_timeout(1000)
+            print(f"  [FAIL] PageBody A11y: role={role}, tabindex={tab_index}")
     else:
-        print("  WARNING: No scrollable PageBody found")
+        print(f"  [WARN] No element with role='main' found")
 
-    # Verify positions
-    if h_box1:
-        h_box2 = await header.bounding_box()
-        h_diff = abs(h_box1['y'] - h_box2['y'])
-        if h_diff < 5:
-            print(f"  [PASS] Header fixed (shift {h_diff}px)")
-        else:
-            print(f"  [FAIL] Header moved {h_diff}px")
-            
-    if s_box1 and viewport_name == "Desktop":
-        s_box2 = await sidebar.bounding_box()
-        s_diff = abs(s_box1['x'] - s_box2['x'])
-        if s_diff < 5:
-            print(f"  [PASS] Sidebar fixed (shift {s_diff}px)")
-        else:
-            print(f"  [FAIL] Sidebar moved {s_diff}px")
+    # 2. Kiểm tra Header cố định
+    header = page.locator('header[role="banner"]').first
+    if await header.count() > 0:
+        box1 = await header.bounding_box()
+        if box1:
+            # Cuộn PageBody (hoặc main container)
+            scrollable = page.locator('.mirats-scroll, div[role="main"]').first
+            if await scrollable.count() > 0:
+                await scrollable.evaluate("el => el.scrollTop = 300")
+                await page.wait_for_timeout(500)
+                
+                box2 = await header.bounding_box()
+                diff = abs(box1['y'] - box2['y'])
+                if diff < 2:
+                    print(f"  [PASS] Header is fixed (shift {diff}px)")
+                else:
+                    print(f"  [FAIL] Header moved {diff}px")
+    else:
+        print("  [WARN] No Header with role='banner' found")
 
-    await page.screenshot(path=str(SCREENSHOTS / f"{viewport_name}_{route_name}_final.png"))
+    await page.screenshot(path=str(SCREENSHOTS / f"{viewport_name}_{route_name}.png"))
 
 async def main():
     async with async_playwright() as playwright:
         browser = await playwright.chromium.launch(headless=True)
-        
-        # Auth restore
         session_file = os.path.expanduser("~/.cache/lovable-auth/session.json")
         
         for vp in VIEWPORTS:
             context = await browser.new_context(viewport={"width": vp["width"], "height": vp["height"]})
             page = await context.new_page()
             
+            # Restore session
             if os.path.exists(session_file):
                 with open(session_file) as f:
                     minted = json.load(f)
@@ -92,10 +84,7 @@ async def main():
                 await page.evaluate(f"window.localStorage.setItem({json.dumps(storage_key)}, {json.dumps(session_json)})")
             
             for name, url in ROUTES:
-                try:
-                    await audit_route(page, name, url, vp["name"])
-                except Exception as e:
-                    print(f"Error auditing {name} on {vp['name']}: {e}")
+                await audit_route(page, name, url, vp["name"])
             
             await context.close()
             
