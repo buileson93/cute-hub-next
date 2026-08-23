@@ -983,9 +983,12 @@ export function StandardTable<T>({
           </Table>
           
           {infiniteScroll?.isFetchingNextPage && (
-            <div className="flex items-center justify-center py-4 gap-2 text-muted-foreground bg-muted/5 border-t">
-              <Loader2 className="h-4 w-4 animate-spin text-primary" />
-              <span className="text-[11px] font-medium uppercase tracking-wider">Đang tải thêm dữ liệu...</span>
+            <div className="flex items-center justify-center py-6 gap-3 text-muted-foreground bg-background/50 border-t backdrop-blur-sm sticky bottom-0 z-20">
+              <div className="relative h-5 w-5">
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                <div className="absolute inset-0 bg-primary/20 rounded-full blur-sm animate-pulse" />
+              </div>
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary/80">Đang tải thêm...</span>
             </div>
           )}
           
