@@ -365,7 +365,7 @@ function ThietBiPage() {
   }, [tree]);
 
   return (
-    <PageBody className="bg-background/30">
+    <PageBody noPadding className="bg-background/30 flex-1 min-h-0 overflow-hidden">
       <PageHeader
         title="Sổ lý lịch"
         supporting="MIRATS"
