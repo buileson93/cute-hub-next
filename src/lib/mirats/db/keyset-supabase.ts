@@ -16,6 +16,8 @@ export interface KeysetFetchConfig {
   dir?: "asc" | "desc";
   cursor?: KeysetCursor | null;
   kichThuoc?: number;
+  filters?: (query: any) => any;
+  signal?: AbortSignal;
 }
 
 export interface KeysetPage<T> {
@@ -36,11 +38,19 @@ export async function fetchKeyset<T extends Record<string, unknown>>(
 
   let q = client
     .from(cfg.bang)
-    .select(cot.join(","), { count: "planned" })
+    .select(cot.join(","), { count: "planned" });
 
-    .order(cfg.sortField, { ascending: dir === "asc" })
+  if (cfg.filters) {
+    q = cfg.filters(q);
+  }
+
+  q = q.order(cfg.sortField, { ascending: dir === "asc" })
     .order("id", { ascending: dir === "asc" })
     .limit(kichThuoc);
+
+  if (cfg.signal) {
+    q = q.abortSignal(cfg.signal);
+  }
 
   if (cfg.cursor && cfg.cursor.lastId) {
     const op = dir === "asc" ? "gt" : "lt";
