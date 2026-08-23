@@ -845,13 +845,24 @@ export function StandardTable<T>({
                       <TableRow 
                         key={rid} 
                         data-key={rid}
-                        className={cn("group transition-colors border-b astryx-table-row", rowClassName?.(r))} 
-                        onClick={() => onRowClick?.(r)}
+                        className={cn("group transition-colors border-b astryx-table-row outline-none", rowClassName?.(r))} 
+                        onClick={(e) => {
+                          if (selectable && (e.shiftKey || e.ctrlKey || e.metaKey)) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleRow(rid, v.index, e);
+                          } else {
+                            onRowClick?.(r);
+                          }
+                        }}
                         onKeyDown={(e) => {
                           if (e.key === " " || e.key === "Enter") {
                             if (selectable) {
                               e.preventDefault();
+                              e.stopPropagation();
                               toggleRow(rid, v.index, e);
+                            } else if (e.key === "Enter") {
+                              onRowClick?.(r);
                             }
                           }
                         }}
@@ -860,7 +871,6 @@ export function StandardTable<T>({
                           willChange: 'transform',
                           contain: 'layout inline-size',
                           transform: 'translate3d(0,0,0)',
-                          outline: 'none'
                         }}
                       >
                         {selectable && (
