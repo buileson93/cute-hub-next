@@ -87,9 +87,12 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
             ben="bottom"
             noiDung={
               <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
-                Cập nhật lại toàn bộ microcopy và nhãn hiển thị để khớp đúng với cơ chế cuộn vô tận (pageSize 100) và không còn gây hiểu nhầm về giới hạn 500 trong bảng của tôi.
+                không thể làm tự động tải thêm dữ liệu khi cuộn tới cuối trang à mà phải  bấm nút , tôi muốn việc này thành tự động để tạo cảm giác không có điểm cuối , nhưng vẫn đảm bảo hiệu năng về render ảo hoá , đưa ra phương pháp phù hợp
 
-Tối ưu cơ chế tải khi cuộn để giảm giật lag bằng cách thêm điều kiện khóa tải trùng và nâng cấp loading/empty/error states rõ ràng cho từng bảng. lên kế hoạch chi tiết và khắc phục
+Triển khai virtualization cho các bảng cuộn vô tận của tôi để giảm lag khi dữ liệu tăng nhanh.
+
+Viết và chạy E2E với Playwright để kiểm tra cuộn vô tận pageSize 100 luôn tải đúng tập dữ liệu và không bị trùng khi cuộn liên tục.
+đưa ra kế hoạch chi tiết để triển khai
               </div>
             }
           >

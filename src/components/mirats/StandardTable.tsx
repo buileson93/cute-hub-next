@@ -780,18 +780,7 @@ export function StandardTable<T>({
             </div>
           )}
           
-          {!infiniteScroll?.isFetchingNextPage && infiniteScroll?.hasNextPage && (
-            <div className="flex items-center justify-center py-2 border-t bg-muted/5 gap-4">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-8 text-[11px] font-semibold text-primary/70 hover:text-primary hover:bg-primary/5"
-                onClick={() => infiniteScroll.fetchNextPage()}
-              >
-                Tải thêm dữ liệu
-              </Button>
-            </div>
-          )}
+          {/* Nút Tải thêm dữ liệu đã được gỡ bỏ để chuyển sang tải tự động hoàn toàn khi cuộn */}
           
           {fullDisplay.length > 0 && <HorizontalScrollRail containerRef={scrollContainerRef} />}
         </div>
