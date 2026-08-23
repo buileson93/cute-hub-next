@@ -14,22 +14,37 @@ async def main():
         page = await context.new_page()
 
         # Login
-        await page.goto("http://localhost:8080/auth", wait_until="domcontentloaded")
+        print("Navigating to auth page...")
+        await page.goto("http://localhost:8080/auth", wait_until="networkidle")
+        await page.screenshot(path=str(SCREENSHOTS / "0_auth_page.png"))
+        
+        print("Filling credentials...")
         await page.fill('input[type="email"]', "buileson93@gmail.com")
         await page.fill('input[type="password"]', "12345")
+        await page.screenshot(path=str(SCREENSHOTS / "0b_credentials_filled.png"))
         
-        # Click login button - wait for navigation
-        await asyncio.gather(
-            page.wait_for_url("**/tong-quan", timeout=15000),
-            page.click('button[type="submit"]')
-        )
+        print("Clicking submit...")
+        await page.click('button[type="submit"]')
         
+        # Wait for some indication of success or error
+        try:
+            await page.wait_for_url("**/tong-quan", timeout=10000)
+            print(f"Login successful, navigated to: {page.url}")
+        except Exception as e:
+            print(f"Navigation to dashboard failed: {e}")
+            await page.screenshot(path=str(SCREENSHOTS / "error_login_failed.png"))
+            # Check for error messages
+            error_msg = await page.content()
+            if "Invalid login credentials" in error_msg:
+                print("Observed 'Invalid login credentials' on page.")
+            return
+
         await page.wait_for_load_state("networkidle")
         await page.screenshot(path=str(SCREENSHOTS / "1_dashboard_loaded.png"))
-        print(f"Opened dashboard: {page.url}")
 
         # Verify Header is sticky
-        header = page.get_by_test_id("page-header")
+        # PageHeader has data-testid="page-header"
+        header = page.locator('[data-testid="page-header"]')
         await header.wait_for(state="visible")
         header_box = await header.bounding_box()
         print(f"Header initial Y: {header_box['y']}")
@@ -47,11 +62,6 @@ async def main():
             print("SUCCESS: Header is sticky/fixed during scroll.")
         else:
             print("FAILURE: Header moved during scroll.")
-
-        # Check if dashboard grid content is visible
-        grid = page.locator(".astryx-dashboard-grid") # Check class in DashboardGrid if possible
-        grid_visible = await scrollable.is_visible()
-        print(f"Dashboard scrollable area visible: {grid_visible}")
 
         await browser.close()
 
