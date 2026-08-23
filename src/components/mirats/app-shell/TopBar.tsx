@@ -87,7 +87,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
             ben="bottom"
             noiDung={
               <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
-                các checkbox select all và select từng dòng ở bảng chưa hoạt động được tìm nguyên nhân và đưa ra kế hoạch chi tiết để khắc phục
+                Sửa lỗi cuộn Dashboard: Trang Tổng quan (/tong-quan) đã được cấu trúc lại để phần nội dung (DashboardGrid) có thể cuộn độc lập, trong khi thanh tiêu đề và các thành phần hệ thống khác vẫn được giữ cố định. chưa được kiểm tra lại và playwright test để nghiệm thu tài khoản buileson93@gmail.com pass 12345
               </div>
             }
           >

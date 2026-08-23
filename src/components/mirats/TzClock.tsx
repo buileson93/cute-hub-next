@@ -44,7 +44,7 @@ export function TzClock() {
         <button
           type="button"
           className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
-          aria-label="các checkbox select all và select từng dòng ở bảng chưa hoạt động được tìm nguyên nhân và đưa ra kế hoạch chi tiết để khắc phục"
+          aria-label="Sửa lỗi cuộn Dashboard: Trang Tổng quan (/tong-quan) đã được cấu trúc lại để phần nội dung (DashboardGrid) có thể cuộn độc lập, trong khi thanh tiêu đề và các thành phần hệ thống khác vẫn được giữ cố định. chưa được kiểm tra lại và playwright test để nghiệm thu tài khoản buileson93@gmail.com pass 12345"
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
           <span className="font-mono tabular-nums">

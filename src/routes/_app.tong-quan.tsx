@@ -81,76 +81,78 @@ function OverviewReport() {
   }
 
   return (
-    <PageBody>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-        <PageHeader title="Báo cáo Tổng quan KPI" icon="entity.chart" />
-        <div className="flex items-center gap-2">
-          {isEditing && (
-            <>
-              <WidgetPicker
-                currentLayout={layout}
-                onAdd={handleAddWidget}
-                trigger={
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-9 gap-2 rounded-xl hover:bg-primary/5 hover:border-primary/40 transition-all shadow-none"
-                  >
-                    <Icon name="action.add" size="tiny" className="text-primary" />
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
-                      Thêm Widget
-                    </span>
-                  </Button>
-                }
-              />
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleReset}
-                className="h-9 gap-2 rounded-xl text-muted-foreground hover:text-destructive transition-all"
-              >
-                <Icon name="action.undo" size="tiny" />
-                <span className="text-[11px] font-bold uppercase tracking-wider">Khôi phục</span>
-              </Button>
-            </>
-          )}
-          <Button
-            variant={isEditing ? "default" : "outline"}
-            size="sm"
-            onClick={() => setIsEditing(!isEditing)}
-            className={cn(
-              "shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl transition-all shadow-none",
+    <PageBody className="h-full overflow-hidden">
+      <div className="flex flex-col shrink-0">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+          <PageHeader title="Báo cáo Tổng quan KPI" icon="entity.chart" />
+          <div className="flex items-center gap-2">
+            {isEditing && (
+              <>
+                <WidgetPicker
+                  currentLayout={layout}
+                  onAdd={handleAddWidget}
+                  trigger={
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-9 gap-2 rounded-xl hover:bg-primary/5 hover:border-primary/40 transition-all shadow-none"
+                    >
+                      <Icon name="action.add" size="tiny" className="text-primary" />
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
+                        Thêm Widget
+                      </span>
+                    </Button>
+                  }
+                />
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleReset}
+                  className="h-9 gap-2 rounded-xl text-muted-foreground hover:text-destructive transition-all"
+                >
+                  <Icon name="action.undo" size="tiny" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider">Khôi phục</span>
+                </Button>
+              </>
             )}
-          >
-            <Icon
-              name={isEditing ? "status.success" : "action.settings"}
-              className={cn(isEditing ? "text-primary-foreground" : "text-primary")}
-            />
-            <span className="font-bold text-[11px] uppercase tracking-wider">
-              {isEditing ? "Hoàn tất" : "Cá nhân hóa"}
-            </span>
-          </Button>
-          {!isEditing && (
             <Button
-              variant="outline"
+              variant={isEditing ? "default" : "outline"}
               size="sm"
-              onClick={handleExport}
-              className="shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl hover:bg-primary/5 transition-all"
+              onClick={() => setIsEditing(!isEditing)}
+              className={cn(
+                "shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl transition-all shadow-none",
+              )}
             >
-              <Icon name="action.download" className="text-primary" />
-              <span className="font-bold text-[11px] uppercase tracking-wider text-primary">
-                Xuất PDF
+              <Icon
+                name={isEditing ? "status.success" : "action.settings"}
+                className={cn(isEditing ? "text-primary-foreground" : "text-primary")}
+              />
+              <span className="font-bold text-[11px] uppercase tracking-wider">
+                {isEditing ? "Hoàn tất" : "Cá nhân hóa"}
               </span>
             </Button>
-          )}
+            {!isEditing && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExport}
+                className="shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl hover:bg-primary/5 transition-all"
+              >
+                <Icon name="action.download" className="text-primary" />
+                <span className="font-bold text-[11px] uppercase tracking-wider text-primary">
+                  Xuất PDF
+                </span>
+              </Button>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-2 -mx-6 mb-4">
+          <HeartBeatStrip />
         </div>
       </div>
 
-      <div className="mt-2 -mx-6">
-        <HeartBeatStrip />
-      </div>
-
-      <div className="mt-6 flex-1 min-h-0 overflow-y-auto pr-2 mirats-scroll">
+      <div className="flex-1 min-h-0 overflow-y-auto pr-2 mirats-scroll">
         <DashboardGrid page="overview" isEditing={isEditing} />
       </div>
     </PageBody>
