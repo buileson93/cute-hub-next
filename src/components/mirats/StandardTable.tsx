@@ -773,6 +773,26 @@ export function StandardTable<T>({
             </TableBody>
           </Table>
           
+          {infiniteScroll?.isFetchingNextPage && (
+            <div className="flex items-center justify-center py-4 gap-2 text-muted-foreground bg-muted/5 border-t">
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+              <span className="text-[11px] font-medium uppercase tracking-wider">Đang tải thêm dữ liệu...</span>
+            </div>
+          )}
+          
+          {!infiniteScroll?.isFetchingNextPage && infiniteScroll?.hasNextPage && (
+            <div className="flex items-center justify-center py-2 border-t bg-muted/5">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8 text-[11px] font-semibold text-primary/70 hover:text-primary hover:bg-primary/5"
+                onClick={() => infiniteScroll.fetchNextPage()}
+              >
+                Tải thêm dữ liệu
+              </Button>
+            </div>
+          )}
+          
           {fullDisplay.length > 0 && <HorizontalScrollRail containerRef={scrollContainerRef} />}
         </div>
       )}
