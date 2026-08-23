@@ -1,31 +1,33 @@
-# Kế hoạch khắc phục lỗi cuộn trang Tổng quan (Overview)
+# Kế hoạch khắc phục lỗi cuộn và tối ưu hóa Table/Dashboard (Phase 11J)
 
-Phân tích hiện tại cho thấy trang `/tong-quan` (Overview) đang sử dụng `PageBody` với thuộc tính `overflow-hidden` (mặc định của `PageBody`), điều này ngăn cản việc cuộn nội dung khi Dashboard Grid có nhiều widget vượt quá chiều cao màn hình. Hơn nữa, kiến trúc `AppShell` đã có cơ chế `overflow-hidden` ở cấp độ main container để phục vụ layout "Một Scroll Owner".
+Người dùng yêu cầu cập nhật Roadmap và giải quyết 2 vấn đề kỹ thuật:
+1. Xác nhận cơ chế cuộn vô tận (Infinite Scroll) hoạt động tự động mà không cần bấm nút.
+2. Sửa lỗi trang Dashboard Overview (`/tong-quan`) không cuộn được nội dung, đảm bảo thanh TopBar và Sidebar cố định trong khi nội dung cuộn.
 
-## Các thay đổi chính
+## 1. Cập nhật Roadmap (Visual Text Edits)
+Cập nhật nội dung tooltip tại `TopBar.tsx` và `aria-label` tại `TzClock.tsx` với văn bản tiếng Việt mới:
+> "kiểm tra đã được cuộn vô tận khi cuộn tới cuối trang chưa và ko cần bấm vào nút kiểm tra dữ liệu , thêm vào đó dashboard overview có cuộn đuộc thêm thông tin chưa, chỉ cuộn nội dung ko cuộn thanh bar vả cả trang web,"
 
-### 1. Cập nhật Roadmap UI (Visual Edits)
-- Thay đổi văn bản Roadmap trong Tooltip của `TopBar.tsx` và `aria-label` của `TzClock.tsx` sang nội dung yêu cầu mới: "trang oview không thể cuộn xuống dc , tôi chỉ muốn cuộn phần có nội dung không phải cuộn cả trang web...".
+## 2. Khắc phục lỗi cuộn tại Dashboard Overview
+**Vấn đề:** Trang `/tong-quan` đang sử dụng `PageBody` (có `overflow-hidden`) nhưng nội dung bên trong (`DashboardGrid`) có thể vượt quá chiều cao màn hình mà không có cơ chế cuộn cục bộ đúng cách, dẫn đến việc nội dung bị khuất.
+**Giải pháp:**
+- Cập nhật `src/routes/_app.tong-quan.tsx`: Đảm bảo container chứa `DashboardGrid` có `overflow-y-auto` và chiếm hết không gian còn lại.
+- Kiểm tra `PageBody.tsx`: Xây dựng theo kiến trúc "One Scroll Owner". `PageBody` mặc định là `overflow-hidden` để các component con (như `StandardTable`) tự quản lý vùng cuộn của chúng. Tuy nhiên, đối với Dashboard, chúng ta cần vùng cuộn bao quanh toàn bộ grid.
 
-### 2. Sửa lỗi cuộn tại trang Tổng quan (`src/routes/_app.tong-quan.tsx`)
-- Cấu trúc lại trang để `PageBody` có thể cuộn nội dung bên trong (`overflow-y-auto`).
-- Đảm bảo các thành phần Header và HeartBeatStrip vẫn cố định hoặc cuộn hợp lý tùy theo thiết kế "Một Scroll Owner".
-- Áp dụng `noPadding` cho `PageBody` nếu cần và quản lý padding thủ công để tránh double scrollbar hoặc mất nội dung do `overflow-hidden` từ các lớp cha.
+## 3. Tăng cường Infinite Scroll (StandardTable)
+**Vấn đề:** Người dùng phản hồi "nút tải thêm vẫn còn chưa tự động". Mặc dù Phase 11I đã thêm trigger, có thể threshold hoặc điều kiện chặn (isFetching) đang quá nhạy hoặc bị kẹt.
+**Giải pháp:**
+- Điều chỉnh `StandardTable.tsx`:
+    - Giảm threshold trigger tự động (từ 100px lên 250px để tải sớm hơn).
+    - Thêm logs debug (chế độ dev) để theo dõi sự kiện cuộn chạm đáy.
+    - Đảm bảo `infiniteScroll.fetchNextPage` được gọi chính xác khi `hasNextPage` là true.
 
-### 3. Tối ưu hóa layout Dashboard
-- Đảm bảo `DashboardGrid` bên trong không bị giới hạn chiều cao bởi container cha `flex-1 overflow-hidden` của `PageBody`.
-- Kiểm tra lại `PageFrame` và `AppShell` để xác nhận vùng `main` (`flex-1 overflow-hidden`) là đúng tiêu chuẩn, và chỉ cần bật cuộn ở cấp độ con trực tiếp (`PageBody` hoặc một wrapper cụ thể bên trong).
+## Các tệp sẽ thay đổi:
+- `src/components/mirats/app-shell/TopBar.tsx`: Cập nhật văn bản Roadmap.
+- `src/components/mirats/TzClock.tsx`: Cập nhật aria-label Roadmap.
+- `src/routes/_app.tong-quan.tsx`: Sửa layout cuộn cho Dashboard.
+- `src/components/mirats/StandardTable.tsx`: Tối ưu threshold tự động tải.
 
-## Chi tiết thực hiện
-
-### Tệp tin thay đổi
-- `src/components/mirats/app-shell/TopBar.tsx`: Cập nhật roadmap text.
-- `src/components/mirats/TzClock.tsx`: Cập nhật roadmap text.
-- `src/routes/_app.tong-quan.tsx`: Thay đổi cấu trúc wrapper để bật cuộn dọc.
-- `src/components/mirats/PageBody.tsx`: Kiểm tra và có thể thêm option `allowScroll` hoặc điều chỉnh CSS class.
-
-### Các bước thực hiện
-1. Cập nhật văn bản Roadmap hiển thị trên giao diện.
-2. Kiểm tra `PageBody.tsx` xem có đang cứng mã `overflow-hidden` hay không.
-3. Chỉnh sửa `OverviewReport` trong `tong-quan.tsx` để thêm class `overflow-y-auto` vào `PageBody` hoặc wrapper bao quanh `DashboardGrid`.
-4. Xác minh trên preview để đảm bảo chỉ phần nội dung cuộn, sidebar và topbar vẫn cố định.
+## Kế hoạch E2E:
+- Chạy lại `tests/table-integrity.test.py` để xác nhận Infinite Scroll không cần nút bấm.
+- Thêm test case kiểm tra scroll container của trang Dashboard.
