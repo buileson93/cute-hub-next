@@ -437,6 +437,9 @@ export function ThanhPhanTable({
         <ComponentTablePanel 
           tableKey={tableKey} 
           hideHeader={hideHeader}
+          editMode={editMode}
+          setEditMode={setEditMode}
+          allowEdit={allowEdit}
           ModeToggle={ModeToggle}
         />
       ) : (
@@ -450,7 +453,6 @@ export function ThanhPhanTable({
   );
 }
 
-// Re-export needed components for panels
 export function ModelCell({
   model,
   modelId,
@@ -461,7 +463,7 @@ export function ModelCell({
   registry: Record<string, any>;
 }) {
   if (!model && !modelId) return <span className="text-xs text-muted-foreground">—</span>;
-  const entry = modelId ? registry[modelId] : null;
+  const entry = modelId ? (registry as any)[modelId] : null;
   const label = model || entry?.ten || modelId || "—";
 
   return (
