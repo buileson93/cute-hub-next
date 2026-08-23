@@ -1,10 +1,11 @@
-import React, { useMemo, useState, useRef, useEffect } from "react";
+import React, { useMemo, useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { 
   Search, X, Cpu, ExternalLink, Copy, Download, X as XIcon, Unplug, Wrench, PackageOpen, Loader2, Check, XCircle
 } from "lucide-react";
 import { toast } from "sonner";
+import { useDebounce } from "use-debounce";
 import { cn } from "@/lib/utils";
 import { StandardTable } from "@/components/mirats/StandardTable";
 import { CodeBadge } from "@/components/mirats/CodeBadge";
@@ -36,6 +37,7 @@ export function AssetTablePanel({
   ModeToggle: React.ReactNode;
 }) {
   const [q, setQ] = useState("");
+  const [debouncedQ] = useDebounce(q, 300);
   const [bucket, setBucket] = useState<"all" | "0" | "1" | "2-3" | ">3">("all");
   const [searchExpanded, setSearchExpanded] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -51,14 +53,14 @@ export function AssetTablePanel({
     isFetchingNextPage: isFetchingTs,
     isLoading: loadingTsReal,
     error: errorTsReal,
-  } = useInfiniteTaiSanRows(q, bucket, true);
+  } = useInfiniteTaiSanRows(debouncedQ, bucket, true);
 
   const taiSanRows = useMemo(() => tsData?.pages.flatMap((p) => p.rows) ?? [], [tsData]);
   const totalTs = tsData?.pages[0]?.totalCount ?? 0;
 
   // Client-side fallback filter if server filter isn't 100% matched yet
   const filteredTaiSan = useMemo(() => {
-    const t = normalize(q).trim();
+    const t = normalize(debouncedQ).trim();
     const inBucket = (n: number) => {
       if (bucket === "all") return true;
       if (bucket === "0") return n === 0;
@@ -77,7 +79,7 @@ export function AssetTablePanel({
         ].join(" ")
       ).includes(t);
     });
-  }, [taiSanRows, q, bucket]);
+  }, [taiSanRows, debouncedQ, bucket]);
 
   async function copyCodes(codes: string[]) {
     const text = codes.filter(Boolean).join("\n");
