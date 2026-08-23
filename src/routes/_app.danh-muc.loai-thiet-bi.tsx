@@ -68,4 +68,5 @@ export const Route = createFileRoute("/_app/danh-muc/loai-thiet-bi")({
       }
     />
   ),
+
 });
