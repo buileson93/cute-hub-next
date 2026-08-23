@@ -22,6 +22,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { ResponsiveDialog } from "@/components/mirats/ResponsiveDialog";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
+import { PageBody } from "@/components/mirats/PageBody";
 import {
   AlertDialog,
   AlertDialogAction,
