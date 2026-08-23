@@ -348,7 +348,7 @@ function ModelCell({
 }
 
 /** Lý do hiển thị khi vai trò hiện tại không được sửa dữ liệu hệ thống kỹ thuật. */
-const LY_DO_KHOA =
+export const LY_DO_KHOA =
   "Vai trò của bạn chỉ được xem: cần quyền sửa dữ liệu Hệ thống kỹ thuật (Admin / Phòng KT / Phụ trách đơn vị) để đổi trạng thái hàng loạt.";
 
 /** Nội dung hộp thoại xác nhận đổi trạng thái hàng loạt. */
