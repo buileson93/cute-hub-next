@@ -23,10 +23,16 @@ import { normalize } from "@/lib/mirats/global-search";
 export function AssetTablePanel({
   tableKey,
   hideHeader,
+  editMode,
+  setEditMode,
+  allowEdit,
   ModeToggle,
 }: {
   tableKey: string;
   hideHeader: boolean;
+  editMode: boolean;
+  setEditMode: (v: boolean | ((prev: boolean) => boolean)) => void;
+  allowEdit: boolean;
   ModeToggle: React.ReactNode;
 }) {
   const [q, setQ] = useState("");
