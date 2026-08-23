@@ -496,7 +496,7 @@ export function StandardTable<T>({
       return loadingInner;
     }
 
-    if (fullDisplay.length === 0) {
+    if (fullDisplay.length === 0 && !trangThai.dangTai) {
       const emptyInner = emptyContent ?? (
         <div className="text-sm text-muted-foreground italic">
           {hasFilter ? "Không có dòng nào khớp bộ lọc" : (emptyText || "Không có dữ liệu")}
