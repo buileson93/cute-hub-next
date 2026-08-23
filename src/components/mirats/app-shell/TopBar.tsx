@@ -87,7 +87,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
             ben="bottom"
             noiDung={
               <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
-                Sửa lỗi cuộn Dashboard: Trang Tổng quan (/tong-quan) đã được cấu trúc lại để phần nội dung (DashboardGrid) có thể cuộn độc lập, trong khi thanh tiêu đề và các thành phần hệ thống khác vẫn được giữ cố định. chưa được kiểm tra lại và playwright test để nghiệm thu tài khoản buileson93@gmail.com pass 12345
+                Add chức năng xóa hàng loạt cho các dòng đã chọn trong StandardTable, kèm xác nhận và thông báo kết quả.\n\nImplement xuất dữ liệu CSV cho các dòng đang được chọn hoặc toàn bộ kết quả bảng trong StandardTable.\n\nAdd điều khiển chọn nhiều dòng bằng bàn phím (Shift/Ctrl, Space) để người dùng chọn nhanh mà không cần chuột.\n\nKiểm tra responsive để đảm bảo bố cục cuộn độc lập vẫn hoạt động đúng khi thay đổi chiều rộng màn hình và khi zoom trình duyệt.\nlên kế hoạch chi tiết để làm
               </div>
             }
           >
