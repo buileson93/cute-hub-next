@@ -17,6 +17,7 @@ import { BP_PX } from "@/lib/mirats/ui/responsive-scope";
 import { MobileRecordCard } from "@/components/mirats/ui/MobileRecordCard";
 import { BulkActionBar } from "@/components/mirats/BulkActionBar";
 import { useColumnPrefs } from "@/lib/mirats/use-column-prefs";
+import { type Domain } from "@/lib/mirats/quyen";
 
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Icon } from "@/components/mirats/ui/Icon";
