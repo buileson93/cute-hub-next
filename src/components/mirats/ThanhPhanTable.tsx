@@ -417,6 +417,9 @@ export function ThanhPhanTable({
         <AssetTablePanel 
           tableKey={tableKey} 
           hideHeader={hideHeader}
+          editMode={editMode}
+          setEditMode={setEditMode}
+          allowEdit={allowEdit}
           ModeToggle={ModeToggle}
         />
       )}
@@ -430,20 +433,26 @@ export function ModelCell({
   registry,
 }: {
   model?: string;
-  modelId?: string;
+  modelId?: string | null;
   registry: Record<string, any>;
 }) {
   if (!model && !modelId) return <span className="text-xs text-muted-foreground">—</span>;
   const entry = modelId ? (registry as any)[modelId] : null;
-  const label = model || entry?.ten || modelId || "—";
+
+  if (!entry) {
+    return (
+      <span title={model} className="line-clamp-2 break-words text-[12px] font-medium leading-snug">
+        {model || "—"}
+      </span>
+    );
+  }
 
   return (
-    <div className="flex items-center gap-1.5">
-      <span title={label} className="truncate text-[12px] font-medium leading-snug">
-        {label}
+    <EntityHoverCard loai="dm_model" row={entry}>
+      <span className="line-clamp-2 cursor-pointer break-words text-[12px] font-medium leading-snug text-primary underline-offset-4 decoration-primary/30 hover:underline">
+        {model || entry.ten || "—"}
       </span>
-      {entry && <EntityHoverCard kind="model" id={modelId!} />}
-    </div>
+    </EntityHoverCard>
   );
 }
 
