@@ -11,3 +11,4 @@
 
 ## Trạng thái
 - No-op theo đúng quy tắc visual text edit: không có chuỗi cũ hợp lệ để thay thế.
+- Lần rà soát hiện tại cũng không tìm thấy `language selector` trong văn bản hiển thị của ứng dụng; giữ nguyên code và không chèn chuỗi thay thế.
