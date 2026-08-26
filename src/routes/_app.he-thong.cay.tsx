@@ -42,7 +42,9 @@ import {
   resolvePhanLoai,
   resolveNhom,
   resolveHeThong,
-  resolveThietBi
+  resolveThietBi,
+  resolveDeviceDisplayIdentity
+
 } from "@/lib/mirats/db-taxonomy";
 
 import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
@@ -313,7 +315,8 @@ function HeThongCayPage() {
     isLoading: loadingDevices,
     refetch: refetchDevices,
   } = useQuery({
-    queryKey: ["thiet_bi_cay"],
+    queryKey: ["thiet_bi_cay", taxonomy ? "taxo" : "no-taxo"],
+    enabled: !!taxonomy,
     staleTime: 5 * 60_000,
     placeholderData: (prev: any) => prev,
     queryFn: async () => {
@@ -328,6 +331,7 @@ function HeThongCayPage() {
             *,
             _loaiTbTen:dm_loai_thiet_bi(ten),
             _loaiTbOrder:dm_loai_thiet_bi(thu_tu),
+            _modelRel:dm_model(ten),
             phan_loai_id,
             nhom_he_thong_id,
             he_thong_id,
@@ -364,6 +368,7 @@ function HeThongCayPage() {
           _thanhPhanTen: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ten,
           _loaiTbTen: d._loaiTbTen?.ten,
           _loaiTbOrder: d._loaiTbOrder?.thu_tu,
+          _modelTen: d._modelRel?.ten ?? d.model ?? null,
         };
       });
 
@@ -493,7 +498,7 @@ function HeThongCayPage() {
               list.push({
                 kind: "tb",
                 ma: d.tb.ma_thiet_bi,
-                label: d.tb.ten || d.tb.ma_thiet_bi,
+                label: resolveDeviceDisplayIdentity(d.tb, overrides as any).primaryLabel,
                 code: d.tb.ma_thiet_bi,
                 plId: pl.id,
                 lvId: lv.id,
@@ -810,7 +815,7 @@ function HeThongCayPage() {
         }
         device={devices.find((d) => d.ma_thiet_bi === search.editTb) || null}
         canManage={canManageNodes}
-        deviceName={(d) => d.ten || d.ma_thiet_bi}
+        deviceName={(d) => resolveDeviceDisplayIdentity(d as any, overrides as any).primaryLabel}
         systemLabel={(d) => htNameMap.get(d.he_thong || "") || d.he_thong || ""}
         systemNameById={(id) => htNameMap.get(id || "") || id || ""}
         onAssign={() => {}}

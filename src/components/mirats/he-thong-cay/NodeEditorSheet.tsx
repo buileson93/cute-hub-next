@@ -52,6 +52,7 @@ export function NodeEditorSheet({
   const { roles } = useSession();
 
   const [ten, setTen] = useState("");
+  const [tenGoc, setTenGoc] = useState("");
   const [tenMindmap, setTenMindmap] = useState("");
   const [tenMindmapTouched, setTenMindmapTouched] = useState(false);
   const [newGroupTen, setNewGroupTen] = useState("");
@@ -82,9 +83,10 @@ export function NodeEditorSheet({
             ? nhLabel(target.ma)
             : target.kind === "ht"
               ? htLabel(target.ma)
-              : (tb?.ten ?? "");
+              : (tb?.ten_thiet_bi ?? tb?.ten ?? "");
 
     setTen(baseTen);
+    setTenGoc(baseTen);
 
     // Chỉ load tenMindmap cho node nháp
     if (!isReal) {
@@ -108,9 +110,19 @@ export function NodeEditorSheet({
           ? "Hệ thống"
           : "Tài sản"
     : "";
+  const coThayDoi = canManage && ten.trim() !== tenGoc.trim();
+
+  const yeuCauDong = () => {
+    if (
+      coThayDoi &&
+      !window.confirm("Bạn có thay đổi chưa lưu. Đóng và bỏ qua thay đổi?")
+    )
+      return;
+    onClose();
+  };
 
   return (
-    <Sheet open={!!target} onOpenChange={(o) => !o && onClose()}>
+    <Sheet open={!!target} onOpenChange={(o) => !o && yeuCauDong()}>
       <SheetContent side="right" className="flex w-full flex-col sm:max-w-md">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
@@ -324,6 +336,8 @@ export function NodeEditorSheet({
               className="w-full"
               onClick={() => {
                 if (!target) return;
+                if (renameEntity.isPending || saveCell.isPending) return;
+                setTenGoc(ten);
 
                 if (target.kind === "tb") {
                   saveCell.mutate({
