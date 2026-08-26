@@ -86,6 +86,7 @@ export function NodeEditorSheet({
               : (tb?.ten_thiet_bi ?? tb?.ten ?? "");
 
     setTen(baseTen);
+    setTenGoc(baseTen);
 
     // Chỉ load tenMindmap cho node nháp
     if (!isReal) {
