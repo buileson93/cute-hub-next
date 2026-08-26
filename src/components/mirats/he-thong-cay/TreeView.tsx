@@ -310,7 +310,19 @@ export function TreeView({
             )}
           </button>
           <FolderTree className="h-3.5 w-3.5 shrink-0 text-violet-500" />
-          <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
+          <div
+            role="button"
+            tabIndex={0}
+            title="Mở bảng chỉnh sửa nhóm hệ thống"
+            onClick={() => onOpenEditor("nh", nh.ma)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onOpenEditor("nh", nh.ma);
+              }
+            }}
+            className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 overflow-hidden rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
             <TruncatedNodeLabel label={nhLabel(nh.ma)} code={nh.ma} />
           </div>
 
