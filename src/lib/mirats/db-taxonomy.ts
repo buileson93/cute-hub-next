@@ -341,7 +341,8 @@ export function resolveDeviceDisplayIdentity(d: DbDevice, overrides?: Map<string
   const override = overrides?.get(`tb:${d.ma_thiet_bi}`)?.ten;
   
   const componentName = d._thanhPhanTen;
-  const assetName = d.ten;
+  // Bảng thiet_bi dùng cột `ten_thiet_bi`; `ten` chỉ là alias tương thích cũ.
+  const assetName = (d as any).ten_thiet_bi ?? (d as any).ten;
   const modelName = d._modelTen;
   const typeName = d._loaiTbTen;
 
