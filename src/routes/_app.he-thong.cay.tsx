@@ -313,7 +313,8 @@ function HeThongCayPage() {
     isLoading: loadingDevices,
     refetch: refetchDevices,
   } = useQuery({
-    queryKey: ["thiet_bi_cay"],
+    queryKey: ["thiet_bi_cay", taxonomy ? "taxo" : "no-taxo"],
+    enabled: !!taxonomy,
     staleTime: 5 * 60_000,
     placeholderData: (prev: any) => prev,
     queryFn: async () => {
