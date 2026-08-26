@@ -498,7 +498,7 @@ function HeThongCayPage() {
               list.push({
                 kind: "tb",
                 ma: d.tb.ma_thiet_bi,
-                label: d.tb.ten || d.tb.ma_thiet_bi,
+                label: resolveDeviceDisplayIdentity(d.tb, overrides as any).primaryLabel,
                 code: d.tb.ma_thiet_bi,
                 plId: pl.id,
                 lvId: lv.id,
