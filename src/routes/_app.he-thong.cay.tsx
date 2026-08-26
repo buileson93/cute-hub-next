@@ -365,6 +365,7 @@ function HeThongCayPage() {
           _thanhPhanTen: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ten,
           _loaiTbTen: d._loaiTbTen?.ten,
           _loaiTbOrder: d._loaiTbOrder?.thu_tu,
+          _modelTen: d._modelRel?.ten ?? d.model ?? null,
         };
       });
 
