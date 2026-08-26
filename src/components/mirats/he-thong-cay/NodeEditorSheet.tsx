@@ -82,7 +82,7 @@ export function NodeEditorSheet({
             ? nhLabel(target.ma)
             : target.kind === "ht"
               ? htLabel(target.ma)
-              : (tb?.ten ?? "");
+              : (tb?.ten_thiet_bi ?? tb?.ten ?? "");
 
     setTen(baseTen);
 
