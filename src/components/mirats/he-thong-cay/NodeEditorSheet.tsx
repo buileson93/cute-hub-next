@@ -110,9 +110,19 @@ export function NodeEditorSheet({
           ? "Hệ thống"
           : "Tài sản"
     : "";
+  const coThayDoi = canManage && ten.trim() !== tenGoc.trim();
+
+  const yeuCauDong = () => {
+    if (
+      coThayDoi &&
+      !window.confirm("Bạn có thay đổi chưa lưu. Đóng và bỏ qua thay đổi?")
+    )
+      return;
+    onClose();
+  };
 
   return (
-    <Sheet open={!!target} onOpenChange={(o) => !o && onClose()}>
+    <Sheet open={!!target} onOpenChange={(o) => !o && yeuCauDong()}>
       <SheetContent side="right" className="flex w-full flex-col sm:max-w-md">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
