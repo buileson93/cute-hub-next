@@ -148,8 +148,19 @@ export function TreeView({
             )}
           </div>
           <Cpu className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-          <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-            <TruncatedNodeLabel label={identity.primaryLabel} code={d.tb.ma_thiet_bi} identity={identity} />
+          <div
+            role="button"
+            tabIndex={0}
+            title="Mở bảng chỉnh sửa tài sản / thành phần"
+            onClick={() => onOpenEditor("tb", d.tb.ma_thiet_bi)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onOpenEditor("tb", d.tb.ma_thiet_bi);
+              }
+            }}
+            className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 overflow-hidden rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          ><TruncatedNodeLabel label={identity.primaryLabel} code={d.tb.ma_thiet_bi} identity={identity} />
             {chips.map((c, i) => (
               <Badge
                 key={i}
