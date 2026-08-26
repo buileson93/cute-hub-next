@@ -42,7 +42,9 @@ import {
   resolvePhanLoai,
   resolveNhom,
   resolveHeThong,
-  resolveThietBi
+  resolveThietBi,
+  resolveDeviceDisplayIdentity
+
 } from "@/lib/mirats/db-taxonomy";
 
 import { useAllViTriChucNang } from "@/lib/mirats/he-thong-thanh-phan";
