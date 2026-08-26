@@ -328,6 +328,7 @@ function HeThongCayPage() {
             *,
             _loaiTbTen:dm_loai_thiet_bi(ten),
             _loaiTbOrder:dm_loai_thiet_bi(thu_tu),
+            _modelRel:dm_model(ten),
             phan_loai_id,
             nhom_he_thong_id,
             he_thong_id,
