@@ -52,6 +52,7 @@ export function NodeEditorSheet({
   const { roles } = useSession();
 
   const [ten, setTen] = useState("");
+  const [tenGoc, setTenGoc] = useState("");
   const [tenMindmap, setTenMindmap] = useState("");
   const [tenMindmapTouched, setTenMindmapTouched] = useState(false);
   const [newGroupTen, setNewGroupTen] = useState("");
