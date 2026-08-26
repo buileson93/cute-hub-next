@@ -237,7 +237,19 @@ export function TreeView({
             )}
           </button>
           <Network className="h-3.5 w-3.5 shrink-0 text-primary" />
-          <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
+          <div
+            role="button"
+            tabIndex={0}
+            title="Mở bảng chỉnh sửa hệ thống (thêm/sửa/xoá thành phần)"
+            onClick={() => onOpenEditor("ht", ht.ma)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onOpenEditor("ht", ht.ma);
+              }
+            }}
+            className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 overflow-hidden rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
             <TruncatedNodeLabel label={htMind(ht.ma)} code={ht.ma} />
           </div>
 
