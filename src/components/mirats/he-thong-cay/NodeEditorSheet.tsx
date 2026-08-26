@@ -336,6 +336,8 @@ export function NodeEditorSheet({
               className="w-full"
               onClick={() => {
                 if (!target) return;
+                if (renameEntity.isPending || saveCell.isPending) return;
+                setTenGoc(ten);
 
                 if (target.kind === "tb") {
                   saveCell.mutate({
