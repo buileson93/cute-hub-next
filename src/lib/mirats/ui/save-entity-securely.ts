@@ -1,6 +1,8 @@
 import { supabase } from "@/integrations/backend/client";
 import { createChangeRequest } from "@/lib/mirats/ghi-nghiep-vu-actions";
+import { parseHtSysMa } from "@/lib/mirats/phan-loai";
 import { CayKind } from "@/lib/mirats/ui/inline-edit";
+
 
 const TABLE_MAP: Record<
   string,
