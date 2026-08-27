@@ -6,6 +6,10 @@ import { CayContext } from "./CayContext";
 import { xoaThietBiAnToan, xemTruocXoaThietBi } from "@/lib/mirats/cay-delete";
 import { useCayRpc } from "@/lib/mirats/cay-reorg";
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+
+
 export function useCayMutations() {
   const qc = useQueryClient();
   const cayCtx = React.useContext(CayContext);
