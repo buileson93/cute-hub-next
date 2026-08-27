@@ -22,18 +22,24 @@ export function useCayMutations() {
 
   const addGroup = useMutation({
     mutationFn: async ({ plId, ten, ma }: { plId: string; ten: string; ma: string }) => {
+      const tenSach = ten.trim();
+      const maSach = ma.trim().toUpperCase();
+      if (!tenSach) throw new Error("Tên nhóm không được để trống");
+      if (!maSach) throw new Error("Mã nhóm không được để trống");
+      if (!UUID_RE.test(plId)) throw new Error("Thiếu phân loại hợp lệ cho nhóm hệ thống");
+
       // Check collision
       const { data: existing } = await supabase
         .from("dm_nhom_he_thong")
         .select("id")
-        .eq("ma", ma)
+        .eq("ma", maSach)
         .maybeSingle();
-      if (existing) throw new Error(`Mã nhóm ${ma} đã tồn tại`);
+      if (existing) throw new Error(`Mã nhóm ${maSach} đã tồn tại`);
 
       const { error } = await supabase.from("dm_nhom_he_thong").insert({
         phan_loai_id: plId,
-        ten,
-        ma,
+        ten: tenSach,
+        ma: maSach,
         active: true,
       } as any);
       if (error) throw error;
@@ -57,37 +63,61 @@ export function useCayMutations() {
       ten: string;
       donViId: string;
     }) => {
-      // Get or create group
-      let nhId: string;
-      const { data: grp } = await supabase
+      const tenSach = ten.trim();
+      if (!tenSach) throw new Error("Tên hệ thống không được để trống");
+
+      // Lấy nhóm hiện có (kèm phân loại) — nguồn chuẩn cho phan_loai_id.
+      const { data: grp, error: grpFindErr } = await supabase
         .from("dm_nhom_he_thong")
-        .select("id")
+        .select("id, phan_loai_id")
         .eq("ma", nhMa)
         .maybeSingle();
+      if (grpFindErr) throw grpFindErr;
+
+      let nhId: string;
+      let phanLoaiId = grp?.phan_loai_id ?? (UUID_RE.test(plId) ? plId : "");
 
       if (!grp) {
+        if (!UUID_RE.test(phanLoaiId))
+          throw new Error("Không xác định được phân loại của nhóm hệ thống");
         const { data: newGrp, error: grpErr } = await supabase
           .from("dm_nhom_he_thong")
           .insert({
             ma: nhMa,
             ten: `Nhóm ${nhMa}`,
-            phan_loai_id: plId,
+            phan_loai_id: phanLoaiId,
             active: true,
           } as any)
-          .select()
+          .select("id")
           .single();
         if (grpErr) throw grpErr;
         nhId = newGrp.id;
       } else {
         nhId = grp.id;
       }
+      if (!UUID_RE.test(phanLoaiId))
+        throw new Error("Không xác định được phân loại của nhóm hệ thống");
+
+      // Sinh mã hệ thống duy nhất (tránh lỗi trùng khoá & rác dữ liệu).
+      const base = `${nhMa}_${tenSach.toUpperCase().replace(/\s+/g, "_")}`.slice(0, 48);
+      let maHt = base;
+      for (let i = 2; i <= 20; i++) {
+        const { data: dup } = await supabase
+          .from("dm_he_thong")
+          .select("id")
+          .eq("ma", maHt)
+          .maybeSingle();
+        if (!dup) break;
+        maHt = `${base}_${i}`;
+        if (i === 20) throw new Error(`Mã hệ thống ${base} đã tồn tại`);
+      }
 
       const { error } = await supabase.from("dm_he_thong").insert({
         nhom_he_thong_id: nhId,
-        phan_loai_id: plId,
-        ten,
-        ma: `${nhMa}_${ten.toUpperCase().replace(/\s+/g, "_")}`,
-        don_vi_id: donViId,
+        phan_loai_id: phanLoaiId,
+        ten: tenSach,
+        ma: maHt,
+        don_vi_id: donViId || null,
         active: true,
       } as any);
       if (error) throw error;
@@ -111,11 +141,23 @@ export function useCayMutations() {
       ten: string;
       ma: string;
     }) => {
+      const tenSach = ten.trim();
+      const maSach = ma.trim().toUpperCase();
+      if (!tenSach) throw new Error("Tên tài sản không được để trống");
+      if (!maSach) throw new Error("Mã tài sản không được để trống");
+
+      const { data: dup } = await supabase
+        .from("thiet_bi")
+        .select("ma_thiet_bi")
+        .eq("ma_thiet_bi", maSach)
+        .maybeSingle();
+      if (dup) throw new Error(`Mã tài sản ${maSach} đã tồn tại`);
+
       const { error } = await supabase.from("thiet_bi").insert({
         he_thong_id: htId,
         phan_loai_id: plId,
-        ten_thiet_bi: ten,
-        ma_thiet_bi: ma,
+        ten_thiet_bi: tenSach,
+        ma_thiet_bi: maSach,
         che_do_kd_hc: "N/A",
         trang_thai_cap_phat: "Sẵn sàng",
       } as any);
@@ -127,6 +169,7 @@ export function useCayMutations() {
     },
     onError: (e: any) => toast.error(e.message),
   });
+
 
   const deleteNode = useMutation({
     mutationFn: async ({
