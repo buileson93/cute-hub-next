@@ -59,8 +59,10 @@ export function NodeEditorSheet({
   const [newGroupMa, setNewGroupMa] = useState("");
   const [newSystemTen, setNewSystemTen] = useState("");
   const [newSystemDonViId, setNewSystemDonViId] = useState("");
-  const [addingGroup, setAddingGroup] = useState(false);
-  const [addingSystem, setAddingSystem] = useState(false);
+  const [serial, setSerial] = useState("");
+  const [serialGoc, setSerialGoc] = useState("");
+  const [viTri, setViTri] = useState("");
+  const [viTriGoc, setViTriGoc] = useState("");
 
   const isReal = target
     ? target.kind === "tb" ||
@@ -87,6 +89,10 @@ export function NodeEditorSheet({
 
     setTen(baseTen);
     setTenGoc(baseTen);
+    setSerial(tb?.ma_serial ?? "");
+    setSerialGoc(tb?.ma_serial ?? "");
+    setViTri(tb?.vi_tri ?? "");
+    setViTriGoc(tb?.vi_tri ?? "");
 
     // Chỉ load tenMindmap cho node nháp
     if (!isReal) {
@@ -100,6 +106,21 @@ export function NodeEditorSheet({
       setTenMindmapTouched(false);
     }
   }, [target, plLabel, nhLabel, htLabel, tbMap, isReal, setGroupCode]);
+
+  // Chỉ ghi khi giá trị thực sự đổi và không có mutation đang chạy (chống ghi rác/trùng).
+  const luuTruongVatLy = (
+    col: string,
+    value: string,
+    goc: string,
+    setGoc: (v: string) => void,
+  ) => {
+    if (!target || !canManage) return;
+    if (value.trim() === goc.trim()) return;
+    if (saveCell.isPending) return;
+    setGoc(value);
+    saveCell.mutate({ ma: target.ma, col, value: value.trim(), userRoles: roles });
+  };
+
 
   const title = target
     ? target.kind === "pl"
@@ -187,36 +208,28 @@ export function NodeEditorSheet({
                 <div className="space-y-1">
                   <Label className="text-[10px] uppercase text-muted-foreground">Số serial</Label>
                   <Input
-                    value={tbMap.get(target.ma)?.ma_serial || ""}
-                    onChange={(e) =>
-                      saveCell.mutate({
-                        ma: target.ma,
-                        col: "ma_serial",
-                        value: e.target.value,
-                        userRoles: roles,
-                      })
-                    }
+                    value={serial}
+                    onChange={(e) => setSerial(e.target.value)}
+                    onBlur={() => luuTruongVatLy("ma_serial", serial, serialGoc, setSerialGoc)}
                     className="h-8 text-xs font-mono"
                   />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-[10px] uppercase text-muted-foreground">Vị trí</Label>
                   <Input
-                    value={tbMap.get(target.ma)?.vi_tri || ""}
-                    onChange={(e) =>
-                      saveCell.mutate({
-                        ma: target.ma,
-                        col: "vi_tri",
-                        value: e.target.value,
-                        userRoles: roles,
-                      })
-                    }
+                    value={viTri}
+                    onChange={(e) => setViTri(e.target.value)}
+                    onBlur={() => luuTruongVatLy("vi_tri", viTri, viTriGoc, setViTriGoc)}
                     className="h-8 text-xs"
                   />
                 </div>
               </div>
+              <p className="text-[10px] italic text-muted-foreground">
+                Thay đổi được lưu khi rời khỏi ô nhập.
+              </p>
             </div>
           )}
+
 
           {target && !isReal && (
             <div className="space-y-1.5">
@@ -377,20 +390,33 @@ export function NodeEditorSheet({
             </Button>
           )}
 
-          {target &&
-            (target.kind === "nh" || target.kind === "ht") &&
-            canManage &&
-            target.ma !== HT_KHAC && (
-              <Button
-                variant="outline"
-                className="w-full text-destructive"
-                onClick={() =>
-                  deleteNode.mutate({ kind: target.kind, ma: target.ma, userRoles: roles })
-                }
-              >
-                <Trash2 className="mr-1.5 h-4 w-4" /> Xoá {title}
-              </Button>
-            )}
+          {target && canManage && (
+            <Button
+              variant="outline"
+              className="w-full text-destructive"
+              disabled={deleteNode.isPending || (target.kind !== "tb" && target.ma === HT_KHAC)}
+              onClick={() => {
+                if (deleteNode.isPending) return;
+                if (target.kind !== "nh" && target.kind !== "ht" && target.kind !== "tb") return;
+                const canhBao =
+                  target.kind === "tb"
+                    ? `Xoá tài sản "${ten || target.ma}"? Nếu đã có hồ sơ, hệ thống sẽ chuyển sang trạng thái ngừng khai thác thay vì xoá cứng.`
+                    : `Ngừng sử dụng ${title.toLowerCase()} "${ten || target.ma}"? Dữ liệu con vẫn được giữ lại.`;
+                if (!window.confirm(canhBao)) return;
+                deleteNode.mutate(
+                  { kind: target.kind, ma: target.ma, userRoles: roles },
+                  { onSuccess: () => onClose() },
+                );
+              }}
+            >
+              {deleteNode.isPending ? (
+                <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="mr-1.5 h-4 w-4" />
+              )}
+              Xoá {title}
+            </Button>
+          )}
 
           <Button variant="outline" className="w-full" onClick={() => setReorgOpen(true)}>
             <RefreshCcw className="mr-1.5 h-4 w-4" /> Lịch sử thay đổi
@@ -400,3 +426,4 @@ export function NodeEditorSheet({
     </Sheet>
   );
 }
+

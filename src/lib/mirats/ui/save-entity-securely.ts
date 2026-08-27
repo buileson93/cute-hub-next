@@ -1,6 +1,8 @@
 import { supabase } from "@/integrations/backend/client";
 import { createChangeRequest } from "@/lib/mirats/ghi-nghiep-vu-actions";
+import { parseHtSysMa } from "@/lib/mirats/phan-loai";
 import { CayKind } from "@/lib/mirats/ui/inline-edit";
+
 
 const TABLE_MAP: Record<
   string,
@@ -57,6 +59,11 @@ export async function saveEntityFieldSecurely(args: {
     targetField = config.nameCol;
   }
 
+  // Chuẩn hoá khoá định danh: node "ht" trên cây mang mã ghép "<NHOM>|<uuid>",
+  // node "nh" mang MÃ nhóm (không phải uuid) -> phải chọn đúng cột khoá,
+  // nếu không câu update sẽ khớp 0 dòng và im lặng "thành công" (sinh rác UX).
+  const { keyCol, keyValue } = resolveEntityKey(args.kind as string, args.id, config.keyCol);
+
   const isAdmin = args.userRoles.includes("admin") || args.userRoles.includes("phong_kt");
 
   if (isAdmin) {
@@ -66,20 +73,21 @@ export async function saveEntityFieldSecurely(args: {
       throw new Error("Tên không được để trống");
     }
 
-    const { error } = await (
+    const { data, error } = await (
       supabase.from(config.table as any).update({ [targetField]: value } as any) as any
-    ).eq(config.keyCol, args.id);
+    )
+      .eq(keyCol, keyValue)
+      .select(keyCol);
 
     if (error) throw error;
+    if (!data || (data as any[]).length === 0) {
+      throw new Error(`Không tìm thấy bản ghi để cập nhật (${config.table}: ${keyValue})`);
+    }
 
     // QUAN TRỌNG: Nếu đổi tên cho node thật -> Xoá triệt để override ở cay_node_edit
     // để đảm bảo SSoT bảng gốc thắng khi hiển thị.
     if (targetField === config.nameCol) {
-      await Promise.all([
-        supabase.from("cay_node_edit").delete().eq("kind", args.kind).eq("ma", args.id),
-        // Nếu có key ten_mindmap trong du_lieu JSON, ta cũng nên dọn (nếu schema cho phép)
-        // Hiện tại ta ưu tiên xoá bản ghi cay_node_edit trước.
-      ]);
+      await supabase.from("cay_node_edit").delete().eq("kind", args.kind).eq("ma", args.id);
     }
 
     return { success: true, mode: "direct" };
@@ -90,17 +98,39 @@ export async function saveEntityFieldSecurely(args: {
         | "thiet_bi.propose_field"
         | "he_thong.propose_field"
         | "dm.propose_new",
-      entity_id: args.id,
+      entity_id: keyValue,
       noi_dung: {
         field: targetField,
         value: args.value,
       },
-      ghi_chu: `Đề xuất cập nhật ${targetField} cho ${config.table} (${args.id})`,
+      ghi_chu: `Đề xuất cập nhật ${targetField} cho ${config.table} (${keyValue})`,
     });
 
     return { success: true, mode: "proposed" };
   }
 }
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Tách khoá thật từ mã node trên cây và chọn đúng cột khoá của bảng gốc. */
+export function resolveEntityKey(
+  kind: string,
+  rawId: string,
+  defaultKeyCol: string,
+): { keyCol: string; keyValue: string } {
+  if (kind === "tb") return { keyCol: defaultKeyCol, keyValue: rawId };
+
+  let value = rawId;
+  if (kind === "ht") {
+    // Mã node hệ thống là "<MA_NHOM>|<id hệ thống>"
+    value = parseHtSysMa(rawId).sysName || rawId;
+  }
+  if (kind === "nh" || kind === "ht" || kind === "pl") {
+    return { keyCol: UUID_RE.test(value) ? "id" : "ma", keyValue: value };
+  }
+  return { keyCol: defaultKeyCol, keyValue: value };
+}
+
 
 /** @deprecated Dùng saveEntityFieldSecurely */
 export const saveCellSecurely = (args: any) =>
