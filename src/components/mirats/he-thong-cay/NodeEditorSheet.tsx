@@ -59,8 +59,10 @@ export function NodeEditorSheet({
   const [newGroupMa, setNewGroupMa] = useState("");
   const [newSystemTen, setNewSystemTen] = useState("");
   const [newSystemDonViId, setNewSystemDonViId] = useState("");
-  const [addingGroup, setAddingGroup] = useState(false);
-  const [addingSystem, setAddingSystem] = useState(false);
+  const [serial, setSerial] = useState("");
+  const [serialGoc, setSerialGoc] = useState("");
+  const [viTri, setViTri] = useState("");
+  const [viTriGoc, setViTriGoc] = useState("");
 
   const isReal = target
     ? target.kind === "tb" ||
@@ -87,6 +89,10 @@ export function NodeEditorSheet({
 
     setTen(baseTen);
     setTenGoc(baseTen);
+    setSerial(tb?.ma_serial ?? "");
+    setSerialGoc(tb?.ma_serial ?? "");
+    setViTri(tb?.vi_tri ?? "");
+    setViTriGoc(tb?.vi_tri ?? "");
 
     // Chỉ load tenMindmap cho node nháp
     if (!isReal) {
@@ -100,6 +106,21 @@ export function NodeEditorSheet({
       setTenMindmapTouched(false);
     }
   }, [target, plLabel, nhLabel, htLabel, tbMap, isReal, setGroupCode]);
+
+  // Chỉ ghi khi giá trị thực sự đổi và không có mutation đang chạy (chống ghi rác/trùng).
+  const luuTruongVatLy = (
+    col: string,
+    value: string,
+    goc: string,
+    setGoc: (v: string) => void,
+  ) => {
+    if (!target || !canManage) return;
+    if (value.trim() === goc.trim()) return;
+    if (saveCell.isPending) return;
+    setGoc(value);
+    saveCell.mutate({ ma: target.ma, col, value: value.trim(), userRoles: roles });
+  };
+
 
   const title = target
     ? target.kind === "pl"
