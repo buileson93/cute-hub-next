@@ -390,20 +390,33 @@ export function NodeEditorSheet({
             </Button>
           )}
 
-          {target &&
-            (target.kind === "nh" || target.kind === "ht") &&
-            canManage &&
-            target.ma !== HT_KHAC && (
-              <Button
-                variant="outline"
-                className="w-full text-destructive"
-                onClick={() =>
-                  deleteNode.mutate({ kind: target.kind, ma: target.ma, userRoles: roles })
-                }
-              >
-                <Trash2 className="mr-1.5 h-4 w-4" /> Xoá {title}
-              </Button>
-            )}
+          {target && canManage && (
+            <Button
+              variant="outline"
+              className="w-full text-destructive"
+              disabled={deleteNode.isPending || (target.kind !== "tb" && target.ma === HT_KHAC)}
+              onClick={() => {
+                if (deleteNode.isPending) return;
+                if (target.kind !== "nh" && target.kind !== "ht" && target.kind !== "tb") return;
+                const canhBao =
+                  target.kind === "tb"
+                    ? `Xoá tài sản "${ten || target.ma}"? Nếu đã có hồ sơ, hệ thống sẽ chuyển sang trạng thái ngừng khai thác thay vì xoá cứng.`
+                    : `Ngừng sử dụng ${title.toLowerCase()} "${ten || target.ma}"? Dữ liệu con vẫn được giữ lại.`;
+                if (!window.confirm(canhBao)) return;
+                deleteNode.mutate(
+                  { kind: target.kind, ma: target.ma, userRoles: roles },
+                  { onSuccess: () => onClose() },
+                );
+              }}
+            >
+              {deleteNode.isPending ? (
+                <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="mr-1.5 h-4 w-4" />
+              )}
+              Xoá {title}
+            </Button>
+          )}
 
           <Button variant="outline" className="w-full" onClick={() => setReorgOpen(true)}>
             <RefreshCcw className="mr-1.5 h-4 w-4" /> Lịch sử thay đổi
@@ -413,3 +426,4 @@ export function NodeEditorSheet({
     </Sheet>
   );
 }
+
