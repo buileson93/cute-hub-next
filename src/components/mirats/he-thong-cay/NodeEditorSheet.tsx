@@ -187,36 +187,28 @@ export function NodeEditorSheet({
                 <div className="space-y-1">
                   <Label className="text-[10px] uppercase text-muted-foreground">Số serial</Label>
                   <Input
-                    value={tbMap.get(target.ma)?.ma_serial || ""}
-                    onChange={(e) =>
-                      saveCell.mutate({
-                        ma: target.ma,
-                        col: "ma_serial",
-                        value: e.target.value,
-                        userRoles: roles,
-                      })
-                    }
+                    value={serial}
+                    onChange={(e) => setSerial(e.target.value)}
+                    onBlur={() => luuTruongVatLy("ma_serial", serial, serialGoc, setSerialGoc)}
                     className="h-8 text-xs font-mono"
                   />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-[10px] uppercase text-muted-foreground">Vị trí</Label>
                   <Input
-                    value={tbMap.get(target.ma)?.vi_tri || ""}
-                    onChange={(e) =>
-                      saveCell.mutate({
-                        ma: target.ma,
-                        col: "vi_tri",
-                        value: e.target.value,
-                        userRoles: roles,
-                      })
-                    }
+                    value={viTri}
+                    onChange={(e) => setViTri(e.target.value)}
+                    onBlur={() => luuTruongVatLy("vi_tri", viTri, viTriGoc, setViTriGoc)}
                     className="h-8 text-xs"
                   />
                 </div>
               </div>
+              <p className="text-[10px] italic text-muted-foreground">
+                Thay đổi được lưu khi rời khỏi ô nhập.
+              </p>
             </div>
           )}
+
 
           {target && !isReal && (
             <div className="space-y-1.5">
