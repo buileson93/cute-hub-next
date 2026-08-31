@@ -5,9 +5,10 @@ import {
   AVAILABLE_WIDGETS,
   DEFAULT_HOME_LAYOUT,
   DEFAULT_OVERVIEW_LAYOUT,
+  type WidgetGroup,
 } from "@/lib/mirats/dashboard/widget-registry";
 import { useUserPref } from "@/hooks/use-user-pref";
-import { moveWidget, sanitizeLayout } from "@/lib/mirats/dashboard/widget-layout";
+import { filterLayoutByGroup, moveWidget, sanitizeLayout } from "@/lib/mirats/dashboard/widget-layout";
 import { WidgetContainer } from "./WidgetContainer";
 
 import { VisualKpiChart } from "@/components/mirats/dashboard/VisualKpiChart";
@@ -87,16 +88,24 @@ const TASK_STATUS_COLORS: Record<string, string> = {
 interface DashboardGridProps {
   page: "home" | "overview";
   isEditing?: boolean;
+  /** Chỉ hiển thị widget thuộc nhóm chủ đề này (tab). Bỏ trống = hiển thị tất cả. */
+  group?: WidgetGroup;
+  /** Nội dung hiển thị khi nhóm hiện tại chưa có widget nào. */
+  emptyState?: React.ReactNode;
 }
 
-export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
+export function DashboardGrid({ page, isEditing, group, emptyState }: DashboardGridProps) {
   const navigate = useNavigate();
   const prefKey = `dashboard:layout:${page}`;
   const defaultLayout = page === "home" ? DEFAULT_HOME_LAYOUT : DEFAULT_OVERVIEW_LAYOUT;
   const [rawLayout, setLayout] = useUserPref<DashboardWidgetConfig[]>(prefKey, defaultLayout);
-  const layout = React.useMemo(
+  const fullLayout = React.useMemo(
     () => sanitizeLayout(rawLayout, defaultLayout),
     [rawLayout, defaultLayout],
+  );
+  const layout = React.useMemo(
+    () => (group ? filterLayoutByGroup(fullLayout, group) : fullLayout),
+    [fullLayout, group],
   );
 
 
@@ -824,6 +833,10 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
       return target ? moveWidget(current, id, target.id) : current;
     });
   };
+
+  if (!layout.length) {
+    return <>{emptyState ?? null}</>;
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full">
