@@ -559,31 +559,36 @@
 }
 
 
-/* MIRATS Table Horizontal Scroll Rail */
+/* MIRATS Table Horizontal Scroll Rail
+   Thanh cuộn ngang phải luôn nhìn thấy được (desktop) và không bị co mất chỗ. */
 .mirats-table-scroll-container {
+  overflow-x: auto;
   scrollbar-width: thin;
-  scrollbar-color: var(--color-border) transparent;
+  scrollbar-gutter: stable;
+  scrollbar-color: color-mix(in oklab, var(--color-primary) 45%, transparent) transparent;
 }
 
 .mirats-table-scroll-container::-webkit-scrollbar {
-  height: 8px;
-  width: 8px;
+  height: 10px;
+  width: 10px;
 }
 
 .mirats-table-scroll-container::-webkit-scrollbar-track {
-  background: transparent;
+  background: color-mix(in oklab, var(--color-muted) 60%, transparent);
+  border-radius: 10px;
 }
 
 .mirats-table-scroll-container::-webkit-scrollbar-thumb {
-  background-color: var(--color-border);
+  background-color: color-mix(in oklab, var(--color-primary) 45%, transparent);
   border-radius: 10px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
 
 .mirats-table-scroll-container::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-muted-foreground);
+  background-color: color-mix(in oklab, var(--color-primary) 70%, transparent);
 }
+
 
 #lovable-badge {
   display: none !important;

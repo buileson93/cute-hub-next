@@ -154,8 +154,9 @@ export function AssetTablePanel({
         </>
       )}
       toolbarLeft={
-        <div className="flex items-center gap-1.5">
+        <div className="flex min-w-0 flex-wrap items-center gap-1.5">
           {ModeToggle}
+
           <div className="relative flex items-center">
             <Button
               variant="ghost"

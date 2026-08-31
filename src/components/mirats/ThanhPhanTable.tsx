@@ -68,6 +68,8 @@ import { AppTooltip } from "@/components/mirats/AppTooltip";
 import type { KeysetCursor } from "@/lib/mirats/db/keyset";
 import { ComponentTablePanel } from "./inventory/ComponentTablePanel";
 import { AssetTablePanel } from "./inventory/AssetTablePanel";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 
 
 // ---- Kiểu dữ liệu 1 dòng ở chế độ "Theo tài sản": 1 TÀI SẢN + tổng hợp thành phần đang lắp
