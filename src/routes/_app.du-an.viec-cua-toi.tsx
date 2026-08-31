@@ -117,6 +117,7 @@ function ViecCuaToiPage() {
                     <Link
                       to="/du-an/$id"
                       params={{ id: r.du_an_id }}
+                      search={{ view: "kanban", q: "" }}
                       className="font-medium text-foreground hover:underline"
                     >
                       {r.ten}

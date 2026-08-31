@@ -120,6 +120,7 @@ function DaKyPage() {
                       <Link
                         to="/du-an/$id"
                         params={{ id: r.dossier.project_id }}
+                      search={{ view: "kanban", q: "" }}
                         className="text-primary hover:underline"
                       >
                         Mở dự án

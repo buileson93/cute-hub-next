@@ -110,6 +110,7 @@ function KhoHoSoPage() {
                       <Link
                         to="/du-an/$id"
                         params={{ id: r.project_id }}
+                      search={{ view: "kanban", q: "" }}
                         className="text-primary hover:underline"
                       >
                         {r.du_an?.ten ?? "Dự án"}
