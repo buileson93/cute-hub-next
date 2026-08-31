@@ -102,7 +102,7 @@ export function AssigneeAvatar({
             {assignee.avatarUrl ? (
               <AvatarImage src={assignee.avatarUrl} alt="" />
             ) : null}
-            <AvatarFallback className={cn("text-[10px] font-semibold", tone)}>
+            <AvatarFallback className={cn("text-xs font-semibold", tone)}>
               {initialsOf(assignee.name)}
             </AvatarFallback>
           </Avatar>
@@ -117,7 +117,7 @@ export function AssigneeAvatar({
 export function AssigneeStack({ assignees }: { assignees: readonly GanttAssignee[] }) {
   if (assignees.length === 0) {
     return (
-      <span className="text-[11px] text-muted-foreground" aria-label="Chưa có người phụ trách">
+      <span className="text-xs text-muted-foreground" aria-label="Chưa có người phụ trách">
         Chưa giao
       </span>
     );
@@ -246,14 +246,14 @@ export function ProjectGantt({
           <div className="min-w-max">
             {/* Header dòng thời gian */}
             <div className="sticky top-0 z-30 flex border-b border-border bg-card/95 backdrop-blur">
-              <div className="sticky left-0 z-10 w-[15rem] shrink-0 border-r border-border bg-card/95 px-3 py-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground sm:w-[19rem]">
+              <div className="sticky left-0 z-10 w-[15rem] shrink-0 border-r border-border bg-card/95 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:w-[19rem]">
                 Công việc
               </div>
               <div className="relative h-9" style={{ width: gridWidth }}>
                 {ticks.map((t) => (
                   <span
                     key={t.key}
-                    className="absolute top-0 h-full border-l border-border/60 pl-1 pt-2 text-[10px] text-muted-foreground"
+                    className="absolute top-0 h-full border-l border-border/60 pl-1 pt-2 text-xs text-muted-foreground"
                     style={{ left: t.left }}
                   >
                     {t.label}
@@ -308,8 +308,8 @@ export function ProjectGantt({
                             className={cn(
                               "min-w-0 flex-1 truncate rounded text-left outline-none focus-visible:ring-2 focus-visible:ring-ring",
                               row.kind === "moc"
-                                ? "text-[13px] font-semibold text-foreground"
-                                : "text-[13px] text-foreground/90",
+                                ? "text-sm font-semibold text-foreground"
+                                : "text-sm text-foreground/90",
                             )}
                           >
                             {row.name || "Chưa đặt tên"}
@@ -367,7 +367,7 @@ export function ProjectGantt({
                               )}
                               style={{ width: `${row.progress}%` }}
                             />
-                            <span className="relative z-10 truncate px-2 text-[11px] font-medium text-foreground">
+                            <span className="relative z-10 truncate px-2 text-xs font-medium text-foreground">
                               {span.spanDays * dayWidth > 56 ? row.name : ""}
                             </span>
                           </button>
