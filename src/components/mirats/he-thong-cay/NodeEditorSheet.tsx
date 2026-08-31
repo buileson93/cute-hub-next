@@ -46,8 +46,9 @@ export function NodeEditorSheet({
   canManage: boolean;
   donViList: any[];
 }) {
-  const { addGroup, addSystem, deleteNode, renameEntity, saveCell, renameGroupCode } =
+  const { addGroup, addSystem, addDevice, deleteNode, renameEntity, saveCell, renameGroupCode } =
     useCayMutations();
+
   const { setReorgOpen, viewTree, groupCode, setGroupCode } = useCayContext();
   const { roles } = useSession();
 
