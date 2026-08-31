@@ -73,18 +73,28 @@ function DuAnListPage() {
   const nav = useNavigate();
   const { session, hasRole } = useSession();
   const [q, setQ] = useState("");
+  const [status, setStatus] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<"created_desc" | "ten_asc" | "tien_do_desc" | "han_asc">(
+    "created_desc",
+  );
   const [openCreate, setOpenCreate] = useState(false);
 
   const canCreate = hasRole("admin") || hasRole("quan_ly_du_an");
 
-  const { data: duAns, isLoading } = useQuery({
+  const {
+    data: duAns,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ["du-an-list"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error: err } = await supabase
         .from("du_an")
         .select("*")
         .order("created_at", { ascending: false });
-      if (error) throw error;
+      if (err) throw err;
       return (data ?? []) as DuAn[];
     },
     enabled: !!session,
@@ -104,11 +114,30 @@ function DuAnListPage() {
 
   const filtered = useMemo(() => {
     const kw = q.trim().toLowerCase();
-    if (!kw) return duAns ?? [];
-    return (duAns ?? []).filter((d) =>
-      [d.ten, d.ma, d.mo_ta].some((v) => v?.toLowerCase().includes(kw)),
-    );
-  }, [duAns, q]);
+    let list = duAns ?? [];
+    if (kw) {
+      list = list.filter((d) => [d.ten, d.ma, d.mo_ta].some((v) => v?.toLowerCase().includes(kw)));
+    }
+    if (status !== "all") list = list.filter((d) => d.trang_thai === status);
+    const sorted = [...list];
+    sorted.sort((a, b) => {
+      switch (sortBy) {
+        case "ten_asc":
+          return a.ten.localeCompare(b.ten, "vi");
+        case "tien_do_desc":
+          return b.tien_do - a.tien_do;
+        case "han_asc":
+          return (a.ngay_ket_thuc_du_kien ?? "9999").localeCompare(
+            b.ngay_ket_thuc_du_kien ?? "9999",
+          );
+        default:
+          return b.created_at.localeCompare(a.created_at);
+      }
+    });
+    return sorted;
+  }, [duAns, q, status, sortBy]);
+
+  const isFiltering = !!q.trim() || status !== "all";
 
   return (
     <>
@@ -133,26 +162,69 @@ function DuAnListPage() {
             </div>
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="relative max-w-md">
-              <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <Input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Tìm dự án…"
-                className="pl-9"
-              />
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="relative flex-1 min-w-[220px] max-w-md">
+                <Search
+                  className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                <Input
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Tìm dự án…"
+                  aria-label="Tìm dự án"
+                  className="pl-9"
+                />
+              </div>
+              <Select value={status} onValueChange={setStatus}>
+                <SelectTrigger className="w-[170px]" aria-label="Lọc theo trạng thái">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tất cả trạng thái</SelectItem>
+                  {Object.entries(TRANG_THAI).map(([v, t]) => (
+                    <SelectItem key={v} value={v}>
+                      {t.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
+                <SelectTrigger className="w-[180px]" aria-label="Sắp xếp">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="created_desc">Mới tạo trước</SelectItem>
+                  <SelectItem value="ten_asc">Tên A→Z</SelectItem>
+                  <SelectItem value="tien_do_desc">Tiến độ cao trước</SelectItem>
+                  <SelectItem value="han_asc">Hạn gần nhất</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
 
         {isLoading ? (
           <div className="flex items-center gap-2 p-8 text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" /> Đang tải…
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Đang tải…
           </div>
+        ) : isError ? (
+          <Card>
+            <CardContent className="py-12 text-center text-sm space-y-3">
+              <div className="text-destructive">
+                Không tải được danh sách dự án: {(error as Error).message}
+              </div>
+              <Button variant="outline" size="sm" onClick={() => refetch()}>
+                Thử lại
+              </Button>
+            </CardContent>
+          </Card>
         ) : filtered.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center text-muted-foreground text-sm">
-              Chưa có dự án nào phù hợp. {canCreate && "Nhấn “Tạo dự án” để bắt đầu."}
+              {isFiltering
+                ? "Không có dự án khớp bộ lọc. Thử xoá từ khoá hoặc chọn lại trạng thái."
+                : `Chưa có dự án nào. ${canCreate ? "Nhấn “Tạo dự án” để bắt đầu." : ""}`}
             </CardContent>
           </Card>
         ) : (
@@ -214,7 +286,14 @@ function DuAnListPage() {
         open={openCreate}
         onOpenChange={setOpenCreate}
         donVis={donVis ?? []}
-        onDone={() => qc.invalidateQueries({ queryKey: ["du-an-list"] })}
+        onDone={(newId) => {
+          qc.invalidateQueries({ queryKey: ["du-an-list"] });
+          nav({
+            to: "/du-an/$id",
+            params: { id: newId },
+            search: { view: "kanban", q: "" } as any,
+          });
+        }}
       />
     </>
   );
@@ -229,7 +308,7 @@ function CreateDuAnDialog({
   open: boolean;
   onOpenChange: (v: boolean) => void;
   donVis: { id: string; ten: string }[];
-  onDone: () => void;
+  onDone: (newId: string) => void;
 }) {
   const { session } = useSession();
   const [form, setForm] = useState({
@@ -245,6 +324,13 @@ function CreateDuAnDialog({
     mutationFn: async () => {
       if (!session?.user?.id) throw new Error("Chưa đăng nhập");
       if (!form.ten.trim()) throw new Error("Cần nhập tên dự án");
+      if (
+        form.ngay_bat_dau &&
+        form.ngay_ket_thuc_du_kien &&
+        form.ngay_ket_thuc_du_kien < form.ngay_bat_dau
+      ) {
+        throw new Error("Ngày kết thúc dự kiến phải sau ngày bắt đầu");
+      }
       const payload = {
         ma: form.ma.trim() || null,
         ten: form.ten.trim(),
@@ -259,7 +345,7 @@ function CreateDuAnDialog({
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (created) => {
       toast.success("Đã tạo dự án thành công");
       onOpenChange(false);
       setForm({
@@ -270,7 +356,7 @@ function CreateDuAnDialog({
         ngay_bat_dau: "",
         ngay_ket_thuc_du_kien: "",
       });
-      onDone();
+      onDone(created.id as string);
     },
     onError: (e: Error) => toast.error("Tạo dự án thất bại: " + e.message),
 

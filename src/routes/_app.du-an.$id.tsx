@@ -78,7 +78,7 @@ import { getTodayDateString } from "@/lib/mirats/calendar-date";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { TaskDetailSlideOver } from "@/components/mirats/projects/TaskDetailSlideOver";
 
-const SUPPORTED_VIEWS = ["kanban", "gantt", "list", "timeline", "hoso", "cong-van", "phase-gate"] as const;
+const SUPPORTED_VIEWS = ["kanban", "gantt", "list", "timeline", "hoso", "cong-van"] as const;
 type ProjectView = (typeof SUPPORTED_VIEWS)[number];
 
 const PROJECT_VIEWS: ReadonlyArray<{
@@ -92,10 +92,9 @@ const PROJECT_VIEWS: ReadonlyArray<{
   { value: "timeline", label: "Dòng thời gian", icon: CalendarClock },
   { value: "hoso", label: "Danh mục Hồ sơ", icon: FolderArchive },
   { value: "cong-van", label: "Sổ Công văn", icon: Mails },
-  { value: "phase-gate", label: "Ma trận Hồ sơ", icon: ShieldAlert },
 ];
 
-const WORK_VIEWS: ProjectView[] = ["kanban", "gantt", "list", "timeline", "phase-gate"];
+const WORK_VIEWS: ProjectView[] = ["kanban", "gantt", "list", "timeline"];
 
 export const Route = createFileRoute("/_app/du-an/$id")({
   validateSearch: (search: Record<string, unknown>) => {
@@ -275,11 +274,36 @@ function DuAnDetailPage() {
   const canAddTask = isManager || hasRole("to_truong") || hasRole("quan_ly_du_an");
 
   const [openMoc, setOpenMoc] = useState(false);
+  const [openSettings, setOpenSettings] = useState(false);
   const [openCV, setOpenCV] = useState(false);
   const [defaultMocId, setDefaultMocId] = useState<string | null>(null);
   const [editingCV, setEditingCV] = useState<CongViec | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [showTaskDetail, setShowTaskDetail] = useState(false);
+
+  // Kéo–thả / đổi nhanh trạng thái trên Kanban (ghi thẳng CSDL, RLS kiểm soát quyền).
+  const changeStatus = useMutation({
+    mutationFn: async ({ task, st }: { task: CongViec; st: (typeof CV_STATUSES)[number] }) => {
+      if (task.trang_thai === st) return;
+      const { error } = await supabase
+        .from("du_an_cong_viec")
+        .update({
+          trang_thai: st,
+          tien_do: st === "hoan_thanh" ? 100 : task.tien_do,
+          ngay_hoan_thanh_thuc_te:
+            st === "hoan_thanh" ? (task.ngay_hoan_thanh_thuc_te ?? getTodayDateString()) : null,
+        })
+        .eq("id", task.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["du-an-cv", id] });
+      qc.invalidateQueries({ queryKey: ["du-an-moc", id] });
+      qc.invalidateQueries({ queryKey: ["du-an", id] });
+    },
+    onError: (e: Error) => toast.error("Không đổi được trạng thái: " + e.message),
+  });
+
 
   if (loadingDA) {
     return (
@@ -323,12 +347,18 @@ function DuAnDetailPage() {
               {duAn.trang_thai.replace("_", " ")}
             </Badge>
             {isManager && (
-              <Button
-                size="sm"
-                className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
-              >
-                <Pencil className="h-4 w-4 mr-2" /> Thiết lập
-              </Button>
+              <>
+                <Button size="sm" variant="outline" onClick={() => setOpenMoc(true)}>
+                  <Plus className="h-4 w-4 mr-2" /> Thêm mốc
+                </Button>
+                <Button
+                  size="sm"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
+                  onClick={() => setOpenSettings(true)}
+                >
+                  <Pencil className="h-4 w-4 mr-2" /> Thiết lập
+                </Button>
+              </>
             )}
           </div>
         </div>
@@ -431,6 +461,9 @@ function DuAnDetailPage() {
                 setEditingCV(null);
                 setOpenCV(true);
               }}
+              canChangeStatus={canAddTask}
+              onChangeStatus={(task, st) => changeStatus.mutate({ task, st })}
+              pendingTaskId={changeStatus.isPending ? changeStatus.variables?.task.id : undefined}
               density="comfortable"
             />
           </TabsContent>
@@ -492,7 +525,13 @@ function DuAnDetailPage() {
           <TabsContent value="list" className="mt-3">
             <ListView
               mocs={mocs ?? []}
-              tasks={congViecs ?? []}
+              tasks={
+                congViecs?.filter(
+                  (t) =>
+                    !currentSearch.q || t.ten.toLowerCase().includes(currentSearch.q.toLowerCase()),
+                ) ?? []
+              }
+              isFiltering={!!currentSearch.q}
               nameOf={nameOf}
               onEdit={(t) => {
                 setSelectedTaskId(t.id);
@@ -526,100 +565,6 @@ function DuAnDetailPage() {
             <ProjectTimeline projectId={id} />
           </TabsContent>
 
-          <TabsContent value="phase-gate" className="mt-3">
-            <div className="bg-card border rounded-xl overflow-hidden min-h-[400px]">
-              <div className="bg-slate-50 border-b p-6 flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-slate-900">Ma trận Hồ sơ theo Giai đoạn</h3>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Kiểm soát điều kiện pháp lý để chuyển đổi giai đoạn dự án.
-                  </p>
-                </div>
-                <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 gap-1.5 py-1">
-                  <ShieldAlert className="h-3 w-3" /> Chặn luồng: BẬT
-                </Badge>
-              </div>
-
-              <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
-                  {/* Connector lines (Desktop) */}
-                  <div className="hidden md:block absolute top-1/2 left-[30%] w-[5%] h-0.5 bg-slate-200 -translate-y-1/2" />
-                  <div className="hidden md:block absolute top-1/2 left-[63%] w-[5%] h-0.5 bg-slate-200 -translate-y-1/2" />
-
-                  {/* Phase 1 */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">1</div>
-                      <span className="font-bold text-slate-800">Chuẩn bị</span>
-                      <Badge className="bg-emerald-50 text-emerald-700 border-emerald-100 ml-auto">Đạt</Badge>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="p-3 bg-white border border-emerald-200 rounded-xl shadow-sm flex items-center justify-between group cursor-pointer hover:border-emerald-400 transition-colors">
-                        <div className="flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                          <span className="text-xs font-medium">Tờ trình chủ trương</span>
-                        </div>
-                        <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-none">Đã ký</Badge>
-                      </div>
-                      <div className="p-3 bg-white border border-emerald-200 rounded-xl shadow-sm flex items-center justify-between group cursor-pointer hover:border-emerald-400 transition-colors">
-                        <div className="flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                          <span className="text-xs font-medium">Quyết định phê duyệt</span>
-                        </div>
-                        <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-none">Đã ban hành</Badge>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Phase 2 */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-sm">2</div>
-                      <span className="font-bold text-slate-800">Triển khai</span>
-                      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 ml-auto">Đang thực hiện</Badge>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="p-3 bg-white border border-indigo-200 rounded-xl shadow-sm flex items-center justify-between group cursor-pointer hover:border-indigo-400 transition-colors">
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-indigo-600" />
-                          <span className="text-xs font-medium">Báo cáo kỹ thuật</span>
-                        </div>
-                        <Badge variant="outline" className="text-[10px] bg-indigo-50 text-indigo-700 border-none">Đang soạn</Badge>
-                      </div>
-                      <div className="p-3 bg-slate-50 border border-dashed border-slate-300 rounded-xl flex items-center justify-between group">
-                        <div className="flex items-center gap-2 opacity-60">
-                          <Circle className="h-4 w-4 text-slate-400" />
-                          <span className="text-xs font-medium">Biên bản kiểm tra</span>
-                        </div>
-                        <Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-500 border-none">Trống</Badge>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Phase 3 */}
-                  <div className="space-y-4 opacity-60">
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-sm">3</div>
-                      <span className="font-bold text-slate-800">Kết thúc</span>
-                      <Lock className="h-3.5 w-3.5 ml-auto text-slate-400" />
-                    </div>
-                    <div className="space-y-2">
-                      <div className="p-3 bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Circle className="h-4 w-4 text-slate-300" />
-                          <span className="text-xs font-medium text-slate-400">Biên bản nghiệm thu</span>
-                        </div>
-                      </div>
-                      <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-[10px] text-amber-800 italic flex gap-2">
-                        <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
-                        <span>Luồng công việc bị chặn cho đến khi hoàn thành hồ sơ giai đoạn 2.</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
         </Tabs>
       </div>
 
@@ -650,12 +595,30 @@ function DuAnDetailPage() {
         taskId={selectedTaskId}
         open={showTaskDetail}
         onOpenChange={setShowTaskDetail}
+        canDelete={isManager}
+        onDeleted={() => {
+          qc.invalidateQueries({ queryKey: ["du-an-cv", id] });
+          qc.invalidateQueries({ queryKey: ["du-an-moc", id] });
+          qc.invalidateQueries({ queryKey: ["du-an", id] });
+        }}
         onEdit={(t) => {
-          setEditingCV(t);
-          setDefaultMocId(t.moc_id);
+          const full = (congViecs ?? []).find((c) => c.id === t.id) ?? null;
+          if (!full) return;
+          setEditingCV(full);
+          setDefaultMocId(full.moc_id);
           setShowTaskDetail(false);
           setOpenCV(true);
         }}
+      />
+
+      <ProjectSettingsDialog
+        open={openSettings}
+        onOpenChange={setOpenSettings}
+        duAn={duAn}
+        users={profiles ?? []}
+        canDelete={hasRole("admin") || duAn.nguoi_tao_id === uid}
+        onDone={() => qc.invalidateQueries({ queryKey: ["du-an", id] })}
+        onDeleted={() => nav({ to: "/du-an" })}
       />
     </div>
   );
@@ -687,6 +650,9 @@ function KanbanView({
   onEdit,
   canAdd,
   onAddIn,
+  canChangeStatus,
+  onChangeStatus,
+  pendingTaskId,
   density = "default",
 }: {
   mocs: Moc[];
@@ -695,9 +661,25 @@ function KanbanView({
   onEdit: (t: CongViec) => void;
   canAdd: boolean;
   onAddIn: (mocId: string) => void;
+  canChangeStatus: boolean;
+  onChangeStatus: (task: CongViec, st: (typeof CV_STATUSES)[number]) => void;
+  pendingTaskId?: string;
   density?: "default" | "comfortable" | "compact";
 }) {
-  const mocMap = useMemo(() => Object.fromEntries(mocs.map((m) => [m.id, m])), [mocs]);
+  const [dragOver, setDragOver] = useState<string | null>(null);
+  const taskMap = useMemo(() => Object.fromEntries(tasks.map((t) => [t.id, t])), [tasks]);
+  const noMoc = mocs.length === 0;
+
+  if (noMoc) {
+    return (
+      <Card>
+        <CardContent className="py-10 text-center text-sm text-muted-foreground">
+          Chưa có mốc công việc nào. Người quản lý dự án hãy tạo mốc trước khi thêm công việc.
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <div
       className="flex gap-4 overflow-x-auto pb-4 scroll-px-4 min-h-[calc(100vh-320px)]"
@@ -738,25 +720,49 @@ function KanbanView({
                 <Button
                   variant="ghost"
                   size="icon"
-                  aria-label="Thêm task mới"
-                  className="h-6 w-6 text-slate-400"
-                  onClick={() => onAddIn(mocs[0]?.id)}
+                  aria-label={`Thêm công việc vào cột ${col.label}`}
+                  className="h-6 w-6 text-muted-foreground"
+                  onClick={() => onAddIn(mocs[0].id)}
                 >
-                  <Plus className="h-3.5 w-3.5" />
+                  <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                 </Button>
               )}
             </div>
 
-            <div className="flex-1 space-y-3 p-1 rounded-lg bg-muted/20 border border-border/50 min-h-[150px]">
+            <div
+              className={cn(
+                "flex-1 space-y-3 p-1 rounded-lg bg-muted/20 border border-border/50 min-h-[150px] transition-colors",
+                dragOver === st && "border-primary bg-primary/5",
+              )}
+              onDragOver={(e) => {
+                if (!canChangeStatus) return;
+                e.preventDefault();
+                setDragOver(st);
+              }}
+              onDragLeave={() => setDragOver((cur) => (cur === st ? null : cur))}
+              onDrop={(e) => {
+                setDragOver(null);
+                if (!canChangeStatus) return;
+                e.preventDefault();
+                const taskId = e.dataTransfer.getData("text/plain");
+                const task = taskMap[taskId];
+                if (task && task.trang_thai !== st) onChangeStatus(task, st);
+              }}
+            >
               {list.map((t) => (
                 <Card
                   key={t.id}
-                  className="group cursor-pointer border-border shadow-sm hover:shadow-md hover:border-primary/50 transition-all duration-200"
+                  draggable={canChangeStatus}
+                  onDragStart={(e) => e.dataTransfer.setData("text/plain", t.id)}
+                  className={cn(
+                    "group cursor-pointer border-border shadow-sm hover:shadow-md hover:border-primary/50 transition-all duration-200",
+                    pendingTaskId === t.id && "opacity-60 pointer-events-none",
+                  )}
                   onClick={() => onEdit(t)}
                 >
                   <CardContent className="p-3 space-y-3">
                     <div className="flex items-start justify-between gap-2">
-                      <div className="text-[10px] font-mono text-slate-400 tracking-tight">
+                      <div className="text-[10px] font-mono text-muted-foreground tracking-tight">
                         #{t.id.slice(0, 6).toUpperCase()}
                       </div>
                       {t.tien_do > 0 && (
@@ -781,7 +787,7 @@ function KanbanView({
 
                     <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-border mt-2">
                       <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                        <UserIcon className="h-3 w-3 text-slate-400" />
+                        <UserIcon className="h-3 w-3" aria-hidden="true" />
                         <span className="max-w-[80px] truncate">{nameOf(t.nguoi_xu_ly_chinh)}</span>
                       </div>
                       {t.ngay_ket_thuc_du_kien && (
@@ -793,18 +799,39 @@ function KanbanView({
                               : "text-muted-foreground",
                           )}
                         >
-                          <CalendarIcon className="h-3 w-3 text-slate-400" />
+                          <CalendarIcon className="h-3 w-3" aria-hidden="true" />
                           <span>{t.ngay_ket_thuc_du_kien}</span>
                         </div>
                       )}
                     </div>
+
+                    {canChangeStatus && (
+                      // Lối bàn phím thay cho kéo–thả (a11y + thiết bị cảm ứng).
+                      <select
+                        aria-label={`Đổi trạng thái công việc ${t.ten}`}
+                        className="w-full h-7 rounded-md border border-border bg-background text-[11px] px-2"
+                        value={t.trang_thai}
+                        disabled={pendingTaskId === t.id}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          onChangeStatus(t, e.target.value as (typeof CV_STATUSES)[number]);
+                        }}
+                      >
+                        {CV_STATUSES.map((s) => (
+                          <option key={s} value={s}>
+                            {CV_TRANG_THAI[s].label}
+                          </option>
+                        ))}
+                      </select>
+                    )}
                   </CardContent>
                 </Card>
               ))}
               {list.length === 0 && (
-                <div className="h-24 flex items-center justify-center border-2 border-dashed border-slate-100 rounded-lg">
-                  <span className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">
-                    No Tasks
+                <div className="h-24 flex items-center justify-center border-2 border-dashed border-border rounded-lg">
+                  <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">
+                    Chưa có công việc
                   </span>
                 </div>
               )}
@@ -944,6 +971,7 @@ function ListView({
   onAddIn,
   isManager,
   onDeleteMoc,
+  isFiltering = false,
 }: {
   mocs: Moc[];
   tasks: CongViec[];
@@ -953,6 +981,7 @@ function ListView({
   onAddIn: (mocId: string) => void;
   isManager: boolean;
   onDeleteMoc: (m: Moc) => void;
+  isFiltering?: boolean;
 }) {
   if (mocs.length === 0) {
     return (
@@ -1026,7 +1055,9 @@ function ListView({
             </CardHeader>
             <CardContent className="pt-0 px-0">
               {list.length === 0 ? (
-                <div className="text-xs text-slate-400 italic py-2">Chưa có công việc con.</div>
+                <div className="text-xs text-muted-foreground italic py-2">
+                  {isFiltering ? "Không có công việc khớp từ khoá." : "Chưa có công việc con."}
+                </div>
               ) : (
                 <div className="divide-y">
                   {list.map((t) => {
@@ -1519,12 +1550,18 @@ function EditCongViecDialog({
           )}
         </div>
 
+        {isEdit && !canEditTask && (
+          <div className="text-[11px] text-muted-foreground">
+            Bạn chỉ có quyền xem công việc này.
+          </div>
+        )}
+
         <DialogFooter className="gap-2">
-          {isEdit && (
+          {isEdit && canDeleteTask && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="outline" className="text-rose-600 mr-auto">
-                  <Trash2 className="h-4 w-4 mr-1.5" /> Xoá
+                <Button variant="outline" className="text-rose-600 mr-auto" disabled={del.isPending}>
+                  <Trash2 className="h-4 w-4 mr-1.5" aria-hidden="true" /> Xoá
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -1533,11 +1570,240 @@ function EditCongViecDialog({
                   <AlertDialogDescription>Hành động không thể hoàn tác.</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Huỷ</AlertDialogCancel>
+                  <AlertDialogCancel disabled={del.isPending}>Huỷ</AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={() => del.mutate()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      del.mutate();
+                    }}
+                    disabled={del.isPending}
                     className="bg-rose-600 hover:bg-rose-700"
                   >
+                    {del.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />}
+                    Xoá
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Huỷ
+          </Button>
+          <Button onClick={() => save.mutate()} disabled={save.isPending || (isEdit && !canEditTask)}>
+            {save.isPending ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
+            ) : (
+              <Save className="h-4 w-4 mr-2" aria-hidden="true" />
+            )}
+            {isEdit ? "Lưu" : "Thêm"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// =====================================================
+// THIẾT LẬP DỰ ÁN (sửa thông tin / xoá dự án)
+// =====================================================
+function ProjectSettingsDialog({
+  open,
+  onOpenChange,
+  duAn,
+  users,
+  canDelete,
+  onDone,
+  onDeleted,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  duAn: DuAn;
+  users: Profile[];
+  canDelete: boolean;
+  onDone: () => void;
+  onDeleted: () => void;
+}) {
+  const [form, setForm] = useState({
+    ten: duAn.ten,
+    ma: duAn.ma ?? "",
+    mo_ta: duAn.mo_ta ?? "",
+    ngay_bat_dau: duAn.ngay_bat_dau ?? "",
+    ngay_ket_thuc_du_kien: duAn.ngay_ket_thuc_du_kien ?? "",
+    trang_thai: duAn.trang_thai,
+    quan_ly_id: duAn.quan_ly_id,
+  });
+
+  useEffect(() => {
+    if (open) {
+      setForm({
+        ten: duAn.ten,
+        ma: duAn.ma ?? "",
+        mo_ta: duAn.mo_ta ?? "",
+        ngay_bat_dau: duAn.ngay_bat_dau ?? "",
+        ngay_ket_thuc_du_kien: duAn.ngay_ket_thuc_du_kien ?? "",
+        trang_thai: duAn.trang_thai,
+        quan_ly_id: duAn.quan_ly_id,
+      });
+    }
+  }, [open, duAn]);
+
+  const save = useMutation({
+    mutationFn: async () => {
+      if (!form.ten.trim()) throw new Error("Cần nhập tên dự án");
+      if (
+        form.ngay_bat_dau &&
+        form.ngay_ket_thuc_du_kien &&
+        form.ngay_ket_thuc_du_kien < form.ngay_bat_dau
+      ) {
+        throw new Error("Ngày kết thúc phải sau ngày bắt đầu");
+      }
+      const { error } = await supabase
+        .from("du_an")
+        .update({
+          ten: form.ten.trim(),
+          ma: form.ma.trim() || null,
+          mo_ta: form.mo_ta.trim() || null,
+          ngay_bat_dau: form.ngay_bat_dau || null,
+          ngay_ket_thuc_du_kien: form.ngay_ket_thuc_du_kien || null,
+          trang_thai: form.trang_thai as "moi" | "dang_thuc_hien" | "tam_dung" | "hoan_thanh" | "huy",
+          quan_ly_id: form.quan_ly_id,
+        })
+        .eq("id", duAn.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Đã cập nhật dự án");
+      onOpenChange(false);
+      onDone();
+    },
+    onError: (e: Error) => toast.error("Cập nhật dự án thất bại: " + e.message),
+  });
+
+  const del = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("du_an").delete().eq("id", duAn.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Đã xoá dự án");
+      onOpenChange(false);
+      onDeleted();
+    },
+    onError: (e: Error) => toast.error("Xoá dự án thất bại: " + e.message),
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Thiết lập dự án</DialogTitle>
+          <DialogDescription>Cập nhật thông tin chung, trạng thái và người quản lý.</DialogDescription>
+        </DialogHeader>
+
+        <div className="grid gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <Label>Mã dự án</Label>
+              <Input value={form.ma} onChange={(e) => setForm({ ...form, ma: e.target.value })} />
+            </div>
+            <div className="md:col-span-2">
+              <Label>Tên dự án *</Label>
+              <Input value={form.ten} onChange={(e) => setForm({ ...form, ten: e.target.value })} />
+            </div>
+          </div>
+
+          <div>
+            <Label>Mô tả</Label>
+            <Textarea
+              rows={3}
+              value={form.mo_ta}
+              onChange={(e) => setForm({ ...form, mo_ta: e.target.value })}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <Label>Ngày bắt đầu</Label>
+              <Input
+                type="date"
+                value={form.ngay_bat_dau}
+                onChange={(e) => setForm({ ...form, ngay_bat_dau: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Kết thúc dự kiến</Label>
+              <Input
+                type="date"
+                value={form.ngay_ket_thuc_du_kien}
+                onChange={(e) => setForm({ ...form, ngay_ket_thuc_du_kien: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <Label>Trạng thái</Label>
+              <Select
+                value={form.trang_thai}
+                onValueChange={(v) => setForm({ ...form, trang_thai: v as DuAn["trang_thai"] })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[
+                    ["moi", "Mới"],
+                    ["dang_thuc_hien", "Đang thực hiện"],
+                    ["tam_dung", "Tạm dừng"],
+                    ["hoan_thanh", "Hoàn thành"],
+                    ["huy", "Huỷ"],
+                  ].map(([v, l]) => (
+                    <SelectItem key={v} value={v}>
+                      {l}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Người quản lý</Label>
+              <Combobox
+                value={form.quan_ly_id}
+                onChange={(v) => setForm({ ...form, quan_ly_id: v })}
+                placeholder="Chọn người quản lý"
+                searchPlaceholder="Tìm người…"
+                options={users.map((u) => ({ value: u.id, label: u.ho_ten ?? u.email ?? u.id }))}
+              />
+            </div>
+          </div>
+        </div>
+
+        <DialogFooter className="gap-2">
+          {canDelete && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" className="text-rose-600 mr-auto" disabled={del.isPending}>
+                  <Trash2 className="h-4 w-4 mr-1.5" aria-hidden="true" /> Xoá dự án
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Xoá dự án "{duAn.ten}"?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Toàn bộ mốc, công việc và liên kết hồ sơ của dự án sẽ bị xoá. Không thể hoàn tác.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel disabled={del.isPending}>Huỷ</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={(e) => {
+                      e.preventDefault();
+                      del.mutate();
+                    }}
+                    disabled={del.isPending}
+                    className="bg-rose-600 hover:bg-rose-700"
+                  >
+                    {del.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />}
                     Xoá
                   </AlertDialogAction>
                 </AlertDialogFooter>
@@ -1549,11 +1815,11 @@ function EditCongViecDialog({
           </Button>
           <Button onClick={() => save.mutate()} disabled={save.isPending}>
             {save.isPending ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
             ) : (
-              <Save className="h-4 w-4 mr-2" />
+              <Save className="h-4 w-4 mr-2" aria-hidden="true" />
             )}
-            {isEdit ? "Lưu" : "Thêm"}
+            Lưu
           </Button>
         </DialogFooter>
       </DialogContent>
