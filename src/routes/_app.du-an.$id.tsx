@@ -807,6 +807,7 @@ function Stat({ label, value, icon: Icon }: { label: string; value: string; icon
 // KANBAN
 // =====================================================
 function KanbanView({
+  attachmentCounts,
   mocs,
   tasks,
   nameOf,
@@ -818,6 +819,7 @@ function KanbanView({
   pendingTaskId,
   density = "default",
 }: {
+  attachmentCounts?: Record<string, number>;
   mocs: Moc[];
   tasks: CongViec[];
   nameOf: (u: string | null) => string;
@@ -966,10 +968,11 @@ function KanbanView({
                         </div>
                       )}
                       <TaskAttachmentButton
-                        className="ml-auto"
+                        className="ml-auto shrink-0"
                         taskId={t.id}
                         taskName={t.ten}
                         canEdit={canAdd}
+                        count={attachmentCounts?.[t.id] ?? 0}
                       />
                     </div>
 
