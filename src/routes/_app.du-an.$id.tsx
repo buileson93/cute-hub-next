@@ -86,6 +86,7 @@ import {
   ProjectGantt,
   type GanttAssignee,
 } from "@/components/mirats/projects/gantt/ProjectGantt";
+import { TaskAttachmentButton } from "@/components/mirats/projects/TaskAttachmentButton";
 import { ProjectReports } from "@/components/mirats/projects/ProjectReports";
 
 
@@ -882,6 +883,12 @@ function KanbanView({
                           <span>{t.ngay_ket_thuc_du_kien}</span>
                         </div>
                       )}
+                      <TaskAttachmentButton
+                        className="ml-auto"
+                        taskId={t.id}
+                        taskName={t.ten}
+                        canEdit={canAdd}
+                      />
                     </div>
 
                     {canChangeStatus && (
@@ -1063,10 +1070,18 @@ function ListView({
                   {list.map((t) => {
                     const c = CV_TRANG_THAI[t.trang_thai];
                     return (
-                      <button
+                      <div
                         key={t.id}
+                        role="button"
+                        tabIndex={0}
                         onClick={() => onEdit(t)}
-                        className="w-full text-left py-2 grid grid-cols-12 gap-2 hover:bg-muted rounded px-2"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            onEdit(t);
+                          }
+                        }}
+                        className="w-full cursor-pointer text-left py-2 grid grid-cols-12 gap-2 hover:bg-muted rounded px-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         <div className="col-span-5 min-w-0">
                           <div className="font-medium text-sm truncate">{t.ten}</div>
@@ -1088,12 +1103,13 @@ function ListView({
                             {t.tien_do}%
                           </span>
                         </div>
-                        <div className="col-span-1 text-right">
+                        <div className="col-span-1 flex items-center justify-end gap-1">
+                          <TaskAttachmentButton taskId={t.id} taskName={t.ten} canEdit={canAdd} />
                           <Badge variant="outline" className={cn(c.tone, "text-[10px]")}>
                             {c.label}
                           </Badge>
                         </div>
-                      </button>
+                      </div>
                     );
                   })}
                 </div>

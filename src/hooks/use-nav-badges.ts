@@ -45,6 +45,15 @@ async function demKdHcSapHetHan(): Promise<number> {
   return count ?? 0;
 }
 
+async function demBaoCaoChoDuyet(): Promise<number> {
+  // Báo cáo nghiệm thu đang chờ lãnh đạo phê duyệt (RLS lọc theo dự án của user).
+  const { count } = await supabase
+    .from("du_an_bao_cao")
+    .select("id", { count: "exact", head: true })
+    .eq("trang_thai", "cho_duyet");
+  return count ?? 0;
+}
+
 export function useNavBadges(): Record<NavBadgeKey, number> {
   const suCo = useQuery({
     queryKey: ["nav-badge", "su_co_mo"],
@@ -66,7 +75,13 @@ export function useNavBadges(): Record<NavBadgeKey, number> {
     queryFn: demKdHcSapHetHan,
     staleTime: 5 * 60_000,
   });
+  const baoCao = useQuery({
+    queryKey: ["nav-badge", "bao_cao_cho_duyet"],
+    queryFn: demBaoCaoChoDuyet,
+    staleTime: 60_000,
+  });
   return {
+    bao_cao_cho_duyet: baoCao.data ?? 0,
     su_co_mo: suCo.data ?? 0,
     hong_hoc_mo: hongHoc.data ?? 0,
     sap_het_han: sapHet.data ?? 0,

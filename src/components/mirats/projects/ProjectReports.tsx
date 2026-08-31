@@ -251,7 +251,10 @@ export function ProjectReports({
         tasks={tasks}
         open={openCreate}
         onOpenChange={setOpenCreate}
-        onDone={() => qc.invalidateQueries({ queryKey: ["du-an-bao-cao", duAnId] })}
+        onDone={() => {
+          qc.invalidateQueries({ queryKey: ["du-an-bao-cao", duAnId] });
+          qc.invalidateQueries({ queryKey: ["nav-badge", "bao_cao_cho_duyet"] });
+        }}
       />
       <ReviewReportDialog
         report={reviewing}
@@ -261,6 +264,7 @@ export function ProjectReports({
           qc.invalidateQueries({ queryKey: ["du-an-bao-cao", duAnId] });
           qc.invalidateQueries({ queryKey: ["du-an-cong-viec", duAnId] });
           qc.invalidateQueries({ queryKey: ["du-an-detail", duAnId] });
+          qc.invalidateQueries({ queryKey: ["nav-badge", "bao_cao_cho_duyet"] });
         }}
       />
     </div>

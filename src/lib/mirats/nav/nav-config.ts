@@ -16,7 +16,12 @@ import {
 } from "@/lib/mirats/nav-contract";
 import type { AppRole } from "@/hooks/use-session";
 
-export type NavBadgeKey = "su_co_mo" | "sap_het_han" | "hong_hoc_mo" | "kd_hc_sap_het_han";
+export type NavBadgeKey =
+  | "su_co_mo"
+  | "sap_het_han"
+  | "hong_hoc_mo"
+  | "kd_hc_sap_het_han"
+  | "bao_cao_cho_duyet";
 
 export interface NavItem {
   /** Khoá ổn định (dùng cho React key + test). */
@@ -50,6 +55,7 @@ const BADGE_BY_ROUTE: Record<string, NavBadgeKey> = {
   "/hong-hoc": "hong_hoc_mo",
   "/giay-phep": "sap_het_han",
   "/kiem-dinh": "kd_hc_sap_het_han",
+  "/du-an": "bao_cao_cho_duyet",
 };
 
 function iconName(icon: ContractNavItem["icon"]): string {
