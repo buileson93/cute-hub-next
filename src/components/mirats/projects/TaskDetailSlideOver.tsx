@@ -273,7 +273,7 @@ export function TaskDetailSlideOver({
                   </div>
                 ) : (
                   <>
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div className="space-y-1.5">
                         <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
                           Người thực hiện
