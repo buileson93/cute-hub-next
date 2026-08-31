@@ -1,1 +1,0 @@
-REVOKE EXECUTE ON FUNCTION public.fn_sync_du_an_tien_do() FROM PUBLIC, anon, authenticated;

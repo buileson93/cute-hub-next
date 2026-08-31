@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "aa231e07-83ba-4971-9ed2-edf3ee39120e",
-  "project_id": "a8d00423-7e52-4a33-9fc8-a92f23bb5c59",
-  "url": "/__l5e/assets-v1/aa231e07-83ba-4971-9ed2-edf3ee39120e/vatm-mirats-full-transparent.png",
-  "r2_key": "a/v1/a8d00423-7e52-4a33-9fc8-a92f23bb5c59/aa231e07-83ba-4971-9ed2-edf3ee39120e/vatm-mirats-full-transparent.png",
-  "original_filename": "vatm-mirats-full-transparent.png",
-  "size": 135473,
   "content_type": "image/png",
-  "created_at": "2026-07-24T23:36:05Z"
+  "created_at": "2026-07-24T23:36:05Z",
+  "original_filename": "vatm-mirats-full-transparent.png",
+  "project_id": "967c93b1-83db-4661-8673-4a8476f5a096",
+  "r2_key": "a/v1/967c93b1-83db-4661-8673-4a8476f5a096/aa231e07-83ba-4971-9ed2-edf3ee39120e/vatm-mirats-full-transparent.png",
+  "size": 135473,
+  "url": "/__l5e/assets-v1/aa231e07-83ba-4971-9ed2-edf3ee39120e/vatm-mirats-full-transparent.png",
+  "version": 1
 }

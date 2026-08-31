@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "3da4104c-927e-467f-a826-7cffe8c9206c",
-  "project_id": "a8d00423-7e52-4a33-9fc8-a92f23bb5c59",
-  "url": "/__l5e/assets-v1/3da4104c-927e-467f-a826-7cffe8c9206c/vatm-mark-square.svg",
-  "r2_key": "a/v1/a8d00423-7e52-4a33-9fc8-a92f23bb5c59/3da4104c-927e-467f-a826-7cffe8c9206c/vatm-mark-square.svg",
-  "original_filename": "vatm-mark-square.svg",
-  "size": 166763,
   "content_type": "image/svg+xml",
-  "created_at": "2026-07-24T23:35:46Z"
+  "created_at": "2026-07-24T23:35:46Z",
+  "original_filename": "vatm-mark-square.svg",
+  "project_id": "967c93b1-83db-4661-8673-4a8476f5a096",
+  "r2_key": "a/v1/967c93b1-83db-4661-8673-4a8476f5a096/3da4104c-927e-467f-a826-7cffe8c9206c/vatm-mark-square.svg",
+  "size": 166763,
+  "url": "/__l5e/assets-v1/3da4104c-927e-467f-a826-7cffe8c9206c/vatm-mark-square.svg",
+  "version": 1
 }

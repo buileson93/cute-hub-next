@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "3aaf82ac-504b-47c3-be53-a61c05096d79",
-  "project_id": "a8d00423-7e52-4a33-9fc8-a92f23bb5c59",
-  "url": "/__l5e/assets-v1/3aaf82ac-504b-47c3-be53-a61c05096d79/vatm-mirats-compact.svg",
-  "r2_key": "a/v1/a8d00423-7e52-4a33-9fc8-a92f23bb5c59/3aaf82ac-504b-47c3-be53-a61c05096d79/vatm-mirats-compact.svg",
-  "original_filename": "vatm-mirats-compact.svg",
-  "size": 164593,
   "content_type": "image/svg+xml",
-  "created_at": "2026-07-24T23:36:00Z"
+  "created_at": "2026-07-24T23:36:00Z",
+  "original_filename": "vatm-mirats-compact.svg",
+  "project_id": "967c93b1-83db-4661-8673-4a8476f5a096",
+  "r2_key": "a/v1/967c93b1-83db-4661-8673-4a8476f5a096/3aaf82ac-504b-47c3-be53-a61c05096d79/vatm-mirats-compact.svg",
+  "size": 164593,
+  "url": "/__l5e/assets-v1/3aaf82ac-504b-47c3-be53-a61c05096d79/vatm-mirats-compact.svg",
+  "version": 1
 }
