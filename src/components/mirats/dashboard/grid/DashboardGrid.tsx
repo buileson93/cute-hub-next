@@ -800,20 +800,36 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
   };
 
   const handleRemove = (id: string) => {
-    setLayout((prev) => prev.filter((w) => w.id !== id));
+    setLayout((prev) => sanitizeLayout(prev, defaultLayout).filter((w) => w.id !== id));
+  };
+
+  const handleDrop = (targetId: string, fromId: string) => {
+    setLayout((prev) => moveWidget(sanitizeLayout(prev, defaultLayout), fromId, targetId));
+  };
+
+  const handleMoveBy = (id: string, delta: number) => {
+    setLayout((prev) => {
+      const current = sanitizeLayout(prev, defaultLayout);
+      const idx = current.findIndex((w) => w.id === id);
+      const target = current[idx + delta];
+      return target ? moveWidget(current, id, target.id) : current;
+    });
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full overflow-x-hidden">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full">
       {layout.map((widget) => (
         <WidgetContainer
           key={widget.id}
           config={widget}
           isEditing={isEditing}
           onRemove={() => handleRemove(widget.id)}
+          onDropWidget={(fromId) => handleDrop(widget.id, fromId)}
+          onMoveBy={(delta) => handleMoveBy(widget.id, delta)}
         >
           {renderWidget(widget)}
         </WidgetContainer>
+
       ))}
     </div>
   );
