@@ -65,6 +65,10 @@ import {
   GitFork,
   List,
   ClipboardList,
+  Plus,
+  Minus,
+  GripVertical,
+  Settings,
 } from "lucide-react";
 
 export const ICON_REGISTRY = {
@@ -84,6 +88,11 @@ export const ICON_REGISTRY = {
   "action.sync": ArrowRightLeft,
   "action.repeat": Repeat2,
   "action.next": ArrowRight,
+  "action.add": Plus,
+  "action.remove": Minus,
+  "action.drag": GripVertical,
+  "action.undo": Undo2,
+  "action.settings": Settings,
 
   // --- Table Controls ---
   "table.sortAsc": ArrowUp,
