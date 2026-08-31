@@ -162,26 +162,69 @@ function DuAnListPage() {
             </div>
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="relative max-w-md">
-              <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <Input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Tìm dự án…"
-                className="pl-9"
-              />
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="relative flex-1 min-w-[220px] max-w-md">
+                <Search
+                  className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                <Input
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Tìm dự án…"
+                  aria-label="Tìm dự án"
+                  className="pl-9"
+                />
+              </div>
+              <Select value={status} onValueChange={setStatus}>
+                <SelectTrigger className="w-[170px]" aria-label="Lọc theo trạng thái">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tất cả trạng thái</SelectItem>
+                  {Object.entries(TRANG_THAI).map(([v, t]) => (
+                    <SelectItem key={v} value={v}>
+                      {t.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
+                <SelectTrigger className="w-[180px]" aria-label="Sắp xếp">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="created_desc">Mới tạo trước</SelectItem>
+                  <SelectItem value="ten_asc">Tên A→Z</SelectItem>
+                  <SelectItem value="tien_do_desc">Tiến độ cao trước</SelectItem>
+                  <SelectItem value="han_asc">Hạn gần nhất</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
 
         {isLoading ? (
           <div className="flex items-center gap-2 p-8 text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" /> Đang tải…
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Đang tải…
           </div>
+        ) : isError ? (
+          <Card>
+            <CardContent className="py-12 text-center text-sm space-y-3">
+              <div className="text-destructive">
+                Không tải được danh sách dự án: {(error as Error).message}
+              </div>
+              <Button variant="outline" size="sm" onClick={() => refetch()}>
+                Thử lại
+              </Button>
+            </CardContent>
+          </Card>
         ) : filtered.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center text-muted-foreground text-sm">
-              Chưa có dự án nào phù hợp. {canCreate && "Nhấn “Tạo dự án” để bắt đầu."}
+              {isFiltering
+                ? "Không có dự án khớp bộ lọc. Thử xoá từ khoá hoặc chọn lại trạng thái."
+                : `Chưa có dự án nào. ${canCreate ? "Nhấn “Tạo dự án” để bắt đầu." : ""}`}
             </CardContent>
           </Card>
         ) : (
