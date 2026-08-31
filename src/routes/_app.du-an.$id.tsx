@@ -25,6 +25,7 @@ import {
   Info,
   ShieldAlert,
   FolderArchive,
+  FileSignature,
   Circle,
   Lock,
   FolderOpen,
