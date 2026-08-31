@@ -1,0 +1,1 @@
+ALTER VIEW public.view_ton_kho_model SET (security_invoker = on);
