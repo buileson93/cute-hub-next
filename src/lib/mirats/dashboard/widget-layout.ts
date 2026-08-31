@@ -2,6 +2,8 @@ import {
   AVAILABLE_WIDGETS,
   DashboardWidgetConfig,
   WidgetType,
+  WIDGET_GROUP,
+  type WidgetGroup,
 } from "@/lib/mirats/dashboard/widget-registry";
 
 /**
@@ -52,4 +54,15 @@ export function sanitizeLayout(
     ];
   });
   return cleaned.length ? cleaned : fallback;
+}
+
+/**
+ * Lọc layout theo nhóm chủ đề (tab). Trả về mảng rỗng khi nhóm chưa có widget nào,
+ * để UI hiển thị empty-state có ngữ cảnh thay vì khung trống.
+ */
+export function filterLayoutByGroup(
+  layout: DashboardWidgetConfig[],
+  group: WidgetGroup,
+): DashboardWidgetConfig[] {
+  return layout.filter((w) => WIDGET_GROUP[w.type] === group);
 }

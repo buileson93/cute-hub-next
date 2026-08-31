@@ -125,3 +125,37 @@ export const DEFAULT_OVERVIEW_LAYOUT: DashboardWidgetConfig[] = [
   { id: "ov14", type: "live-timeline", w: 12, title: "Nhật ký" },
 
 ];
+
+/** Nhóm chủ đề dùng cho tab dashboard. */
+export type WidgetGroup = "tong-quan" | "cong-viec" | "van-hanh";
+
+export const WIDGET_GROUP: Record<WidgetType, WidgetGroup> = {
+  "reliability-kpi": "tong-quan",
+  "mttr-kpi": "tong-quan",
+  "mtbf-kpi": "tong-quan",
+  "pm-kpi": "tong-quan",
+  "emergency-kpi": "tong-quan",
+  "pm-due-kpi": "tong-quan",
+  "pm-overdue-kpi": "tong-quan",
+  "completeness-gauge": "tong-quan",
+  "health-donut": "tong-quan",
+  "asset-status-pie": "van-hanh",
+  "asset-type-bar": "van-hanh",
+  "su-co-trend": "van-hanh",
+  "su-co-heatmap": "van-hanh",
+  "top-he-thong-su-co": "van-hanh",
+  "top-thiet-bi-hong-lap": "van-hanh",
+  "expiry-timeline": "van-hanh",
+  "live-timeline": "van-hanh",
+  "task-status-distribution": "cong-viec",
+  "task-completion-trend": "cong-viec",
+  "task-due-summary": "cong-viec",
+  "project-health-bar": "cong-viec",
+  "dossier-compliance-heatmap": "cong-viec",
+};
+
+export const WIDGET_GROUP_LABEL: Record<WidgetGroup, string> = {
+  "tong-quan": "Tổng quan",
+  "cong-viec": "Công việc",
+  "van-hanh": "Vận hành",
+};
