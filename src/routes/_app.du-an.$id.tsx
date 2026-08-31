@@ -87,7 +87,10 @@ import {
   ProjectGantt,
   type GanttAssignee,
 } from "@/components/mirats/projects/gantt/ProjectGantt";
-import { TaskAttachmentButton } from "@/components/mirats/projects/TaskAttachmentButton";
+import {
+  TaskAttachmentButton,
+  useTaskAttachmentCounts,
+} from "@/components/mirats/projects/TaskAttachmentButton";
 import { ProjectReports } from "@/components/mirats/projects/ProjectReports";
 
 
@@ -242,6 +245,9 @@ function DuAnDetailPage() {
     rootMargin: "240px",
   });
 
+  // Các tab thực sự cần dữ liệu mốc/công việc.
+  const needsTasks = WORK_VIEWS.includes(activeTab) || activeTab === "bao-cao";
+
   const { data: mocs } = useQuery({
     queryKey: ["du-an-moc", id],
     queryFn: async () => {
@@ -253,7 +259,7 @@ function DuAnDetailPage() {
       if (error) throw error;
       return (data ?? []) as Moc[];
     },
-    enabled: !!id && workVisible,
+    enabled: !!id && needsTasks && workVisible,
     staleTime: 60_000,
   });
   const {
@@ -274,11 +280,11 @@ function DuAnDetailPage() {
       if (error) throw error;
       return (data ?? []) as CongViec[];
     },
-    enabled: !!id && workVisible,
+    enabled: !!id && needsTasks && workVisible,
     staleTime: 60_000,
     refetchOnWindowFocus: false,
   });
-  const tasksReady = workVisible && !loadingCV && !errorCV;
+  const tasksReady = !needsTasks || (workVisible && !loadingCV && !errorCV);
 
   const userIds = useMemo(() => {
     const s = new Set<string>();
@@ -333,8 +339,15 @@ function DuAnDetailPage() {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [showTaskDetail, setShowTaskDetail] = useState(false);
   const [openMembers, setOpenMembers] = useState(false);
+  // Chỉ tải danh sách thành viên sau lần mở hộp thoại đầu tiên, sau đó dùng lại cache.
+  const [membersLoadedOnce, setMembersLoadedOnce] = useState(false);
 
-  const { data: members } = useProjectMembers(id);
+  const { data: members } = useProjectMembers(id, openMembers || membersLoadedOnce);
+  const taskIds = useMemo(() => (congViecs ?? []).map((t) => t.id), [congViecs]);
+  const { data: attachmentCounts } = useTaskAttachmentCounts(
+    taskIds,
+    needsTasks && workVisible,
+  );
   const metrics = useMemo(() => computeTaskMetrics(congViecs ?? []), [congViecs]);
 
 
@@ -404,7 +417,14 @@ function DuAnDetailPage() {
             >
               {duAn.trang_thai.replace("_", " ")}
             </Badge>
-            <Button size="sm" variant="outline" onClick={() => setOpenMembers(true)}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setMembersLoadedOnce(true);
+                setOpenMembers(true);
+              }}
+            >
               <UserIcon className="h-4 w-4 mr-2" aria-hidden="true" /> Thành viên
               {members && members.length > 0 && (
                 <span className="ml-1.5 text-xs text-muted-foreground tabular-nums">
@@ -521,7 +541,7 @@ function DuAnDetailPage() {
 
         <div ref={workSectionRef} aria-hidden="true" className="h-px -mt-px" />
 
-        {!workVisible || loadingCV ? (
+        {needsTasks && (!workVisible || loadingCV) ? (
           <div
             className="rounded-xl border border-border bg-card p-4 space-y-3"
             aria-live="polite"
@@ -538,7 +558,7 @@ function DuAnDetailPage() {
               ))}
             </div>
           </div>
-        ) : errorCV ? (
+        ) : needsTasks && errorCV ? (
           <div
             role="alert"
             className="rounded-xl border border-destructive/40 bg-destructive/5 p-4 flex flex-wrap items-center justify-between gap-3"
@@ -566,6 +586,7 @@ function DuAnDetailPage() {
         <Tabs value={activeTab} className={!tasksReady ? "hidden" : undefined}>
           <TabsContent value="kanban" className="mt-0">
             <KanbanView
+              attachmentCounts={attachmentCounts}
               mocs={mocs ?? []}
               tasks={
                 congViecs?.filter(
@@ -661,6 +682,7 @@ function DuAnDetailPage() {
 
           <TabsContent value="list" className="mt-3">
             <ListView
+              attachmentCounts={attachmentCounts}
               mocs={mocs ?? []}
               tasks={
                 congViecs?.filter(
@@ -789,6 +811,7 @@ function Stat({ label, value, icon: Icon }: { label: string; value: string; icon
 // KANBAN
 // =====================================================
 function KanbanView({
+  attachmentCounts,
   mocs,
   tasks,
   nameOf,
@@ -800,6 +823,7 @@ function KanbanView({
   pendingTaskId,
   density = "default",
 }: {
+  attachmentCounts?: Record<string, number>;
   mocs: Moc[];
   tasks: CongViec[];
   nameOf: (u: string | null) => string;
@@ -948,10 +972,11 @@ function KanbanView({
                         </div>
                       )}
                       <TaskAttachmentButton
-                        className="ml-auto"
+                        className="ml-auto shrink-0"
                         taskId={t.id}
                         taskName={t.ten}
                         canEdit={canAdd}
+                        count={attachmentCounts?.[t.id] ?? 0}
                       />
                     </div>
 
@@ -1034,6 +1059,7 @@ function GanttView({
 // LIST
 // =====================================================
 function ListView({
+  attachmentCounts,
   mocs,
   tasks,
   nameOf,
@@ -1044,6 +1070,7 @@ function ListView({
   onDeleteMoc,
   isFiltering = false,
 }: {
+  attachmentCounts?: Record<string, number>;
   mocs: Moc[];
   tasks: CongViec[];
   nameOf: (u: string | null) => string;
@@ -1144,31 +1171,37 @@ function ListView({
                             onEdit(t);
                           }
                         }}
-                        className="w-full cursor-pointer text-left py-2 grid grid-cols-12 gap-2 hover:bg-muted rounded px-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        className="w-full cursor-pointer text-left py-2 grid grid-cols-1 sm:grid-cols-12 gap-x-3 gap-y-1 items-center hover:bg-muted rounded px-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
-                        <div className="col-span-5 min-w-0">
+                        <div className="sm:col-span-4 min-w-0">
                           <div className="font-medium text-sm truncate">{t.ten}</div>
                           {t.mo_ta && (
                             <div className="text-[11px] text-muted-foreground truncate">{t.mo_ta}</div>
                           )}
                         </div>
-                        <div className="col-span-2 text-xs text-muted-foreground truncate flex items-center gap-1">
+                        <div className="sm:col-span-2 min-w-0 text-xs text-muted-foreground flex items-center gap-1">
                           <UserIcon className="h-3 w-3 shrink-0" />
-                          {nameOf(t.nguoi_xu_ly_chinh)}
+                          <span className="truncate">
+                          {nameOf(t.nguoi_xu_ly_chinh)}</span>
                         </div>
-                        <div className="col-span-2 text-xs text-muted-foreground flex items-center gap-1">
-                          <CalendarIcon className="h-3 w-3" />
+                        <div className="sm:col-span-2 min-w-0 text-xs text-muted-foreground flex items-center gap-1">
+                          <CalendarIcon className="h-3 w-3 shrink-0" />
                           {t.ngay_ket_thuc_du_kien ?? "—"}
                         </div>
-                        <div className="col-span-2 flex items-center gap-2">
-                          <Progress value={t.tien_do} className="h-1.5 flex-1" />
+                        <div className="sm:col-span-2 min-w-0 flex items-center gap-2">
+                          <Progress value={t.tien_do} className="h-1.5 min-w-0 flex-1" />
                           <span className="text-[11px] text-muted-foreground tabular-nums">
                             {t.tien_do}%
                           </span>
                         </div>
-                        <div className="col-span-1 flex items-center justify-end gap-1">
-                          <TaskAttachmentButton taskId={t.id} taskName={t.ten} canEdit={canAdd} />
-                          <Badge variant="outline" className={cn(c.tone, "text-[10px]")}>
+                        <div className="sm:col-span-2 flex shrink-0 flex-wrap items-center justify-start gap-1 sm:justify-end">
+                          <TaskAttachmentButton
+                            taskId={t.id}
+                            taskName={t.ten}
+                            canEdit={canAdd}
+                            count={attachmentCounts?.[t.id] ?? 0}
+                          />
+                          <Badge variant="outline" className={cn(c.tone, "shrink-0 text-[10px]")}>
                             {c.label}
                           </Badge>
                         </div>
