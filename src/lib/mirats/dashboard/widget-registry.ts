@@ -1,5 +1,3 @@
-import { ReactNode } from "react";
-
 export type WidgetType =
   | "reliability-kpi"
   | "mttr-kpi"
@@ -18,8 +16,12 @@ export type WidgetType =
   | "top-he-thong-su-co"
   | "top-thiet-bi-hong-lap"
   | "project-health-bar"
+  | "task-status-distribution"
+  | "task-completion-trend"
+  | "task-due-summary"
   | "dossier-compliance-heatmap"
   | "expiry-timeline";
+
 
 export interface DashboardWidgetConfig {
   id: string;
@@ -63,6 +65,21 @@ export const AVAILABLE_WIDGETS: Record<
     defaultWidth: 6,
     icon: "entity.chart",
   },
+  "task-status-distribution": {
+    title: "Phân bổ công việc theo trạng thái",
+    defaultWidth: 6,
+    icon: "entity.chart",
+  },
+  "task-completion-trend": {
+    title: "Xu hướng hoàn thành công việc",
+    defaultWidth: 6,
+    icon: "entity.history",
+  },
+  "task-due-summary": {
+    title: "Công việc đến hạn / quá hạn",
+    defaultWidth: 4,
+    icon: "status.maintenance",
+  },
   "dossier-compliance-heatmap": {
     title: "Tuân thủ Hồ sơ (Dossier Compliance)",
     defaultWidth: 6,
@@ -70,6 +87,10 @@ export const AVAILABLE_WIDGETS: Record<
   },
 };
 
+/**
+ * Layout mặc định xếp theo luồng đọc chữ Z:
+ * KPI quét nhanh → biểu đồ phân tích chính → chi tiết → widget ít/chưa có dữ liệu ở cuối.
+ */
 export const DEFAULT_HOME_LAYOUT: DashboardWidgetConfig[] = [
   { id: "w1", type: "reliability-kpi", w: 6, title: "Độ sẵn sàng" },
   { id: "w2", type: "mttr-kpi", w: 6, title: "MTTR" },
@@ -83,6 +104,8 @@ export const DEFAULT_HOME_LAYOUT: DashboardWidgetConfig[] = [
   { id: "w10", type: "asset-type-bar", w: 6, title: "Phân loại" },
   { id: "w11", type: "completeness-gauge", w: 4, title: "Hồ sơ" },
   { id: "w12", type: "live-timeline", w: 8, title: "Nhật ký" },
+  { id: "w13", type: "task-status-distribution", w: 6, title: "Trạng thái công việc" },
+  { id: "w14", type: "task-completion-trend", w: 6, title: "Hoàn thành công việc" },
 ];
 
 export const DEFAULT_OVERVIEW_LAYOUT: DashboardWidgetConfig[] = [
@@ -94,7 +117,11 @@ export const DEFAULT_OVERVIEW_LAYOUT: DashboardWidgetConfig[] = [
   { id: "ov6", type: "asset-status-pie", w: 4, title: "Trạng thái" },
   { id: "ov7", type: "health-donut", w: 6, title: "Sức khỏe" },
   { id: "ov8", type: "completeness-gauge", w: 6, title: "Hồ sơ" },
-  { id: "ov9", type: "project-health-bar", w: 6, title: "Sức khỏe dự án" },
-  { id: "ov10", type: "dossier-compliance-heatmap", w: 6, title: "Tuân thủ hồ sơ" },
-  { id: "ov11", type: "live-timeline", w: 12, title: "Nhật ký" },
+  { id: "ov9", type: "task-due-summary", w: 4, title: "Đến hạn công việc" },
+  { id: "ov10", type: "task-status-distribution", w: 4, title: "Trạng thái công việc" },
+  { id: "ov11", type: "task-completion-trend", w: 4, title: "Hoàn thành công việc" },
+  { id: "ov12", type: "project-health-bar", w: 6, title: "Sức khỏe dự án" },
+  { id: "ov13", type: "dossier-compliance-heatmap", w: 6, title: "Tuân thủ hồ sơ" },
+  { id: "ov14", type: "live-timeline", w: 12, title: "Nhật ký" },
+
 ];

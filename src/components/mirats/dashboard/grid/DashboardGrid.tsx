@@ -7,7 +7,9 @@ import {
   DEFAULT_OVERVIEW_LAYOUT,
 } from "@/lib/mirats/dashboard/widget-registry";
 import { useUserPref } from "@/hooks/use-user-pref";
+import { moveWidget, sanitizeLayout } from "@/lib/mirats/dashboard/widget-layout";
 import { WidgetContainer } from "./WidgetContainer";
+
 import { VisualKpiChart } from "@/components/mirats/dashboard/VisualKpiChart";
 import { KpiCard } from "@/components/mirats/dashboard/KpiCard";
 import { StatusDonutChart } from "@/components/mirats/dashboard/StatusDonutChart";
@@ -72,6 +74,15 @@ const STATUS_COLORS = [
   "hsl(280 60% 55%)",
   "hsl(215 16% 55%)",
 ];
+/** Palette semantic cho trạng thái công việc (không dùng rainbow). */
+const TASK_STATUS_COLORS: Record<string, string> = {
+  "Chưa bắt đầu": "hsl(215 16% 60%)",
+  "Đang làm": "hsl(217 91% 50%)",
+  "Chờ duyệt": "hsl(38 92% 50%)",
+  "Hoàn thành": "hsl(142 71% 45%)",
+  "Quá hạn": "hsl(0 84% 60%)",
+};
+
 
 interface DashboardGridProps {
   page: "home" | "overview";
@@ -82,7 +93,12 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
   const navigate = useNavigate();
   const prefKey = `dashboard:layout:${page}`;
   const defaultLayout = page === "home" ? DEFAULT_HOME_LAYOUT : DEFAULT_OVERVIEW_LAYOUT;
-  const [layout, setLayout] = useUserPref<DashboardWidgetConfig[]>(prefKey, defaultLayout);
+  const [rawLayout, setLayout] = useUserPref<DashboardWidgetConfig[]>(prefKey, defaultLayout);
+  const layout = React.useMemo(
+    () => sanitizeLayout(rawLayout, defaultLayout),
+    [rawLayout, defaultLayout],
+  );
+
 
   const {
     reliabilityAvail: reliability,
@@ -208,23 +224,96 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
   });
 
   const dossierCompQ = useQuery({
-    queryKey: ["dashboard_dossier_compliance", scope.donViCode],
+    queryKey: ["dashboard_dossier_compliance"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("dossier_documents")
-        .select("status, dossier_id")
-        .limit(100);
+        .select("status")
+        .limit(500);
       if (error) throw error;
-      
-      // Calculate compliance by dossier (simplified)
-      return [
-        { phase: "Chuẩn bị", value: 85 },
-        { phase: "Thiết kế", value: 62 },
-        { phase: "Triển khai", value: 45 },
-        { phase: "Nghiệm thu", value: 12 }
-      ];
-    }
+      const counts = new Map<string, number>();
+      (data ?? []).forEach((row) => {
+        const key = String(row.status ?? "khac");
+        counts.set(key, (counts.get(key) ?? 0) + 1);
+      });
+      return Array.from(counts, ([phase, value]) => ({ phase, value })).sort(
+        (a, b) => b.value - a.value,
+      );
+    },
   });
+
+  /** Công việc dự án — nguồn cho 3 widget quản lý công việc. */
+  const tasksQ = useQuery({
+    queryKey: ["dashboard_project_tasks"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("du_an_cong_viec")
+        .select("id, trang_thai, ngay_ket_thuc_du_kien, ngay_hoan_thanh_thuc_te")
+        .limit(1000);
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 60_000,
+  });
+
+  const taskStatusData = React.useMemo(() => {
+    const LABEL: Record<string, string> = {
+      chua_bat_dau: "Chưa bắt đầu",
+      dang_lam: "Đang làm",
+      cho_duyet: "Chờ duyệt",
+      hoan_thanh: "Hoàn thành",
+      qua_han: "Quá hạn",
+    };
+    const counts = new Map<string, number>();
+    (tasksQ.data ?? []).forEach((t) => {
+      const key = LABEL[String(t.trang_thai)] ?? "Khác";
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    });
+    return Array.from(counts, ([name, value]) => ({ name, value }));
+  }, [tasksQ.data]);
+
+  const taskTrendData = React.useMemo(() => {
+    const days = 30;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const buckets = new Map<string, number>();
+    for (let i = days - 1; i >= 0; i--) {
+      buckets.set(format(addDays(today, -i), "yyyy-MM-dd"), 0);
+    }
+    (tasksQ.data ?? []).forEach((t) => {
+      if (!t.ngay_hoan_thanh_thuc_te) return;
+      const d = new Date(t.ngay_hoan_thanh_thuc_te);
+      if (Number.isNaN(d.getTime())) return;
+      const key = format(d, "yyyy-MM-dd");
+      if (buckets.has(key)) buckets.set(key, (buckets.get(key) ?? 0) + 1);
+    });
+    return Array.from(buckets, ([day, value]) => ({
+      day,
+      label: format(new Date(day), "dd/MM", { locale: vi }),
+      value,
+    }));
+  }, [tasksQ.data]);
+
+  const taskDueSummary = React.useMemo(() => {
+    const now = new Date();
+    const in7 = addDays(now, 7);
+    let overdue = 0;
+    let dueSoon = 0;
+    let done = 0;
+    (tasksQ.data ?? []).forEach((t) => {
+      if (t.trang_thai === "hoan_thanh") {
+        done += 1;
+        return;
+      }
+      if (!t.ngay_ket_thuc_du_kien) return;
+      const d = new Date(t.ngay_ket_thuc_du_kien);
+      if (Number.isNaN(d.getTime())) return;
+      if (d < now) overdue += 1;
+      else if (d <= in7) dueSoon += 1;
+    });
+    return { overdue, dueSoon, done, total: (tasksQ.data ?? []).length };
+  }, [tasksQ.data]);
+
 
   const trendData = React.useMemo(() => {
     const rows = (trendQ.data as any[]) ?? [];
@@ -554,29 +643,105 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
       case "dossier-compliance-heatmap":
         return (
           <ERPChartFrame
-            title="Dossier Compliance by Phase"
+            title="Hồ sơ theo trạng thái"
             icon="entity.security"
             loading={dossierCompQ.isLoading}
+            error={dossierCompQ.isError ? "Không tải được dữ liệu hồ sơ" : undefined}
+            empty={!dossierCompQ.data?.length}
           >
-             <ChartContainer config={{ value: { label: "Tỷ lệ tuân thủ", color: "#10b981" } }}>
-              <BarChart
-                data={dossierCompQ.data}
-                margin={{ left: -20, right: 0, top: 0, bottom: 0 }}
-              >
-                <CartesianGrid vertical={false} />
-                <XAxis dataKey="phase" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} domain={[0, 100]} />
-                <ChartTooltip content={<ChartTooltipContent unit="%" />} />
-                <Bar
-                  dataKey="value"
-                  fill="#10b981"
-                  radius={[4, 4, 0, 0]}
-                  barSize={30}
-                />
+            <ChartContainer config={{ value: { label: "Tài liệu", color: "var(--chart-2)" } }}>
+              <BarChart data={dossierCompQ.data} margin={{ left: -20, right: 0, top: 0, bottom: 0 }}>
+                <CartesianGrid vertical={false} strokeOpacity={0.35} />
+                <XAxis dataKey="phase" axisLine={false} tickLine={false} fontSize={10} />
+                <YAxis axisLine={false} tickLine={false} allowDecimals={false} />
+                <ChartTooltip content={<ChartTooltipContent unit="tài liệu" />} />
+                <Bar dataKey="value" fill="var(--color-value)" radius={[4, 4, 0, 0]} barSize={28} />
               </BarChart>
             </ChartContainer>
           </ERPChartFrame>
         );
+      case "task-status-distribution":
+        return (
+          <ERPChartFrame
+            title="Phân bổ công việc theo trạng thái"
+            icon="entity.chart"
+            loading={tasksQ.isLoading}
+            error={tasksQ.isError ? "Không tải được danh sách công việc" : undefined}
+            empty={!taskStatusData.length}
+          >
+            <ChartContainer config={{ value: { label: "Công việc", color: "var(--chart-1)" } }}>
+              <BarChart
+                layout="vertical"
+                data={taskStatusData}
+                margin={{ left: 10, right: 24, top: 0, bottom: 0 }}
+              >
+                <XAxis type="number" hide allowDecimals={false} />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  width={100}
+                  fontSize={10}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <ChartTooltip content={<ChartTooltipContent hideIndicator unit="công việc" />} />
+                <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={14}>
+                  {taskStatusData.map((entry) => (
+                    <Cell key={entry.name} fill={TASK_STATUS_COLORS[entry.name] ?? "var(--chart-1)"} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ChartContainer>
+          </ERPChartFrame>
+        );
+      case "task-completion-trend":
+        return (
+          <ERPChartFrame
+            title="Xu hướng hoàn thành công việc (30 ngày)"
+            icon="entity.history"
+            loading={tasksQ.isLoading}
+            error={tasksQ.isError ? "Không tải được dữ liệu công việc" : undefined}
+            empty={!taskTrendData.some((d) => d.value > 0)}
+          >
+            <ChartContainer config={{ value: { label: "Hoàn thành", color: "var(--chart-2)" } }}>
+              <BarChart data={taskTrendData} margin={{ left: -20, right: 0, top: 0, bottom: 0 }}>
+                <CartesianGrid vertical={false} strokeOpacity={0.35} />
+                <XAxis dataKey="label" axisLine={false} tickLine={false} fontSize={9} interval={4} />
+                <YAxis axisLine={false} tickLine={false} allowDecimals={false} />
+                <ChartTooltip content={<ChartTooltipContent unit="công việc" />} />
+                <Bar dataKey="value" fill="var(--color-value)" radius={[2, 2, 0, 0]} />
+              </BarChart>
+            </ChartContainer>
+          </ERPChartFrame>
+        );
+      case "task-due-summary":
+        return (
+          <Card className="astryx-card h-full flex flex-col">
+            <CardHeader className="p-4 pb-0">
+              <CardTitle className="astryx-text-label flex items-center gap-2">
+                <Icon name="status.maintenance" size="tiny" className="text-primary" />
+                Công việc đến hạn
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 grid grid-cols-3 gap-2">
+              {[
+                { label: "Quá hạn", value: taskDueSummary.overdue, tone: "text-destructive" },
+                { label: "7 ngày tới", value: taskDueSummary.dueSoon, tone: "text-warning" },
+                { label: "Hoàn thành", value: taskDueSummary.done, tone: "text-success" },
+              ].map((item) => (
+                <div key={item.label} className="min-w-0 rounded-xl bg-muted/30 p-3">
+                  <div className={cn("text-2xl font-black tabular-nums", item.tone)}>
+                    {tasksQ.isLoading ? "…" : item.value}
+                  </div>
+                  <div className="truncate text-[11px] font-medium text-muted-foreground">
+                    {item.label}
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        );
+
       case "live-timeline":
         return (
           <Card className="astryx-card h-full flex flex-col">
@@ -644,20 +809,36 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
   };
 
   const handleRemove = (id: string) => {
-    setLayout((prev) => prev.filter((w) => w.id !== id));
+    setLayout((prev) => sanitizeLayout(prev, defaultLayout).filter((w) => w.id !== id));
+  };
+
+  const handleDrop = (targetId: string, fromId: string) => {
+    setLayout((prev) => moveWidget(sanitizeLayout(prev, defaultLayout), fromId, targetId));
+  };
+
+  const handleMoveBy = (id: string, delta: number) => {
+    setLayout((prev) => {
+      const current = sanitizeLayout(prev, defaultLayout);
+      const idx = current.findIndex((w) => w.id === id);
+      const target = current[idx + delta];
+      return target ? moveWidget(current, id, target.id) : current;
+    });
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full overflow-x-hidden">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 w-full">
       {layout.map((widget) => (
         <WidgetContainer
           key={widget.id}
           config={widget}
           isEditing={isEditing}
           onRemove={() => handleRemove(widget.id)}
+          onDropWidget={(fromId) => handleDrop(widget.id, fromId)}
+          onMoveBy={(delta) => handleMoveBy(widget.id, delta)}
         >
           {renderWidget(widget)}
         </WidgetContainer>
+
       ))}
     </div>
   );
