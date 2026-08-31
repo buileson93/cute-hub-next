@@ -134,6 +134,7 @@ export function TaskAttachmentButton({
     onSuccess: () => {
       toast.success("Đã đính kèm tệp vào công việc");
       qc.invalidateQueries({ queryKey: ["du-an-cong-viec-tep", taskId] });
+      qc.invalidateQueries({ queryKey: ["du-an-cong-viec-tep-counts"] });
     },
     onError: (e: Error) => toast.error("Không tải được tệp: " + e.message),
     onSettled: () => setBusy(false),
@@ -148,6 +149,7 @@ export function TaskAttachmentButton({
     onSuccess: () => {
       toast.success("Đã xoá tệp đính kèm");
       qc.invalidateQueries({ queryKey: ["du-an-cong-viec-tep", taskId] });
+      qc.invalidateQueries({ queryKey: ["du-an-cong-viec-tep-counts"] });
     },
     onError: (e: Error) => toast.error("Không xoá được tệp: " + e.message),
   });
@@ -163,7 +165,7 @@ export function TaskAttachmentButton({
     window.open(data.signedUrl, "_blank", "noopener,noreferrer");
   }
 
-  const count = files?.length ?? 0;
+  const count = files?.length ?? countProp ?? 0;
 
   return (
     <span
@@ -208,7 +210,7 @@ export function TaskAttachmentButton({
       ) : null}
 
       {count > 0 ? (
-        <DropdownMenu>
+        <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
           <DropdownMenuTrigger asChild>
             <Button
               type="button"
