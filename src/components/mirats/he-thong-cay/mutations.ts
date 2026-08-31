@@ -211,23 +211,40 @@ export function useCayMutations() {
         return xoaThietBiAnToan(mas || [ma]);
       }
 
+      // Hệ thống bị ngừng: tài sản KHÔNG bị xoá, vẫn giữ nguyên liên kết và
+      // hồ sơ. Đếm trước để thông báo rõ ràng cho người dùng.
+      let soTaiSan = 0;
+      if (kind === "ht" && UUID_RE.test(ma)) {
+        const { count } = await supabase
+          .from("thiet_bi")
+          .select("ma_thiet_bi", { count: "exact", head: true })
+          .eq("he_thong_id", ma);
+        soTaiSan = count ?? 0;
+      }
+
       const { saveEntityFieldSecurely } = await import("@/lib/mirats/ui/save-entity-securely");
       // For groups/systems, we set active = false
-      return saveEntityFieldSecurely({
+      const res = await saveEntityFieldSecurely({
         kind: kind as any,
         id: ma,
         field: "active",
         value: false,
         userRoles,
       });
+      return { ...(res as any), soTaiSan };
     },
     onSuccess: (res: any) => {
       invalidate();
       if (res?.retired?.length) {
         toast.success(`Đã ngừng khai thác ${res.retired.length} tài sản (giữ hồ sơ)`);
+      } else if (res?.soTaiSan > 0) {
+        toast.success(
+          `Đã ẩn hệ thống. ${res.soTaiSan} tài sản vẫn được giữ nguyên hồ sơ và liên kết — hãy điều chuyển sang hệ thống khác nếu cần.`,
+        );
       } else {
         toast.success("Đã xoá thành công");
       }
+
     },
     onError: (e: any) => toast.error(e.message),
   });
