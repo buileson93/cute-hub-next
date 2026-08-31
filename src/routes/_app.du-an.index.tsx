@@ -286,7 +286,14 @@ function DuAnListPage() {
         open={openCreate}
         onOpenChange={setOpenCreate}
         donVis={donVis ?? []}
-        onDone={() => qc.invalidateQueries({ queryKey: ["du-an-list"] })}
+        onDone={(newId) => {
+          qc.invalidateQueries({ queryKey: ["du-an-list"] });
+          nav({
+            to: "/du-an/$id",
+            params: { id: newId },
+            search: { view: "kanban", q: "" } as any,
+          });
+        }}
       />
     </>
   );
@@ -301,7 +308,7 @@ function CreateDuAnDialog({
   open: boolean;
   onOpenChange: (v: boolean) => void;
   donVis: { id: string; ten: string }[];
-  onDone: () => void;
+  onDone: (newId: string) => void;
 }) {
   const { session } = useSession();
   const [form, setForm] = useState({
@@ -317,6 +324,13 @@ function CreateDuAnDialog({
     mutationFn: async () => {
       if (!session?.user?.id) throw new Error("Chưa đăng nhập");
       if (!form.ten.trim()) throw new Error("Cần nhập tên dự án");
+      if (
+        form.ngay_bat_dau &&
+        form.ngay_ket_thuc_du_kien &&
+        form.ngay_ket_thuc_du_kien < form.ngay_bat_dau
+      ) {
+        throw new Error("Ngày kết thúc dự kiến phải sau ngày bắt đầu");
+      }
       const payload = {
         ma: form.ma.trim() || null,
         ten: form.ten.trim(),
@@ -331,7 +345,7 @@ function CreateDuAnDialog({
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (created) => {
       toast.success("Đã tạo dự án thành công");
       onOpenChange(false);
       setForm({
@@ -342,7 +356,7 @@ function CreateDuAnDialog({
         ngay_bat_dau: "",
         ngay_ket_thuc_du_kien: "",
       });
-      onDone();
+      onDone(created.id as string);
     },
     onError: (e: Error) => toast.error("Tạo dự án thất bại: " + e.message),
 
