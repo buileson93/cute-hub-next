@@ -203,7 +203,7 @@ type CongViec = {
   ket_qua: string | null;
   created_by: string | null;
 };
-type Profile = { id: string; ho_ten: string | null; email: string };
+type Profile = { id: string; ho_ten: string | null; email: string; avatar_url: string | null };
 
 function DuAnDetailPage() {
   const { id } = Route.useParams();
@@ -260,7 +260,7 @@ function DuAnDetailPage() {
     queryKey: ["profiles-for", userIds.sort().join(",")],
     queryFn: async () => {
       if (userIds.length === 0) return [] as Profile[];
-      const { data } = await supabase.from("profiles").select("id,ho_ten,email").in("id", userIds);
+      const { data } = await supabase.from("profiles").select("id,ho_ten,email,avatar_url").in("id", userIds);
       return (data ?? []) as Profile[];
     },
     enabled: userIds.length > 0,
@@ -1312,7 +1312,7 @@ function EditCongViecDialog({
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("id,ho_ten,email")
+        .select("id,ho_ten,email,avatar_url")
         .eq("active", true)
         .order("ho_ten");
       return (data ?? []) as Profile[];
