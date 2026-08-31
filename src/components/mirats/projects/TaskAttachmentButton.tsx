@@ -52,23 +52,54 @@ export function formatBytes(bytes: number | null): string {
   return `${(bytes / 1024 ** i).toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
 }
 
+/**
+ * Đếm tệp đính kèm theo lô cho nhiều công việc bằng MỘT truy vấn.
+ * Thay cho việc mỗi nút tự gọi API (N request khi danh sách dài).
+ */
+export function useTaskAttachmentCounts(taskIds: string[], enabled = true) {
+  const ids = [...taskIds].sort();
+  return useQuery({
+    queryKey: ["du-an-cong-viec-tep-counts", ids.join(",")],
+    enabled: enabled && ids.length > 0,
+    staleTime: 60_000,
+    queryFn: async (): Promise<Record<string, number>> => {
+      const { data, error } = await supabase
+        .from("du_an_cong_viec_tep")
+        .select("cong_viec_id")
+        .in("cong_viec_id", ids);
+      if (error) throw error;
+      const counts: Record<string, number> = {};
+      for (const row of data ?? []) {
+        counts[row.cong_viec_id] = (counts[row.cong_viec_id] ?? 0) + 1;
+      }
+      return counts;
+    },
+  });
+}
+
 export function TaskAttachmentButton({
   taskId,
   taskName,
   canEdit,
   className,
+  count: countProp,
 }: {
   taskId: string;
   taskName: string;
   canEdit: boolean;
   className?: string;
+  /** Số tệp lấy từ truy vấn gộp ở danh sách cha; bỏ trống thì nút tự tải khi mở menu. */
+  count?: number;
 }) {
   const qc = useQueryClient();
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const { data: files, isLoading } = useQuery({
     queryKey: ["du-an-cong-viec-tep", taskId],
+    // Chỉ tải danh sách tệp khi người dùng thực sự mở menu (hoặc không có số đếm gộp).
+    enabled: menuOpen || countProp === undefined,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("du_an_cong_viec_tep")
