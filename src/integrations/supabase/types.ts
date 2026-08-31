@@ -3369,6 +3369,53 @@ export type Database = {
           },
         ]
       }
+      du_an_cong_viec_tep: {
+        Row: {
+          bucket: string
+          cong_viec_id: string
+          created_at: string
+          file_name: string
+          file_path: string
+          id: string
+          kich_thuoc: number | null
+          mime_type: string | null
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          bucket?: string
+          cong_viec_id: string
+          created_at?: string
+          file_name: string
+          file_path: string
+          id?: string
+          kich_thuoc?: number | null
+          mime_type?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          bucket?: string
+          cong_viec_id?: string
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          id?: string
+          kich_thuoc?: number | null
+          mime_type?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "du_an_cong_viec_tep_cong_viec_id_fkey"
+            columns: ["cong_viec_id"]
+            isOneToOne: false
+            referencedRelation: "du_an_cong_viec"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       du_an_moc: {
         Row: {
           created_at: string

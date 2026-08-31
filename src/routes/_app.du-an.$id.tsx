@@ -86,6 +86,7 @@ import {
   ProjectGantt,
   type GanttAssignee,
 } from "@/components/mirats/projects/gantt/ProjectGantt";
+import { TaskAttachmentButton } from "@/components/mirats/projects/TaskAttachmentButton";
 import { ProjectReports } from "@/components/mirats/projects/ProjectReports";
 
 
@@ -456,7 +457,7 @@ function DuAnDetailPage() {
                 <TabsTrigger
                   key={view.value}
                   value={view.value}
-                  className="flex-1 lg:flex-none px-3 h-7 text-xs font-medium gap-1.5"
+                  className="flex-1 lg:flex-none px-3 h-9 text-xs font-medium gap-1.5"
                 >
                   <view.icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                   <span>{view.label}</span>
@@ -472,7 +473,7 @@ function DuAnDetailPage() {
                   <SearchIcon className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     placeholder="Tìm công việc..."
-                    className="h-8 pl-8 text-xs w-full lg:w-[200px] bg-card border-border"
+                    className="h-9 pl-8 text-xs w-full lg:w-[200px] bg-card border-border"
                     value={currentSearch.q}
                     onChange={(e) =>
                       nav({ search: { ...currentSearch, q: e.target.value } as any, replace: true })
@@ -482,7 +483,7 @@ function DuAnDetailPage() {
                 {canAddTask && (
                   <Button
                     size="sm"
-                    className="h-8 px-3 text-xs"
+                    className="h-9 px-3 text-xs"
                     onClick={() => {
                       setDefaultMocId(mocs?.[0]?.id ?? null);
                       setEditingCV(null);
@@ -798,9 +799,8 @@ function KanbanView({
               {canAdd && (
                 <Button
                   variant="ghost"
-                  size="icon"
-                  aria-label={`Thêm công việc vào cột ${col.label}`}
-                  className="h-6 w-6 text-muted-foreground"
+                  size="icon" aria-label={`Thêm công việc vào cột ${col.label}`}
+                  className="size-9 md:size-7 text-muted-foreground"
                   onClick={() => onAddIn(mocs[0].id)}
                 >
                   <Plus className="h-3.5 w-3.5" aria-hidden="true" />
@@ -882,13 +882,19 @@ function KanbanView({
                           <span>{t.ngay_ket_thuc_du_kien}</span>
                         </div>
                       )}
+                      <TaskAttachmentButton
+                        className="ml-auto"
+                        taskId={t.id}
+                        taskName={t.ten}
+                        canEdit={canAdd}
+                      />
                     </div>
 
                     {canChangeStatus && (
                       // Lối bàn phím thay cho kéo–thả (a11y + thiết bị cảm ứng).
                       <select
                         aria-label={`Đổi trạng thái công việc ${t.ten}`}
-                        className="w-full h-7 rounded-md border border-border bg-background text-[11px] px-2"
+                        className="w-full h-9 rounded-md border border-border bg-background text-[11px] px-2"
                         value={t.trang_thai}
                         disabled={pendingTaskId === t.id}
                         onClick={(e) => e.stopPropagation()}
@@ -1023,10 +1029,9 @@ function ListView({
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button
-                          size="icon"
+                          size="icon" aria-label={`Xoá mốc ${m.ten}`}
                           variant="ghost"
-                          className="h-8 w-8 text-rose-500"
-                          aria-label="Xoá"
+                          className="size-9 text-rose-500"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -1063,10 +1068,18 @@ function ListView({
                   {list.map((t) => {
                     const c = CV_TRANG_THAI[t.trang_thai];
                     return (
-                      <button
+                      <div
                         key={t.id}
+                        role="button"
+                        tabIndex={0}
                         onClick={() => onEdit(t)}
-                        className="w-full text-left py-2 grid grid-cols-12 gap-2 hover:bg-muted rounded px-2"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            onEdit(t);
+                          }
+                        }}
+                        className="w-full cursor-pointer text-left py-2 grid grid-cols-12 gap-2 hover:bg-muted rounded px-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         <div className="col-span-5 min-w-0">
                           <div className="font-medium text-sm truncate">{t.ten}</div>
@@ -1088,12 +1101,13 @@ function ListView({
                             {t.tien_do}%
                           </span>
                         </div>
-                        <div className="col-span-1 text-right">
+                        <div className="col-span-1 flex items-center justify-end gap-1">
+                          <TaskAttachmentButton taskId={t.id} taskName={t.ten} canEdit={canAdd} />
                           <Badge variant="outline" className={cn(c.tone, "text-[10px]")}>
                             {c.label}
                           </Badge>
                         </div>
-                      </button>
+                      </div>
                     );
                   })}
                 </div>

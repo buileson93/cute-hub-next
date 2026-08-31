@@ -112,7 +112,7 @@ export function TaskComments({
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="h-6 w-6 text-destructive opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+                      className="size-9 md:size-8 text-destructive opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
                       aria-label="Xoá bình luận"
                       onClick={() => remove.mutate(c.id)}
                       disabled={remove.isPending}

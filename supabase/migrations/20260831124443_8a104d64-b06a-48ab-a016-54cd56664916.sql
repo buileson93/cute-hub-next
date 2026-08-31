@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.fn_log_project_event() FROM PUBLIC, anon, authenticated;
