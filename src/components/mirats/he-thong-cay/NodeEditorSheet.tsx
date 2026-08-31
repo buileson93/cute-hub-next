@@ -330,6 +330,52 @@ export function NodeEditorSheet({
             </div>
           )}
 
+          {target?.kind === "ht" && canManage && (
+            <div className="space-y-2 rounded-md border p-3">
+              <div className="flex items-center gap-1.5 text-sm font-medium">
+                <Plus className="h-4 w-4 text-emerald-600" /> Thêm tài sản vào hệ thống
+              </div>
+              <Input
+                value={newDeviceTen}
+                onChange={(e) => setNewDeviceTen(e.target.value)}
+                placeholder="Tên tài sản mới..."
+              />
+              <Input
+                value={newDeviceMa}
+                onChange={(e) => setNewDeviceMa(e.target.value.toUpperCase())}
+                placeholder="Mã tài sản (bỏ trống để tự sinh)"
+              />
+              <Button
+                size="sm"
+                disabled={addDevice.isPending || !newDeviceTen.trim()}
+                onClick={() => {
+                  if (addDevice.isPending || !newDeviceTen.trim()) return;
+                  addDevice.mutate(
+                    {
+                      htId: physKeyValue("ht", target.ma),
+                      ten: newDeviceTen,
+                      ma: newDeviceMa,
+                    },
+                    {
+                      onSuccess: () => {
+                        setNewDeviceTen("");
+                        setNewDeviceMa("");
+                      },
+                    },
+                  );
+                }}
+              >
+                {addDevice.isPending ? (
+                  <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                ) : (
+                  <Plus className="h-4 w-4 mr-1" />
+                )}
+                Thêm tài sản
+              </Button>
+            </div>
+          )}
+
+
           {target?.kind === "ht" && (
             <HeThongTruongEditor heThongId={target.ma} canManage={canManage} scope="he_thong" />
           )}
