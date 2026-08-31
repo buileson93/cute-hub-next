@@ -322,18 +322,28 @@ export function NodeEditorSheet({
                   </Select>
                   <Button
                     size="sm"
+                    disabled={addSystem.isPending || !newSystemTen.trim() || !newSystemDonViId}
                     onClick={() => {
-                      addSystem.mutate({
-                        nhMa: target.ma,
-                        plId: "HT_KHAC",
-                        ten: newSystemTen,
-                        donViId: newSystemDonViId,
-                      });
-                      setNewSystemTen("");
+                      if (addSystem.isPending) return;
+                      addSystem.mutate(
+                        {
+                          nhMa: target.ma,
+                          plId: "HT_KHAC",
+                          ten: newSystemTen,
+                          donViId: newSystemDonViId,
+                        },
+                        { onSuccess: () => setNewSystemTen("") },
+                      );
                     }}
                   >
-                    <Plus className="h-4 w-4 mr-1" /> Thêm HT
+                    {addSystem.isPending ? (
+                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                    ) : (
+                      <Plus className="h-4 w-4 mr-1" />
+                    )}
+                    Thêm HT
                   </Button>
+
                 </div>
               )}
             </div>
