@@ -149,9 +149,10 @@ function OverviewReport() {
           </div>
         </div>
 
-        <div className="mt-2 mb-4">
+        <div className="mt-2 mb-4 empty:hidden">
           <HeartBeatStrip />
         </div>
+
       </div>
 
       <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-6 mirats-scroll">

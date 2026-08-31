@@ -147,14 +147,13 @@ function Dashboard() {
       />
 
       <PageBody className="bg-background min-h-0 flex-1">
-        <div className="mb-6 p-1 astryx-surface overflow-hidden">
+        <div className="mb-6 overflow-hidden rounded-[var(--radius-container)] empty:hidden">
           <HeartBeatStrip />
         </div>
 
-        <div className="mt-6">
-          <DashboardGrid page="home" isEditing={isEditing} />
-        </div>
+        <DashboardGrid page="home" isEditing={isEditing} />
       </PageBody>
+
     </PageFrame>
   );
 }
