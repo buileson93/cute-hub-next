@@ -236,6 +236,11 @@ function DuAnDetailPage() {
       return data as DuAn | null;
     },
   });
+  // Sentinel: chỉ tải mốc + công việc khi khu vực công việc đi vào (gần) viewport.
+  const { ref: workSectionRef, hasIntersected: workVisible } = useLazySection<HTMLDivElement>({
+    rootMargin: "240px",
+  });
+
   const { data: mocs } = useQuery({
     queryKey: ["du-an-moc", id],
     queryFn: async () => {
@@ -247,8 +252,17 @@ function DuAnDetailPage() {
       if (error) throw error;
       return (data ?? []) as Moc[];
     },
+    enabled: !!id && workVisible,
+    staleTime: 60_000,
   });
-  const { data: congViecs } = useQuery({
+  const {
+    data: congViecs,
+    isLoading: loadingCV,
+    isError: errorCV,
+    error: cvError,
+    refetch: refetchCV,
+    isFetching: fetchingCV,
+  } = useQuery({
     queryKey: ["du-an-cv", id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -259,7 +273,11 @@ function DuAnDetailPage() {
       if (error) throw error;
       return (data ?? []) as CongViec[];
     },
+    enabled: !!id && workVisible,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
   });
+  const tasksReady = workVisible && !loadingCV && !errorCV;
 
   const userIds = useMemo(() => {
     const s = new Set<string>();
