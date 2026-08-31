@@ -215,23 +215,96 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
   });
 
   const dossierCompQ = useQuery({
-    queryKey: ["dashboard_dossier_compliance", scope.donViCode],
+    queryKey: ["dashboard_dossier_compliance"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("dossier_documents")
-        .select("status, dossier_id")
-        .limit(100);
+        .select("status")
+        .limit(500);
       if (error) throw error;
-      
-      // Calculate compliance by dossier (simplified)
-      return [
-        { phase: "Chuẩn bị", value: 85 },
-        { phase: "Thiết kế", value: 62 },
-        { phase: "Triển khai", value: 45 },
-        { phase: "Nghiệm thu", value: 12 }
-      ];
-    }
+      const counts = new Map<string, number>();
+      (data ?? []).forEach((row) => {
+        const key = String(row.status ?? "khac");
+        counts.set(key, (counts.get(key) ?? 0) + 1);
+      });
+      return Array.from(counts, ([phase, value]) => ({ phase, value })).sort(
+        (a, b) => b.value - a.value,
+      );
+    },
   });
+
+  /** Công việc dự án — nguồn cho 3 widget quản lý công việc. */
+  const tasksQ = useQuery({
+    queryKey: ["dashboard_project_tasks"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("du_an_cong_viec")
+        .select("id, trang_thai, ngay_ket_thuc_du_kien, ngay_hoan_thanh_thuc_te")
+        .limit(1000);
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 60_000,
+  });
+
+  const taskStatusData = React.useMemo(() => {
+    const LABEL: Record<string, string> = {
+      chua_bat_dau: "Chưa bắt đầu",
+      dang_lam: "Đang làm",
+      cho_duyet: "Chờ duyệt",
+      hoan_thanh: "Hoàn thành",
+      qua_han: "Quá hạn",
+    };
+    const counts = new Map<string, number>();
+    (tasksQ.data ?? []).forEach((t) => {
+      const key = LABEL[String(t.trang_thai)] ?? "Khác";
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    });
+    return Array.from(counts, ([name, value]) => ({ name, value }));
+  }, [tasksQ.data]);
+
+  const taskTrendData = React.useMemo(() => {
+    const days = 30;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const buckets = new Map<string, number>();
+    for (let i = days - 1; i >= 0; i--) {
+      buckets.set(format(addDays(today, -i), "yyyy-MM-dd"), 0);
+    }
+    (tasksQ.data ?? []).forEach((t) => {
+      if (!t.ngay_hoan_thanh_thuc_te) return;
+      const d = new Date(t.ngay_hoan_thanh_thuc_te);
+      if (Number.isNaN(d.getTime())) return;
+      const key = format(d, "yyyy-MM-dd");
+      if (buckets.has(key)) buckets.set(key, (buckets.get(key) ?? 0) + 1);
+    });
+    return Array.from(buckets, ([day, value]) => ({
+      day,
+      label: format(new Date(day), "dd/MM", { locale: vi }),
+      value,
+    }));
+  }, [tasksQ.data]);
+
+  const taskDueSummary = React.useMemo(() => {
+    const now = new Date();
+    const in7 = addDays(now, 7);
+    let overdue = 0;
+    let dueSoon = 0;
+    let done = 0;
+    (tasksQ.data ?? []).forEach((t) => {
+      if (t.trang_thai === "hoan_thanh") {
+        done += 1;
+        return;
+      }
+      if (!t.ngay_ket_thuc_du_kien) return;
+      const d = new Date(t.ngay_ket_thuc_du_kien);
+      if (Number.isNaN(d.getTime())) return;
+      if (d < now) overdue += 1;
+      else if (d <= in7) dueSoon += 1;
+    });
+    return { overdue, dueSoon, done, total: (tasksQ.data ?? []).length };
+  }, [tasksQ.data]);
+
 
   const trendData = React.useMemo(() => {
     const rows = (trendQ.data as any[]) ?? [];
