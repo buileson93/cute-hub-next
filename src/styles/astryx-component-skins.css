@@ -35,21 +35,39 @@
 
   .astryx-card {
     background-color: var(--card);
+    /* Viền luôn tồn tại ở mọi trạng thái -> không nhảy layout khi hover/focus/drag */
     border: 1px solid var(--border);
     border-radius: var(--radius-container);
     box-shadow:
       0 1px 3px 0 oklch(0 0 0 / 0.05),
       0 1px 2px -1px oklch(0 0 0 / 0.05);
-    transition: all var(--duration-medium) var(--ease-standard);
+    transition:
+      box-shadow var(--duration-medium) var(--ease-standard),
+      border-color var(--duration-medium) var(--ease-standard),
+      background-color var(--duration-medium) var(--ease-standard);
   }
 
   .astryx-card:hover {
-    border-color: color-mix(in oklab, var(--border) 70%, var(--primary));
+    border-color: color-mix(in oklab, var(--border) 60%, var(--primary));
+    background-color: color-mix(in oklab, var(--card) 96%, var(--primary));
     box-shadow:
-      0 4px 6px -1px oklch(0 0 0 / 0.05),
-      0 2px 4px -2px oklch(0 0 0 / 0.05);
-    transform: translateY(-1px);
+      0 6px 16px -8px color-mix(in oklab, var(--primary) 35%, transparent),
+      0 2px 4px -2px oklch(0 0 0 / 0.06);
   }
+
+  .astryx-card:focus-visible,
+  .astryx-card:focus-within {
+    outline: 2px solid color-mix(in oklab, var(--primary) 60%, transparent);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .astryx-card,
+    .astryx-surface {
+      transition: none;
+    }
+  }
+
 
   /* Typography & Headings */
   .astryx-heading-1 {
