@@ -156,7 +156,7 @@ export function TaskChecklist({
                 <Input
                   defaultValue={item.noi_dung}
                   onBlur={(e) => rename.mutate({ item, value: e.target.value })}
-                  className="h-7 text-sm border-transparent hover:border-border focus-visible:border-input px-2"
+                  className="h-9 text-sm border-transparent hover:border-border focus-visible:border-input px-2"
                   aria-label="Nội dung checklist"
                 />
               ) : (
@@ -168,7 +168,7 @@ export function TaskChecklist({
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-7 w-7 text-destructive opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+                  className="size-9 text-destructive opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
                   aria-label={`Xoá mục ${item.noi_dung}`}
                   onClick={() => remove.mutate(item)}
                   disabled={remove.isPending}
@@ -193,7 +193,7 @@ export function TaskChecklist({
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             placeholder="Thêm mục checklist…"
-            className="h-8 text-sm"
+            className="h-9 text-sm"
             aria-label="Nội dung mục checklist mới"
           />
           <Button type="submit" size="sm" disabled={!draft.trim() || add.isPending}>

@@ -259,7 +259,7 @@ export function ProjectMembersDialog({
                     onValueChange={(v) => changeRole.mutate({ m, role: v as VaiTroDuAn })}
                     disabled={changeRole.isPending}
                   >
-                    <SelectTrigger className="w-[130px] h-8 text-xs" aria-label="Đổi vai trò">
+                    <SelectTrigger className="w-[130px] h-9 text-xs" aria-label="Đổi vai trò">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -279,7 +279,7 @@ export function ProjectMembersDialog({
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="h-8 w-8 text-destructive"
+                    className="size-9 md:size-8 text-destructive"
                     aria-label={`Xoá thành viên ${m.ho_ten ?? m.email ?? ""}`}
                     onClick={() => removeMember.mutate(m)}
                     disabled={removeMember.isPending}
