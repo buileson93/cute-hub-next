@@ -1,85 +1,178 @@
-import React, { useState } from "react";
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetHeader, 
-  SheetTitle, 
-  SheetDescription 
+// ============================================================================
+// TaskDetailSlideOver — Xem nhanh chi tiết một công việc dự án.
+// Dữ liệu thật: du_an_cong_viec, du_an_moc, profiles, du_an_cong_viec_phoi_hop.
+// Không hiển thị dữ liệu giả lập (thảo luận/ký số) khi backend chưa hỗ trợ.
+// ============================================================================
+import { useState } from "react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
 } from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  CheckCircle2, 
-  Clock, 
-  MessageSquare, 
-  FileText, 
-  FileCheck, 
-  History, 
-  ExternalLink,
+import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Clock,
+  FileText,
+  History,
   ChevronRight,
   User,
   Calendar,
+  Users,
+  Trash2,
+  Loader2,
   AlertCircle,
-  FileCheck2,
-  Stamp
 } from "lucide-react";
 import { AuditLog } from "./AuditLog";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
+
+export interface TaskDetail {
+  id: string;
+  du_an_id: string;
+  moc_id: string;
+  ten: string;
+  mo_ta: string | null;
+  nguoi_xu_ly_chinh: string | null;
+  ngay_bat_dau: string | null;
+  ngay_ket_thuc_du_kien: string | null;
+  ngay_hoan_thanh_thuc_te: string | null;
+  trang_thai: string;
+  tien_do: number;
+  ket_qua: string | null;
+  created_by: string | null;
+  moc: { ten: string } | null;
+  assignee: { ho_ten: string | null; email: string | null } | null;
+}
 
 interface TaskDetailSlideOverProps {
   taskId: string | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onEdit?: (task: any) => void;
+  onEdit?: (task: TaskDetail) => void;
+  /** Cho phép xoá công việc (kiểm tra thêm ở tầng RLS). */
+  canDelete?: boolean;
+  /** Gọi lại sau khi xoá thành công để làm mới dữ liệu cha. */
+  onDeleted?: () => void;
 }
 
-export function TaskDetailSlideOver({ taskId, open, onOpenChange, onEdit }: TaskDetailSlideOverProps) {
-  const { data: task, isLoading } = useQuery({
-    queryKey: ["du-an-cv-detail", taskId],
-    queryFn: async () => {
-      if (!taskId) return null;
-      const { data, error } = await supabase
-        .from("du_an_cong_viec")
-        .select(`
-          *,
-          moc:du_an_moc(ten)
-        `)
-        .eq("id", taskId)
-        .single();
-      if (error) throw error;
+const TT_LABEL: Record<string, string> = {
+  chua_bat_dau: "Chưa bắt đầu",
+  dang_lam: "Đang làm",
+  cho_duyet: "Chờ duyệt",
+  hoan_thanh: "Hoàn thành",
+  qua_han: "Quá hạn",
+};
 
-      // Manually fetch assignee profile since relationship is not visible in Types
-      let assignee = null;
+function daysLeftLabel(due: string | null): { text: string; tone: string } | null {
+  if (!due) return null;
+  const ms = new Date(`${due}T00:00:00`).getTime() - new Date().setHours(0, 0, 0, 0);
+  const days = Math.round(ms / 86_400_000);
+  if (Number.isNaN(days)) return null;
+  if (days < 0) return { text: `Quá hạn ${Math.abs(days)} ngày`, tone: "text-destructive" };
+  if (days === 0) return { text: "Đến hạn hôm nay", tone: "text-warning-fg" };
+  return { text: `Còn ${days} ngày`, tone: "text-muted-foreground" };
+}
+
+export function TaskDetailSlideOver({
+  taskId,
+  open,
+  onOpenChange,
+  onEdit,
+  canDelete = false,
+  onDeleted,
+}: TaskDetailSlideOverProps) {
+  const qc = useQueryClient();
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const {
+    data: task,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["du-an-cv-detail", taskId],
+    queryFn: async (): Promise<TaskDetail | null> => {
+      if (!taskId) return null;
+      const { data, error: err } = await supabase
+        .from("du_an_cong_viec")
+        .select("*, moc:du_an_moc(ten)")
+        .eq("id", taskId)
+        .maybeSingle();
+      if (err) throw err;
+      if (!data) return null;
+
+      let assignee: TaskDetail["assignee"] = null;
       if (data.nguoi_xu_ly_chinh) {
         const { data: profile } = await supabase
           .from("profiles")
           .select("ho_ten, email")
           .eq("id", data.nguoi_xu_ly_chinh)
-          .single();
-        assignee = profile;
+          .maybeSingle();
+        assignee = profile ?? null;
       }
-
-      return { ...data, assignee };
+      return { ...(data as unknown as TaskDetail), assignee };
     },
     enabled: !!taskId && open,
   });
 
-  const { data: docs = [] } = useQuery({
-    queryKey: ["du-an-cv-docs", taskId],
-    queryFn: async () => {
+  const { data: collaborators = [] } = useQuery({
+    queryKey: ["du-an-cv-phoi-hop", taskId],
+    queryFn: async (): Promise<{ ho_ten: string | null; email: string | null }[]> => {
       if (!taskId) return [];
-      // This is a mock query until we have the correct junction table for task-documents
-      // Assuming a link might exist via du_an_id and potentially metadata
-      return [];
+      const { data, error: err } = await supabase
+        .from("du_an_cong_viec_phoi_hop")
+        .select("user_id")
+        .eq("cong_viec_id", taskId);
+      if (err) throw err;
+      const ids = (data ?? []).map((r) => r.user_id);
+      if (ids.length === 0) return [];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("ho_ten, email")
+        .in("id", ids);
+      return profiles ?? [];
     },
     enabled: !!taskId && open,
+  });
+
+  const del = useMutation({
+    mutationFn: async () => {
+      if (!taskId) return;
+      const { error: err } = await supabase.from("du_an_cong_viec").delete().eq("id", taskId);
+      if (err) throw err;
+    },
+    onSuccess: () => {
+      toast.success("Đã xoá công việc");
+      setConfirmDelete(false);
+      onOpenChange(false);
+      qc.invalidateQueries({ queryKey: ["du-an-cv-detail", taskId] });
+      onDeleted?.();
+    },
+    onError: (e: Error) => toast.error("Xoá công việc thất bại: " + e.message),
   });
 
   if (!taskId) return null;
+
+  const due = daysLeftLabel(task?.ngay_ket_thuc_du_kien ?? null);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -87,272 +180,211 @@ export function TaskDetailSlideOver({ taskId, open, onOpenChange, onEdit }: Task
         <SheetHeader className="p-6 pb-2">
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
             <span>Dự án</span>
-            <ChevronRight className="h-3 w-3" />
-            <span>{task?.moc?.ten || "Mốc công việc"}</span>
+            <ChevronRight className="h-3 w-3" aria-hidden="true" />
+            <span>{task?.moc?.ten ?? "Mốc công việc"}</span>
           </div>
           <SheetTitle className="text-xl font-bold leading-tight">
-            {isLoading ? "Đang tải..." : task?.ten}
+            {isLoading ? <Skeleton className="h-6 w-2/3" /> : (task?.ten ?? "Không tìm thấy công việc")}
           </SheetTitle>
-          <div className="flex items-center gap-3 mt-4">
-            <Badge variant="outline" className="bg-sky-50 text-sky-700 border-sky-200">
-              {task?.trang_thai?.replace("_", " ")}
-            </Badge>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Clock className="h-3.5 w-3.5" />
-              <span>Tiến độ: {task?.tien_do || 0}%</span>
+          {task && (
+            <div className="flex items-center gap-3 mt-4">
+              <Badge variant="outline">{TT_LABEL[task.trang_thai] ?? task.trang_thai}</Badge>
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Clock className="h-3.5 w-3.5" aria-hidden="true" />
+                <span>Tiến độ: {task.tien_do}%</span>
+              </div>
+              <Progress value={task.tien_do} className="h-1.5 flex-1 max-w-[120px]" />
             </div>
-          </div>
+          )}
         </SheetHeader>
 
-        <Tabs defaultValue="progress" className="flex-1 flex flex-col mt-4">
-          <div className="px-6 border-b">
-            <TabsList className="bg-transparent h-auto p-0 gap-6 w-full justify-start">
-              <TabsTrigger 
-                value="progress" 
-                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 py-2 text-sm font-semibold"
-              >
-                Tiến độ & Phối hợp
-              </TabsTrigger>
-              <TabsTrigger 
-                value="deliverables" 
-                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 py-2 text-sm font-semibold"
-              >
-                Sản phẩm & Trình ký
-              </TabsTrigger>
-              <TabsTrigger 
-                value="audit" 
-                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 py-2 text-sm font-semibold"
-              >
-                Nhật ký
-              </TabsTrigger>
-            </TabsList>
+        {isError ? (
+          <div className="p-6 space-y-3">
+            <div className="flex items-center gap-2 text-sm text-destructive">
+              <AlertCircle className="h-4 w-4" aria-hidden="true" />
+              Không tải được công việc: {(error as Error).message}
+            </div>
+            <Button size="sm" variant="outline" onClick={() => refetch()}>
+              Thử lại
+            </Button>
           </div>
+        ) : (
+          <Tabs defaultValue="progress" className="flex-1 flex flex-col mt-4 min-h-0">
+            <div className="px-6 border-b">
+              <TabsList className="bg-transparent h-auto p-0 gap-6 w-full justify-start">
+                <TabsTrigger
+                  value="progress"
+                  className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 py-2 text-sm font-semibold"
+                >
+                  Tiến độ & Phối hợp
+                </TabsTrigger>
+                <TabsTrigger
+                  value="audit"
+                  className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 py-2 text-sm font-semibold"
+                >
+                  Nhật ký
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
-          <ScrollArea className="flex-1">
-            <TabsContent value="progress" className="p-6 m-0 space-y-8">
-              {/* Assignee & Dates */}
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-1.5">
-                  <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Người thực hiện</span>
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center border">
-                      <User className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-sm font-medium truncate">{task?.assignee?.ho_ten || "Chưa giao"}</span>
-                      <span className="text-[10px] text-muted-foreground truncate">{task?.assignee?.email}</span>
-                    </div>
+            <ScrollArea className="flex-1 min-h-0">
+              <TabsContent value="progress" className="p-6 m-0 space-y-8">
+                {isLoading ? (
+                  <div className="space-y-3">
+                    <Skeleton className="h-16 w-full" />
+                    <Skeleton className="h-24 w-full" />
                   </div>
-                </div>
-                <div className="space-y-1.5">
-                  <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Hạn hoàn thành</span>
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-full bg-rose-50 flex items-center justify-center border border-rose-100">
-                      <Calendar className="h-4 w-4 text-rose-600" />
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="space-y-1.5">
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
+                          Người thực hiện
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center border">
+                            <User className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                          </div>
+                          <div className="flex flex-col min-w-0">
+                            <span className="text-sm font-medium truncate">
+                              {task?.assignee?.ho_ten ?? task?.assignee?.email ?? "Chưa giao"}
+                            </span>
+                            {task?.assignee?.email && (
+                              <span className="text-[10px] text-muted-foreground truncate">
+                                {task.assignee.email}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
+                          Hạn hoàn thành
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center border">
+                            <Calendar className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-sm font-medium">
+                              {task?.ngay_ket_thuc_du_kien ?? "—"}
+                            </span>
+                            {due && <span className={`text-[10px] ${due.tone}`}>{due.text}</span>}
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium">{task?.ngay_ket_thuc_du_kien || "—"}</span>
-                      <span className="text-[10px] text-rose-600">Còn 2 ngày</span>
+
+                    <Separator />
+
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-bold flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-primary" aria-hidden="true" />
+                        Mô tả & Yêu cầu
+                      </h4>
+                      <div className="bg-muted/30 p-4 rounded-xl text-sm leading-relaxed whitespace-pre-line">
+                        {task?.mo_ta || "Không có mô tả chi tiết."}
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </div>
 
-              <Separator />
+                    {task?.ket_qua && (
+                      <div className="space-y-3">
+                        <h4 className="text-sm font-bold">Kết quả thực hiện</h4>
+                        <div className="bg-muted/30 p-4 rounded-xl text-sm leading-relaxed whitespace-pre-line">
+                          {task.ket_qua}
+                        </div>
+                      </div>
+                    )}
 
-              {/* Description */}
-              <div className="space-y-3">
-                <h4 className="text-sm font-bold flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-primary" />
-                  Mô tả & Yêu cầu
-                </h4>
-                <div className="bg-muted/30 p-4 rounded-xl text-sm leading-relaxed text-slate-700">
-                  {task?.mo_ta || "Không có mô tả chi tiết."}
-                </div>
-              </div>
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-bold flex items-center gap-2">
+                        <Users className="h-4 w-4 text-primary" aria-hidden="true" />
+                        Người phối hợp
+                      </h4>
+                      {collaborators.length === 0 ? (
+                        <div className="text-xs text-muted-foreground">
+                          Chưa có người phối hợp. Thêm trong hộp thoại chỉnh sửa công việc.
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap gap-1.5">
+                          {collaborators.map((c) => (
+                            <Badge key={c.email ?? c.ho_ten} variant="secondary" className="text-xs">
+                              {c.ho_ten ?? c.email}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </TabsContent>
 
-              {/* Activity Feed Placeholder */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-bold flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4 text-primary" />
-                  Thảo luận
-                </h4>
+              <TabsContent value="audit" className="p-6 m-0">
                 <div className="space-y-4">
-                  <div className="flex gap-3">
-                    <div className="h-7 w-7 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
-                      <span className="text-[10px] font-bold text-indigo-700">MT</span>
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold">Minh Trần</span>
-                        <span className="text-[10px] text-muted-foreground">Vừa xong</span>
-                      </div>
-                      <div className="bg-slate-50 p-2.5 rounded-2xl rounded-tl-none text-xs border border-slate-100">
-                        Hồ sơ đính kèm đã sẵn sàng, nhờ Lãnh đạo xem xét trình ký.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="pt-2">
-                  <div className="flex items-center gap-2 border rounded-full px-3 py-1.5 bg-card">
-                    <span className="text-xs text-muted-foreground flex-1 px-1">Nhập bình luận hoặc / để dùng lệnh...</span>
-                    <Button size="icon" variant="ghost" className="h-7 w-7 rounded-full">
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="deliverables" className="p-6 m-0 space-y-6">
-              {/* Dossier Status */}
-              <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl flex items-start gap-3">
-                <FileCheck className="h-5 w-5 text-emerald-600 mt-0.5" />
-                <div>
-                  <h5 className="text-sm font-bold text-emerald-900">Tính pháp lý của Task</h5>
-                  <p className="text-[11px] text-emerald-700 mt-1">
-                    Cần hoàn thành <strong>2/2 hồ sơ bắt buộc</strong> để chuyển trạng thái Done.
-                  </p>
-                </div>
-              </div>
-
-              {/* Documents List */}
-              <div className="space-y-3">
-                <h4 className="text-sm font-bold">Danh mục hồ sơ nộp</h4>
-                <div className="space-y-2">
-                  {docs.map((doc: any) => (
-                    <div key={doc.id} className="flex flex-col p-3 border rounded-xl bg-card hover:border-primary/30 transition-colors group">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="h-10 w-8 bg-rose-50 border border-rose-100 rounded flex items-center justify-center shrink-0">
-                            <span className="text-[8px] font-bold text-rose-700">PDF</span>
-                          </div>
-                          <div className="min-w-0">
-                            <div className="text-xs font-semibold truncate group-hover:text-primary transition-colors">{doc.title}</div>
-                            <div className="text-[10px] text-muted-foreground">{doc.status === 'complete' ? 'Đã ký số' : 'Chưa ký'} · {doc.format || 'Điện tử'}</div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1">
-                           <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => window.open(doc.file_path, '_blank')}>
-                            <ExternalLink className="h-3.5 w-3.5" />
-                          </Button>
-                        </div>
-                      </div>
-                      
-                      {/* Live PDF Preview Simulation / Quick View */}
-                      <div className="mt-3 aspect-[16/9] bg-slate-100 rounded-lg overflow-hidden border border-slate-200 relative group/preview">
-                         <div className="absolute inset-0 flex items-center justify-center bg-slate-200/50 opacity-0 group-hover/preview:opacity-100 transition-opacity z-20">
-                            <Button size="sm" variant="secondary" className="text-[10px] font-bold" onClick={() => window.open(doc.file_path, '_blank')}>
-                              Mở xem chi tiết
-                            </Button>
-                         </div>
-                         <iframe 
-                            src={`${doc.file_path}#toolbar=0&navpanes=0`} 
-                            className="w-full h-full border-none pointer-events-none"
-                            title={doc.title}
-                         />
-                      </div>
-                    </div>
-                  ))}
-
-                  {docs.length === 0 && (
-                    <div className="text-center py-8 border border-dashed rounded-xl bg-slate-50/50">
-                       <FileText className="h-8 w-8 text-slate-300 mx-auto mb-2" />
-                       <div className="text-[11px] text-slate-400">Chưa có hồ sơ nào được đính kèm.</div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* E-Sign Section */}
-              <div className="pt-4 border-t space-y-4">
-                <h4 className="text-sm font-bold flex items-center gap-2">
-                  <Stamp className="h-4 w-4 text-indigo-600" />
-                  Luồng phê duyệt & Ký số
-                </h4>
-                <div className="space-y-4 px-2">
-                  <div className="flex gap-4 relative">
-                    <div className="absolute left-[13px] top-7 bottom-0 w-0.5 bg-slate-100" />
-                    <div className="h-7 w-7 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 z-10">
-                      <CheckCircle2 className="h-4 w-4 text-white" />
-                    </div>
-                    <div className="pb-6">
-                      <div className="text-xs font-bold">Trần Văn A (Trưởng phòng)</div>
-                      <div className="text-[10px] text-muted-foreground">Đã thẩm định · 14:30 20/08/2026</div>
-                      <div className="mt-2 flex items-center gap-1.5 text-[9px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded border border-emerald-100 w-fit">
-                        <FileCheck2 className="h-3 w-3" />
-                        Mã con dấu: MIRATS-ESIGN-2026-X892
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-4 relative">
-                    <div className="absolute left-[13px] top-7 bottom-0 w-0.5 bg-slate-100" />
-                    <div className="h-7 w-7 rounded-full bg-indigo-600 flex items-center justify-center shrink-0 z-10 shadow-sm shadow-indigo-200">
-                      <Clock className="h-4 w-4 text-white" />
-                    </div>
-                    <div className="pb-6">
-                      <div className="text-xs font-bold">Nguyễn Thị B (Lãnh đạo đơn vị)</div>
-                      <div className="text-[10px] text-amber-600 font-medium">Đang chờ ký số...</div>
-                      <div className="mt-3 flex items-center gap-2">
-                        <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-[11px] font-bold h-7">
-                          Trình ký ngay
-                        </Button>
-                        <Button size="sm" variant="outline" className="text-[11px] font-bold h-7">
-                          <Stamp className="h-3 w-3 mr-1.5" /> Ký số & Ban hành
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="audit" className="p-6 m-0">
-               <div className="space-y-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-sm font-bold flex items-center gap-2">
-                      <History className="h-4 w-4 text-primary" />
-                      Lịch sử hoạt động & Audit Log
-                    </h4>
-                  </div>
+                  <h4 className="text-sm font-bold flex items-center gap-2">
+                    <History className="h-4 w-4 text-primary" aria-hidden="true" />
+                    Lịch sử hoạt động
+                  </h4>
                   <AuditLog entityType="du_an_cong_viec" entityId={taskId} />
-               </div>
-            </TabsContent>
-          </ScrollArea>
-        </Tabs>
+                </div>
+              </TabsContent>
+            </ScrollArea>
+          </Tabs>
+        )}
 
         <div className="p-4 border-t bg-muted/20 flex items-center justify-between gap-3">
-          <Button variant="ghost" size="sm" className="text-rose-600 text-xs font-bold">
-            <AlertCircle className="h-3.5 w-3.5 mr-1.5" /> Xóa công việc
-          </Button>
+          {canDelete ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-destructive text-xs font-bold"
+              onClick={() => setConfirmDelete(true)}
+              disabled={del.isPending || !task}
+            >
+              {del.isPending ? (
+                <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" aria-hidden="true" />
+              ) : (
+                <Trash2 className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              )}
+              Xoá công việc
+            </Button>
+          ) : (
+            <span className="text-[11px] text-muted-foreground">Bạn không có quyền xoá công việc này.</span>
+          )}
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>Đóng</Button>
-            <Button size="sm" onClick={() => onEdit?.(task)}>Chỉnh sửa</Button>
+            <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
+              Đóng
+            </Button>
+            <Button size="sm" onClick={() => task && onEdit?.(task)} disabled={!task}>
+              Chỉnh sửa
+            </Button>
           </div>
         </div>
+
+        <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Xoá công việc "{task?.ten}"?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Hành động không thể hoàn tác. Tiến độ mốc và dự án sẽ được tính lại.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={del.isPending}>Huỷ</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={(e) => {
+                  e.preventDefault();
+                  del.mutate();
+                }}
+                disabled={del.isPending}
+              >
+                {del.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />}
+                Xoá
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </SheetContent>
     </Sheet>
-  );
-}
-
-function ShieldAlert({ className, ...props }: any) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      {...props}
-    >
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
-      <path d="M12 8v4" />
-      <path d="M12 16h.01" />
-    </svg>
   );
 }

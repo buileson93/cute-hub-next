@@ -73,18 +73,28 @@ function DuAnListPage() {
   const nav = useNavigate();
   const { session, hasRole } = useSession();
   const [q, setQ] = useState("");
+  const [status, setStatus] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<"created_desc" | "ten_asc" | "tien_do_desc" | "han_asc">(
+    "created_desc",
+  );
   const [openCreate, setOpenCreate] = useState(false);
 
   const canCreate = hasRole("admin") || hasRole("quan_ly_du_an");
 
-  const { data: duAns, isLoading } = useQuery({
+  const {
+    data: duAns,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ["du-an-list"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error: err } = await supabase
         .from("du_an")
         .select("*")
         .order("created_at", { ascending: false });
-      if (error) throw error;
+      if (err) throw err;
       return (data ?? []) as DuAn[];
     },
     enabled: !!session,
