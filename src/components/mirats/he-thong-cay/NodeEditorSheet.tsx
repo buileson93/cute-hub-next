@@ -269,14 +269,28 @@ export function NodeEditorSheet({
                   />
                   <Button
                     size="sm"
+                    disabled={addGroup.isPending || !newGroupTen.trim() || !newGroupMa.trim()}
                     onClick={() => {
-                      addGroup.mutate({ plId: target.ma, ten: newGroupTen, ma: newGroupMa });
-                      setNewGroupTen("");
-                      setNewGroupMa("");
+                      if (addGroup.isPending) return;
+                      addGroup.mutate(
+                        { plId: target.ma, ten: newGroupTen, ma: newGroupMa },
+                        {
+                          onSuccess: () => {
+                            setNewGroupTen("");
+                            setNewGroupMa("");
+                          },
+                        },
+                      );
                     }}
                   >
-                    <Plus className="h-4 w-4 mr-1" /> Thêm
+                    {addGroup.isPending ? (
+                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                    ) : (
+                      <Plus className="h-4 w-4 mr-1" />
+                    )}
+                    Thêm
                   </Button>
+
                 </div>
               )}
             </div>
