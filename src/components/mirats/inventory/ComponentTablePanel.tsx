@@ -221,23 +221,13 @@ export function ComponentTablePanel({
           </>
         )}
         toolbarLeft={
-          <div className="flex items-center gap-1.5">
-            {allowEdit && (
-              <div className="flex items-center gap-1">
-                {editMode && <KhaiThemCumButtons />}
-                <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chỉnh sửa nhanh"}>
-                  <Button
-                    size="sm"
-                    variant={editMode ? "default" : "outline"}
-                    className="h-7 w-7 p-0"
-                    onClick={() => setEditMode(!editMode)}
-                  >
-                    {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
-                  </Button>
-                </AppTooltip>
-              </div>
-            )}
+          <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+            {/* Nút bật/tắt chỉnh sửa đã chuyển sang cột thao tác (ActionRail)
+                để tránh 2 nút cùng chức năng. Ở đây chỉ giữ hành động "thêm"
+                theo ngữ cảnh khi đang ở chế độ chỉnh sửa. */}
+            {allowEdit && editMode && <KhaiThemCumButtons />}
             {ModeToggle}
+
             <div className="relative flex items-center">
               <Button
                 variant="ghost"

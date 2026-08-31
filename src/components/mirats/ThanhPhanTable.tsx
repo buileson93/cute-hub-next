@@ -68,6 +68,8 @@ import { AppTooltip } from "@/components/mirats/AppTooltip";
 import type { KeysetCursor } from "@/lib/mirats/db/keyset";
 import { ComponentTablePanel } from "./inventory/ComponentTablePanel";
 import { AssetTablePanel } from "./inventory/AssetTablePanel";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 
 
 // ---- Kiểu dữ liệu 1 dòng ở chế độ "Theo tài sản": 1 TÀI SẢN + tổng hợp thành phần đang lắp
@@ -360,12 +362,16 @@ export function ThanhPhanTable({
   tableKey = "mirats:unified-tp-table", // Sử dụng key chung để share preference
   externalEditMode,
 }: ThanhPhanTableProps) {
-  const [q, setQ] = useState("");
   const [viewMode, setViewMode] = useUserPref<"component" | "asset">(
     "thanh-phan:view-mode",
     "component",
   );
-  const [internalEditMode, setInternalEditMode] = useState(false);
+  // Chế độ chỉnh sửa nhanh: mặc định do bảng tự quản lý (và ghi nhớ theo user).
+  // Trang cha có thể ghi đè bằng externalEditMode khi nhúng ở ngữ cảnh khác.
+  const [internalEditMode, setInternalEditMode] = useUserPref<boolean>(
+    "he-thong:edit-mode",
+    false,
+  );
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const isExternalEdit = externalEditMode !== undefined;
@@ -375,66 +381,98 @@ export function ThanhPhanTable({
   const { roles } = useSession();
   const allowEdit = canWrite("he_thong", roles);
 
-  const ModeToggle = (
-    <div className="flex items-center gap-1.5 p-0.5 bg-muted/30 border rounded-md shrink-0">
-      <Button
-        size="sm"
-        variant={viewMode === "component" ? "default" : "ghost"}
-        className={cn(
-          "h-7 gap-1.5 px-2.5 text-[11px] font-semibold uppercase tracking-tight transition-all",
-          viewMode === "component" && "bg-background shadow-sm text-primary"
-        )}
-        onClick={() => {
-          setViewMode("component");
-          setSelectedIds(new Set());
-        }}
-      >
-        <LayoutGrid className="h-3.5 w-3.5" />
-        <span>Theo thành phần</span>
-      </Button>
-      
-      <Button
-        size="sm"
-        variant={viewMode === "asset" ? "default" : "ghost"}
-        className={cn(
-          "h-7 gap-1.5 px-2.5 text-[11px] font-semibold uppercase tracking-tight transition-all",
-          viewMode === "asset" && "bg-background shadow-sm text-primary"
-        )}
-        onClick={() => {
-          setViewMode("asset");
-          setSelectedIds(new Set());
-        }}
-      >
-        <Package className="h-3.5 w-3.5" />
-        <span>Theo tài sản</span>
-      </Button>
-    </div>
+  /**
+   * Cột thao tác (~200px) — nhóm theo ngữ cảnh: "Chế độ xem" (Thành phần /
+   * Tài sản) và "Thao tác". Trên màn hẹp rail xếp ngang phía trên bảng.
+   */
+  const ActionRail = (
+    <aside
+      aria-label="Bộ điều khiển danh sách"
+      className="flex shrink-0 flex-row flex-wrap items-center gap-2 xl:h-full xl:min-h-0 xl:flex-col xl:flex-nowrap xl:items-stretch xl:overflow-y-auto xl:border-r xl:pr-3"
+    >
+      <div className="min-w-0 flex-1 xl:flex-none">
+        <p className="mb-1 hidden text-[10px] font-bold uppercase tracking-widest text-muted-foreground xl:block">
+          Chế độ xem
+        </p>
+        <Tabs value={viewMode} onValueChange={(v) => { setViewMode(v as "component" | "asset"); setSelectedIds(new Set()); }}>
+          <TabsList className="h-8 w-full bg-muted/50 p-0.5 xl:h-auto xl:flex-col xl:items-stretch">
+            <TabsTrigger
+              value="component"
+              className="h-7 min-w-0 flex-1 gap-1.5 whitespace-nowrap px-2.5 text-[11px] font-semibold uppercase tracking-tight xl:w-full xl:justify-start"
+            >
+              <LayoutGrid className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              <span className="truncate">Theo thành phần</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="asset"
+              className="h-7 min-w-0 flex-1 gap-1.5 whitespace-nowrap px-2.5 text-[11px] font-semibold uppercase tracking-tight xl:w-full xl:justify-start"
+            >
+              <Package className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              <span className="truncate">Theo tài sản</span>
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+
+      {allowEdit && !isExternalEdit && (
+        <div className="shrink-0 xl:w-full">
+          <p className="mb-1 hidden text-[10px] font-bold uppercase tracking-widest text-muted-foreground xl:block">
+            Thao tác
+          </p>
+          <Button
+            size="sm"
+            variant={editMode ? "default" : "outline"}
+            aria-pressed={editMode}
+            aria-label={editMode ? "Hoàn tất chỉnh sửa nhanh" : "Bật chỉnh sửa nhanh"}
+            onClick={() => setEditMode(!editMode)}
+            className="inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap px-2.5 text-[11px] font-semibold uppercase tracking-tight xl:w-full xl:justify-start"
+          >
+            {editMode ? (
+              <Check className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            ) : (
+              <Pencil className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            )}
+            <span className="truncate">{editMode ? "Hoàn tất" : "Chỉnh sửa nhanh"}</span>
+          </Button>
+        </div>
+      )}
+    </aside>
   );
 
   return (
-    <div className={cn("flex h-full min-h-0 flex-col gap-1.5 overflow-hidden", !hideHeader && "p-2")}>
-      {viewMode === "component" ? (
-        <ComponentTablePanel 
-          tableKey={tableKey} 
-          hideHeader={hideHeader}
-          editMode={editMode}
-          setEditMode={setEditMode}
-          allowEdit={allowEdit}
-          ModeToggle={ModeToggle}
-        />
-      ) : (
-        <AssetTablePanel 
-          tableKey={tableKey} 
-          hideHeader={hideHeader}
-          editMode={editMode}
-          setEditMode={setEditMode}
-          allowEdit={allowEdit}
-          ModeToggle={ModeToggle}
-        />
+    <div
+      className={cn(
+        "flex h-full min-h-0 flex-col gap-2 overflow-hidden",
+        "xl:grid xl:grid-cols-[200px_minmax(0,1fr)] xl:gap-3",
+        !hideHeader && "p-2",
       )}
+    >
+      {ActionRail}
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+        {viewMode === "component" ? (
+          <ComponentTablePanel
+            tableKey={tableKey}
+            hideHeader={hideHeader}
+            editMode={editMode}
+            setEditMode={setEditMode}
+            allowEdit={allowEdit}
+            ModeToggle={null}
+          />
+        ) : (
+          <AssetTablePanel
+            tableKey={tableKey}
+            hideHeader={hideHeader}
+            editMode={editMode}
+            setEditMode={setEditMode}
+            allowEdit={allowEdit}
+            ModeToggle={null}
+          />
+        )}
+      </div>
     </div>
   );
 }
+
 
 export function ModelCell({
   model,

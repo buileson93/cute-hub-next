@@ -1,12 +1,10 @@
 import { createFileRoute, useRouter, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ThanhPhanTable } from "@/components/mirats/ThanhPhanTable";
 import { Button } from "@/components/ui/button";
 import {
   AlertTriangle,
   RefreshCw,
-  Pencil,
-  Check,
   GitFork,
   Activity,
   ClipboardList,
@@ -14,13 +12,11 @@ import {
   LayoutGrid,
 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useCan } from "@/hooks/use-permissions";
-import { useUserPref } from "@/hooks/use-user-pref";
 import { PageFrame } from "@/components/mirats/layout/PageFrame";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { PageSection } from "@/components/mirats/layout/PageSection";
-import { AppTooltip } from "@/components/mirats/AppTooltip";
+
 
 export const Route = createFileRoute("/_app/he-thong/thanh-phan")({
   head: () => ({
@@ -38,8 +34,6 @@ export const Route = createFileRoute("/_app/he-thong/thanh-phan")({
 
 function ThanhPhanListPage() {
   const nav = useNavigate();
-  const canManage = useCan(["he-thong", "admin"], "manage");
-  const [editMode, setEditMode] = useUserPref<boolean>("he-thong:edit-mode", false);
 
   const handleDisplayChange = (v: string) => {
     if (v === "table") return;
@@ -56,24 +50,8 @@ function ThanhPhanListPage() {
           { label: "Hệ thống", to: "/he-thong/cay" },
           { label: "Thành phần & Tài sản" },
         ]}
-        actions={
-          <div className="flex items-center gap-2">
-            {canManage && (
-              <AppTooltip noiDung={editMode ? "Hoàn tất" : "Chỉnh sửa nhanh"}>
-                <Button
-                  variant={editMode ? "default" : "outline"}
-                  size="icon"
-                  aria-label="Chỉnh sửa nhanh thành phần"
-                  className="h-8 w-8"
-                  onClick={() => setEditMode(!editMode)}
-                >
-                  {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
-                </Button>
-              </AppTooltip>
-            )}
-          </div>
-        }
       />
+
 
       <PageSection className="px-4 py-2 border-b bg-background/30 backdrop-blur-sm z-10 shrink-0">
         <Tabs value="table" onValueChange={handleDisplayChange}>
@@ -118,7 +96,7 @@ function ThanhPhanListPage() {
       </PageSection>
 
       <PageBody noPadding className="relative flex flex-col bg-muted/5 overflow-hidden flex-1 min-h-0">
-        <ThanhPhanTable externalEditMode={editMode} hideHeader />
+        <ThanhPhanTable hideHeader />
       </PageBody>
     </PageFrame>
   );
