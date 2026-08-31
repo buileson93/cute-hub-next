@@ -799,8 +799,7 @@ function KanbanView({
               {canAdd && (
                 <Button
                   variant="ghost"
-                  size="icon"
-                  aria-label={`Thêm công việc vào cột ${col.label}`}
+                  size="icon" aria-label={`Thêm công việc vào cột ${col.label}`}
                   className="h-6 w-6 text-muted-foreground"
                   onClick={() => onAddIn(mocs[0].id)}
                 >
@@ -1030,10 +1029,9 @@ function ListView({
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button
-                          size="icon"
+                          size="icon" aria-label={`Xoá mốc ${m.ten}`}
                           variant="ghost"
                           className="h-8 w-8 text-rose-500"
-                          aria-label="Xoá"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
