@@ -60,6 +60,9 @@ export function NodeEditorSheet({
   const [newGroupMa, setNewGroupMa] = useState("");
   const [newSystemTen, setNewSystemTen] = useState("");
   const [newSystemDonViId, setNewSystemDonViId] = useState("");
+  const [newDeviceTen, setNewDeviceTen] = useState("");
+  const [newDeviceMa, setNewDeviceMa] = useState("");
+
   const [serial, setSerial] = useState("");
   const [serialGoc, setSerialGoc] = useState("");
   const [viTri, setViTri] = useState("");
