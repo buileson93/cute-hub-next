@@ -48,6 +48,7 @@ import { Route as AppNhanRouteImport } from './routes/_app.nhan'
 import { Route as AppMessagesRouteImport } from './routes/_app.messages'
 import { Route as AppKiemKeRouteImport } from './routes/_app.kiem-ke'
 import { Route as AppKiemDinhRouteImport } from './routes/_app.kiem-dinh'
+import { Route as AppKhoHoSoRouteImport } from './routes/_app.kho-ho-so'
 import { Route as AppInboxRouteImport } from './routes/_app.inbox'
 import { Route as AppHongHocRouteImport } from './routes/_app.hong-hoc'
 import { Route as AppGopGachRouteImport } from './routes/_app.gop-gach'
@@ -335,6 +336,11 @@ const AppKiemKeRoute = AppKiemKeRouteImport.update({
 const AppKiemDinhRoute = AppKiemDinhRouteImport.update({
   id: '/kiem-dinh',
   path: '/kiem-dinh',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppKhoHoSoRoute = AppKhoHoSoRouteImport.update({
+  id: '/kho-ho-so',
+  path: '/kho-ho-so',
   getParentRoute: () => AppRoute,
 } as any)
 const AppInboxRoute = AppInboxRouteImport.update({
@@ -840,6 +846,7 @@ export interface FileRoutesByFullPath {
   '/gop-gach': typeof AppGopGachRoute
   '/hong-hoc': typeof AppHongHocRouteWithChildren
   '/inbox': typeof AppInboxRoute
+  '/kho-ho-so': typeof AppKhoHoSoRoute
   '/kiem-dinh': typeof AppKiemDinhRoute
   '/kiem-ke': typeof AppKiemKeRoute
   '/messages': typeof AppMessagesRouteWithChildren
@@ -970,6 +977,7 @@ export interface FileRoutesByTo {
   '/gop-gach': typeof AppGopGachRoute
   '/hong-hoc': typeof AppHongHocRouteWithChildren
   '/inbox': typeof AppInboxRoute
+  '/kho-ho-so': typeof AppKhoHoSoRoute
   '/kiem-dinh': typeof AppKiemDinhRoute
   '/kiem-ke': typeof AppKiemKeRoute
   '/nhan': typeof AppNhanRoute
@@ -1100,6 +1108,7 @@ export interface FileRoutesById {
   '/_app/gop-gach': typeof AppGopGachRoute
   '/_app/hong-hoc': typeof AppHongHocRouteWithChildren
   '/_app/inbox': typeof AppInboxRoute
+  '/_app/kho-ho-so': typeof AppKhoHoSoRoute
   '/_app/kiem-dinh': typeof AppKiemDinhRoute
   '/_app/kiem-ke': typeof AppKiemKeRoute
   '/_app/messages': typeof AppMessagesRouteWithChildren
@@ -1237,6 +1246,7 @@ export interface FileRouteTypes {
     | '/gop-gach'
     | '/hong-hoc'
     | '/inbox'
+    | '/kho-ho-so'
     | '/kiem-dinh'
     | '/kiem-ke'
     | '/messages'
@@ -1367,6 +1377,7 @@ export interface FileRouteTypes {
     | '/gop-gach'
     | '/hong-hoc'
     | '/inbox'
+    | '/kho-ho-so'
     | '/kiem-dinh'
     | '/kiem-ke'
     | '/nhan'
@@ -1496,6 +1507,7 @@ export interface FileRouteTypes {
     | '/_app/gop-gach'
     | '/_app/hong-hoc'
     | '/_app/inbox'
+    | '/_app/kho-ho-so'
     | '/_app/kiem-dinh'
     | '/_app/kiem-ke'
     | '/_app/messages'
@@ -1919,6 +1931,13 @@ declare module '@tanstack/react-router' {
       path: '/kiem-dinh'
       fullPath: '/kiem-dinh'
       preLoaderRoute: typeof AppKiemDinhRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/kho-ho-so': {
+      id: '/_app/kho-ho-so'
+      path: '/kho-ho-so'
+      fullPath: '/kho-ho-so'
+      preLoaderRoute: typeof AppKhoHoSoRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/inbox': {
@@ -2778,6 +2797,7 @@ interface AppRouteChildren {
   AppGopGachRoute: typeof AppGopGachRoute
   AppHongHocRoute: typeof AppHongHocRouteWithChildren
   AppInboxRoute: typeof AppInboxRoute
+  AppKhoHoSoRoute: typeof AppKhoHoSoRoute
   AppKiemDinhRoute: typeof AppKiemDinhRoute
   AppKiemKeRoute: typeof AppKiemKeRoute
   AppMessagesRoute: typeof AppMessagesRouteWithChildren
@@ -2849,6 +2869,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppGopGachRoute: AppGopGachRoute,
   AppHongHocRoute: AppHongHocRouteWithChildren,
   AppInboxRoute: AppInboxRoute,
+  AppKhoHoSoRoute: AppKhoHoSoRoute,
   AppKiemDinhRoute: AppKiemDinhRoute,
   AppKiemKeRoute: AppKiemKeRoute,
   AppMessagesRoute: AppMessagesRouteWithChildren,
