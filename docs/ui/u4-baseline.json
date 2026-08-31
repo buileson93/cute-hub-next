@@ -1,86 +1,78 @@
 {
-  "date": "2026-08-22T03:29:27.034Z",
-  "commitHash": "f5b794fd6a86002d70eb0611c92201d7af2bab59",
+  "date": "2026-08-31T08:18:53.866Z",
+  "commitHash": "6fff56d5363ee92fa5dfa8705fbd1e6dd09a2a25",
   "summary": {
-    "textPxTotal": 909,
+    "textPxTotal": 949,
     "textPxByValue": {
-      "9px": 50,
-      "10px": 403,
-      "11px": 388,
-      "12px": 40,
+      "9px": 53,
+      "10px": 433,
+      "11px": 406,
+      "12px": 31,
       "15px": 3,
-      "13px": 17,
-      "14px": 2,
-      "8px": 3,
+      "13px": 15,
+      "8px": 4,
       "4px": 1,
       "3px": 1,
+      "14px": 1,
       "16px": 1
     },
     "textPresets": {
-      "xs": 1229,
-      "sm": 806,
-      "base": 108
+      "xs": 1223,
+      "sm": 811,
+      "base": 101
     },
-    "paletteColors": 1746,
-    "hexColors": 176,
+    "paletteColors": 1675,
+    "hexColors": 168,
     "buttonVariants": {
-      "outline": 343,
-      "secondary": 20,
+      "outline": 346,
+      "secondary": 21,
       "default": 6,
       "destructive": 17,
-      "ghost": 302,
+      "ghost": 309,
       "link": 2
     },
-    "iconNoLabel": 318,
-    "pageHeaderRatio": "60/130"
+    "iconNoLabel": 320,
+    "pageHeaderRatio": "60/133"
   },
   "top20Files": [
     {
       "file": "src/routes/_app.he-thong.$id.tsx",
-      "count": 129
-    },
-    {
-      "file": "src/routes/admin.schema.tsx",
-      "count": 115
+      "count": 120
     },
     {
       "file": "src/routes/_app.du-an.$id.tsx",
-      "count": 102
+      "count": 110
+    },
+    {
+      "file": "src/routes/admin.schema.tsx",
+      "count": 87
     },
     {
       "file": "src/components/mirats/NetworkOverview.tsx",
       "count": 81
     },
     {
+      "file": "src/components/mirats/projects/TaskDetailSlideOver.tsx",
+      "count": 61
+    },
+    {
       "file": "src/routes/admin.audit.tsx",
       "count": 58
     },
     {
-      "file": "src/routes/_app.so-do.$id.tsx",
-      "count": 48
+      "file": "src/routes/_app.danh-muc.thiet-bi.tsx",
+      "count": 54
     },
     {
       "file": "src/components/mirats/ChecklistRenderer.tsx",
       "count": 47
     },
     {
-      "file": "src/routes/_app.danh-muc.thiet-bi.tsx",
+      "file": "src/routes/_app.so-do.$id.tsx",
       "count": 46
     },
     {
-      "file": "src/components/mirats/StandardTable.tsx",
-      "count": 45
-    },
-    {
-      "file": "src/components/mirats/congvan/types.ts",
-      "count": 45
-    },
-    {
       "file": "src/components/mirats/FormFieldRuntime.tsx",
-      "count": 44
-    },
-    {
-      "file": "src/routes/_app.phan-mem-ban-quyen.tsx",
       "count": 44
     },
     {
@@ -88,31 +80,39 @@
       "count": 43
     },
     {
+      "file": "src/components/mirats/congvan/types.ts",
+      "count": 41
+    },
+    {
       "file": "src/routes/_app.danh-muc.model.tsx",
-      "count": 40
+      "count": 41
+    },
+    {
+      "file": "src/routes/_app.phan-mem-ban-quyen.tsx",
+      "count": 41
     },
     {
       "file": "src/routes/_app.admin.forms.$id.tsx",
       "count": 39
     },
     {
-      "file": "src/components/mirats/ThanhPhanTable.tsx",
-      "count": 38
-    },
-    {
       "file": "src/routes/_app.admin.ocr.tsx",
       "count": 37
     },
     {
-      "file": "src/components/mirats/he-thong-cay/types.ts",
-      "count": 36
-    },
-    {
-      "file": "src/components/mirats/he-thong-cay/utils.ts",
-      "count": 35
-    },
-    {
       "file": "src/components/mirats/AtcTowerScene.tsx",
+      "count": 34
+    },
+    {
+      "file": "src/components/mirats/CatalogTable.tsx",
+      "count": 34
+    },
+    {
+      "file": "src/components/mirats/GpktImportDialog.tsx",
+      "count": 34
+    },
+    {
+      "file": "src/components/mirats/he-thong-cay/types.ts",
       "count": 34
     }
   ]
