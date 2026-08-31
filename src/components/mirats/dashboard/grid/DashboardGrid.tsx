@@ -634,29 +634,105 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
       case "dossier-compliance-heatmap":
         return (
           <ERPChartFrame
-            title="Dossier Compliance by Phase"
+            title="Hồ sơ theo trạng thái"
             icon="entity.security"
             loading={dossierCompQ.isLoading}
+            error={dossierCompQ.isError ? "Không tải được dữ liệu hồ sơ" : undefined}
+            empty={!dossierCompQ.data?.length}
           >
-             <ChartContainer config={{ value: { label: "Tỷ lệ tuân thủ", color: "#10b981" } }}>
-              <BarChart
-                data={dossierCompQ.data}
-                margin={{ left: -20, right: 0, top: 0, bottom: 0 }}
-              >
-                <CartesianGrid vertical={false} />
-                <XAxis dataKey="phase" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} domain={[0, 100]} />
-                <ChartTooltip content={<ChartTooltipContent unit="%" />} />
-                <Bar
-                  dataKey="value"
-                  fill="#10b981"
-                  radius={[4, 4, 0, 0]}
-                  barSize={30}
-                />
+            <ChartContainer config={{ value: { label: "Tài liệu", color: "var(--chart-2)" } }}>
+              <BarChart data={dossierCompQ.data} margin={{ left: -20, right: 0, top: 0, bottom: 0 }}>
+                <CartesianGrid vertical={false} strokeOpacity={0.35} />
+                <XAxis dataKey="phase" axisLine={false} tickLine={false} fontSize={10} />
+                <YAxis axisLine={false} tickLine={false} allowDecimals={false} />
+                <ChartTooltip content={<ChartTooltipContent unit="tài liệu" />} />
+                <Bar dataKey="value" fill="var(--color-value)" radius={[4, 4, 0, 0]} barSize={28} />
               </BarChart>
             </ChartContainer>
           </ERPChartFrame>
         );
+      case "task-status-distribution":
+        return (
+          <ERPChartFrame
+            title="Phân bổ công việc theo trạng thái"
+            icon="entity.chart"
+            loading={tasksQ.isLoading}
+            error={tasksQ.isError ? "Không tải được danh sách công việc" : undefined}
+            empty={!taskStatusData.length}
+          >
+            <ChartContainer config={{ value: { label: "Công việc", color: "var(--chart-1)" } }}>
+              <BarChart
+                layout="vertical"
+                data={taskStatusData}
+                margin={{ left: 10, right: 24, top: 0, bottom: 0 }}
+              >
+                <XAxis type="number" hide allowDecimals={false} />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  width={100}
+                  fontSize={10}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <ChartTooltip content={<ChartTooltipContent hideIndicator unit="công việc" />} />
+                <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={14}>
+                  {taskStatusData.map((entry) => (
+                    <Cell key={entry.name} fill={TASK_STATUS_COLORS[entry.name] ?? "var(--chart-1)"} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ChartContainer>
+          </ERPChartFrame>
+        );
+      case "task-completion-trend":
+        return (
+          <ERPChartFrame
+            title="Xu hướng hoàn thành công việc (30 ngày)"
+            icon="entity.history"
+            loading={tasksQ.isLoading}
+            error={tasksQ.isError ? "Không tải được dữ liệu công việc" : undefined}
+            empty={!taskTrendData.some((d) => d.value > 0)}
+          >
+            <ChartContainer config={{ value: { label: "Hoàn thành", color: "var(--chart-2)" } }}>
+              <BarChart data={taskTrendData} margin={{ left: -20, right: 0, top: 0, bottom: 0 }}>
+                <CartesianGrid vertical={false} strokeOpacity={0.35} />
+                <XAxis dataKey="label" axisLine={false} tickLine={false} fontSize={9} interval={4} />
+                <YAxis axisLine={false} tickLine={false} allowDecimals={false} />
+                <ChartTooltip content={<ChartTooltipContent unit="công việc" />} />
+                <Bar dataKey="value" fill="var(--color-value)" radius={[2, 2, 0, 0]} />
+              </BarChart>
+            </ChartContainer>
+          </ERPChartFrame>
+        );
+      case "task-due-summary":
+        return (
+          <Card className="astryx-card h-full flex flex-col">
+            <CardHeader className="p-4 pb-0">
+              <CardTitle className="astryx-text-label flex items-center gap-2">
+                <Icon name="status.maintenance" size="tiny" className="text-primary" />
+                Công việc đến hạn
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 grid grid-cols-3 gap-2">
+              {[
+                { label: "Quá hạn", value: taskDueSummary.overdue, tone: "text-destructive" },
+                { label: "7 ngày tới", value: taskDueSummary.dueSoon, tone: "text-warning" },
+                { label: "Hoàn thành", value: taskDueSummary.done, tone: "text-success" },
+              ].map((item) => (
+                <div key={item.label} className="min-w-0 rounded-xl bg-muted/30 p-3">
+                  <div className={cn("text-2xl font-black tabular-nums", item.tone)}>
+                    {tasksQ.isLoading ? "…" : item.value}
+                  </div>
+                  <div className="truncate text-[11px] font-medium text-muted-foreground">
+                    {item.label}
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        );
+
       case "live-timeline":
         return (
           <Card className="astryx-card h-full flex flex-col">
