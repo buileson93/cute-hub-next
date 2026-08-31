@@ -440,12 +440,14 @@ function DuAnDetailPage() {
         />
         <Stat
           label="Công việc"
-          value={`${metrics.completed}/${metrics.total} xong`}
+          value={tasksReady ? `${metrics.completed}/${metrics.total} xong` : "—"}
           icon={CalendarIcon}
         />
         <Stat
           label="Quá hạn"
-          value={metrics.overdue === 0 ? "Không có" : `${metrics.overdue} việc`}
+          value={
+            tasksReady ? (metrics.overdue === 0 ? "Không có" : `${metrics.overdue} việc`) : "—"
+          }
           icon={CalendarIcon}
         />
         <div className="min-w-[140px] flex-1 max-w-[200px]">
