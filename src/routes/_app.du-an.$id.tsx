@@ -30,7 +30,6 @@ import {
   FolderOpen,
   type LucideIcon,
 } from "lucide-react";
-import "@/vendor/frappe-gantt.css";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -82,6 +81,10 @@ import {
   useProjectMembers,
 } from "@/components/mirats/projects/ProjectMembersDialog";
 import { computeTaskMetrics } from "@/lib/mirats/projects/task-metrics";
+import {
+  ProjectGantt,
+  type GanttAssignee,
+} from "@/components/mirats/projects/gantt/ProjectGantt";
 
 
 const SUPPORTED_VIEWS = ["kanban", "gantt", "list", "timeline", "hoso", "cong-van"] as const;
@@ -272,6 +275,18 @@ function DuAnDetailPage() {
   const nameOf = useCallback(
     (uid: string | null) =>
       uid ? (profileMap[uid]?.ho_ten ?? profileMap[uid]?.email ?? uid.slice(0, 8)) : "—",
+    [profileMap],
+  );
+
+  const assigneeOf = useCallback(
+    (userId: string): GanttAssignee => {
+      const p = profileMap[userId];
+      return {
+        id: userId,
+        name: p?.ho_ten ?? p?.email ?? userId.slice(0, 8),
+        avatarUrl: p?.avatar_url ?? null,
+      };
+    },
     [profileMap],
   );
 
@@ -510,6 +525,11 @@ function DuAnDetailPage() {
               }
               projectStart={duAn.ngay_bat_dau}
               density="comfortable"
+              assigneeOf={assigneeOf}
+              onSelectTask={(taskId) => {
+                setSelectedTaskId(taskId);
+                setShowTaskDetail(true);
+              }}
             />
           </TabsContent>
 
