@@ -1,9 +1,13 @@
 // ============================================================================
 // TaskDetailSlideOver — Xem nhanh chi tiết một công việc dự án.
-// Dữ liệu thật: du_an_cong_viec, du_an_moc, profiles, du_an_cong_viec_phoi_hop.
-// Không hiển thị dữ liệu giả lập (thảo luận/ký số) khi backend chưa hỗ trợ.
+// Dữ liệu thật: du_an_cong_viec, du_an_moc, profiles, du_an_cong_viec_phoi_hop,
+// du_an_cong_viec_checklist, du_an_cong_viec_binh_luan.
 // ============================================================================
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useSession } from "@/hooks/use-session";
+import { TaskChecklist } from "./TaskChecklist";
+import { TaskComments } from "./TaskComments";
+
 import {
   Sheet,
   SheetContent,
@@ -100,7 +104,9 @@ export function TaskDetailSlideOver({
   onDeleted,
 }: TaskDetailSlideOverProps) {
   const qc = useQueryClient();
+  const { user, hasRole } = useSession();
   const [confirmDelete, setConfirmDelete] = useState(false);
+
 
   const {
     data: task,
@@ -170,7 +176,31 @@ export function TaskDetailSlideOver({
     onError: (e: Error) => toast.error("Xoá công việc thất bại: " + e.message),
   });
 
+  const { data: profileList = [] } = useQuery({
+    queryKey: ["all-profiles"],
+    enabled: open,
+    staleTime: 300_000,
+    queryFn: async () => {
+      const { data, error: err } = await supabase.from("profiles").select("id,ho_ten,email");
+      if (err) throw err;
+      return data ?? [];
+    },
+  });
+
+  const nameOf = useMemo(() => {
+    const map = new Map(profileList.map((p) => [p.id, p.ho_ten || p.email || ""]));
+    return (id: string | null) => (id ? (map.get(id) || "Người dùng") : "Không rõ");
+  }, [profileList]);
+
+  // Người phụ trách, người phối hợp, quản lý dự án và admin được ghi checklist.
+  const canEditCollab =
+    hasRole("admin") ||
+    hasRole("quan_ly_du_an") ||
+    (!!user?.id && task?.nguoi_xu_ly_chinh === user.id) ||
+    canDelete;
+
   if (!taskId) return null;
+
 
   const due = daysLeftLabel(task?.ngay_ket_thuc_du_kien ?? null);
 
@@ -219,11 +249,18 @@ export function TaskDetailSlideOver({
                   Tiến độ & Phối hợp
                 </TabsTrigger>
                 <TabsTrigger
+                  value="collab"
+                  className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 py-2 text-sm font-semibold"
+                >
+                  Checklist & Trao đổi
+                </TabsTrigger>
+                <TabsTrigger
                   value="audit"
                   className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 py-2 text-sm font-semibold"
                 >
                   Nhật ký
                 </TabsTrigger>
+
               </TabsList>
             </div>
 
@@ -318,6 +355,24 @@ export function TaskDetailSlideOver({
                   </>
                 )}
               </TabsContent>
+
+              <TabsContent value="collab" className="p-6 m-0 space-y-8">
+                <section className="space-y-3">
+                  <h4 className="text-sm font-bold">Checklist</h4>
+                  <TaskChecklist taskId={taskId} canEdit={canEditCollab} enabled={open} />
+                </section>
+                <section className="space-y-3">
+                  <h4 className="text-sm font-bold">Trao đổi</h4>
+                  <TaskComments
+                    taskId={taskId}
+                    currentUserId={user?.id ?? null}
+                    nameOf={nameOf}
+                    enabled={open}
+                  />
+                </section>
+              </TabsContent>
+
+
 
               <TabsContent value="audit" className="p-6 m-0">
                 <div className="space-y-4">

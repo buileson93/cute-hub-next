@@ -3198,6 +3198,82 @@ export type Database = {
           },
         ]
       }
+      du_an_cong_viec_binh_luan: {
+        Row: {
+          cong_viec_id: string
+          created_at: string
+          id: string
+          noi_dung: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cong_viec_id: string
+          created_at?: string
+          id?: string
+          noi_dung: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          cong_viec_id?: string
+          created_at?: string
+          id?: string
+          noi_dung?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "du_an_cong_viec_binh_luan_cong_viec_id_fkey"
+            columns: ["cong_viec_id"]
+            isOneToOne: false
+            referencedRelation: "du_an_cong_viec"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      du_an_cong_viec_checklist: {
+        Row: {
+          cong_viec_id: string
+          created_at: string
+          created_by: string | null
+          hoan_thanh: boolean
+          id: string
+          noi_dung: string
+          thu_tu: number
+          updated_at: string
+        }
+        Insert: {
+          cong_viec_id: string
+          created_at?: string
+          created_by?: string | null
+          hoan_thanh?: boolean
+          id?: string
+          noi_dung: string
+          thu_tu?: number
+          updated_at?: string
+        }
+        Update: {
+          cong_viec_id?: string
+          created_at?: string
+          created_by?: string | null
+          hoan_thanh?: boolean
+          id?: string
+          noi_dung?: string
+          thu_tu?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "du_an_cong_viec_checklist_cong_viec_id_fkey"
+            columns: ["cong_viec_id"]
+            isOneToOne: false
+            referencedRelation: "du_an_cong_viec"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       du_an_cong_viec_phoi_hop: {
         Row: {
           added_at: string
@@ -3339,6 +3415,41 @@ export type Database = {
           },
           {
             foreignKeyName: "du_an_su_kien_du_an_id_fkey"
+            columns: ["du_an_id"]
+            isOneToOne: false
+            referencedRelation: "du_an"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      du_an_thanh_vien: {
+        Row: {
+          created_at: string
+          du_an_id: string
+          id: string
+          updated_at: string
+          user_id: string
+          vai_tro: string
+        }
+        Insert: {
+          created_at?: string
+          du_an_id: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          vai_tro?: string
+        }
+        Update: {
+          created_at?: string
+          du_an_id?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          vai_tro?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "du_an_thanh_vien_du_an_id_fkey"
             columns: ["du_an_id"]
             isOneToOne: false
             referencedRelation: "du_an"
