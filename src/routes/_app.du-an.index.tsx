@@ -114,11 +114,30 @@ function DuAnListPage() {
 
   const filtered = useMemo(() => {
     const kw = q.trim().toLowerCase();
-    if (!kw) return duAns ?? [];
-    return (duAns ?? []).filter((d) =>
-      [d.ten, d.ma, d.mo_ta].some((v) => v?.toLowerCase().includes(kw)),
-    );
-  }, [duAns, q]);
+    let list = duAns ?? [];
+    if (kw) {
+      list = list.filter((d) => [d.ten, d.ma, d.mo_ta].some((v) => v?.toLowerCase().includes(kw)));
+    }
+    if (status !== "all") list = list.filter((d) => d.trang_thai === status);
+    const sorted = [...list];
+    sorted.sort((a, b) => {
+      switch (sortBy) {
+        case "ten_asc":
+          return a.ten.localeCompare(b.ten, "vi");
+        case "tien_do_desc":
+          return b.tien_do - a.tien_do;
+        case "han_asc":
+          return (a.ngay_ket_thuc_du_kien ?? "9999").localeCompare(
+            b.ngay_ket_thuc_du_kien ?? "9999",
+          );
+        default:
+          return b.created_at.localeCompare(a.created_at);
+      }
+    });
+    return sorted;
+  }, [duAns, q, status, sortBy]);
+
+  const isFiltering = !!q.trim() || status !== "all";
 
   return (
     <>
