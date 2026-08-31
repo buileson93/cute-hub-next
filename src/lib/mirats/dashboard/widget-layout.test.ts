@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { moveWidget, sanitizeLayout } from "./widget-layout";
+import { filterLayoutByGroup, moveWidget, sanitizeLayout } from "./widget-layout";
 import { DEFAULT_HOME_LAYOUT } from "./widget-registry";
 
 describe("widget-layout", () => {
@@ -34,5 +34,21 @@ describe("widget-layout", () => {
     );
     expect(out).toHaveLength(1);
     expect(out[0].w).toBe(6);
+  });
+});
+
+describe("filterLayoutByGroup", () => {
+  it("chỉ giữ widget thuộc đúng nhóm chủ đề", () => {
+    const layout = sanitizeLayout(
+      [
+        { id: "a", type: "mttr-kpi", w: 6 },
+        { id: "b", type: "task-status-distribution", w: 6 },
+        { id: "c", type: "su-co-trend", w: 12 },
+      ],
+      DEFAULT_HOME_LAYOUT,
+    );
+    expect(filterLayoutByGroup(layout, "cong-viec").map((w) => w.id)).toEqual(["b"]);
+    expect(filterLayoutByGroup(layout, "van-hanh").map((w) => w.id)).toEqual(["c"]);
+    expect(filterLayoutByGroup(layout, "tong-quan").map((w) => w.id)).toEqual(["a"]);
   });
 });

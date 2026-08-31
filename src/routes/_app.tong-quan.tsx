@@ -12,8 +12,11 @@ import { toast } from "sonner";
 import { DashboardGrid } from "@/components/mirats/dashboard/grid/DashboardGrid";
 import { WidgetPicker } from "@/components/mirats/dashboard/grid/WidgetPicker";
 import { useUserPref } from "@/hooks/use-user-pref";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   DashboardWidgetConfig,
+  WIDGET_GROUP_LABEL,
+  type WidgetGroup,
   DEFAULT_OVERVIEW_LAYOUT,
   AVAILABLE_WIDGETS,
   WidgetType,
@@ -43,6 +46,7 @@ export const Route = createFileRoute("/_app/tong-quan")({
 function OverviewReport() {
   const { scope } = useUnifiedDashboardStats();
   const [isEditing, setIsEditing] = useState(false);
+  const [tab, setTab] = useUserPref<WidgetGroup>("dashboard:overview:tab", "tong-quan");
   const [layout, setLayout] = useUserPref<DashboardWidgetConfig[]>(
     "dashboard:layout:overview",
     DEFAULT_OVERVIEW_LAYOUT,
@@ -155,9 +159,49 @@ function OverviewReport() {
 
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-6 mirats-scroll">
-        <DashboardGrid page="overview" isEditing={isEditing} />
-      </div>
+      <Tabs
+        value={tab}
+        onValueChange={(v) => setTab(v as WidgetGroup)}
+        className="flex flex-1 min-h-0 flex-col"
+      >
+        <div className="shrink-0 overflow-x-auto px-6 pb-3">
+          <TabsList className="h-9 w-max">
+            {(["tong-quan", "cong-viec", "van-hanh"] as const).map((g) => (
+              <TabsTrigger
+                key={g}
+                value={g}
+                className="h-7 whitespace-nowrap px-3 text-[11px] font-bold uppercase tracking-wider"
+              >
+                {WIDGET_GROUP_LABEL[g]}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
+
+        {(["tong-quan", "cong-viec", "van-hanh"] as const).map((g) => (
+          <TabsContent
+            key={g}
+            value={g}
+            className="mt-0 flex-1 min-h-0 overflow-y-auto px-6 pb-6 mirats-scroll data-[state=inactive]:hidden"
+          >
+            <DashboardGrid
+              page="overview"
+              isEditing={isEditing}
+              group={g}
+              emptyState={
+                <div className="rounded-2xl border border-dashed p-8 text-center">
+                  <p className="text-sm font-semibold">
+                    Chưa có widget nào trong nhóm “{WIDGET_GROUP_LABEL[g]}”
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Bật “Cá nhân hóa” rồi chọn “Thêm Widget” để đưa nội dung vào tab này.
+                  </p>
+                </div>
+              }
+            />
+          </TabsContent>
+        ))}
+      </Tabs>
       </PageBody>
     </PageFrame>
   );
