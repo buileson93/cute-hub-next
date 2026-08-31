@@ -77,6 +77,12 @@ import { ProjectTimeline } from "@/components/mirats/projects/timeline/ProjectTi
 import { getTodayDateString } from "@/lib/mirats/calendar-date";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { TaskDetailSlideOver } from "@/components/mirats/projects/TaskDetailSlideOver";
+import {
+  ProjectMembersDialog,
+  useProjectMembers,
+} from "@/components/mirats/projects/ProjectMembersDialog";
+import { computeTaskMetrics } from "@/lib/mirats/projects/task-metrics";
+
 
 const SUPPORTED_VIEWS = ["kanban", "gantt", "list", "timeline", "hoso", "cong-van"] as const;
 type ProjectView = (typeof SUPPORTED_VIEWS)[number];
@@ -280,6 +286,12 @@ function DuAnDetailPage() {
   const [editingCV, setEditingCV] = useState<CongViec | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [showTaskDetail, setShowTaskDetail] = useState(false);
+  const [openMembers, setOpenMembers] = useState(false);
+
+  const { data: members } = useProjectMembers(id);
+  const metrics = useMemo(() => computeTaskMetrics(congViecs ?? []), [congViecs]);
+
+
 
   // Kéo–thả / đổi nhanh trạng thái trên Kanban (ghi thẳng CSDL, RLS kiểm soát quyền).
   const changeStatus = useMutation({
@@ -346,6 +358,14 @@ function DuAnDetailPage() {
             >
               {duAn.trang_thai.replace("_", " ")}
             </Badge>
+            <Button size="sm" variant="outline" onClick={() => setOpenMembers(true)}>
+              <UserIcon className="h-4 w-4 mr-2" aria-hidden="true" /> Thành viên
+              {members && members.length > 0 && (
+                <span className="ml-1.5 text-xs text-muted-foreground tabular-nums">
+                  {members.length}
+                </span>
+              )}
+            </Button>
             {isManager && (
               <>
                 <Button size="sm" variant="outline" onClick={() => setOpenMoc(true)}>
@@ -373,6 +393,16 @@ function DuAnDetailPage() {
           value={duAn.ngay_ket_thuc_du_kien ?? "—"}
           icon={CalendarIcon}
         />
+        <Stat
+          label="Công việc"
+          value={`${metrics.completed}/${metrics.total} xong`}
+          icon={CalendarIcon}
+        />
+        <Stat
+          label="Quá hạn"
+          value={metrics.overdue === 0 ? "Không có" : `${metrics.overdue} việc`}
+          icon={CalendarIcon}
+        />
         <div className="min-w-[140px] flex-1 max-w-[200px]">
           <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5 flex items-center justify-between">
             <span>Tiến độ</span>
@@ -381,6 +411,7 @@ function DuAnDetailPage() {
           <Progress value={duAn.tien_do} className="h-1.5 bg-muted" />
         </div>
       </div>
+
 
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-3 min-w-0">
@@ -620,6 +651,14 @@ function DuAnDetailPage() {
         onDone={() => qc.invalidateQueries({ queryKey: ["du-an", id] })}
         onDeleted={() => nav({ to: "/du-an" })}
       />
+
+      <ProjectMembersDialog
+        open={openMembers}
+        onOpenChange={setOpenMembers}
+        duAnId={id}
+        canManage={isManager}
+      />
+
     </div>
   );
 }
