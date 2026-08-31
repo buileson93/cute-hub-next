@@ -183,7 +183,7 @@ export function TaskAttachmentButton({
               type="button"
               size="sm"
               variant="ghost"
-              className="size-9 md:h-7 md:w-auto md:px-1.5 px-0 text-[10px] font-medium text-muted-foreground"
+              className="size-9 md:size-7 md:w-auto md:px-1.5 px-0 text-[10px] font-medium text-muted-foreground"
               aria-label={`${count} tệp đính kèm của công việc ${taskName}`}
             >
               {count}
