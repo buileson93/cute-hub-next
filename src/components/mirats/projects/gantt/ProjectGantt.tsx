@@ -70,6 +70,21 @@ const AVATAR_TONES = [
   "bg-secondary text-secondary-foreground",
 ] as const;
 
+/** Ngày rút gọn dd/MM để hiển thị cạnh thanh hẹp. */
+export function shortDate(dateKey: string): string {
+  const [, m, d] = dateKey.split("-");
+  return `${d}/${m}`;
+}
+
+/**
+ * Ước lượng bề rộng tối thiểu (px) để tên task đọc được trong thanh:
+ * ~6.6px mỗi ký tự ở text-xs + 16px padding, chặn trên để thanh dài vẫn hiện tên.
+ */
+export function estimateLabelWidth(name: string, maxChars = 18): number {
+  const chars = Math.min(name.trim().length || 1, maxChars);
+  return Math.round(chars * 6.6) + 16;
+}
+
 function formatDate(dateKey: string): string {
   const [y, m, d] = dateKey.split("-");
   return `${d}/${m}/${y}`;
@@ -241,12 +256,16 @@ export function ProjectGantt({
 
         <div
           ref={scrollRef}
-          className="relative max-h-[65vh] overflow-auto rounded-lg border border-border bg-card"
+          className={cn(
+            "relative max-h-[65vh] overflow-auto rounded-lg border border-border bg-card",
+            // Cuộn ngang mượt, có kiểm soát trên màn hình hẹp / cảm ứng.
+            "scroll-smooth overscroll-x-contain [-webkit-overflow-scrolling:touch] motion-reduce:scroll-auto",
+          )}
         >
           <div className="min-w-max">
             {/* Header dòng thời gian */}
             <div className="sticky top-0 z-30 flex border-b border-border bg-card/95 backdrop-blur">
-              <div className="sticky left-0 z-10 w-[15rem] shrink-0 border-r border-border bg-card/95 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:w-[19rem]">
+              <div className="sticky left-0 z-10 w-[10.5rem] shrink-0 border-r border-border bg-card/95 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground sm:w-[15rem] lg:w-[19rem]">
                 Công việc
               </div>
               <div className="relative h-9" style={{ width: gridWidth }}>
@@ -273,6 +292,15 @@ export function ProjectGantt({
                 const barLabel = `${row.name} · ${formatDate(row.start)} – ${formatDate(row.end)} · ${row.progress}%${
                   meta ? ` · ${meta.label}` : ""
                 }${row.inferredDates ? " · ngày tạm suy ra" : ""}`;
+                const barLeft = span.offsetDays * dayWidth;
+                const barWidth = Math.max(span.spanDays * dayWidth, 14);
+                const fitsName = barWidth >= estimateLabelWidth(row.name);
+                const dateRangeShort =
+                  row.start === row.end
+                    ? shortDate(row.start)
+                    : `${shortDate(row.start)}–${shortDate(row.end)}`;
+                const labelAfterBar = gridWidth - (barLeft + barWidth) >= 78;
+
 
                 return (
                   <div
@@ -289,7 +317,7 @@ export function ProjectGantt({
                     {/* Cột trái */}
                     <div
                       className={cn(
-                        "sticky left-0 z-10 flex w-[15rem] shrink-0 items-center gap-2 border-r border-border bg-inherit px-3 py-2 sm:w-[19rem]",
+                        "sticky left-0 z-10 flex w-[10.5rem] shrink-0 items-center gap-2 border-r border-border bg-inherit px-2 py-2 sm:w-[15rem] sm:px-3 lg:w-[19rem]",
                         row.kind === "task" && "pl-6",
                       )}
                     >
@@ -325,7 +353,7 @@ export function ProjectGantt({
                     </div>
 
                     {/* Lưới thời gian */}
-                    <div className="relative py-2" style={{ width: gridWidth }}>
+                    <div className="relative py-2.5" style={{ width: gridWidth }}>
                       {ticks.map((t) => (
                         <span
                           key={t.key}
@@ -349,17 +377,14 @@ export function ProjectGantt({
                             onClick={() => handleActivate(row)}
                             aria-label={barLabel}
                             className={cn(
-                              "absolute top-1.5 flex h-6 min-w-0 items-center justify-start overflow-hidden rounded-md border p-0 text-left transition-[box-shadow] hover:bg-transparent motion-reduce:transition-none",
+                              "absolute top-1 flex h-8 min-w-0 items-center justify-start overflow-hidden rounded-lg border p-0 text-left shadow-sm transition-[box-shadow] hover:bg-transparent motion-reduce:transition-none",
                               row.kind === "moc"
-                                ? "h-7 border-foreground/30 bg-foreground/10"
+                                ? "h-9 border-foreground/30 bg-foreground/10"
                                 : "border-border/70",
                               row.inferredDates && "border-dashed",
                               isActive && "shadow-md ring-1 ring-primary/40",
                             )}
-                            style={{
-                              left: span.offsetDays * dayWidth,
-                              width: Math.max(span.spanDays * dayWidth, 14),
-                            }}
+                            style={{ left: barLeft, width: barWidth }}
                           >
                             <span
                               aria-hidden="true"
@@ -372,15 +397,27 @@ export function ProjectGantt({
                               style={{ width: `${row.progress}%` }}
                             />
                             <span className="relative z-10 truncate px-2 text-xs font-medium text-foreground">
-                              {span.spanDays * dayWidth > 56 ? row.name : ""}
+                              {fitsName ? row.name : ""}
                             </span>
                           </Button>
-
                         </TooltipTrigger>
                         <TooltipContent side="top" className="max-w-xs">
                           {barLabel}
                         </TooltipContent>
                       </Tooltip>
+                      {/* Thanh quá hẹp để hiện tên → nêu rõ ngày bắt đầu/kết thúc cạnh thanh. */}
+                      {fitsName ? null : (
+                        <span
+                          aria-hidden="true"
+                          className={cn(
+                            "pointer-events-none absolute top-1 flex h-8 items-center whitespace-nowrap text-[11px] tabular-nums text-muted-foreground",
+                            labelAfterBar ? "pl-1.5" : "-translate-x-full pr-1.5",
+                          )}
+                          style={{ left: labelAfterBar ? barLeft + barWidth : barLeft }}
+                        >
+                          {dateRangeShort}
+                        </span>
+                      )}
                     </div>
                   </div>
                 );

@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.fn_du_an_bao_cao_duyet() FROM PUBLIC, anon, authenticated;
