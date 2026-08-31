@@ -883,120 +883,41 @@ function KanbanView({
 }
 
 // =====================================================
-// GANTT (frappe-gantt)
+// GANTT (React thuần — ProjectGantt)
 // =====================================================
 function GanttView({
   mocs,
   tasks,
   projectStart,
   density = "default",
+  assigneeOf,
+  onSelectTask,
 }: {
   mocs: Moc[];
   tasks: CongViec[];
   projectStart: string | null;
   density?: string;
+  assigneeOf: (userId: string) => GanttAssignee;
+  onSelectTask?: (taskId: string) => void;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [viewMode, setViewMode] = useState<"Day" | "Week" | "Month">("Week");
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!ref.current) return;
-    const el = ref.current;
-    el.innerHTML = "";
-
-    const today = getTodayDateString();
-    const fallbackStart = projectStart ?? today;
-    const items: {
-      id: string;
-      name: string;
-      start: string;
-      end: string;
-      progress: number;
-      custom_class?: string;
-    }[] = [];
-
-    for (const m of mocs) {
-      items.push({
-        id: `m_${m.id}`,
-        name: `● ${m.ten}`,
-        start: m.ngay_bat_dau ?? fallbackStart,
-        end: m.ngay_ket_thuc_du_kien ?? m.ngay_bat_dau ?? fallbackStart,
-        progress: m.tien_do,
-        custom_class: "gantt-milestone",
-      });
-      for (const t of tasks.filter((x) => x.moc_id === m.id)) {
-        items.push({
-          id: `t_${t.id}`,
-          name: `   ${t.ten}`,
-          start: t.ngay_bat_dau ?? m.ngay_bat_dau ?? fallbackStart,
-          end:
-            t.ngay_ket_thuc_du_kien ?? t.ngay_bat_dau ?? m.ngay_ket_thuc_du_kien ?? fallbackStart,
-          progress: t.tien_do,
-          custom_class: `gantt-${t.trang_thai}`,
-        });
-      }
-    }
-    if (items.length === 0) return;
-
-    let cancelled = false;
-    import("frappe-gantt")
-      .then((mod) => {
-        if (cancelled) return;
-        const Gantt = (mod as { default?: unknown }).default ?? mod;
-        try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          new (Gantt as any)(el, items, {
-            view_mode: viewMode,
-            readonly: true,
-            bar_height: 22,
-            padding: 14,
-            language: "en",
-          });
-        } catch (e) {
-          console.error("Gantt render error", e);
-        }
-      })
-      .catch((e) => console.error("Gantt load error", e));
-
-    return () => {
-      cancelled = true;
-    };
-  }, [mocs, tasks, projectStart, viewMode]);
-
   return (
     <Card data-density={density} className="border-none shadow-none bg-transparent">
       <CardHeader className="pb-2 px-0 pt-0">
-        <div className="flex items-center justify-between gap-2">
-          <CardTitle className="text-sm">Sơ đồ Gantt</CardTitle>
-          <div className="flex gap-1">
-            {(["Day", "Week", "Month"] as const).map((v) => (
-              <Button
-                key={v}
-                size="sm"
-                variant={viewMode === v ? "default" : "outline"}
-                onClick={() => setViewMode(v)}
-              >
-                {v === "Day" ? "Ngày" : v === "Week" ? "Tuần" : "Tháng"}
-              </Button>
-            ))}
-          </div>
-        </div>
+        <CardTitle className="text-sm">Sơ đồ Gantt</CardTitle>
       </CardHeader>
       <CardContent className="px-0">
-        {mocs.length === 0 ? (
-          <div className="text-sm text-muted-foreground py-8 text-center">
-            Chưa có mốc/công việc để hiển thị Gantt.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <div ref={ref} className="frappe-gantt-wrapper" />
-          </div>
-        )}
+        <ProjectGantt
+          mocs={mocs}
+          tasks={tasks}
+          projectStart={projectStart}
+          assigneeOf={assigneeOf}
+          onSelectTask={onSelectTask}
+        />
       </CardContent>
     </Card>
   );
 }
+
 
 // =====================================================
 // LIST
