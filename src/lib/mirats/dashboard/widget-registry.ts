@@ -1,5 +1,3 @@
-import { ReactNode } from "react";
-
 export type WidgetType =
   | "reliability-kpi"
   | "mttr-kpi"
@@ -18,8 +16,12 @@ export type WidgetType =
   | "top-he-thong-su-co"
   | "top-thiet-bi-hong-lap"
   | "project-health-bar"
+  | "task-status-distribution"
+  | "task-completion-trend"
+  | "task-due-summary"
   | "dossier-compliance-heatmap"
   | "expiry-timeline";
+
 
 export interface DashboardWidgetConfig {
   id: string;
