@@ -2,7 +2,7 @@
 // /inbox — Hộp thư hoạt động: thông báo cá nhân (bảng notifications, RLS theo user_id).
 // Archetype chuẩn: PageFrame → PageHeader → PageBody.
 // ============================================================================
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Inbox as InboxIcon, CheckCheck, Loader2 } from "lucide-react";
@@ -154,9 +154,9 @@ function InboxPage() {
                   </span>
                 </div>
                 {r.link ? (
-                  <Link to={r.link} className="mt-2 inline-block text-primary underline">
+                  <a href={r.link} className="mt-2 inline-block text-primary underline">
                     Mở chi tiết
-                  </Link>
+                  </a>
                 ) : null}
               </li>
             ))}
