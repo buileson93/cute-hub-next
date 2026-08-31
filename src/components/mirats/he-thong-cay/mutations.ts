@@ -141,25 +141,44 @@ export function useCayMutations() {
       ma,
     }: {
       htId: string;
-      plId: string;
+      plId?: string;
       ten: string;
-      ma: string;
+      ma?: string;
     }) => {
       const tenSach = ten.trim();
-      const maSach = ma.trim().toUpperCase();
       if (!tenSach) throw new Error("Tên tài sản không được để trống");
-      if (!maSach) throw new Error("Mã tài sản không được để trống");
+      if (!UUID_RE.test(htId)) throw new Error("Chỉ có thể thêm tài sản vào hệ thống thật");
 
-      const { data: dup } = await supabase
-        .from("thiet_bi")
-        .select("ma_thiet_bi")
-        .eq("ma_thiet_bi", maSach)
+      // Phân loại luôn lấy từ hệ thống cha (nguồn chuẩn).
+      const { data: ht, error: htErr } = await supabase
+        .from("dm_he_thong")
+        .select("id, phan_loai_id")
+        .eq("id", htId)
         .maybeSingle();
-      if (dup) throw new Error(`Mã tài sản ${maSach} đã tồn tại`);
+      if (htErr) throw htErr;
+      if (!ht) throw new Error("Không tìm thấy hệ thống cha");
+      const phanLoaiId = ht.phan_loai_id ?? plId ?? null;
+
+      // Sinh mã tài sản duy nhất nếu người dùng không nhập.
+      const base = (ma?.trim() || `TS_${tenSach.toUpperCase().replace(/\s+/g, "_")}`)
+        .toUpperCase()
+        .slice(0, 48);
+      let maSach = base;
+      for (let i = 2; i <= 20; i++) {
+        const { data: dup } = await supabase
+          .from("thiet_bi")
+          .select("ma_thiet_bi")
+          .eq("ma_thiet_bi", maSach)
+          .maybeSingle();
+        if (!dup) break;
+        if (ma?.trim()) throw new Error(`Mã tài sản ${maSach} đã tồn tại`);
+        maSach = `${base}_${i}`;
+        if (i === 20) throw new Error(`Mã tài sản ${base} đã tồn tại`);
+      }
 
       const { error } = await supabase.from("thiet_bi").insert({
         he_thong_id: htId,
-        phan_loai_id: plId,
+        phan_loai_id: phanLoaiId,
         ten_thiet_bi: tenSach,
         ma_thiet_bi: maSach,
         che_do_kd_hc: "N/A",
@@ -167,6 +186,7 @@ export function useCayMutations() {
       } as any);
       if (error) throw error;
     },
+
     onSuccess: () => {
       invalidate();
       toast.success("Đã thêm tài sản");

@@ -8,10 +8,13 @@ import { join } from "node:path";
 // (xoaThietBiAnToan → purge_thiet_bi + ngừng khai thác) để không mất lý lịch.
 // ============================================================================
 
-const FILE = join(process.cwd(), "src", "routes", "_app.he-thong.cay.tsx");
+const FILES = [
+  join(process.cwd(), "src", "routes", "_app.he-thong.cay.tsx"),
+  join(process.cwd(), "src", "components", "mirats", "he-thong-cay", "mutations.ts"),
+];
 
 describe("cây hệ thống — không xoá trực tiếp thiet_bi", () => {
-  const src = readFileSync(FILE, "utf8");
+  const src = FILES.map((f) => readFileSync(f, "utf8")).join("\n");
 
   it('không gọi supabase.from("thiet_bi").delete()', () => {
     // Bắt mọi biến thể khoảng trắng: from("thiet_bi") ... .delete()

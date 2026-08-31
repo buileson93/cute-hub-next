@@ -46,8 +46,9 @@ export function NodeEditorSheet({
   canManage: boolean;
   donViList: any[];
 }) {
-  const { addGroup, addSystem, deleteNode, renameEntity, saveCell, renameGroupCode } =
+  const { addGroup, addSystem, addDevice, deleteNode, renameEntity, saveCell, renameGroupCode } =
     useCayMutations();
+
   const { setReorgOpen, viewTree, groupCode, setGroupCode } = useCayContext();
   const { roles } = useSession();
 
@@ -59,6 +60,9 @@ export function NodeEditorSheet({
   const [newGroupMa, setNewGroupMa] = useState("");
   const [newSystemTen, setNewSystemTen] = useState("");
   const [newSystemDonViId, setNewSystemDonViId] = useState("");
+  const [newDeviceTen, setNewDeviceTen] = useState("");
+  const [newDeviceMa, setNewDeviceMa] = useState("");
+
   const [serial, setSerial] = useState("");
   const [serialGoc, setSerialGoc] = useState("");
   const [viTri, setViTri] = useState("");
@@ -265,14 +269,28 @@ export function NodeEditorSheet({
                   />
                   <Button
                     size="sm"
+                    disabled={addGroup.isPending || !newGroupTen.trim() || !newGroupMa.trim()}
                     onClick={() => {
-                      addGroup.mutate({ plId: target.ma, ten: newGroupTen, ma: newGroupMa });
-                      setNewGroupTen("");
-                      setNewGroupMa("");
+                      if (addGroup.isPending) return;
+                      addGroup.mutate(
+                        { plId: target.ma, ten: newGroupTen, ma: newGroupMa },
+                        {
+                          onSuccess: () => {
+                            setNewGroupTen("");
+                            setNewGroupMa("");
+                          },
+                        },
+                      );
                     }}
                   >
-                    <Plus className="h-4 w-4 mr-1" /> Thêm
+                    {addGroup.isPending ? (
+                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                    ) : (
+                      <Plus className="h-4 w-4 mr-1" />
+                    )}
+                    Thêm
                   </Button>
+
                 </div>
               )}
             </div>
@@ -304,18 +322,28 @@ export function NodeEditorSheet({
                   </Select>
                   <Button
                     size="sm"
+                    disabled={addSystem.isPending || !newSystemTen.trim() || !newSystemDonViId}
                     onClick={() => {
-                      addSystem.mutate({
-                        nhMa: target.ma,
-                        plId: "HT_KHAC",
-                        ten: newSystemTen,
-                        donViId: newSystemDonViId,
-                      });
-                      setNewSystemTen("");
+                      if (addSystem.isPending) return;
+                      addSystem.mutate(
+                        {
+                          nhMa: target.ma,
+                          plId: "HT_KHAC",
+                          ten: newSystemTen,
+                          donViId: newSystemDonViId,
+                        },
+                        { onSuccess: () => setNewSystemTen("") },
+                      );
                     }}
                   >
-                    <Plus className="h-4 w-4 mr-1" /> Thêm HT
+                    {addSystem.isPending ? (
+                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                    ) : (
+                      <Plus className="h-4 w-4 mr-1" />
+                    )}
+                    Thêm HT
                   </Button>
+
                 </div>
               )}
             </div>
@@ -329,6 +357,52 @@ export function NodeEditorSheet({
               <ThanhPhanManager heThongId={physKeyValue("ht", target.ma)} canManage={canManage} />
             </div>
           )}
+
+          {target?.kind === "ht" && canManage && (
+            <div className="space-y-2 rounded-md border p-3">
+              <div className="flex items-center gap-1.5 text-sm font-medium">
+                <Plus className="h-4 w-4 text-emerald-600" /> Thêm tài sản vào hệ thống
+              </div>
+              <Input
+                value={newDeviceTen}
+                onChange={(e) => setNewDeviceTen(e.target.value)}
+                placeholder="Tên tài sản mới..."
+              />
+              <Input
+                value={newDeviceMa}
+                onChange={(e) => setNewDeviceMa(e.target.value.toUpperCase())}
+                placeholder="Mã tài sản (bỏ trống để tự sinh)"
+              />
+              <Button
+                size="sm"
+                disabled={addDevice.isPending || !newDeviceTen.trim()}
+                onClick={() => {
+                  if (addDevice.isPending || !newDeviceTen.trim()) return;
+                  addDevice.mutate(
+                    {
+                      htId: physKeyValue("ht", target.ma),
+                      ten: newDeviceTen,
+                      ma: newDeviceMa,
+                    },
+                    {
+                      onSuccess: () => {
+                        setNewDeviceTen("");
+                        setNewDeviceMa("");
+                      },
+                    },
+                  );
+                }}
+              >
+                {addDevice.isPending ? (
+                  <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                ) : (
+                  <Plus className="h-4 w-4 mr-1" />
+                )}
+                Thêm tài sản
+              </Button>
+            </div>
+          )}
+
 
           {target?.kind === "ht" && (
             <HeThongTruongEditor heThongId={target.ma} canManage={canManage} scope="he_thong" />
