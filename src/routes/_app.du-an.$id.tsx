@@ -71,6 +71,7 @@ import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useLazySection } from "@/hooks/use-lazy-section";
 // Standard features
 import { DossierRegister } from "@/components/mirats/projects/dossier/DossierRegister";
 import { ProjectTimeline } from "@/components/mirats/projects/timeline/ProjectTimeline";
