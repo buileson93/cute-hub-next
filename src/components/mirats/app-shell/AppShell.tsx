@@ -1,4 +1,4 @@
-import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { ProductTourProvider, useProductTour } from "@/components/mirats/ProductTour";
@@ -254,9 +254,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               )}
             >
               <div className="flex flex-1 items-center gap-4">
-                <Link to="/" className="md:hidden shrink-0">
+                <div className="md:hidden shrink-0">
                   <SidebarLogoRail />
-                </Link>
+                </div>
                 <div className="hidden md:block">
                   <TourButton />
                 </div>

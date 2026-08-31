@@ -2950,6 +2950,72 @@ export type Database = {
           },
         ]
       }
+      du_an_bao_cao: {
+        Row: {
+          bang_chung: string | null
+          cong_viec_id: string | null
+          created_at: string
+          du_an_id: string
+          id: string
+          ngay_duyet: string | null
+          nguoi_duyet_id: string | null
+          nguoi_nop_id: string
+          noi_dung: string | null
+          tep_url: string | null
+          tieu_de: string
+          trang_thai: Database["public"]["Enums"]["bao_cao_trang_thai"]
+          updated_at: string
+          y_kien_lanh_dao: string | null
+        }
+        Insert: {
+          bang_chung?: string | null
+          cong_viec_id?: string | null
+          created_at?: string
+          du_an_id: string
+          id?: string
+          ngay_duyet?: string | null
+          nguoi_duyet_id?: string | null
+          nguoi_nop_id?: string
+          noi_dung?: string | null
+          tep_url?: string | null
+          tieu_de: string
+          trang_thai?: Database["public"]["Enums"]["bao_cao_trang_thai"]
+          updated_at?: string
+          y_kien_lanh_dao?: string | null
+        }
+        Update: {
+          bang_chung?: string | null
+          cong_viec_id?: string | null
+          created_at?: string
+          du_an_id?: string
+          id?: string
+          ngay_duyet?: string | null
+          nguoi_duyet_id?: string | null
+          nguoi_nop_id?: string
+          noi_dung?: string | null
+          tep_url?: string | null
+          tieu_de?: string
+          trang_thai?: Database["public"]["Enums"]["bao_cao_trang_thai"]
+          updated_at?: string
+          y_kien_lanh_dao?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "du_an_bao_cao_cong_viec_id_fkey"
+            columns: ["cong_viec_id"]
+            isOneToOne: false
+            referencedRelation: "du_an_cong_viec"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "du_an_bao_cao_du_an_id_fkey"
+            columns: ["du_an_id"]
+            isOneToOne: false
+            referencedRelation: "du_an"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       du_an_cong_van: {
         Row: {
           attrs: Json
@@ -11337,6 +11403,7 @@ export type Database = {
         | "quan_ly_du_an"
         | "to_truong"
       bao_cao_annotation_loai: "bao_tri" | "su_co" | "thay_doi" | "ghi_chu"
+      bao_cao_trang_thai: "cho_duyet" | "da_duyet" | "yeu_cau_sua" | "huy"
       change_request_loai:
         | "cay.delete_node"
         | "cay.restore_node"
@@ -11613,6 +11680,7 @@ export const Constants = {
         "to_truong",
       ],
       bao_cao_annotation_loai: ["bao_tri", "su_co", "thay_doi", "ghi_chu"],
+      bao_cao_trang_thai: ["cho_duyet", "da_duyet", "yeu_cau_sua", "huy"],
       change_request_loai: [
         "cay.delete_node",
         "cay.restore_node",

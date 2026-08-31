@@ -25,6 +25,7 @@ import {
   Info,
   ShieldAlert,
   FolderArchive,
+  FileSignature,
   Circle,
   Lock,
   FolderOpen,
@@ -85,9 +86,18 @@ import {
   ProjectGantt,
   type GanttAssignee,
 } from "@/components/mirats/projects/gantt/ProjectGantt";
+import { ProjectReports } from "@/components/mirats/projects/ProjectReports";
 
 
-const SUPPORTED_VIEWS = ["kanban", "gantt", "list", "timeline", "hoso", "cong-van"] as const;
+const SUPPORTED_VIEWS = [
+  "kanban",
+  "gantt",
+  "list",
+  "timeline",
+  "bao-cao",
+  "hoso",
+  "cong-van",
+] as const;
 type ProjectView = (typeof SUPPORTED_VIEWS)[number];
 
 const PROJECT_VIEWS: ReadonlyArray<{
@@ -99,6 +109,7 @@ const PROJECT_VIEWS: ReadonlyArray<{
   { value: "gantt", label: "Biểu đồ Gantt", icon: GanttChart },
   { value: "list", label: "Danh sách công việc", icon: ListTree },
   { value: "timeline", label: "Dòng thời gian", icon: CalendarClock },
+  { value: "bao-cao", label: "Báo cáo nghiệm thu", icon: FileSignature },
   { value: "hoso", label: "Danh mục Hồ sơ", icon: FolderArchive },
   { value: "cong-van", label: "Sổ Công văn", icon: Mails },
 ];
@@ -568,6 +579,15 @@ function DuAnDetailPage() {
             <OperationsLane wipLimit={2} incidents={[]} />
           </TabsContent>
           */}
+
+          <TabsContent value="bao-cao" className="mt-3">
+            <ProjectReports
+              duAnId={id}
+              tasks={congViecs ?? []}
+              nameOf={nameOf}
+              canManage={isManager}
+            />
+          </TabsContent>
 
           <TabsContent value="hoso" className="mt-3">
             <DossierRegister project_id={id} />
