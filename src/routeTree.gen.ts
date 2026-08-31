@@ -89,6 +89,7 @@ import { Route as AppHeThongThanhPhanRouteImport } from './routes/_app.he-thong.
 import { Route as AppHeThongLienKetRouteImport } from './routes/_app.he-thong.lien-ket'
 import { Route as AppHeThongCayRouteImport } from './routes/_app.he-thong.cay'
 import { Route as AppHeThongIdRouteImport } from './routes/_app.he-thong.$id'
+import { Route as AppDuAnViecCuaToiRouteImport } from './routes/_app.du-an.viec-cua-toi'
 import { Route as AppDuAnIdRouteImport } from './routes/_app.du-an.$id'
 import { Route as AppDanhMucViTriRouteImport } from './routes/_app.danh-muc.vi-tri'
 import { Route as AppDanhMucThietBiRouteImport } from './routes/_app.danh-muc.thiet-bi'
@@ -544,6 +545,11 @@ const AppHeThongIdRoute = AppHeThongIdRouteImport.update({
   path: '/he-thong/$id',
   getParentRoute: () => AppRoute,
 } as any)
+const AppDuAnViecCuaToiRoute = AppDuAnViecCuaToiRouteImport.update({
+  id: '/du-an/viec-cua-toi',
+  path: '/du-an/viec-cua-toi',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDuAnIdRoute = AppDuAnIdRouteImport.update({
   id: '/du-an/$id',
   path: '/du-an/$id',
@@ -898,6 +904,7 @@ export interface FileRoutesByFullPath {
   '/danh-muc/thiet-bi': typeof AppDanhMucThietBiRoute
   '/danh-muc/vi-tri': typeof AppDanhMucViTriRoute
   '/du-an/$id': typeof AppDuAnIdRoute
+  '/du-an/viec-cua-toi': typeof AppDuAnViecCuaToiRoute
   '/he-thong/$id': typeof AppHeThongIdRouteWithChildren
   '/he-thong/cay': typeof AppHeThongCayRoute
   '/he-thong/lien-ket': typeof AppHeThongLienKetRoute
@@ -1023,6 +1030,7 @@ export interface FileRoutesByTo {
   '/danh-muc/thiet-bi': typeof AppDanhMucThietBiRoute
   '/danh-muc/vi-tri': typeof AppDanhMucViTriRoute
   '/du-an/$id': typeof AppDuAnIdRoute
+  '/du-an/viec-cua-toi': typeof AppDuAnViecCuaToiRoute
   '/he-thong/$id': typeof AppHeThongIdRouteWithChildren
   '/he-thong/cay': typeof AppHeThongCayRoute
   '/he-thong/lien-ket': typeof AppHeThongLienKetRoute
@@ -1158,6 +1166,7 @@ export interface FileRoutesById {
   '/_app/danh-muc/thiet-bi': typeof AppDanhMucThietBiRoute
   '/_app/danh-muc/vi-tri': typeof AppDanhMucViTriRoute
   '/_app/du-an/$id': typeof AppDuAnIdRoute
+  '/_app/du-an/viec-cua-toi': typeof AppDuAnViecCuaToiRoute
   '/_app/he-thong/$id': typeof AppHeThongIdRouteWithChildren
   '/_app/he-thong/cay': typeof AppHeThongCayRoute
   '/_app/he-thong/lien-ket': typeof AppHeThongLienKetRoute
@@ -1292,6 +1301,7 @@ export interface FileRouteTypes {
     | '/danh-muc/thiet-bi'
     | '/danh-muc/vi-tri'
     | '/du-an/$id'
+    | '/du-an/viec-cua-toi'
     | '/he-thong/$id'
     | '/he-thong/cay'
     | '/he-thong/lien-ket'
@@ -1417,6 +1427,7 @@ export interface FileRouteTypes {
     | '/danh-muc/thiet-bi'
     | '/danh-muc/vi-tri'
     | '/du-an/$id'
+    | '/du-an/viec-cua-toi'
     | '/he-thong/$id'
     | '/he-thong/cay'
     | '/he-thong/lien-ket'
@@ -1551,6 +1562,7 @@ export interface FileRouteTypes {
     | '/_app/danh-muc/thiet-bi'
     | '/_app/danh-muc/vi-tri'
     | '/_app/du-an/$id'
+    | '/_app/du-an/viec-cua-toi'
     | '/_app/he-thong/$id'
     | '/_app/he-thong/cay'
     | '/_app/he-thong/lien-ket'
@@ -2196,6 +2208,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppHeThongIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/du-an/viec-cua-toi': {
+      id: '/_app/du-an/viec-cua-toi'
+      path: '/du-an/viec-cua-toi'
+      fullPath: '/du-an/viec-cua-toi'
+      preLoaderRoute: typeof AppDuAnViecCuaToiRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/du-an/$id': {
       id: '/_app/du-an/$id'
       path: '/du-an/$id'
@@ -2806,6 +2825,7 @@ interface AppRouteChildren {
   AppDanhMucThietBiRoute: typeof AppDanhMucThietBiRoute
   AppDanhMucViTriRoute: typeof AppDanhMucViTriRoute
   AppDuAnIdRoute: typeof AppDuAnIdRoute
+  AppDuAnViecCuaToiRoute: typeof AppDuAnViecCuaToiRoute
   AppHeThongIdRoute: typeof AppHeThongIdRouteWithChildren
   AppHeThongCayRoute: typeof AppHeThongCayRoute
   AppHeThongLienKetRoute: typeof AppHeThongLienKetRoute
@@ -2876,6 +2896,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDanhMucThietBiRoute: AppDanhMucThietBiRoute,
   AppDanhMucViTriRoute: AppDanhMucViTriRoute,
   AppDuAnIdRoute: AppDuAnIdRoute,
+  AppDuAnViecCuaToiRoute: AppDuAnViecCuaToiRoute,
   AppHeThongIdRoute: AppHeThongIdRouteWithChildren,
   AppHeThongCayRoute: AppHeThongCayRoute,
   AppHeThongLienKetRoute: AppHeThongLienKetRoute,
