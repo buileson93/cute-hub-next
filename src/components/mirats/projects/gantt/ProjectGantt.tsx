@@ -302,18 +302,20 @@ export function ProjectGantt({
                       />
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <button
+                          <Button
                             type="button"
+                            variant="ghost"
                             onClick={() => handleActivate(row)}
                             className={cn(
-                              "min-w-0 flex-1 truncate rounded text-left outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                              "h-auto min-w-0 flex-1 justify-start truncate rounded px-0 py-0 text-left font-normal hover:bg-transparent",
                               row.kind === "moc"
                                 ? "text-sm font-semibold text-foreground"
                                 : "text-sm text-foreground/90",
                             )}
                           >
                             {row.name || "Chưa đặt tên"}
-                          </button>
+                          </Button>
+
                         </TooltipTrigger>
                         <TooltipContent side="top" className="max-w-xs">
                           {barLabel}
