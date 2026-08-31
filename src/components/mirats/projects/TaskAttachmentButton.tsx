@@ -159,10 +159,9 @@ export function TaskAttachmentButton({
           <TooltipTrigger asChild>
             <Button
               type="button"
-              size="icon"
+              size="icon" aria-label={`Đính kèm tệp cho công việc ${taskName}`}
               variant="ghost"
               className="h-6 w-6 text-muted-foreground hover:text-foreground"
-              aria-label={`Đính kèm tệp cho công việc ${taskName}`}
               disabled={busy}
               onClick={() => inputRef.current?.click()}
             >
