@@ -73,6 +73,7 @@ import { Route as QrThietBiIdRouteImport } from './routes/qr.thiet-bi.$id'
 import { Route as ApiPublicQaResetTestPasswordsRouteImport } from './routes/api/public/qa-reset-test-passwords'
 import { Route as ApiPublicInventoryCronRouteImport } from './routes/api/public/inventory-cron'
 import { Route as AdminAuditLapThaoRouteImport } from './routes/admin.audit.lap-thao'
+import { Route as AppTrinhKyDaKyRouteImport } from './routes/_app.trinh-ky.da-ky'
 import { Route as AppTicketsIdRouteImport } from './routes/_app.tickets.$id'
 import { Route as AppThongKeLaptopRouteImport } from './routes/_app.thong-ke.laptop'
 import { Route as AppThietBiDanhSachRouteImport } from './routes/_app.thiet-bi.danh-sach'
@@ -466,6 +467,11 @@ const AdminAuditLapThaoRoute = AdminAuditLapThaoRouteImport.update({
   id: '/lap-thao',
   path: '/lap-thao',
   getParentRoute: () => AdminAuditRoute,
+} as any)
+const AppTrinhKyDaKyRoute = AppTrinhKyDaKyRouteImport.update({
+  id: '/trinh-ky/da-ky',
+  path: '/trinh-ky/da-ky',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppTicketsIdRoute = AppTicketsIdRouteImport.update({
   id: '/$id',
@@ -937,6 +943,7 @@ export interface FileRoutesByFullPath {
   '/thiet-bi/danh-sach': typeof AppThietBiDanhSachRoute
   '/thong-ke/laptop': typeof AppThongKeLaptopRoute
   '/tickets/$id': typeof AppTicketsIdRoute
+  '/trinh-ky/da-ky': typeof AppTrinhKyDaKyRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
   '/api/public/inventory-cron': typeof ApiPublicInventoryCronRoute
   '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
@@ -1065,6 +1072,7 @@ export interface FileRoutesByTo {
   '/thiet-bi/danh-sach': typeof AppThietBiDanhSachRoute
   '/thong-ke/laptop': typeof AppThongKeLaptopRoute
   '/tickets/$id': typeof AppTicketsIdRoute
+  '/trinh-ky/da-ky': typeof AppTrinhKyDaKyRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
   '/api/public/inventory-cron': typeof ApiPublicInventoryCronRoute
   '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
@@ -1203,6 +1211,7 @@ export interface FileRoutesById {
   '/_app/thiet-bi/danh-sach': typeof AppThietBiDanhSachRoute
   '/_app/thong-ke/laptop': typeof AppThongKeLaptopRoute
   '/_app/tickets/$id': typeof AppTicketsIdRoute
+  '/_app/trinh-ky/da-ky': typeof AppTrinhKyDaKyRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
   '/api/public/inventory-cron': typeof ApiPublicInventoryCronRoute
   '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
@@ -1340,6 +1349,7 @@ export interface FileRouteTypes {
     | '/thiet-bi/danh-sach'
     | '/thong-ke/laptop'
     | '/tickets/$id'
+    | '/trinh-ky/da-ky'
     | '/admin/audit/lap-thao'
     | '/api/public/inventory-cron'
     | '/api/public/qa-reset-test-passwords'
@@ -1468,6 +1478,7 @@ export interface FileRouteTypes {
     | '/thiet-bi/danh-sach'
     | '/thong-ke/laptop'
     | '/tickets/$id'
+    | '/trinh-ky/da-ky'
     | '/admin/audit/lap-thao'
     | '/api/public/inventory-cron'
     | '/api/public/qa-reset-test-passwords'
@@ -1605,6 +1616,7 @@ export interface FileRouteTypes {
     | '/_app/thiet-bi/danh-sach'
     | '/_app/thong-ke/laptop'
     | '/_app/tickets/$id'
+    | '/_app/trinh-ky/da-ky'
     | '/admin/audit/lap-thao'
     | '/api/public/inventory-cron'
     | '/api/public/qa-reset-test-passwords'
@@ -2119,6 +2131,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/audit/lap-thao'
       preLoaderRoute: typeof AdminAuditLapThaoRouteImport
       parentRoute: typeof AdminAuditRoute
+    }
+    '/_app/trinh-ky/da-ky': {
+      id: '/_app/trinh-ky/da-ky'
+      path: '/trinh-ky/da-ky'
+      fullPath: '/trinh-ky/da-ky'
+      preLoaderRoute: typeof AppTrinhKyDaKyRouteImport
+      parentRoute: typeof AppRoute
     }
     '/_app/tickets/$id': {
       id: '/_app/tickets/$id'
@@ -2874,6 +2893,7 @@ interface AppRouteChildren {
   AppQuanTriNguoiDungRoute: typeof AppQuanTriNguoiDungRoute
   AppSoDoIdRoute: typeof AppSoDoIdRoute
   AppThongKeLaptopRoute: typeof AppThongKeLaptopRoute
+  AppTrinhKyDaKyRoute: typeof AppTrinhKyDaKyRoute
   AppDuAnIndexRoute: typeof AppDuAnIndexRoute
   AppSoDoIndexRoute: typeof AppSoDoIndexRoute
   AppTrinhKyIndexRoute: typeof AppTrinhKyIndexRoute
@@ -2947,6 +2967,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppQuanTriNguoiDungRoute: AppQuanTriNguoiDungRoute,
   AppSoDoIdRoute: AppSoDoIdRoute,
   AppThongKeLaptopRoute: AppThongKeLaptopRoute,
+  AppTrinhKyDaKyRoute: AppTrinhKyDaKyRoute,
   AppDuAnIndexRoute: AppDuAnIndexRoute,
   AppSoDoIndexRoute: AppSoDoIndexRoute,
   AppTrinhKyIndexRoute: AppTrinhKyIndexRoute,
