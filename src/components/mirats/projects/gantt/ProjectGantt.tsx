@@ -343,13 +343,13 @@ export function ProjectGantt({
                       ) : null}
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <button
+                          <Button
                             type="button"
+                            variant="ghost"
                             onClick={() => handleActivate(row)}
                             aria-label={barLabel}
                             className={cn(
-                              "absolute top-1.5 flex h-6 items-center overflow-hidden rounded-md border text-left outline-none transition-[box-shadow,transform] motion-reduce:transition-none",
-                              "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
+                              "absolute top-1.5 flex h-6 min-w-0 items-center justify-start overflow-hidden rounded-md border p-0 text-left transition-[box-shadow] hover:bg-transparent motion-reduce:transition-none",
                               row.kind === "moc"
                                 ? "h-7 border-foreground/30 bg-foreground/10"
                                 : "border-border/70",
@@ -365,14 +365,17 @@ export function ProjectGantt({
                               aria-hidden="true"
                               className={cn(
                                 "absolute inset-y-0 left-0",
-                                row.kind === "moc" ? "bg-foreground/25" : (meta?.bar ?? "bg-primary/60"),
+                                row.kind === "moc"
+                                  ? "bg-foreground/25"
+                                  : (meta?.bar ?? "bg-primary/60"),
                               )}
                               style={{ width: `${row.progress}%` }}
                             />
                             <span className="relative z-10 truncate px-2 text-xs font-medium text-foreground">
                               {span.spanDays * dayWidth > 56 ? row.name : ""}
                             </span>
-                          </button>
+                          </Button>
+
                         </TooltipTrigger>
                         <TooltipContent side="top" className="max-w-xs">
                           {barLabel}
