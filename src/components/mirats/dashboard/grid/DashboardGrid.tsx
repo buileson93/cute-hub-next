@@ -74,6 +74,15 @@ const STATUS_COLORS = [
   "hsl(280 60% 55%)",
   "hsl(215 16% 55%)",
 ];
+/** Palette semantic cho trạng thái công việc (không dùng rainbow). */
+const TASK_STATUS_COLORS: Record<string, string> = {
+  "Chưa bắt đầu": "hsl(215 16% 60%)",
+  "Đang làm": "hsl(217 91% 50%)",
+  "Chờ duyệt": "hsl(38 92% 50%)",
+  "Hoàn thành": "hsl(142 71% 45%)",
+  "Quá hạn": "hsl(0 84% 60%)",
+};
+
 
 interface DashboardGridProps {
   page: "home" | "overview";
