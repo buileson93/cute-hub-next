@@ -339,8 +339,15 @@ function DuAnDetailPage() {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [showTaskDetail, setShowTaskDetail] = useState(false);
   const [openMembers, setOpenMembers] = useState(false);
+  // Chỉ tải danh sách thành viên sau lần mở hộp thoại đầu tiên, sau đó dùng lại cache.
+  const [membersLoadedOnce, setMembersLoadedOnce] = useState(false);
 
   const { data: members } = useProjectMembers(id, openMembers || membersLoadedOnce);
+  const taskIds = useMemo(() => (congViecs ?? []).map((t) => t.id), [congViecs]);
+  const { data: attachmentCounts } = useTaskAttachmentCounts(
+    taskIds,
+    needsTasks && workVisible,
+  );
   const metrics = useMemo(() => computeTaskMetrics(congViecs ?? []), [congViecs]);
 
 
@@ -410,7 +417,10 @@ function DuAnDetailPage() {
             >
               {duAn.trang_thai.replace("_", " ")}
             </Badge>
-            <Button size="sm" variant="outline" onClick={() => setOpenMembers(true)}>
+            <Button size="sm" variant="outline" onClick={() => (() => {
+                setMembersLoadedOnce(true);
+                setOpenMembers(true);
+              })()}>
               <UserIcon className="h-4 w-4 mr-2" aria-hidden="true" /> Thành viên
               {members && members.length > 0 && (
                 <span className="ml-1.5 text-xs text-muted-foreground tabular-nums">
@@ -572,6 +582,7 @@ function DuAnDetailPage() {
         <Tabs value={activeTab} className={!tasksReady ? "hidden" : undefined}>
           <TabsContent value="kanban" className="mt-0">
             <KanbanView
+              attachmentCounts={attachmentCounts}
               mocs={mocs ?? []}
               tasks={
                 congViecs?.filter(
@@ -667,6 +678,7 @@ function DuAnDetailPage() {
 
           <TabsContent value="list" className="mt-3">
             <ListView
+              attachmentCounts={attachmentCounts}
               mocs={mocs ?? []}
               tasks={
                 congViecs?.filter(
@@ -1040,6 +1052,7 @@ function GanttView({
 // LIST
 // =====================================================
 function ListView({
+  attachmentCounts,
   mocs,
   tasks,
   nameOf,
@@ -1050,6 +1063,7 @@ function ListView({
   onDeleteMoc,
   isFiltering = false,
 }: {
+  attachmentCounts?: Record<string, number>;
   mocs: Moc[];
   tasks: CongViec[];
   nameOf: (u: string | null) => string;
