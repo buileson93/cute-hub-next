@@ -40,6 +40,7 @@ import { Route as AppThietBiRouteImport } from './routes/_app.thiet-bi'
 import { Route as AppTepTinRouteImport } from './routes/_app.tep-tin'
 import { Route as AppTaiLieuRouteImport } from './routes/_app.tai-lieu'
 import { Route as AppSuCoRouteImport } from './routes/_app.su-co'
+import { Route as AppSoCongVanRouteImport } from './routes/_app.so-cong-van'
 import { Route as AppSapHetHanRouteImport } from './routes/_app.sap-het-han'
 import { Route as AppPhanQuyenRouteImport } from './routes/_app.phan-quyen'
 import { Route as AppPhanMemBanQuyenRouteImport } from './routes/_app.phan-mem-ban-quyen'
@@ -48,6 +49,8 @@ import { Route as AppNhanRouteImport } from './routes/_app.nhan'
 import { Route as AppMessagesRouteImport } from './routes/_app.messages'
 import { Route as AppKiemKeRouteImport } from './routes/_app.kiem-ke'
 import { Route as AppKiemDinhRouteImport } from './routes/_app.kiem-dinh'
+import { Route as AppKhoHoSoRouteImport } from './routes/_app.kho-ho-so'
+import { Route as AppInboxRouteImport } from './routes/_app.inbox'
 import { Route as AppHongHocRouteImport } from './routes/_app.hong-hoc'
 import { Route as AppGopGachRouteImport } from './routes/_app.gop-gach'
 import { Route as AppGiayPhepRouteImport } from './routes/_app.giay-phep'
@@ -70,6 +73,7 @@ import { Route as QrThietBiIdRouteImport } from './routes/qr.thiet-bi.$id'
 import { Route as ApiPublicQaResetTestPasswordsRouteImport } from './routes/api/public/qa-reset-test-passwords'
 import { Route as ApiPublicInventoryCronRouteImport } from './routes/api/public/inventory-cron'
 import { Route as AdminAuditLapThaoRouteImport } from './routes/admin.audit.lap-thao'
+import { Route as AppTrinhKyDaKyRouteImport } from './routes/_app.trinh-ky.da-ky'
 import { Route as AppTicketsIdRouteImport } from './routes/_app.tickets.$id'
 import { Route as AppThongKeLaptopRouteImport } from './routes/_app.thong-ke.laptop'
 import { Route as AppThietBiDanhSachRouteImport } from './routes/_app.thiet-bi.danh-sach'
@@ -88,6 +92,7 @@ import { Route as AppHeThongThanhPhanRouteImport } from './routes/_app.he-thong.
 import { Route as AppHeThongLienKetRouteImport } from './routes/_app.he-thong.lien-ket'
 import { Route as AppHeThongCayRouteImport } from './routes/_app.he-thong.cay'
 import { Route as AppHeThongIdRouteImport } from './routes/_app.he-thong.$id'
+import { Route as AppDuAnViecCuaToiRouteImport } from './routes/_app.du-an.viec-cua-toi'
 import { Route as AppDuAnIdRouteImport } from './routes/_app.du-an.$id'
 import { Route as AppDanhMucViTriRouteImport } from './routes/_app.danh-muc.vi-tri'
 import { Route as AppDanhMucThietBiRouteImport } from './routes/_app.danh-muc.thiet-bi'
@@ -295,6 +300,11 @@ const AppSuCoRoute = AppSuCoRouteImport.update({
   path: '/su-co',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSoCongVanRoute = AppSoCongVanRouteImport.update({
+  id: '/so-cong-van',
+  path: '/so-cong-van',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppSapHetHanRoute = AppSapHetHanRouteImport.update({
   id: '/sap-het-han',
   path: '/sap-het-han',
@@ -333,6 +343,16 @@ const AppKiemKeRoute = AppKiemKeRouteImport.update({
 const AppKiemDinhRoute = AppKiemDinhRouteImport.update({
   id: '/kiem-dinh',
   path: '/kiem-dinh',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppKhoHoSoRoute = AppKhoHoSoRouteImport.update({
+  id: '/kho-ho-so',
+  path: '/kho-ho-so',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppInboxRoute = AppInboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
   getParentRoute: () => AppRoute,
 } as any)
 const AppHongHocRoute = AppHongHocRouteImport.update({
@@ -448,6 +468,11 @@ const AdminAuditLapThaoRoute = AdminAuditLapThaoRouteImport.update({
   path: '/lap-thao',
   getParentRoute: () => AdminAuditRoute,
 } as any)
+const AppTrinhKyDaKyRoute = AppTrinhKyDaKyRouteImport.update({
+  id: '/trinh-ky/da-ky',
+  path: '/trinh-ky/da-ky',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppTicketsIdRoute = AppTicketsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -536,6 +561,11 @@ const AppHeThongCayRoute = AppHeThongCayRouteImport.update({
 const AppHeThongIdRoute = AppHeThongIdRouteImport.update({
   id: '/he-thong/$id',
   path: '/he-thong/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDuAnViecCuaToiRoute = AppDuAnViecCuaToiRouteImport.update({
+  id: '/du-an/viec-cua-toi',
+  path: '/du-an/viec-cua-toi',
   getParentRoute: () => AppRoute,
 } as any)
 const AppDuAnIdRoute = AppDuAnIdRouteImport.update({
@@ -827,6 +857,8 @@ export interface FileRoutesByFullPath {
   '/giay-phep': typeof AppGiayPhepRoute
   '/gop-gach': typeof AppGopGachRoute
   '/hong-hoc': typeof AppHongHocRouteWithChildren
+  '/inbox': typeof AppInboxRoute
+  '/kho-ho-so': typeof AppKhoHoSoRoute
   '/kiem-dinh': typeof AppKiemDinhRoute
   '/kiem-ke': typeof AppKiemKeRoute
   '/messages': typeof AppMessagesRouteWithChildren
@@ -835,6 +867,7 @@ export interface FileRoutesByFullPath {
   '/phan-mem-ban-quyen': typeof AppPhanMemBanQuyenRouteWithChildren
   '/phan-quyen': typeof AppPhanQuyenRoute
   '/sap-het-han': typeof AppSapHetHanRoute
+  '/so-cong-van': typeof AppSoCongVanRoute
   '/su-co': typeof AppSuCoRouteWithChildren
   '/tai-lieu': typeof AppTaiLieuRoute
   '/tep-tin': typeof AppTepTinRoute
@@ -891,6 +924,7 @@ export interface FileRoutesByFullPath {
   '/danh-muc/thiet-bi': typeof AppDanhMucThietBiRoute
   '/danh-muc/vi-tri': typeof AppDanhMucViTriRoute
   '/du-an/$id': typeof AppDuAnIdRoute
+  '/du-an/viec-cua-toi': typeof AppDuAnViecCuaToiRoute
   '/he-thong/$id': typeof AppHeThongIdRouteWithChildren
   '/he-thong/cay': typeof AppHeThongCayRoute
   '/he-thong/lien-ket': typeof AppHeThongLienKetRoute
@@ -909,6 +943,7 @@ export interface FileRoutesByFullPath {
   '/thiet-bi/danh-sach': typeof AppThietBiDanhSachRoute
   '/thong-ke/laptop': typeof AppThongKeLaptopRoute
   '/tickets/$id': typeof AppTicketsIdRoute
+  '/trinh-ky/da-ky': typeof AppTrinhKyDaKyRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
   '/api/public/inventory-cron': typeof ApiPublicInventoryCronRoute
   '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
@@ -955,6 +990,8 @@ export interface FileRoutesByTo {
   '/giay-phep': typeof AppGiayPhepRoute
   '/gop-gach': typeof AppGopGachRoute
   '/hong-hoc': typeof AppHongHocRouteWithChildren
+  '/inbox': typeof AppInboxRoute
+  '/kho-ho-so': typeof AppKhoHoSoRoute
   '/kiem-dinh': typeof AppKiemDinhRoute
   '/kiem-ke': typeof AppKiemKeRoute
   '/nhan': typeof AppNhanRoute
@@ -962,6 +999,7 @@ export interface FileRoutesByTo {
   '/phan-mem-ban-quyen': typeof AppPhanMemBanQuyenRouteWithChildren
   '/phan-quyen': typeof AppPhanQuyenRoute
   '/sap-het-han': typeof AppSapHetHanRoute
+  '/so-cong-van': typeof AppSoCongVanRoute
   '/tai-lieu': typeof AppTaiLieuRoute
   '/tep-tin': typeof AppTepTinRoute
   '/thong-bao': typeof AppThongBaoRoute
@@ -1015,6 +1053,7 @@ export interface FileRoutesByTo {
   '/danh-muc/thiet-bi': typeof AppDanhMucThietBiRoute
   '/danh-muc/vi-tri': typeof AppDanhMucViTriRoute
   '/du-an/$id': typeof AppDuAnIdRoute
+  '/du-an/viec-cua-toi': typeof AppDuAnViecCuaToiRoute
   '/he-thong/$id': typeof AppHeThongIdRouteWithChildren
   '/he-thong/cay': typeof AppHeThongCayRoute
   '/he-thong/lien-ket': typeof AppHeThongLienKetRoute
@@ -1033,6 +1072,7 @@ export interface FileRoutesByTo {
   '/thiet-bi/danh-sach': typeof AppThietBiDanhSachRoute
   '/thong-ke/laptop': typeof AppThongKeLaptopRoute
   '/tickets/$id': typeof AppTicketsIdRoute
+  '/trinh-ky/da-ky': typeof AppTrinhKyDaKyRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
   '/api/public/inventory-cron': typeof ApiPublicInventoryCronRoute
   '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
@@ -1083,6 +1123,8 @@ export interface FileRoutesById {
   '/_app/giay-phep': typeof AppGiayPhepRoute
   '/_app/gop-gach': typeof AppGopGachRoute
   '/_app/hong-hoc': typeof AppHongHocRouteWithChildren
+  '/_app/inbox': typeof AppInboxRoute
+  '/_app/kho-ho-so': typeof AppKhoHoSoRoute
   '/_app/kiem-dinh': typeof AppKiemDinhRoute
   '/_app/kiem-ke': typeof AppKiemKeRoute
   '/_app/messages': typeof AppMessagesRouteWithChildren
@@ -1091,6 +1133,7 @@ export interface FileRoutesById {
   '/_app/phan-mem-ban-quyen': typeof AppPhanMemBanQuyenRouteWithChildren
   '/_app/phan-quyen': typeof AppPhanQuyenRoute
   '/_app/sap-het-han': typeof AppSapHetHanRoute
+  '/_app/so-cong-van': typeof AppSoCongVanRoute
   '/_app/su-co': typeof AppSuCoRouteWithChildren
   '/_app/tai-lieu': typeof AppTaiLieuRoute
   '/_app/tep-tin': typeof AppTepTinRoute
@@ -1149,6 +1192,7 @@ export interface FileRoutesById {
   '/_app/danh-muc/thiet-bi': typeof AppDanhMucThietBiRoute
   '/_app/danh-muc/vi-tri': typeof AppDanhMucViTriRoute
   '/_app/du-an/$id': typeof AppDuAnIdRoute
+  '/_app/du-an/viec-cua-toi': typeof AppDuAnViecCuaToiRoute
   '/_app/he-thong/$id': typeof AppHeThongIdRouteWithChildren
   '/_app/he-thong/cay': typeof AppHeThongCayRoute
   '/_app/he-thong/lien-ket': typeof AppHeThongLienKetRoute
@@ -1167,6 +1211,7 @@ export interface FileRoutesById {
   '/_app/thiet-bi/danh-sach': typeof AppThietBiDanhSachRoute
   '/_app/thong-ke/laptop': typeof AppThongKeLaptopRoute
   '/_app/tickets/$id': typeof AppTicketsIdRoute
+  '/_app/trinh-ky/da-ky': typeof AppTrinhKyDaKyRoute
   '/admin/audit/lap-thao': typeof AdminAuditLapThaoRoute
   '/api/public/inventory-cron': typeof ApiPublicInventoryCronRoute
   '/api/public/qa-reset-test-passwords': typeof ApiPublicQaResetTestPasswordsRoute
@@ -1218,6 +1263,8 @@ export interface FileRouteTypes {
     | '/giay-phep'
     | '/gop-gach'
     | '/hong-hoc'
+    | '/inbox'
+    | '/kho-ho-so'
     | '/kiem-dinh'
     | '/kiem-ke'
     | '/messages'
@@ -1226,6 +1273,7 @@ export interface FileRouteTypes {
     | '/phan-mem-ban-quyen'
     | '/phan-quyen'
     | '/sap-het-han'
+    | '/so-cong-van'
     | '/su-co'
     | '/tai-lieu'
     | '/tep-tin'
@@ -1282,6 +1330,7 @@ export interface FileRouteTypes {
     | '/danh-muc/thiet-bi'
     | '/danh-muc/vi-tri'
     | '/du-an/$id'
+    | '/du-an/viec-cua-toi'
     | '/he-thong/$id'
     | '/he-thong/cay'
     | '/he-thong/lien-ket'
@@ -1300,6 +1349,7 @@ export interface FileRouteTypes {
     | '/thiet-bi/danh-sach'
     | '/thong-ke/laptop'
     | '/tickets/$id'
+    | '/trinh-ky/da-ky'
     | '/admin/audit/lap-thao'
     | '/api/public/inventory-cron'
     | '/api/public/qa-reset-test-passwords'
@@ -1346,6 +1396,8 @@ export interface FileRouteTypes {
     | '/giay-phep'
     | '/gop-gach'
     | '/hong-hoc'
+    | '/inbox'
+    | '/kho-ho-so'
     | '/kiem-dinh'
     | '/kiem-ke'
     | '/nhan'
@@ -1353,6 +1405,7 @@ export interface FileRouteTypes {
     | '/phan-mem-ban-quyen'
     | '/phan-quyen'
     | '/sap-het-han'
+    | '/so-cong-van'
     | '/tai-lieu'
     | '/tep-tin'
     | '/thong-bao'
@@ -1406,6 +1459,7 @@ export interface FileRouteTypes {
     | '/danh-muc/thiet-bi'
     | '/danh-muc/vi-tri'
     | '/du-an/$id'
+    | '/du-an/viec-cua-toi'
     | '/he-thong/$id'
     | '/he-thong/cay'
     | '/he-thong/lien-ket'
@@ -1424,6 +1478,7 @@ export interface FileRouteTypes {
     | '/thiet-bi/danh-sach'
     | '/thong-ke/laptop'
     | '/tickets/$id'
+    | '/trinh-ky/da-ky'
     | '/admin/audit/lap-thao'
     | '/api/public/inventory-cron'
     | '/api/public/qa-reset-test-passwords'
@@ -1473,6 +1528,8 @@ export interface FileRouteTypes {
     | '/_app/giay-phep'
     | '/_app/gop-gach'
     | '/_app/hong-hoc'
+    | '/_app/inbox'
+    | '/_app/kho-ho-so'
     | '/_app/kiem-dinh'
     | '/_app/kiem-ke'
     | '/_app/messages'
@@ -1481,6 +1538,7 @@ export interface FileRouteTypes {
     | '/_app/phan-mem-ban-quyen'
     | '/_app/phan-quyen'
     | '/_app/sap-het-han'
+    | '/_app/so-cong-van'
     | '/_app/su-co'
     | '/_app/tai-lieu'
     | '/_app/tep-tin'
@@ -1539,6 +1597,7 @@ export interface FileRouteTypes {
     | '/_app/danh-muc/thiet-bi'
     | '/_app/danh-muc/vi-tri'
     | '/_app/du-an/$id'
+    | '/_app/du-an/viec-cua-toi'
     | '/_app/he-thong/$id'
     | '/_app/he-thong/cay'
     | '/_app/he-thong/lien-ket'
@@ -1557,6 +1616,7 @@ export interface FileRouteTypes {
     | '/_app/thiet-bi/danh-sach'
     | '/_app/thong-ke/laptop'
     | '/_app/tickets/$id'
+    | '/_app/trinh-ky/da-ky'
     | '/admin/audit/lap-thao'
     | '/api/public/inventory-cron'
     | '/api/public/qa-reset-test-passwords'
@@ -1841,6 +1901,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSuCoRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/so-cong-van': {
+      id: '/_app/so-cong-van'
+      path: '/so-cong-van'
+      fullPath: '/so-cong-van'
+      preLoaderRoute: typeof AppSoCongVanRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/sap-het-han': {
       id: '/_app/sap-het-han'
       path: '/sap-het-han'
@@ -1895,6 +1962,20 @@ declare module '@tanstack/react-router' {
       path: '/kiem-dinh'
       fullPath: '/kiem-dinh'
       preLoaderRoute: typeof AppKiemDinhRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/kho-ho-so': {
+      id: '/_app/kho-ho-so'
+      path: '/kho-ho-so'
+      fullPath: '/kho-ho-so'
+      preLoaderRoute: typeof AppKhoHoSoRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/inbox': {
+      id: '/_app/inbox'
+      path: '/inbox'
+      fullPath: '/inbox'
+      preLoaderRoute: typeof AppInboxRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/hong-hoc': {
@@ -2051,6 +2132,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAuditLapThaoRouteImport
       parentRoute: typeof AdminAuditRoute
     }
+    '/_app/trinh-ky/da-ky': {
+      id: '/_app/trinh-ky/da-ky'
+      path: '/trinh-ky/da-ky'
+      fullPath: '/trinh-ky/da-ky'
+      preLoaderRoute: typeof AppTrinhKyDaKyRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/tickets/$id': {
       id: '/_app/tickets/$id'
       path: '/$id'
@@ -2175,6 +2263,13 @@ declare module '@tanstack/react-router' {
       path: '/he-thong/$id'
       fullPath: '/he-thong/$id'
       preLoaderRoute: typeof AppHeThongIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/du-an/viec-cua-toi': {
+      id: '/_app/du-an/viec-cua-toi'
+      path: '/du-an/viec-cua-toi'
+      fullPath: '/du-an/viec-cua-toi'
+      preLoaderRoute: typeof AppDuAnViecCuaToiRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/du-an/$id': {
@@ -2739,6 +2834,8 @@ interface AppRouteChildren {
   AppGiayPhepRoute: typeof AppGiayPhepRoute
   AppGopGachRoute: typeof AppGopGachRoute
   AppHongHocRoute: typeof AppHongHocRouteWithChildren
+  AppInboxRoute: typeof AppInboxRoute
+  AppKhoHoSoRoute: typeof AppKhoHoSoRoute
   AppKiemDinhRoute: typeof AppKiemDinhRoute
   AppKiemKeRoute: typeof AppKiemKeRoute
   AppMessagesRoute: typeof AppMessagesRouteWithChildren
@@ -2747,6 +2844,7 @@ interface AppRouteChildren {
   AppPhanMemBanQuyenRoute: typeof AppPhanMemBanQuyenRouteWithChildren
   AppPhanQuyenRoute: typeof AppPhanQuyenRoute
   AppSapHetHanRoute: typeof AppSapHetHanRoute
+  AppSoCongVanRoute: typeof AppSoCongVanRoute
   AppSuCoRoute: typeof AppSuCoRouteWithChildren
   AppTaiLieuRoute: typeof AppTaiLieuRoute
   AppTepTinRoute: typeof AppTepTinRoute
@@ -2786,6 +2884,7 @@ interface AppRouteChildren {
   AppDanhMucThietBiRoute: typeof AppDanhMucThietBiRoute
   AppDanhMucViTriRoute: typeof AppDanhMucViTriRoute
   AppDuAnIdRoute: typeof AppDuAnIdRoute
+  AppDuAnViecCuaToiRoute: typeof AppDuAnViecCuaToiRoute
   AppHeThongIdRoute: typeof AppHeThongIdRouteWithChildren
   AppHeThongCayRoute: typeof AppHeThongCayRoute
   AppHeThongLienKetRoute: typeof AppHeThongLienKetRoute
@@ -2794,6 +2893,7 @@ interface AppRouteChildren {
   AppQuanTriNguoiDungRoute: typeof AppQuanTriNguoiDungRoute
   AppSoDoIdRoute: typeof AppSoDoIdRoute
   AppThongKeLaptopRoute: typeof AppThongKeLaptopRoute
+  AppTrinhKyDaKyRoute: typeof AppTrinhKyDaKyRoute
   AppDuAnIndexRoute: typeof AppDuAnIndexRoute
   AppSoDoIndexRoute: typeof AppSoDoIndexRoute
   AppTrinhKyIndexRoute: typeof AppTrinhKyIndexRoute
@@ -2808,6 +2908,8 @@ const AppRouteChildren: AppRouteChildren = {
   AppGiayPhepRoute: AppGiayPhepRoute,
   AppGopGachRoute: AppGopGachRoute,
   AppHongHocRoute: AppHongHocRouteWithChildren,
+  AppInboxRoute: AppInboxRoute,
+  AppKhoHoSoRoute: AppKhoHoSoRoute,
   AppKiemDinhRoute: AppKiemDinhRoute,
   AppKiemKeRoute: AppKiemKeRoute,
   AppMessagesRoute: AppMessagesRouteWithChildren,
@@ -2816,6 +2918,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppPhanMemBanQuyenRoute: AppPhanMemBanQuyenRouteWithChildren,
   AppPhanQuyenRoute: AppPhanQuyenRoute,
   AppSapHetHanRoute: AppSapHetHanRoute,
+  AppSoCongVanRoute: AppSoCongVanRoute,
   AppSuCoRoute: AppSuCoRouteWithChildren,
   AppTaiLieuRoute: AppTaiLieuRoute,
   AppTepTinRoute: AppTepTinRoute,
@@ -2855,6 +2958,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDanhMucThietBiRoute: AppDanhMucThietBiRoute,
   AppDanhMucViTriRoute: AppDanhMucViTriRoute,
   AppDuAnIdRoute: AppDuAnIdRoute,
+  AppDuAnViecCuaToiRoute: AppDuAnViecCuaToiRoute,
   AppHeThongIdRoute: AppHeThongIdRouteWithChildren,
   AppHeThongCayRoute: AppHeThongCayRoute,
   AppHeThongLienKetRoute: AppHeThongLienKetRoute,
@@ -2863,6 +2967,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppQuanTriNguoiDungRoute: AppQuanTriNguoiDungRoute,
   AppSoDoIdRoute: AppSoDoIdRoute,
   AppThongKeLaptopRoute: AppThongKeLaptopRoute,
+  AppTrinhKyDaKyRoute: AppTrinhKyDaKyRoute,
   AppDuAnIndexRoute: AppDuAnIndexRoute,
   AppSoDoIndexRoute: AppSoDoIndexRoute,
   AppTrinhKyIndexRoute: AppTrinhKyIndexRoute,
