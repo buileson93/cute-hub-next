@@ -7,7 +7,9 @@ import {
   DEFAULT_OVERVIEW_LAYOUT,
 } from "@/lib/mirats/dashboard/widget-registry";
 import { useUserPref } from "@/hooks/use-user-pref";
+import { moveWidget, sanitizeLayout } from "@/lib/mirats/dashboard/widget-layout";
 import { WidgetContainer } from "./WidgetContainer";
+
 import { VisualKpiChart } from "@/components/mirats/dashboard/VisualKpiChart";
 import { KpiCard } from "@/components/mirats/dashboard/KpiCard";
 import { StatusDonutChart } from "@/components/mirats/dashboard/StatusDonutChart";
@@ -82,7 +84,12 @@ export function DashboardGrid({ page, isEditing }: DashboardGridProps) {
   const navigate = useNavigate();
   const prefKey = `dashboard:layout:${page}`;
   const defaultLayout = page === "home" ? DEFAULT_HOME_LAYOUT : DEFAULT_OVERVIEW_LAYOUT;
-  const [layout, setLayout] = useUserPref<DashboardWidgetConfig[]>(prefKey, defaultLayout);
+  const [rawLayout, setLayout] = useUserPref<DashboardWidgetConfig[]>(prefKey, defaultLayout);
+  const layout = React.useMemo(
+    () => sanitizeLayout(rawLayout, defaultLayout),
+    [rawLayout, defaultLayout],
+  );
+
 
   const {
     reliabilityAvail: reliability,
