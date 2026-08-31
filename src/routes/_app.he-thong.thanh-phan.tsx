@@ -38,8 +38,6 @@ export const Route = createFileRoute("/_app/he-thong/thanh-phan")({
 
 function ThanhPhanListPage() {
   const nav = useNavigate();
-  const canManage = useCan(["he-thong", "admin"], "manage");
-  const [editMode, setEditMode] = useUserPref<boolean>("he-thong:edit-mode", false);
 
   const handleDisplayChange = (v: string) => {
     if (v === "table") return;
@@ -56,24 +54,8 @@ function ThanhPhanListPage() {
           { label: "Hệ thống", to: "/he-thong/cay" },
           { label: "Thành phần & Tài sản" },
         ]}
-        actions={
-          <div className="flex items-center gap-2">
-            {canManage && (
-              <AppTooltip noiDung={editMode ? "Hoàn tất" : "Chỉnh sửa nhanh"}>
-                <Button
-                  variant={editMode ? "default" : "outline"}
-                  size="icon"
-                  aria-label="Chỉnh sửa nhanh thành phần"
-                  className="h-8 w-8"
-                  onClick={() => setEditMode(!editMode)}
-                >
-                  {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
-                </Button>
-              </AppTooltip>
-            )}
-          </div>
-        }
       />
+
 
       <PageSection className="px-4 py-2 border-b bg-background/30 backdrop-blur-sm z-10 shrink-0">
         <Tabs value="table" onValueChange={handleDisplayChange}>
