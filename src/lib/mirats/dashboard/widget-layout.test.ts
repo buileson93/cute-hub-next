@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { moveWidget, sanitizeLayout } from "./widget-layout";
+import { filterLayoutByGroup, moveWidget, sanitizeLayout } from "./widget-layout";
 import { DEFAULT_HOME_LAYOUT } from "./widget-registry";
 
 describe("widget-layout", () => {
