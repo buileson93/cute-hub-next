@@ -417,10 +417,14 @@ function DuAnDetailPage() {
             >
               {duAn.trang_thai.replace("_", " ")}
             </Badge>
-            <Button size="sm" variant="outline" onClick={() => (() => {
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
                 setMembersLoadedOnce(true);
                 setOpenMembers(true);
-              })()}>
+              }}
+            >
               <UserIcon className="h-4 w-4 mr-2" aria-hidden="true" /> Thành viên
               {members && members.length > 0 && (
                 <span className="ml-1.5 text-xs text-muted-foreground tabular-nums">
