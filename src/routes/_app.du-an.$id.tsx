@@ -71,6 +71,7 @@ import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useLazySection } from "@/hooks/use-lazy-section";
 // Standard features
 import { DossierRegister } from "@/components/mirats/projects/dossier/DossierRegister";
 import { ProjectTimeline } from "@/components/mirats/projects/timeline/ProjectTimeline";
@@ -236,6 +237,11 @@ function DuAnDetailPage() {
       return data as DuAn | null;
     },
   });
+  // Sentinel: chỉ tải mốc + công việc khi khu vực công việc đi vào (gần) viewport.
+  const { ref: workSectionRef, hasIntersected: workVisible } = useLazySection<HTMLDivElement>({
+    rootMargin: "240px",
+  });
+
   const { data: mocs } = useQuery({
     queryKey: ["du-an-moc", id],
     queryFn: async () => {
@@ -247,8 +253,17 @@ function DuAnDetailPage() {
       if (error) throw error;
       return (data ?? []) as Moc[];
     },
+    enabled: !!id && workVisible,
+    staleTime: 60_000,
   });
-  const { data: congViecs } = useQuery({
+  const {
+    data: congViecs,
+    isLoading: loadingCV,
+    isError: errorCV,
+    error: cvError,
+    refetch: refetchCV,
+    isFetching: fetchingCV,
+  } = useQuery({
     queryKey: ["du-an-cv", id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -259,7 +274,11 @@ function DuAnDetailPage() {
       if (error) throw error;
       return (data ?? []) as CongViec[];
     },
+    enabled: !!id && workVisible,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
   });
+  const tasksReady = workVisible && !loadingCV && !errorCV;
 
   const userIds = useMemo(() => {
     const s = new Set<string>();
@@ -422,12 +441,14 @@ function DuAnDetailPage() {
         />
         <Stat
           label="Công việc"
-          value={`${metrics.completed}/${metrics.total} xong`}
+          value={tasksReady ? `${metrics.completed}/${metrics.total} xong` : "—"}
           icon={CalendarIcon}
         />
         <Stat
           label="Quá hạn"
-          value={metrics.overdue === 0 ? "Không có" : `${metrics.overdue} việc`}
+          value={
+            tasksReady ? (metrics.overdue === 0 ? "Không có" : `${metrics.overdue} việc`) : "—"
+          }
           icon={CalendarIcon}
         />
         <div className="min-w-[140px] flex-1 max-w-[200px]">
@@ -498,7 +519,51 @@ function DuAnDetailPage() {
           </div>
         </div>
 
-        <Tabs value={activeTab}>
+        <div ref={workSectionRef} aria-hidden="true" className="h-px -mt-px" />
+
+        {!workVisible || loadingCV ? (
+          <div
+            className="rounded-xl border border-border bg-card p-4 space-y-3"
+            aria-live="polite"
+            aria-busy="true"
+          >
+            <span className="sr-only">Đang tải danh sách công việc…</span>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="space-y-2">
+                  <div className="h-4 w-24 rounded bg-muted animate-pulse" />
+                  <div className="h-20 rounded-lg bg-muted/70 animate-pulse" />
+                  <div className="h-20 rounded-lg bg-muted/50 animate-pulse" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : errorCV ? (
+          <div
+            role="alert"
+            className="rounded-xl border border-destructive/40 bg-destructive/5 p-4 flex flex-wrap items-center justify-between gap-3"
+          >
+            <div className="text-sm text-foreground">
+              Không tải được danh sách công việc.
+              <span className="block text-xs text-muted-foreground">
+                {cvError instanceof Error ? cvError.message : "Lỗi không xác định"}
+              </span>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-9"
+              disabled={fetchingCV}
+              onClick={() => void refetchCV()}
+              aria-label="Thử tải lại danh sách công việc"
+            >
+              {fetchingCV ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              Thử lại
+            </Button>
+          </div>
+        ) : null}
+
+        <Tabs value={activeTab} className={!tasksReady ? "hidden" : undefined}>
           <TabsContent value="kanban" className="mt-0">
             <KanbanView
               mocs={mocs ?? []}
