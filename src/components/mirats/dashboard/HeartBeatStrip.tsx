@@ -21,6 +21,8 @@ export function HeartBeatStrip() {
 
   return (
     <div className="w-full bg-card/50 py-2 px-4 overflow-x-auto no-scrollbar">
+      <div className="flex items-center gap-2 min-w-max">
+
 
         <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mr-2">
           Hệ thống
