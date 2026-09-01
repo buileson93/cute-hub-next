@@ -72,10 +72,16 @@ export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
   const selectedEvent = events?.find((e) => e.id === selectedEventId);
 
   return (
-    <div className="flex h-full min-h-[500px] overflow-hidden border-none rounded-none bg-transparent shadow-none">
-      <div className="flex-1 flex flex-col min-w-0">
+    <div
+      className={cn(
+        // Scroll owner cục bộ: cao theo viewport khả dụng, không đẩy scroll ra toàn trang.
+        "flex flex-col md:flex-row overflow-hidden rounded-xl border border-border bg-card",
+        "h-[calc(100dvh-19rem)] min-h-[360px] max-h-[calc(100dvh-12rem)]",
+      )}
+    >
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
         {/* Toolbar */}
-        <div className="flex items-center justify-between p-3 border-b bg-muted/20 gap-3">
+        <div className="flex items-center justify-between p-2 border-b bg-muted/20 gap-2 shrink-0">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
@@ -83,6 +89,7 @@ export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
               className="pl-8 h-8 text-xs bg-background"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Tìm kiếm sự kiện dòng thời gian"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -90,15 +97,21 @@ export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
               <Filter className="h-3.5 w-3.5" /> Bộ lọc
             </Button>
             <Separator orientation="vertical" className="h-6" />
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" aria-label="Tuỳ chọn khác">
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </div>
         </div>
 
-        {/* Timeline Content */}
-        <ScrollArea className="flex-1">
-          <div className="p-6">
+        {/* Timeline Content — vùng cuộn duy nhất */}
+        <div
+          className="flex-1 min-h-0 overflow-y-auto overscroll-contain mirats-scroll"
+          tabIndex={0}
+          role="region"
+          aria-label="Danh sách sự kiện dòng thời gian"
+        >
+          <div className="p-3 sm:p-4">
+
             {isLoading ? (
               <TimelineLoading />
             ) : filteredEvents.length === 0 ? (
