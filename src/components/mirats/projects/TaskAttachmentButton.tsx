@@ -20,6 +20,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { supabase } from "@/integrations/backend/client";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useFileProcess } from "@/lib/mirats/upload/use-file-process";
+import { FileProcessList } from "@/components/mirats/upload/FileProcessBox";
 
 const BUCKET = "du-an-cong-viec";
 const MAX_BYTES = 50 * 1024 * 1024;
@@ -93,7 +95,6 @@ export function TaskAttachmentButton({
 }) {
   const qc = useQueryClient();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [busy, setBusy] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const { data: files, isLoading } = useQuery({
@@ -112,9 +113,11 @@ export function TaskAttachmentButton({
     staleTime: 30_000,
   });
 
-  const upload = useMutation({
-    mutationFn: async (file: File) => {
-      if (file.size > MAX_BYTES) throw new Error("Tệp vượt quá 50MB");
+  // Luồng xử lý tệp dùng chung: kiểm tra → nhận diện PDF scan → OCR trên
+  // thiết bị (nếu cần) → tải lên → xác nhận nhà cung cấp lưu trữ.
+  const process = useFileProcess({
+    rules: { maxBytes: MAX_BYTES },
+    upload: async (file) => {
       const path = buildAttachmentPath(taskId, file.name);
       const up = await supabase.storage.from(BUCKET).upload(path, file, { upsert: false });
       if (up.error) throw up.error;
@@ -131,13 +134,11 @@ export function TaskAttachmentButton({
         throw error;
       }
     },
-    onSuccess: () => {
+    onCompleted: () => {
       toast.success("Đã đính kèm tệp vào công việc");
       qc.invalidateQueries({ queryKey: ["du-an-cong-viec-tep", taskId] });
       qc.invalidateQueries({ queryKey: ["du-an-cong-viec-tep-counts"] });
     },
-    onError: (e: Error) => toast.error("Không tải được tệp: " + e.message),
-    onSettled: () => setBusy(false),
   });
 
   const remove = useMutation({
@@ -175,15 +176,16 @@ export function TaskAttachmentButton({
       <input
         ref={inputRef}
         type="file"
+        multiple
         className="sr-only"
         tabIndex={-1}
         aria-hidden="true"
         onChange={(e) => {
-          const file = e.target.files?.[0];
+          const files = Array.from(e.target.files ?? []);
           e.target.value = "";
-          if (!file) return;
-          setBusy(true);
-          upload.mutate(file);
+          if (files.length === 0) return;
+          setMenuOpen(true);
+          process.addFiles(files);
         }}
       />
 
@@ -195,10 +197,10 @@ export function TaskAttachmentButton({
               size="icon" aria-label={`Đính kèm tệp cho công việc ${taskName}`}
               variant="ghost"
               className="size-9 md:size-7 text-muted-foreground hover:text-foreground"
-              disabled={busy}
+              disabled={process.busy}
               onClick={() => inputRef.current?.click()}
             >
-              {busy ? (
+              {process.busy ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
               ) : (
                 <Paperclip className="h-3.5 w-3.5" aria-hidden="true" />
@@ -223,6 +225,16 @@ export function TaskAttachmentButton({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-72">
+            {process.items.length > 0 ? (
+              <div className="p-2">
+                <FileProcessList
+                  items={process.items}
+                  onRetry={process.retry}
+                  onCancel={process.cancel}
+                  onDismiss={process.dismiss}
+                />
+              </div>
+            ) : null}
             <DropdownMenuLabel className="text-xs">Tệp đính kèm</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {isLoading ? (
