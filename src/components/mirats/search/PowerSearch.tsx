@@ -258,16 +258,21 @@ export function PowerSearch({
   return (
     <>
       {!isControlled && (
-        <button
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          aria-label="Mở bảng lệnh, phím tắt Ctrl hoặc Command K"
+          aria-keyshortcuts="Meta+K Control+K"
           onClick={() => setIsOpen(true)}
-          className="flex items-center gap-2 rounded-lg border bg-muted/50 px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted"
+          className="gap-2 bg-muted/50 font-normal text-muted-foreground hover:bg-muted"
         >
-          <Search className="h-4 w-4" />
-          <span className="hidden sm:inline-block">Tìm kiếm...</span>
-          <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+          <Search className="h-4 w-4" aria-hidden="true" />
+          <span className="hidden sm:inline-block">Tìm kiếm hoặc gõ lệnh…</span>
+          <kbd className="pointer-events-none ml-1 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium sm:flex">
             <span className="text-xs">⌘</span>K
           </kbd>
-        </button>
+        </Button>
       )}
 
       <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
