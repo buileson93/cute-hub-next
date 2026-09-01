@@ -13,7 +13,6 @@ import {
   ClipboardCheck,
   FilePlus2,
   FolderKanban,
-  LifeBuoy,
   LogOut,
   Plus,
   QrCode,
@@ -195,14 +194,6 @@ const SYSTEM_COMMANDS: AppCommand[] = [
     group: "settings",
     icon: User,
     target: { kind: "navigate", to: "/cai-dat/tai-khoan" },
-  },
-  {
-    id: "help:tro-giup",
-    title: "Trung tâm trợ giúp",
-    keywords: ["tro giup", "help", "huong dan", "support"],
-    group: "help",
-    icon: LifeBuoy,
-    target: { kind: "navigate", to: "/tro-giup" },
   },
   {
     id: "system:logout",
