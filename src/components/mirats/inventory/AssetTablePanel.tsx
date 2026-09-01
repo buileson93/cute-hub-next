@@ -307,18 +307,38 @@ export function AssetTablePanel({
           hideBelow: "lg",
           value: (r) => `${r.model} ${r.serial}`,
           priority: "secondary",
-          cell: (r) => (
-            <div className="flex min-w-0 flex-col gap-0.5">
-              <ModelCell model={r.model} modelId={r.modelId || undefined} registry={modelRegistry} />
-              {r.serial ? (
-                <AppTooltip noiDung={`Serial: ${r.serial}`}>
-                  <span tabIndex={0} className="block truncate font-mono text-[11px] text-muted-foreground">
+          cell: (r) => {
+            // Popover chỉ chứa metadata BỔ SUNG — không lặp lại Model/Serial.
+            const meta = buildMetaItems(
+              [
+                { label: "Chủng loại", value: r.chungLoai },
+                { label: "Hãng SX", value: r.nhaSanXuat },
+                { label: "P/N", value: r.pN },
+                { label: "Mã Bravo", value: r.maTaiSanBravo },
+                { label: "Năm SX", value: r.namSanXuat },
+                { label: "Hạn bảo hành", value: r.hanBaoHanh },
+                { label: "Nhà cung cấp", value: r.nhaCungCap },
+              ],
+              [r.model, r.serial],
+            );
+            return (
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <div className="flex min-w-0 items-center gap-1">
+                  <ModelCell model={r.model} modelId={r.modelId || undefined} registry={modelRegistry} />
+                  <MetaPopover
+                    title="Thông tin bổ sung"
+                    items={meta}
+                    label={`Xem thông tin bổ sung của tài sản ${r.ma}`}
+                  />
+                </div>
+                {r.serial ? (
+                  <span className="block truncate font-mono text-[11px] text-muted-foreground">
                     {r.serial}
                   </span>
-                </AppTooltip>
-              ) : null}
-            </div>
-          ),
+                ) : null}
+              </div>
+            );
+          },
         },
         {
           key: "serial",
@@ -328,6 +348,27 @@ export function AssetTablePanel({
           defaultHidden: true,
           value: (r) => r.serial,
           cell: (r) => <span className="break-all font-mono text-xs text-muted-foreground">{r.serial || "—"}</span>,
+        },
+        {
+          key: "lienHe",
+          label: "Liên hệ",
+          minW: "min-w-[180px]",
+          cellClassName: "max-w-[240px]",
+          filter: "text",
+          hideBelow: "xl",
+          priority: "secondary",
+          value: (r) => formatContactsForExport(buildContacts(r)),
+          cell: (r) => <ContactCell contacts={buildContacts(r)} />,
+        },
+        {
+          key: "nhaCungCap",
+          label: "Nhà cung cấp",
+          minW: "min-w-[170px]",
+          cellClassName: "max-w-[220px]",
+          filter: "cat",
+          defaultHidden: true,
+          value: (r) => r.nhaCungCap,
+          cell: (r) => <TextCell value={r.nhaCungCap} />,
         },
         {
           key: "chungLoai",
