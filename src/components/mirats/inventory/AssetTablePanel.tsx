@@ -221,6 +221,22 @@ export function AssetTablePanel({
           </div>
         </div>
       }
+      toolbarRight={({ filteredRows }) => (
+        <AppTooltip noiDung="Xuất CSV: Model, Serial, Người liên hệ, Trạng thái bảo hành">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 gap-1.5 px-2 text-[11px] font-semibold"
+            disabled={loadingTsReal || filteredRows.length === 0}
+            aria-label="Xuất CSV danh sách thành phần & tài sản đang lọc"
+            onClick={() => xuatCsvTaiSan(filteredRows)}
+          >
+            <Download className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Xuất CSV</span>
+          </Button>
+        </AppTooltip>
+      )}
+
       columns={[
         {
           key: "ma",
