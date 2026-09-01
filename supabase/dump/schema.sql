@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict Xz15OlRiZNSAmhHOjii4DHEbHNH2li3q43ZZ1tngRRvKb3xoVh0c2ah56xtblS6
+\restrict Gc4M4QY5hMAJHvIwITrN5YXKac9OBMER6Hc6TWSTrIwi8hCYcOcfgp9DVft1uNE
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.9
@@ -11,12 +11,13 @@ SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET transaction_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
+SET client_encoding = 'SQL_ASCII';
+SET standard_conforming_strings = off;
 SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
+SET escape_string_warning = off;
 SET row_security = off;
 
 --
@@ -21880,9 +21881,7 @@ CREATE POLICY "Users can view and delete their own keys" ON public.api_keys FOR 
 -- Name: du_an_su_kien Users can view events for projects they have access to; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY "Users can view events for projects they have access to" ON public.du_an_su_kien FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
-   FROM public.du_an
-  WHERE (du_an.id = du_an_su_kien.du_an_id))));
+CREATE POLICY "Users can view events for projects they have access to" ON public.du_an_su_kien FOR SELECT TO authenticated USING (public.can_access_du_an(du_an_id, auth.uid()));
 
 
 --
@@ -25204,5 +25203,5 @@ CREATE POLICY wri_select_scope ON public.weekly_report_import FOR SELECT TO auth
 -- PostgreSQL database dump complete
 --
 
-\unrestrict Xz15OlRiZNSAmhHOjii4DHEbHNH2li3q43ZZ1tngRRvKb3xoVh0c2ah56xtblS6
+\unrestrict Gc4M4QY5hMAJHvIwITrN5YXKac9OBMER6Hc6TWSTrIwi8hCYcOcfgp9DVft1uNE
 
