@@ -25,7 +25,7 @@ export function InfoHint({
             type="button"
             aria-label="Hướng dẫn"
             className={cn(
-              "inline-flex shrink-0 items-center justify-center rounded-full p-1 text-primary transition-colors hover:bg-primary/10",
+              "inline-flex shrink-0 items-center justify-center rounded-full p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
               className,
             )}
           >
@@ -37,7 +37,7 @@ export function InfoHint({
           align={align}
           sideOffset={6}
           collisionPadding={12}
-          className="max-w-xs text-sm leading-relaxed"
+          className="max-w-xs text-xs leading-relaxed"
         >
           {children}
         </TooltipContent>
