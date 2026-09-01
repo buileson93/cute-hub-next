@@ -16,13 +16,13 @@ import { physKeyValue } from "@/lib/mirats/editable-columns";
 import { ThanhPhanManager } from "@/components/mirats/ThanhPhanManager";
 import { HeThongTruongEditor } from "@/components/mirats/HeThongTruongEditor";
 import { Save, Loader2, Trash2, FolderTree, Network, Plus, Cpu, RefreshCcw } from "lucide-react";
+import { Combobox, type ComboOption } from "@/components/mirats/Combobox";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  EntityFormHeader,
+  FormActionBar,
+  FormSection,
+  type EntityKind,
+} from "@/components/mirats/form/EntityFormKit";
 import { useCayMutations } from "./mutations";
 import { useCayContext } from "./CayContext";
 import { useSession } from "@/hooks/use-session";
