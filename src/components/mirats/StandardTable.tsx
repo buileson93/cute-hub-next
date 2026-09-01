@@ -396,6 +396,7 @@ export function StandardTable<T>({
   const clearAllFilters = useCallback(() => {
     setTextFilters({});
     setCatFilters({});
+    setGlobalQuery("");
   }, []);
 
   const toggleCat = useCallback((key: string, val: string) => {
@@ -404,7 +405,34 @@ export function StandardTable<T>({
       const set = new Set(next[key] || []);
       if (set.has(val)) set.delete(val);
       else set.add(val);
-      next[key] = set;
+      if (set.size === 0) delete next[key];
+      else next[key] = set;
+      return next;
+    });
+  }, []);
+
+  const selectOnlyCat = useCallback((key: string, val: string) => {
+    setCatFilters((prev) => ({ ...prev, [key]: new Set([val]) }));
+  }, []);
+
+  const setTextFilter = useCallback((key: string, val: string) => {
+    setTextFilters((prev) => {
+      const next = { ...prev };
+      if (!val) delete next[key];
+      else next[key] = val;
+      return next;
+    });
+  }, []);
+
+  const clearColumnFilter = useCallback((key: string) => {
+    setTextFilters((prev) => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+    setCatFilters((prev) => {
+      const next = { ...prev };
+      delete next[key];
       return next;
     });
   }, []);
@@ -416,6 +444,7 @@ export function StandardTable<T>({
       return next;
     });
   }, []);
+
 
   const renderToolbar = (
     toolbar: React.ReactNode | ((ctx: {
