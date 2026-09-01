@@ -1,5 +1,5 @@
-id,name,public,created_at
-dot-bao-duong,dot-bao-duong,f,2026-07-25 10:06:10.720797+00
-du-an-cong-van,du-an-cong-van,f,2026-07-29 07:36:45.726986+00
-du-an-cong-viec,du-an-cong-viec,f,2026-08-31 12:37:53.746845+00
-giay-phep-khai-thac,giay-phep-khai-thac,f,2026-07-25 02:10:09.991136+00
+id,name,owner,created_at,updated_at,public,avif_autodetection,file_size_limit,allowed_mime_types,owner_id,type,versioning_status
+giay-phep-khai-thac,giay-phep-khai-thac,,2026-07-25 02:10:09.991136+00,2026-07-25 02:10:09.991136+00,f,f,,,,STANDARD,DISABLED
+dot-bao-duong,dot-bao-duong,,2026-07-25 10:06:10.720797+00,2026-07-25 10:06:10.720797+00,f,f,,,,STANDARD,DISABLED
+du-an-cong-van,du-an-cong-van,,2026-07-29 07:36:45.726986+00,2026-07-29 07:36:45.726986+00,f,f,,,,STANDARD,DISABLED
+du-an-cong-viec,du-an-cong-viec,,2026-08-31 12:37:53.746845+00,2026-08-31 12:37:53.746845+00,f,f,50000000,,,STANDARD,DISABLED

@@ -1,410 +1,408 @@
-access_request	ar_admin_update	UPDATE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
-access_request	ar_owner_insert	INSERT	{authenticated}		(user_id = current_uid())
-access_request	ar_owner_read	SELECT	{authenticated}	((user_id = current_uid()) OR has_role(current_uid(), 'admin'::app_role))	
-ai_config	ai_config_admin_all	ALL	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
-ai_conversation	ai_conversation_owner_all	ALL	{authenticated}	((current_uid() = user_id) OR has_role(current_uid(), 'admin'::app_role))	(current_uid() = user_id)
-ai_message	ai_message_owner_all	ALL	{authenticated}	(EXISTS ( SELECT 1
+public	access_request	ar_admin_update	UPDATE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
+public	access_request	ar_owner_insert	INSERT	{authenticated}		(user_id = current_uid())
+public	access_request	ar_owner_read	SELECT	{authenticated}	((user_id = current_uid()) OR has_role(current_uid(), 'admin'::app_role))	
+public	ai_config	ai_config_admin_all	ALL	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
+public	ai_conversation	ai_conversation_owner_all	ALL	{authenticated}	((current_uid() = user_id) OR has_role(current_uid(), 'admin'::app_role))	(current_uid() = user_id)
+public	ai_message	ai_message_owner_all	ALL	{authenticated}	(EXISTS ( SELECT 1
    FROM ai_conversation c
   WHERE ((c.id = ai_message.conversation_id) AND ((c.user_id = current_uid()) OR has_role(current_uid(), 'admin'::app_role)))))	(EXISTS ( SELECT 1
    FROM ai_conversation c
   WHERE ((c.id = ai_message.conversation_id) AND (c.user_id = current_uid()))))
-anomaly_alert	an_admin_update	UPDATE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
-anomaly_alert	an_read	SELECT	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	
-api_audit_log	System can insert audit logs	INSERT	{authenticated}		true
-api_audit_log	Users can view their own API audit logs	SELECT	{authenticated}	(auth.uid() = user_id)	
-api_audit_log	Users can view their own audit logs	SELECT	{authenticated}	(auth.uid() = user_id)	
-api_key_project_scopes	Users can manage their own API key scopes	ALL	{authenticated}	(EXISTS ( SELECT 1
+public	anomaly_alert	an_admin_update	UPDATE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
+public	anomaly_alert	an_read	SELECT	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	
+public	api_audit_log	System can insert audit logs	INSERT	{authenticated}		true
+public	api_audit_log	Users can view their own API audit logs	SELECT	{authenticated}	(auth.uid() = user_id)	
+public	api_audit_log	Users can view their own audit logs	SELECT	{authenticated}	(auth.uid() = user_id)	
+public	api_key_project_scopes	Users can manage their own API key scopes	ALL	{authenticated}	(EXISTS ( SELECT 1
    FROM api_keys
   WHERE ((api_keys.id = api_key_project_scopes.api_key_id) AND (api_keys.user_id = auth.uid()))))	(EXISTS ( SELECT 1
    FROM api_keys
   WHERE ((api_keys.id = api_key_project_scopes.api_key_id) AND (api_keys.user_id = auth.uid()))))
-api_keys	Users can create their own keys	INSERT	{authenticated}		(auth.uid() = user_id)
-api_keys	Users can revoke their own keys	UPDATE	{authenticated}	(auth.uid() = user_id)	(auth.uid() = user_id)
-api_keys	Users can view and delete their own keys	SELECT	{authenticated}	(auth.uid() = user_id)	
-app_cai_dat	app_cai_dat_admin_delete	DELETE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
-app_cai_dat	app_cai_dat_admin_insert	INSERT	{authenticated}		has_role(current_uid(), 'admin'::app_role)
-app_cai_dat	app_cai_dat_admin_update	UPDATE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
-app_cai_dat	app_cai_dat_read_mgr	SELECT	{authenticated}	can_manage_equipment(current_uid())	
-audit_log	audit_admin_kt_select_all	SELECT	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	
-audit_log	audit_self_select	SELECT	{authenticated}	(user_id = current_uid())	
-audit_log	audit_system_insert	INSERT	{authenticated}		((user_id IS NULL) OR (user_id = current_uid()))
-auth_event_log	ae_read	SELECT	{authenticated}	((user_id = current_uid()) OR (target_user_id = current_uid()) OR has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	
-backup_lich_su	Admin ghi lịch sử backup	INSERT	{authenticated}		has_role(current_uid(), 'admin'::app_role)
-backup_lich_su	Admin sửa lịch sử backup	UPDATE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
-backup_lich_su	Admin xem lịch sử backup	SELECT	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
-backup_lich_su	Admin xoá lịch sử backup	DELETE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
-ban_giao	ban_giao_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((thiet_bi_id IS NOT NULL) AND can_view_thiet_bi(thiet_bi_id, current_uid()))))	
-ban_giao	ban_giao_write	ALL	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))
-bang_cot_tuy_chinh	Users manage their own column prefs	ALL	{authenticated}	(current_uid() = user_id)	(current_uid() = user_id)
-bao_cao_annotation	annotation_delete_owner_or_admin	DELETE	{authenticated}	((tao_boi = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))	
-bao_cao_annotation	annotation_insert_kt_admin	INSERT	{authenticated}		(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))
-bao_cao_annotation	annotation_select_scoped	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (tao_boi = auth.uid()) OR ((he_thong_id IS NOT NULL) AND (EXISTS ( SELECT 1
+public	api_keys	Users can create their own keys	INSERT	{authenticated}		(auth.uid() = user_id)
+public	api_keys	Users can revoke their own keys	UPDATE	{authenticated}	(auth.uid() = user_id)	(auth.uid() = user_id)
+public	api_keys	Users can view and delete their own keys	SELECT	{authenticated}	(auth.uid() = user_id)	
+public	app_cai_dat	app_cai_dat_admin_delete	DELETE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
+public	app_cai_dat	app_cai_dat_admin_insert	INSERT	{authenticated}		has_role(current_uid(), 'admin'::app_role)
+public	app_cai_dat	app_cai_dat_admin_update	UPDATE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
+public	app_cai_dat	app_cai_dat_read_mgr	SELECT	{authenticated}	can_manage_equipment(current_uid())	
+public	audit_log	audit_admin_kt_select_all	SELECT	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	
+public	audit_log	audit_self_select	SELECT	{authenticated}	(user_id = current_uid())	
+public	audit_log	audit_system_insert	INSERT	{authenticated}		((user_id IS NULL) OR (user_id = current_uid()))
+public	auth_event_log	ae_read	SELECT	{authenticated}	((user_id = current_uid()) OR (target_user_id = current_uid()) OR has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	
+public	backup_lich_su	Admin ghi lịch sử backup	INSERT	{authenticated}		has_role(current_uid(), 'admin'::app_role)
+public	backup_lich_su	Admin sửa lịch sử backup	UPDATE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
+public	backup_lich_su	Admin xem lịch sử backup	SELECT	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
+public	backup_lich_su	Admin xoá lịch sử backup	DELETE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
+public	ban_giao	ban_giao_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((thiet_bi_id IS NOT NULL) AND can_view_thiet_bi(thiet_bi_id, current_uid()))))	
+public	ban_giao	ban_giao_write	ALL	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))
+public	bang_cot_tuy_chinh	Users manage their own column prefs	ALL	{authenticated}	(current_uid() = user_id)	(current_uid() = user_id)
+public	bao_cao_annotation	annotation_delete_owner_or_admin	DELETE	{authenticated}	((tao_boi = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))	
+public	bao_cao_annotation	annotation_insert_kt_admin	INSERT	{authenticated}		(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))
+public	bao_cao_annotation	annotation_select_scoped	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (tao_boi = auth.uid()) OR ((he_thong_id IS NOT NULL) AND (EXISTS ( SELECT 1
    FROM thiet_bi tb
   WHERE ((tb.he_thong_id = bao_cao_annotation.he_thong_id) AND can_view_thiet_bi(tb.id, current_uid()))
  LIMIT 1)))))	
-bao_cao_annotation	annotation_update_owner_or_admin	UPDATE	{authenticated}	((tao_boi = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))	((tao_boi = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))
-bao_tri	bao_tri_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((thiet_bi_id IS NOT NULL) AND can_view_thiet_bi(thiet_bi_id, current_uid()))))	
-bao_tri	bao_tri_write	ALL	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))
-bao_tri_chinh_sach	bao_tri_chinh_sach_select	SELECT	{public}	is_active_user(current_uid())	
-bao_tri_chinh_sach	bao_tri_chinh_sach_write	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-canh_bao_het_han_log	canh_bao_log_read	SELECT	{authenticated}	can_manage_equipment(current_uid())	
-cay_node_edit	Managers can delete node edits	DELETE	{authenticated}	can_manage_equipment(current_uid())	
-cay_node_edit	Managers can insert node edits	INSERT	{authenticated}		can_manage_equipment(current_uid())
-cay_node_edit	Managers can update node edits	UPDATE	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-cay_node_edit	cay_node_edit_select	SELECT	{authenticated}	(can_manage_equipment(current_uid()) OR (created_by = current_uid()))	
-cay_thay_doi	admin update cay_thay_doi	UPDATE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
-cay_thay_doi	insert cay_thay_doi	INSERT	{authenticated}		(can_manage_equipment(current_uid()) AND (nguoi_tao = current_uid()))
-cay_thay_doi	read cay_thay_doi	SELECT	{authenticated}	(can_manage_equipment(current_uid()) OR (nguoi_tao = current_uid()))	
-change_request	cr_insert	INSERT	{authenticated}		((nguoi_tao = auth.uid()) AND (trang_thai = 'pending'::change_request_status) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role)))
-change_request	cr_no_delete	DELETE	{authenticated}	false	
-change_request	cr_select	SELECT	{authenticated}	((nguoi_tao = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))	
-change_request	cr_update	UPDATE	{authenticated}	((has_role(auth.uid(), 'admin'::app_role) AND (nguoi_tao <> auth.uid())) OR ((nguoi_tao = auth.uid()) AND (trang_thai = 'pending'::change_request_status)))	((has_role(auth.uid(), 'admin'::app_role) AND (nguoi_tao <> auth.uid())) OR ((nguoi_tao = auth.uid()) AND (trang_thai = ANY (ARRAY['pending'::change_request_status, 'cancelled'::change_request_status]))))
-chung_chi_thiet_bi	chung_chi_read	SELECT	{authenticated}	(can_manage_equipment(current_uid()) OR (EXISTS ( SELECT 1
+public	bao_cao_annotation	annotation_update_owner_or_admin	UPDATE	{authenticated}	((tao_boi = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))	((tao_boi = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))
+public	bao_tri	bao_tri_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((thiet_bi_id IS NOT NULL) AND can_view_thiet_bi(thiet_bi_id, current_uid()))))	
+public	bao_tri	bao_tri_write	ALL	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))
+public	bao_tri_chinh_sach	bao_tri_chinh_sach_select	SELECT	{public}	is_active_user(current_uid())	
+public	bao_tri_chinh_sach	bao_tri_chinh_sach_write	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	canh_bao_het_han_log	canh_bao_log_read	SELECT	{authenticated}	can_manage_equipment(current_uid())	
+public	cay_node_edit	Managers can delete node edits	DELETE	{authenticated}	can_manage_equipment(current_uid())	
+public	cay_node_edit	Managers can insert node edits	INSERT	{authenticated}		can_manage_equipment(current_uid())
+public	cay_node_edit	Managers can update node edits	UPDATE	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	cay_node_edit	cay_node_edit_select	SELECT	{authenticated}	(can_manage_equipment(current_uid()) OR (created_by = current_uid()))	
+public	cay_thay_doi	admin update cay_thay_doi	UPDATE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
+public	cay_thay_doi	insert cay_thay_doi	INSERT	{authenticated}		(can_manage_equipment(current_uid()) AND (nguoi_tao = current_uid()))
+public	cay_thay_doi	read cay_thay_doi	SELECT	{authenticated}	(can_manage_equipment(current_uid()) OR (nguoi_tao = current_uid()))	
+public	change_request	cr_insert	INSERT	{authenticated}		((nguoi_tao = auth.uid()) AND (trang_thai = 'pending'::change_request_status) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role)))
+public	change_request	cr_no_delete	DELETE	{authenticated}	false	
+public	change_request	cr_select	SELECT	{authenticated}	((nguoi_tao = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))	
+public	change_request	cr_update	UPDATE	{authenticated}	((has_role(auth.uid(), 'admin'::app_role) AND (nguoi_tao <> auth.uid())) OR ((nguoi_tao = auth.uid()) AND (trang_thai = 'pending'::change_request_status)))	((has_role(auth.uid(), 'admin'::app_role) AND (nguoi_tao <> auth.uid())) OR ((nguoi_tao = auth.uid()) AND (trang_thai = ANY (ARRAY['pending'::change_request_status, 'cancelled'::change_request_status]))))
+public	chung_chi_thiet_bi	chung_chi_read	SELECT	{authenticated}	(can_manage_equipment(current_uid()) OR (EXISTS ( SELECT 1
    FROM thiet_bi tb
   WHERE ((tb.id = chung_chi_thiet_bi.thiet_bi_id) AND (NOT (tb.don_vi_quan_ly_id IS DISTINCT FROM get_user_don_vi_id(current_uid())))))))	
-chung_chi_thiet_bi	chung_chi_write	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-cong_viec_bao_tri	cvbt_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((thiet_bi_id IS NOT NULL) AND can_view_thiet_bi(thiet_bi_id, current_uid())) OR ((don_vi_id_snapshot IS NOT NULL) AND (don_vi_id_snapshot = get_user_don_vi_id(current_uid())))))	
-cong_viec_bao_tri	cvbt_write	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-conversation_participant	cp_delete_own	DELETE	{authenticated}	(user_id = current_uid())	
-conversation_participant	cp_insert_self_or_creator	INSERT	{authenticated}		((user_id = current_uid()) OR (EXISTS ( SELECT 1
+public	chung_chi_thiet_bi	chung_chi_write	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	cong_viec_bao_tri	cvbt_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((thiet_bi_id IS NOT NULL) AND can_view_thiet_bi(thiet_bi_id, current_uid())) OR ((don_vi_id_snapshot IS NOT NULL) AND (don_vi_id_snapshot = get_user_don_vi_id(current_uid())))))	
+public	cong_viec_bao_tri	cvbt_write	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	conversation_participant	cp_delete_own	DELETE	{authenticated}	(user_id = current_uid())	
+public	conversation_participant	cp_insert_self_or_creator	INSERT	{authenticated}		((user_id = current_uid()) OR (EXISTS ( SELECT 1
    FROM conversations c
   WHERE ((c.id = conversation_participant.conversation_id) AND (c.created_by = current_uid())))))
-conversation_participant	cp_select_own_convs	SELECT	{authenticated}	((user_id = current_uid()) OR is_conv_participant(conversation_id, current_uid()))	
-conversation_participant	cp_update_own	UPDATE	{authenticated}	(user_id = current_uid())	
-conversations	conv_insert_self	INSERT	{authenticated}		(created_by = current_uid())
-conversations	conv_select_participant	SELECT	{authenticated}	((created_by = current_uid()) OR is_conv_participant(id, current_uid()))	
-conversations	conv_update_creator	UPDATE	{authenticated}	((created_by = current_uid()) OR is_conv_participant(id, current_uid()))	
-dinh_nghia_truong	dnt_read_mgr	SELECT	{authenticated}	can_manage_equipment(current_uid())	
-dinh_nghia_truong	dnt_write_admin	ALL	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
-dm_dac_tinh	dm_dac_tinh_read_active	SELECT	{public}	is_active_user(current_uid())	
-dm_dac_tinh	dm_dac_tinh_write_manager	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-dm_danh_gia_nien_han	nh_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
-dm_danh_gia_nien_han	nh_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-dm_don_vi	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
-dm_don_vi	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-dm_he_thong	dm_he_thong_read_scope	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (don_vi_id IS NULL) OR (don_vi_id = get_user_don_vi_id(current_uid()))))	
-dm_he_thong	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-dm_loai_ban_quyen	dm_loai_ban_quyen_read	SELECT	{authenticated}	is_active_user(current_uid())	
-dm_loai_ban_quyen	dm_loai_ban_quyen_write	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-dm_loai_giay_phep	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
-dm_loai_giay_phep	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-dm_loai_lien_ket	llk_lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
-dm_loai_lien_ket	llk_lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-dm_loai_thiet_bi	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
-dm_loai_thiet_bi	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-dm_model	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
-dm_model	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-dm_model_dac_tinh	dm_model_dac_tinh_read_active	SELECT	{public}	is_active_user(current_uid())	
-dm_model_dac_tinh	dm_model_dac_tinh_write_manager	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-dm_nha_cung_cap	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
-dm_nha_cung_cap	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-dm_nha_san_xuat	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
-dm_nha_san_xuat	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-dm_nhom_he_thong	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
-dm_nhom_he_thong	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-dm_noi_cap	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
-dm_noi_cap	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-dm_phan_loai	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
-dm_phan_loai	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-dm_to_chuc	to_chuc_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
-dm_to_chuc	to_chuc_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-dm_trang_thai_thiet_bi	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
-dm_trang_thai_thiet_bi	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-dm_vi_tri	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
-dm_vi_tri	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-dong_gop_diem	Users can see their scores	SELECT	{authenticated}	(user_id = auth.uid())	
-dossier_documents	dossier_documents_select	SELECT	{authenticated}	(EXISTS ( SELECT 1
+public	conversation_participant	cp_select_own_convs	SELECT	{authenticated}	((user_id = current_uid()) OR is_conv_participant(conversation_id, current_uid()))	
+public	conversation_participant	cp_update_own	UPDATE	{authenticated}	(user_id = current_uid())	
+public	conversations	conv_insert_self	INSERT	{authenticated}		(created_by = current_uid())
+public	conversations	conv_select_participant	SELECT	{authenticated}	((created_by = current_uid()) OR is_conv_participant(id, current_uid()))	
+public	conversations	conv_update_creator	UPDATE	{authenticated}	((created_by = current_uid()) OR is_conv_participant(id, current_uid()))	
+public	dinh_nghia_truong	dnt_read_mgr	SELECT	{authenticated}	can_manage_equipment(current_uid())	
+public	dinh_nghia_truong	dnt_write_admin	ALL	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
+public	dm_dac_tinh	dm_dac_tinh_read_active	SELECT	{public}	is_active_user(current_uid())	
+public	dm_dac_tinh	dm_dac_tinh_write_manager	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	dm_danh_gia_nien_han	nh_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	dm_danh_gia_nien_han	nh_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	dm_don_vi	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	dm_don_vi	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	dm_he_thong	dm_he_thong_read_scope	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (don_vi_id IS NULL) OR (don_vi_id = get_user_don_vi_id(current_uid()))))	
+public	dm_he_thong	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	dm_loai_ban_quyen	dm_loai_ban_quyen_read	SELECT	{authenticated}	is_active_user(current_uid())	
+public	dm_loai_ban_quyen	dm_loai_ban_quyen_write	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	dm_loai_giay_phep	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	dm_loai_giay_phep	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	dm_loai_lien_ket	llk_lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	dm_loai_lien_ket	llk_lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	dm_loai_thiet_bi	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	dm_loai_thiet_bi	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	dm_model	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	dm_model	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	dm_model_dac_tinh	dm_model_dac_tinh_read_active	SELECT	{public}	is_active_user(current_uid())	
+public	dm_model_dac_tinh	dm_model_dac_tinh_write_manager	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	dm_nha_cung_cap	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	dm_nha_cung_cap	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	dm_nha_san_xuat	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	dm_nha_san_xuat	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	dm_nhom_he_thong	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	dm_nhom_he_thong	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	dm_noi_cap	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	dm_noi_cap	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	dm_phan_loai	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	dm_phan_loai	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	dm_to_chuc	to_chuc_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	dm_to_chuc	to_chuc_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	dm_trang_thai_thiet_bi	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	dm_trang_thai_thiet_bi	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	dm_vi_tri	lookup_read_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	dm_vi_tri	lookup_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	dong_gop_diem	Users can see their scores	SELECT	{authenticated}	(user_id = auth.uid())	
+public	dossier_documents	dossier_documents_select	SELECT	{authenticated}	(EXISTS ( SELECT 1
    FROM project_dossiers d
   WHERE ((d.id = dossier_documents.dossier_id) AND can_access_du_an(d.project_id, current_uid()))))	
-dossier_documents	dossier_documents_write	ALL	{authenticated}	(EXISTS ( SELECT 1
+public	dossier_documents	dossier_documents_write	ALL	{authenticated}	(EXISTS ( SELECT 1
    FROM project_dossiers d
   WHERE ((d.id = dossier_documents.dossier_id) AND can_manage_du_an(d.project_id, current_uid()))))	(EXISTS ( SELECT 1
    FROM project_dossiers d
   WHERE ((d.id = dossier_documents.dossier_id) AND can_manage_du_an(d.project_id, current_uid()))))
-dot_bao_duong	dbd_read	SELECT	{authenticated}	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (EXISTS ( SELECT 1
+public	dot_bao_duong	dbd_read	SELECT	{authenticated}	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (EXISTS ( SELECT 1
    FROM dot_bao_duong_hang_muc h
   WHERE ((h.dot_id = dot_bao_duong.id) AND (h.don_vi_id = get_user_don_vi_id(auth.uid()))))))	
-dot_bao_duong	dot_bd_write_kt	ALL	{authenticated}	((has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role)) AND ((trang_thai <> 'dong'::dot_bao_duong_trang_thai) OR has_role(auth.uid(), 'admin'::app_role)))	((has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role)) AND ((trang_thai <> 'dong'::dot_bao_duong_trang_thai) OR has_role(auth.uid(), 'admin'::app_role)))
-dot_bao_duong_audit_log	dbd_audit_insert	INSERT	{authenticated}		((actor = auth.uid()) AND (EXISTS ( SELECT 1
+public	dot_bao_duong	dot_bd_write_kt	ALL	{authenticated}	((has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role)) AND ((trang_thai <> 'dong'::dot_bao_duong_trang_thai) OR has_role(auth.uid(), 'admin'::app_role)))	((has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role)) AND ((trang_thai <> 'dong'::dot_bao_duong_trang_thai) OR has_role(auth.uid(), 'admin'::app_role)))
+public	dot_bao_duong_audit_log	dbd_audit_insert	INSERT	{authenticated}		((actor = auth.uid()) AND (EXISTS ( SELECT 1
    FROM dot_bao_duong_hang_muc h
   WHERE ((h.id = dot_bao_duong_audit_log.hang_muc_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (h.don_vi_id = get_user_don_vi_id(auth.uid())) OR (dot_bao_duong_audit_log.don_vi_id = get_user_don_vi_id(auth.uid())))))))
-dot_bao_duong_audit_log	dbd_audit_select	SELECT	{authenticated}	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (don_vi_id = get_user_don_vi_id(auth.uid())))	
-dot_bao_duong_bien_ban	dbd_bb_all	ALL	{authenticated}	(EXISTS ( SELECT 1
+public	dot_bao_duong_audit_log	dbd_audit_select	SELECT	{authenticated}	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (don_vi_id = get_user_don_vi_id(auth.uid())))	
+public	dot_bao_duong_bien_ban	dbd_bb_all	ALL	{authenticated}	(EXISTS ( SELECT 1
    FROM dot_bao_duong_hang_muc h
   WHERE ((h.id = dot_bao_duong_bien_ban.hang_muc_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (h.don_vi_id = get_user_don_vi_id(auth.uid()))))))	(EXISTS ( SELECT 1
    FROM dot_bao_duong_hang_muc h
   WHERE ((h.id = dot_bao_duong_bien_ban.hang_muc_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (h.don_vi_id = get_user_don_vi_id(auth.uid()))))))
-dot_bao_duong_han	dbd_han_read	SELECT	{authenticated}	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))	
-dot_bao_duong_han	dbd_han_write_kt	ALL	{authenticated}	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))
-dot_bao_duong_hang_muc	dbd_hm_read	SELECT	{authenticated}	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (don_vi_id = get_user_don_vi_id(auth.uid())))	
-dot_bao_duong_hang_muc	dbd_hm_write_dv	ALL	{authenticated}	((don_vi_id = get_user_don_vi_id(auth.uid())) AND (duyet_trang_thai <> 'da_duyet'::text) AND (EXISTS ( SELECT 1
+public	dot_bao_duong_han	dbd_han_read	SELECT	{authenticated}	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))	
+public	dot_bao_duong_han	dbd_han_write_kt	ALL	{authenticated}	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))
+public	dot_bao_duong_hang_muc	dbd_hm_read	SELECT	{authenticated}	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (don_vi_id = get_user_don_vi_id(auth.uid())))	
+public	dot_bao_duong_hang_muc	dbd_hm_write_dv	ALL	{authenticated}	((don_vi_id = get_user_don_vi_id(auth.uid())) AND (duyet_trang_thai <> 'da_duyet'::text) AND (EXISTS ( SELECT 1
    FROM dot_bao_duong d
   WHERE ((d.id = dot_bao_duong_hang_muc.dot_id) AND (d.trang_thai <> ALL (ARRAY['dong'::dot_bao_duong_trang_thai, 'huy'::dot_bao_duong_trang_thai]))))))	((don_vi_id = get_user_don_vi_id(auth.uid())) AND (duyet_trang_thai <> 'da_duyet'::text) AND (EXISTS ( SELECT 1
    FROM dot_bao_duong d
   WHERE ((d.id = dot_bao_duong_hang_muc.dot_id) AND (d.trang_thai <> ALL (ARRAY['dong'::dot_bao_duong_trang_thai, 'huy'::dot_bao_duong_trang_thai]))))))
-dot_bao_duong_hang_muc	dbd_hm_write_kt	ALL	{authenticated}	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))
-dot_bao_duong_su_co	dbd_sc_all	ALL	{authenticated}	(EXISTS ( SELECT 1
+public	dot_bao_duong_hang_muc	dbd_hm_write_kt	ALL	{authenticated}	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role))
+public	dot_bao_duong_su_co	dbd_sc_all	ALL	{authenticated}	(EXISTS ( SELECT 1
    FROM dot_bao_duong_hang_muc h
   WHERE ((h.id = dot_bao_duong_su_co.hang_muc_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (h.don_vi_id = get_user_don_vi_id(auth.uid()))))))	(EXISTS ( SELECT 1
    FROM dot_bao_duong_hang_muc h
   WHERE ((h.id = dot_bao_duong_su_co.hang_muc_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (h.don_vi_id = get_user_don_vi_id(auth.uid()))))))
-dot_bao_duong_tep	dbd_tep_all	ALL	{authenticated}	(EXISTS ( SELECT 1
+public	dot_bao_duong_tep	dbd_tep_all	ALL	{authenticated}	(EXISTS ( SELECT 1
    FROM dot_bao_duong_hang_muc h
   WHERE ((h.id = dot_bao_duong_tep.hang_muc_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (h.don_vi_id = get_user_don_vi_id(auth.uid()))))))	(EXISTS ( SELECT 1
    FROM dot_bao_duong_hang_muc h
   WHERE ((h.id = dot_bao_duong_tep.hang_muc_id) AND (has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (h.don_vi_id = get_user_don_vi_id(auth.uid()))))))
-du_an	du_an_delete	DELETE	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR (nguoi_tao_id = current_uid()))	
-du_an	du_an_insert	INSERT	{authenticated}		((has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'quan_ly_du_an'::app_role)) AND (nguoi_tao_id = current_uid()))
-du_an	du_an_select	SELECT	{authenticated}	can_access_du_an(id, current_uid())	
-du_an	du_an_update	UPDATE	{authenticated}	can_manage_du_an(id, current_uid())	can_manage_du_an(id, current_uid())
-du_an_bao_cao	du_an_bao_cao_delete	DELETE	{authenticated}	(can_manage_du_an(du_an_id, current_uid()) OR ((nguoi_nop_id = current_uid()) AND (trang_thai = 'cho_duyet'::bao_cao_trang_thai)))	
-du_an_bao_cao	du_an_bao_cao_insert	INSERT	{authenticated}		(can_access_du_an(du_an_id, current_uid()) AND (nguoi_nop_id = current_uid()))
-du_an_bao_cao	du_an_bao_cao_select	SELECT	{authenticated}	can_access_du_an(du_an_id, current_uid())	
-du_an_bao_cao	du_an_bao_cao_update	UPDATE	{authenticated}	(can_manage_du_an(du_an_id, current_uid()) OR ((nguoi_nop_id = current_uid()) AND (trang_thai = ANY (ARRAY['cho_duyet'::bao_cao_trang_thai, 'yeu_cau_sua'::bao_cao_trang_thai]))))	
-du_an_cong_van	dacv_select	SELECT	{authenticated}	can_access_du_an(du_an_id, current_uid())	
-du_an_cong_van	dacv_write	ALL	{authenticated}	can_manage_du_an(du_an_id, current_uid())	can_manage_du_an(du_an_id, current_uid())
-du_an_cong_van_lien_ket	dacvlk_select	SELECT	{authenticated}	(EXISTS ( SELECT 1
+public	du_an	du_an_delete	DELETE	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR (nguoi_tao_id = current_uid()))	
+public	du_an	du_an_insert	INSERT	{authenticated}		((has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'quan_ly_du_an'::app_role)) AND (nguoi_tao_id = current_uid()))
+public	du_an	du_an_select	SELECT	{authenticated}	can_access_du_an(id, current_uid())	
+public	du_an	du_an_update	UPDATE	{authenticated}	can_manage_du_an(id, current_uid())	can_manage_du_an(id, current_uid())
+public	du_an_bao_cao	du_an_bao_cao_delete	DELETE	{authenticated}	(can_manage_du_an(du_an_id, current_uid()) OR ((nguoi_nop_id = current_uid()) AND (trang_thai = 'cho_duyet'::bao_cao_trang_thai)))	
+public	du_an_bao_cao	du_an_bao_cao_insert	INSERT	{authenticated}		(can_access_du_an(du_an_id, current_uid()) AND (nguoi_nop_id = current_uid()))
+public	du_an_bao_cao	du_an_bao_cao_select	SELECT	{authenticated}	can_access_du_an(du_an_id, current_uid())	
+public	du_an_bao_cao	du_an_bao_cao_update	UPDATE	{authenticated}	(can_manage_du_an(du_an_id, current_uid()) OR ((nguoi_nop_id = current_uid()) AND (trang_thai = ANY (ARRAY['cho_duyet'::bao_cao_trang_thai, 'yeu_cau_sua'::bao_cao_trang_thai]))))	
+public	du_an_cong_van	dacv_select	SELECT	{authenticated}	can_access_du_an(du_an_id, current_uid())	
+public	du_an_cong_van	dacv_write	ALL	{authenticated}	can_manage_du_an(du_an_id, current_uid())	can_manage_du_an(du_an_id, current_uid())
+public	du_an_cong_van_lien_ket	dacvlk_select	SELECT	{authenticated}	(EXISTS ( SELECT 1
    FROM du_an_cong_van cv
   WHERE ((cv.id = du_an_cong_van_lien_ket.tu_id) AND can_access_du_an(cv.du_an_id, current_uid()))))	
-du_an_cong_van_lien_ket	dacvlk_write	ALL	{authenticated}	(EXISTS ( SELECT 1
+public	du_an_cong_van_lien_ket	dacvlk_write	ALL	{authenticated}	(EXISTS ( SELECT 1
    FROM du_an_cong_van cv
   WHERE ((cv.id = du_an_cong_van_lien_ket.tu_id) AND can_manage_du_an(cv.du_an_id, current_uid()))))	(EXISTS ( SELECT 1
    FROM du_an_cong_van cv
   WHERE ((cv.id = du_an_cong_van_lien_ket.tu_id) AND can_manage_du_an(cv.du_an_id, current_uid()))))
-du_an_cong_van_tep	dacvt_select	SELECT	{authenticated}	(EXISTS ( SELECT 1
+public	du_an_cong_van_tep	dacvt_select	SELECT	{authenticated}	(EXISTS ( SELECT 1
    FROM du_an_cong_van cv
   WHERE ((cv.id = du_an_cong_van_tep.cong_van_id) AND can_access_du_an(cv.du_an_id, current_uid()))))	
-du_an_cong_van_tep	dacvt_write	ALL	{authenticated}	(EXISTS ( SELECT 1
+public	du_an_cong_van_tep	dacvt_write	ALL	{authenticated}	(EXISTS ( SELECT 1
    FROM du_an_cong_van cv
   WHERE ((cv.id = du_an_cong_van_tep.cong_van_id) AND can_manage_du_an(cv.du_an_id, current_uid()))))	(EXISTS ( SELECT 1
    FROM du_an_cong_van cv
   WHERE ((cv.id = du_an_cong_van_tep.cong_van_id) AND can_manage_du_an(cv.du_an_id, current_uid()))))
-du_an_cong_viec	cv_delete	DELETE	{authenticated}	(can_manage_du_an(du_an_id, current_uid()) OR (created_by = current_uid()))	
-du_an_cong_viec	cv_insert	INSERT	{authenticated}		(can_manage_du_an(du_an_id, current_uid()) OR has_role(current_uid(), 'to_truong'::app_role) OR has_role(current_uid(), 'quan_ly_du_an'::app_role))
-du_an_cong_viec	cv_select	SELECT	{authenticated}	can_access_du_an(du_an_id, current_uid())	
-du_an_cong_viec	cv_update	UPDATE	{authenticated}	can_edit_cong_viec(id, current_uid())	can_edit_cong_viec(id, current_uid())
-du_an_cong_viec_binh_luan	dacv_binh_luan_delete	DELETE	{authenticated}	((user_id = auth.uid()) OR (EXISTS ( SELECT 1
+public	du_an_cong_viec	cv_delete	DELETE	{authenticated}	(can_manage_du_an(du_an_id, current_uid()) OR (created_by = current_uid()))	
+public	du_an_cong_viec	cv_insert	INSERT	{authenticated}		(can_manage_du_an(du_an_id, current_uid()) OR has_role(current_uid(), 'to_truong'::app_role) OR has_role(current_uid(), 'quan_ly_du_an'::app_role))
+public	du_an_cong_viec	cv_select	SELECT	{authenticated}	can_access_du_an(du_an_id, current_uid())	
+public	du_an_cong_viec	cv_update	UPDATE	{authenticated}	can_edit_cong_viec(id, current_uid())	can_edit_cong_viec(id, current_uid())
+public	du_an_cong_viec_binh_luan	dacv_binh_luan_delete	DELETE	{authenticated}	((user_id = auth.uid()) OR (EXISTS ( SELECT 1
    FROM du_an_cong_viec c
   WHERE ((c.id = du_an_cong_viec_binh_luan.cong_viec_id) AND can_manage_du_an(c.du_an_id, auth.uid())))))	
-du_an_cong_viec_binh_luan	dacv_binh_luan_insert	INSERT	{authenticated}		((user_id = auth.uid()) AND (EXISTS ( SELECT 1
+public	du_an_cong_viec_binh_luan	dacv_binh_luan_insert	INSERT	{authenticated}		((user_id = auth.uid()) AND (EXISTS ( SELECT 1
    FROM du_an_cong_viec c
   WHERE ((c.id = du_an_cong_viec_binh_luan.cong_viec_id) AND can_access_du_an(c.du_an_id, auth.uid())))))
-du_an_cong_viec_binh_luan	dacv_binh_luan_select	SELECT	{authenticated}	(EXISTS ( SELECT 1
+public	du_an_cong_viec_binh_luan	dacv_binh_luan_select	SELECT	{authenticated}	(EXISTS ( SELECT 1
    FROM du_an_cong_viec c
   WHERE ((c.id = du_an_cong_viec_binh_luan.cong_viec_id) AND can_access_du_an(c.du_an_id, auth.uid()))))	
-du_an_cong_viec_binh_luan	dacv_binh_luan_update_own	UPDATE	{authenticated}	(user_id = auth.uid())	(user_id = auth.uid())
-du_an_cong_viec_checklist	dacv_checklist_select	SELECT	{authenticated}	(EXISTS ( SELECT 1
+public	du_an_cong_viec_binh_luan	dacv_binh_luan_update_own	UPDATE	{authenticated}	(user_id = auth.uid())	(user_id = auth.uid())
+public	du_an_cong_viec_checklist	dacv_checklist_select	SELECT	{authenticated}	(EXISTS ( SELECT 1
    FROM du_an_cong_viec c
   WHERE ((c.id = du_an_cong_viec_checklist.cong_viec_id) AND can_access_du_an(c.du_an_id, auth.uid()))))	
-du_an_cong_viec_checklist	dacv_checklist_write	ALL	{authenticated}	can_edit_cong_viec(cong_viec_id, auth.uid())	can_edit_cong_viec(cong_viec_id, auth.uid())
-du_an_cong_viec_phoi_hop	phoi_hop_delete	DELETE	{authenticated}	can_edit_cong_viec(cong_viec_id, current_uid())	
-du_an_cong_viec_phoi_hop	phoi_hop_insert	INSERT	{authenticated}		can_edit_cong_viec(cong_viec_id, current_uid())
-du_an_cong_viec_phoi_hop	phoi_hop_select	SELECT	{authenticated}	((user_id = current_uid()) OR (EXISTS ( SELECT 1
+public	du_an_cong_viec_checklist	dacv_checklist_write	ALL	{authenticated}	can_edit_cong_viec(cong_viec_id, auth.uid())	can_edit_cong_viec(cong_viec_id, auth.uid())
+public	du_an_cong_viec_phoi_hop	phoi_hop_delete	DELETE	{authenticated}	can_edit_cong_viec(cong_viec_id, current_uid())	
+public	du_an_cong_viec_phoi_hop	phoi_hop_insert	INSERT	{authenticated}		can_edit_cong_viec(cong_viec_id, current_uid())
+public	du_an_cong_viec_phoi_hop	phoi_hop_select	SELECT	{authenticated}	((user_id = current_uid()) OR (EXISTS ( SELECT 1
    FROM du_an_cong_viec c
   WHERE ((c.id = du_an_cong_viec_phoi_hop.cong_viec_id) AND can_access_du_an(c.du_an_id, current_uid())))))	
-du_an_cong_viec_tep	dacvt_cv_select	SELECT	{authenticated}	(EXISTS ( SELECT 1
+public	du_an_cong_viec_tep	dacvt_cv_select	SELECT	{authenticated}	(EXISTS ( SELECT 1
    FROM du_an_cong_viec cv
   WHERE ((cv.id = du_an_cong_viec_tep.cong_viec_id) AND can_access_du_an(cv.du_an_id, current_uid()))))	
-du_an_cong_viec_tep	dacvt_cv_write	ALL	{authenticated}	(EXISTS ( SELECT 1
+public	du_an_cong_viec_tep	dacvt_cv_write	ALL	{authenticated}	(EXISTS ( SELECT 1
    FROM du_an_cong_viec cv
   WHERE ((cv.id = du_an_cong_viec_tep.cong_viec_id) AND (can_manage_du_an(cv.du_an_id, current_uid()) OR can_edit_cong_viec(cv.id, current_uid())))))	(EXISTS ( SELECT 1
    FROM du_an_cong_viec cv
   WHERE ((cv.id = du_an_cong_viec_tep.cong_viec_id) AND (can_manage_du_an(cv.du_an_id, current_uid()) OR can_edit_cong_viec(cv.id, current_uid())))))
-du_an_moc	moc_delete	DELETE	{authenticated}	can_manage_du_an(du_an_id, current_uid())	
-du_an_moc	moc_insert	INSERT	{authenticated}		can_manage_du_an(du_an_id, current_uid())
-du_an_moc	moc_select	SELECT	{authenticated}	can_access_du_an(du_an_id, current_uid())	
-du_an_moc	moc_update	UPDATE	{authenticated}	can_manage_du_an(du_an_id, current_uid())	can_manage_du_an(du_an_id, current_uid())
-du_an_su_kien	Users can insert events	INSERT	{authenticated}		true
-du_an_su_kien	Users can view events for projects they have access to	SELECT	{authenticated}	(EXISTS ( SELECT 1
-   FROM du_an
-  WHERE (du_an.id = du_an_su_kien.du_an_id)))	
-du_an_thanh_vien	du_an_thanh_vien_select	SELECT	{authenticated}	can_access_du_an(du_an_id, auth.uid())	
-du_an_thanh_vien	du_an_thanh_vien_write	ALL	{authenticated}	can_manage_du_an(du_an_id, auth.uid())	can_manage_du_an(du_an_id, auth.uid())
-feature_usage_log	fu_owner_read	SELECT	{authenticated}	((user_id = current_uid()) OR has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	
-field_set	admin manage field_set	ALL	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
-field_set	read field_set	SELECT	{authenticated}	is_active_user(current_uid())	
-field_set_item	admin manage field_set_item	ALL	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
-field_set_item	read field_set_item	SELECT	{authenticated}	is_active_user(current_uid())	
-form_check_item	form_check_item_manage_kt	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-form_check_item	form_check_item_select_active	SELECT	{authenticated}	is_active_user(current_uid())	
-form_field	form_field_manage_kt	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-form_field	form_field_select_active	SELECT	{authenticated}	is_active_user(current_uid())	
-form_section	form_section_manage_kt	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-form_section	form_section_select_active	SELECT	{authenticated}	is_active_user(current_uid())	
-form_sign_otp	otp_own_insert	INSERT	{authenticated}		(auth.uid() = user_id)
-form_sign_otp	otp_own_select	SELECT	{authenticated}	(auth.uid() = user_id)	
-form_sign_otp	otp_own_update	UPDATE	{authenticated}	(auth.uid() = user_id)	(auth.uid() = user_id)
-form_submission	form_submission_delete_own_draft	DELETE	{authenticated}	(((created_by = current_uid()) AND (status = 'draft'::form_submission_status)) OR has_role(current_uid(), 'admin'::app_role))	
-form_submission	form_submission_insert_own	INSERT	{authenticated}		(is_active_user(current_uid()) AND (created_by = current_uid()))
-form_submission	form_submission_select_scope	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (created_by = current_uid()) OR ((status <> 'draft'::form_submission_status) AND (don_vi_id IS NOT NULL) AND (don_vi_id = get_user_don_vi_id(current_uid())))))	
-form_submission	form_submission_update_kt	UPDATE	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-form_submission	form_submission_update_own_draft	UPDATE	{authenticated}	((created_by = current_uid()) AND (status = ANY (ARRAY['draft'::form_submission_status, 'returned'::form_submission_status])))	((created_by = current_uid()) AND (status = ANY (ARRAY['draft'::form_submission_status, 'submitted'::form_submission_status, 'returned'::form_submission_status])))
-form_submission_item_result	fsir_select_scope	SELECT	{authenticated}	(EXISTS ( SELECT 1
+public	du_an_moc	moc_delete	DELETE	{authenticated}	can_manage_du_an(du_an_id, current_uid())	
+public	du_an_moc	moc_insert	INSERT	{authenticated}		can_manage_du_an(du_an_id, current_uid())
+public	du_an_moc	moc_select	SELECT	{authenticated}	can_access_du_an(du_an_id, current_uid())	
+public	du_an_moc	moc_update	UPDATE	{authenticated}	can_manage_du_an(du_an_id, current_uid())	can_manage_du_an(du_an_id, current_uid())
+public	du_an_su_kien	Users can insert events	INSERT	{authenticated}		true
+public	du_an_su_kien	Users can view events for projects they have access to	SELECT	{authenticated}	can_access_du_an(du_an_id, auth.uid())	
+public	du_an_thanh_vien	du_an_thanh_vien_select	SELECT	{authenticated}	can_access_du_an(du_an_id, auth.uid())	
+public	du_an_thanh_vien	du_an_thanh_vien_write	ALL	{authenticated}	can_manage_du_an(du_an_id, auth.uid())	can_manage_du_an(du_an_id, auth.uid())
+public	feature_usage_log	fu_owner_read	SELECT	{authenticated}	((user_id = current_uid()) OR has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	
+public	field_set	admin manage field_set	ALL	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
+public	field_set	read field_set	SELECT	{authenticated}	is_active_user(current_uid())	
+public	field_set_item	admin manage field_set_item	ALL	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
+public	field_set_item	read field_set_item	SELECT	{authenticated}	is_active_user(current_uid())	
+public	form_check_item	form_check_item_manage_kt	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	form_check_item	form_check_item_select_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	form_field	form_field_manage_kt	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	form_field	form_field_select_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	form_section	form_section_manage_kt	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	form_section	form_section_select_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	form_sign_otp	otp_own_insert	INSERT	{authenticated}		(auth.uid() = user_id)
+public	form_sign_otp	otp_own_select	SELECT	{authenticated}	(auth.uid() = user_id)	
+public	form_sign_otp	otp_own_update	UPDATE	{authenticated}	(auth.uid() = user_id)	(auth.uid() = user_id)
+public	form_submission	form_submission_delete_own_draft	DELETE	{authenticated}	(((created_by = current_uid()) AND (status = 'draft'::form_submission_status)) OR has_role(current_uid(), 'admin'::app_role))	
+public	form_submission	form_submission_insert_own	INSERT	{authenticated}		(is_active_user(current_uid()) AND (created_by = current_uid()))
+public	form_submission	form_submission_select_scope	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (created_by = current_uid()) OR ((status <> 'draft'::form_submission_status) AND (don_vi_id IS NOT NULL) AND (don_vi_id = get_user_don_vi_id(current_uid())))))	
+public	form_submission	form_submission_update_kt	UPDATE	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	form_submission	form_submission_update_own_draft	UPDATE	{authenticated}	((created_by = current_uid()) AND (status = ANY (ARRAY['draft'::form_submission_status, 'returned'::form_submission_status])))	((created_by = current_uid()) AND (status = ANY (ARRAY['draft'::form_submission_status, 'submitted'::form_submission_status, 'returned'::form_submission_status])))
+public	form_submission_item_result	fsir_select_scope	SELECT	{authenticated}	(EXISTS ( SELECT 1
    FROM form_submission s
   WHERE ((s.id = form_submission_item_result.submission_id) AND is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (s.created_by = current_uid()) OR ((s.status <> 'draft'::form_submission_status) AND (s.don_vi_id IS NOT NULL) AND (s.don_vi_id = get_user_don_vi_id(current_uid())))))))	
-form_submission_item_result	fsir_write_owner_or_kt	ALL	{authenticated}	(EXISTS ( SELECT 1
+public	form_submission_item_result	fsir_write_owner_or_kt	ALL	{authenticated}	(EXISTS ( SELECT 1
    FROM form_submission s
   WHERE ((s.id = form_submission_item_result.submission_id) AND (can_manage_equipment(current_uid()) OR ((s.created_by = current_uid()) AND (s.status = ANY (ARRAY['draft'::form_submission_status, 'submitted'::form_submission_status, 'returned'::form_submission_status])))))))	(EXISTS ( SELECT 1
    FROM form_submission s
   WHERE ((s.id = form_submission_item_result.submission_id) AND (can_manage_equipment(current_uid()) OR ((s.created_by = current_uid()) AND (s.status = ANY (ARRAY['draft'::form_submission_status, 'submitted'::form_submission_status, 'returned'::form_submission_status])))))))
-form_submission_signature	fss_read_scope	SELECT	{authenticated}	(EXISTS ( SELECT 1
+public	form_submission_signature	fss_read_scope	SELECT	{authenticated}	(EXISTS ( SELECT 1
    FROM form_submission s
   WHERE ((s.id = form_submission_signature.submission_id) AND is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (s.created_by = current_uid()) OR ((s.status <> 'draft'::form_submission_status) AND (s.don_vi_id IS NOT NULL) AND (s.don_vi_id = get_user_don_vi_id(current_uid())))))))	
-form_submission_signature	fss_write_service_only	INSERT	{service_role}		true
-form_submission_thiet_bi	form_sub_tb_select_by_parent	SELECT	{public}	(EXISTS ( SELECT 1
+public	form_submission_signature	fss_write_service_only	INSERT	{service_role}		true
+public	form_submission_thiet_bi	form_sub_tb_select_by_parent	SELECT	{public}	(EXISTS ( SELECT 1
    FROM form_submission s
   WHERE ((s.id = form_submission_thiet_bi.submission_id) AND is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (s.created_by = current_uid()) OR ((s.status <> 'draft'::form_submission_status) AND (s.don_vi_id IS NOT NULL) AND (s.don_vi_id = get_user_don_vi_id(current_uid())))))))	
-form_submission_thiet_bi	form_sub_tb_write_by_owner	ALL	{authenticated}	(EXISTS ( SELECT 1
+public	form_submission_thiet_bi	form_sub_tb_write_by_owner	ALL	{authenticated}	(EXISTS ( SELECT 1
    FROM form_submission s
   WHERE ((s.id = form_submission_thiet_bi.submission_id) AND (((s.created_by = current_uid()) AND (s.status = ANY (ARRAY['draft'::form_submission_status, 'returned'::form_submission_status]))) OR can_manage_equipment(current_uid())))))	(EXISTS ( SELECT 1
    FROM form_submission s
   WHERE ((s.id = form_submission_thiet_bi.submission_id) AND (((s.created_by = current_uid()) AND (s.status = ANY (ARRAY['draft'::form_submission_status, 'submitted'::form_submission_status, 'returned'::form_submission_status]))) OR can_manage_equipment(current_uid())))))
-form_template	form_template_manage_kt	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-form_template	form_template_select_active	SELECT	{authenticated}	is_active_user(current_uid())	
-form_template_he_thong	form_tpl_ht_manage	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-form_template_he_thong	form_tpl_ht_select	SELECT	{public}	is_active_user(current_uid())	
-form_template_include	ftinc_manage_kt	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-form_template_include	ftinc_select_active	SELECT	{authenticated}	is_active_user(current_uid())	
-form_template_version	ftv_manage_kt	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-form_template_version	ftv_select_active	SELECT	{authenticated}	is_active_user(current_uid())	
-gan_chuc_nang	gcn_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR can_view_thiet_bi(thiet_bi_id, current_uid()) OR ((don_vi_id_snapshot IS NOT NULL) AND (don_vi_id_snapshot = get_user_don_vi_id(current_uid())))))	
-gan_chuc_nang	gcn_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-gan_linh_kien	glk_select	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR can_view_thiet_bi(linh_kien_id, current_uid()) OR ((don_vi_id_snapshot IS NOT NULL) AND (don_vi_id_snapshot = get_user_don_vi_id(current_uid())))))	
-gan_linh_kien	glk_write_manager	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-giay_phep	giay_phep_read_scope	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (EXISTS ( SELECT 1
+public	form_template	form_template_manage_kt	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	form_template	form_template_select_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	form_template_he_thong	form_tpl_ht_manage	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	form_template_he_thong	form_tpl_ht_select	SELECT	{public}	is_active_user(current_uid())	
+public	form_template_include	ftinc_manage_kt	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	form_template_include	ftinc_select_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	form_template_version	ftv_manage_kt	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	form_template_version	ftv_select_active	SELECT	{authenticated}	is_active_user(current_uid())	
+public	gan_chuc_nang	gcn_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR can_view_thiet_bi(thiet_bi_id, current_uid()) OR ((don_vi_id_snapshot IS NOT NULL) AND (don_vi_id_snapshot = get_user_don_vi_id(current_uid())))))	
+public	gan_chuc_nang	gcn_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	gan_linh_kien	glk_select	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR can_view_thiet_bi(linh_kien_id, current_uid()) OR ((don_vi_id_snapshot IS NOT NULL) AND (don_vi_id_snapshot = get_user_don_vi_id(current_uid())))))	
+public	gan_linh_kien	glk_write_manager	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	giay_phep	giay_phep_read_scope	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (EXISTS ( SELECT 1
    FROM thiet_bi tb
   WHERE ((tb.id = giay_phep.thiet_bi_id) AND (NOT (tb.don_vi_quan_ly_id IS DISTINCT FROM get_user_don_vi_id(current_uid()))))))))	
-giay_phep	giay_phep_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-giay_phep_khai_thac	gpkt_read_scope	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (he_thong_id IS NULL) OR (EXISTS ( SELECT 1
+public	giay_phep	giay_phep_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	giay_phep_khai_thac	gpkt_read_scope	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (he_thong_id IS NULL) OR (EXISTS ( SELECT 1
    FROM dm_he_thong h
   WHERE ((h.id = giay_phep_khai_thac.he_thong_id) AND ((h.don_vi_id IS NULL) OR (h.don_vi_id = get_user_don_vi_id(current_uid()))))))))	
-giay_phep_khai_thac	gpkt_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-he_thong_thanh_phan	htp_select	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((don_vi_id_snapshot IS NOT NULL) AND (don_vi_id_snapshot = get_user_don_vi_id(current_uid())))))	
-he_thong_thanh_phan	htp_write_manager	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-he_thong_truong	admin manage he_thong_truong	ALL	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
-he_thong_truong	read he_thong_truong	SELECT	{authenticated}	is_active_user(current_uid())	
-hong_hoc	hong_hoc_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((thiet_bi_hong_id IS NOT NULL) AND can_view_thiet_bi(thiet_bi_hong_id, current_uid()))))	
-hong_hoc	hong_hoc_write	ALL	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))
-import_alias	import_alias_delete	DELETE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
-import_alias	import_alias_insert	INSERT	{authenticated}		(has_role(current_uid(), 'admin'::app_role) AND (confirmed_by = current_uid()))
-import_alias	import_alias_select	SELECT	{authenticated}	is_active_user(current_uid())	
-import_alias	import_alias_update	UPDATE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
-import_batch	import_batch_delete	DELETE	{authenticated}	((created_by = current_uid()) OR has_role(current_uid(), 'admin'::app_role))	
-import_batch	import_batch_insert	INSERT	{authenticated}		(has_role(current_uid(), 'admin'::app_role) AND (created_by = current_uid()))
-import_batch	import_batch_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND ((created_by = current_uid()) OR has_role(current_uid(), 'admin'::app_role)))	
-import_batch	import_batch_update	UPDATE	{authenticated}	((created_by = current_uid()) OR has_role(current_uid(), 'admin'::app_role))	((created_by = current_uid()) OR has_role(current_uid(), 'admin'::app_role))
-import_item	import_item_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND can_view_import_batch(batch_id, current_uid()))	
-import_item	import_item_write	ALL	{authenticated}	can_view_import_batch(batch_id, current_uid())	can_view_import_batch(batch_id, current_uid())
-kho	kho_select	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (don_vi_id IS NULL) OR (don_vi_id = get_user_don_vi_id(current_uid()))))	
-kho	kho_write	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-kho_giao_dich	kgd_insert	INSERT	{authenticated}		(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (don_vi_id = get_user_don_vi_id(current_uid()))))
-kho_giao_dich	kgd_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (don_vi_id IS NULL) OR (don_vi_id = get_user_don_vi_id(current_uid()))))	
-kiem_ke	kiem_ke_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR can_view_thiet_bi(thiet_bi_id, current_uid())))	
-kiem_ke	kiem_ke_write	ALL	{authenticated}	(can_manage_equipment(current_uid()) OR can_view_thiet_bi(thiet_bi_id, current_uid()))	(can_manage_equipment(current_uid()) OR can_view_thiet_bi(thiet_bi_id, current_uid()))
-lean_ux_canvases	lean_ux_canvases_select	SELECT	{authenticated}	can_access_du_an(project_id, current_uid())	
-lean_ux_canvases	lean_ux_canvases_write	ALL	{authenticated}	can_manage_du_an(project_id, current_uid())	can_manage_du_an(project_id, current_uid())
-lien_ket_he_thong	lkht_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((don_vi_id_snapshot IS NOT NULL) AND (don_vi_id_snapshot = get_user_don_vi_id(current_uid())))))	
-lien_ket_he_thong	lkht_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-lien_ket_khe	lkk_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((don_vi_id_snapshot IS NOT NULL) AND (don_vi_id_snapshot = get_user_don_vi_id(current_uid())))))	
-lien_ket_khe	lkk_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-luu_tru_health_log	Admin xem nhat ky health check	SELECT	{authenticated}	has_role(auth.uid(), 'admin'::app_role)	
-messages	msg_delete_own	DELETE	{authenticated}	(sender_id = current_uid())	
-messages	msg_insert_participant	INSERT	{authenticated}		((sender_id = current_uid()) AND is_conv_participant(conversation_id, current_uid()))
-messages	msg_select_participant	SELECT	{authenticated}	is_conv_participant(conversation_id, current_uid())	
-model_tai_lieu	model_tai_lieu quan ly	ALL	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))
-model_tai_lieu	model_tai_lieu_select	SELECT	{authenticated}	can_manage_equipment(current_uid())	
-nhan_vien	nhan_vien write admin	ALL	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))
-nhan_vien	nhan_vien_select	SELECT	{authenticated}	can_manage_equipment(current_uid())	
-nhat_ky_he_thong	Admins can view all audit logs	SELECT	{authenticated}	has_role(auth.uid(), 'admin'::app_role)	
-nhat_ky_he_thong	Authenticated users can insert audit logs	INSERT	{authenticated}		((auth.uid() = user_id) OR (user_id IS NULL))
-nhat_ky_he_thong	Users can view own audit logs	SELECT	{authenticated}	(auth.uid() = user_id)	
-nhiem_vu_nhap_lieu	Users can see their assigned tasks	SELECT	{authenticated}	((nguoi_nhan = auth.uid()) OR (nguoi_nhan IS NULL))	
-nhiem_vu_nhap_lieu	Users can update their assigned tasks	UPDATE	{authenticated}	(nguoi_nhan = auth.uid())	
-node_note	node_note_delete_admin	DELETE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
-node_note	node_note_insert_auth	INSERT	{authenticated}		((current_uid() IS NOT NULL) AND (updated_by = current_uid()))
-node_note	node_note_select	SELECT	{authenticated}	can_manage_equipment(current_uid())	
-node_note	node_note_update_auth	UPDATE	{authenticated}	(can_manage_equipment(current_uid()) OR (updated_by = current_uid()))	(updated_by = current_uid())
-notifications	notif_delete_own	DELETE	{authenticated}	(user_id = current_uid())	
-notifications	notif_select_own	SELECT	{authenticated}	(user_id = current_uid())	
-notifications	notif_update_own	UPDATE	{authenticated}	(user_id = current_uid())	
-ocr_artifact	Read artifact via link	SELECT	{authenticated}	(EXISTS ( SELECT 1
+public	giay_phep_khai_thac	gpkt_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	he_thong_thanh_phan	htp_select	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((don_vi_id_snapshot IS NOT NULL) AND (don_vi_id_snapshot = get_user_don_vi_id(current_uid())))))	
+public	he_thong_thanh_phan	htp_write_manager	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	he_thong_truong	admin manage he_thong_truong	ALL	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
+public	he_thong_truong	read he_thong_truong	SELECT	{authenticated}	is_active_user(current_uid())	
+public	hong_hoc	hong_hoc_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((thiet_bi_hong_id IS NOT NULL) AND can_view_thiet_bi(thiet_bi_hong_id, current_uid()))))	
+public	hong_hoc	hong_hoc_write	ALL	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))
+public	import_alias	import_alias_delete	DELETE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
+public	import_alias	import_alias_insert	INSERT	{authenticated}		(has_role(current_uid(), 'admin'::app_role) AND (confirmed_by = current_uid()))
+public	import_alias	import_alias_select	SELECT	{authenticated}	is_active_user(current_uid())	
+public	import_alias	import_alias_update	UPDATE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
+public	import_batch	import_batch_delete	DELETE	{authenticated}	((created_by = current_uid()) OR has_role(current_uid(), 'admin'::app_role))	
+public	import_batch	import_batch_insert	INSERT	{authenticated}		(has_role(current_uid(), 'admin'::app_role) AND (created_by = current_uid()))
+public	import_batch	import_batch_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND ((created_by = current_uid()) OR has_role(current_uid(), 'admin'::app_role)))	
+public	import_batch	import_batch_update	UPDATE	{authenticated}	((created_by = current_uid()) OR has_role(current_uid(), 'admin'::app_role))	((created_by = current_uid()) OR has_role(current_uid(), 'admin'::app_role))
+public	import_item	import_item_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND can_view_import_batch(batch_id, current_uid()))	
+public	import_item	import_item_write	ALL	{authenticated}	can_view_import_batch(batch_id, current_uid())	can_view_import_batch(batch_id, current_uid())
+public	kho	kho_select	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (don_vi_id IS NULL) OR (don_vi_id = get_user_don_vi_id(current_uid()))))	
+public	kho	kho_write	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	kho_giao_dich	kgd_insert	INSERT	{authenticated}		(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (don_vi_id = get_user_don_vi_id(current_uid()))))
+public	kho_giao_dich	kgd_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (don_vi_id IS NULL) OR (don_vi_id = get_user_don_vi_id(current_uid()))))	
+public	kiem_ke	kiem_ke_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR can_view_thiet_bi(thiet_bi_id, current_uid())))	
+public	kiem_ke	kiem_ke_write	ALL	{authenticated}	(can_manage_equipment(current_uid()) OR can_view_thiet_bi(thiet_bi_id, current_uid()))	(can_manage_equipment(current_uid()) OR can_view_thiet_bi(thiet_bi_id, current_uid()))
+public	lean_ux_canvases	lean_ux_canvases_select	SELECT	{authenticated}	can_access_du_an(project_id, current_uid())	
+public	lean_ux_canvases	lean_ux_canvases_write	ALL	{authenticated}	can_manage_du_an(project_id, current_uid())	can_manage_du_an(project_id, current_uid())
+public	lien_ket_he_thong	lkht_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((don_vi_id_snapshot IS NOT NULL) AND (don_vi_id_snapshot = get_user_don_vi_id(current_uid())))))	
+public	lien_ket_he_thong	lkht_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	lien_ket_khe	lkk_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((don_vi_id_snapshot IS NOT NULL) AND (don_vi_id_snapshot = get_user_don_vi_id(current_uid())))))	
+public	lien_ket_khe	lkk_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	luu_tru_health_log	Admin xem nhat ky health check	SELECT	{authenticated}	has_role(auth.uid(), 'admin'::app_role)	
+public	messages	msg_delete_own	DELETE	{authenticated}	(sender_id = current_uid())	
+public	messages	msg_insert_participant	INSERT	{authenticated}		((sender_id = current_uid()) AND is_conv_participant(conversation_id, current_uid()))
+public	messages	msg_select_participant	SELECT	{authenticated}	is_conv_participant(conversation_id, current_uid())	
+public	model_tai_lieu	model_tai_lieu quan ly	ALL	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))
+public	model_tai_lieu	model_tai_lieu_select	SELECT	{authenticated}	can_manage_equipment(current_uid())	
+public	nhan_vien	nhan_vien write admin	ALL	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))
+public	nhan_vien	nhan_vien_select	SELECT	{authenticated}	can_manage_equipment(current_uid())	
+public	nhat_ky_he_thong	Admins can view all audit logs	SELECT	{authenticated}	has_role(auth.uid(), 'admin'::app_role)	
+public	nhat_ky_he_thong	Authenticated users can insert audit logs	INSERT	{authenticated}		((auth.uid() = user_id) OR (user_id IS NULL))
+public	nhat_ky_he_thong	Users can view own audit logs	SELECT	{authenticated}	(auth.uid() = user_id)	
+public	nhiem_vu_nhap_lieu	Users can see their assigned tasks	SELECT	{authenticated}	((nguoi_nhan = auth.uid()) OR (nguoi_nhan IS NULL))	
+public	nhiem_vu_nhap_lieu	Users can update their assigned tasks	UPDATE	{authenticated}	(nguoi_nhan = auth.uid())	
+public	node_note	node_note_delete_admin	DELETE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
+public	node_note	node_note_insert_auth	INSERT	{authenticated}		((current_uid() IS NOT NULL) AND (updated_by = current_uid()))
+public	node_note	node_note_select	SELECT	{authenticated}	can_manage_equipment(current_uid())	
+public	node_note	node_note_update_auth	UPDATE	{authenticated}	(can_manage_equipment(current_uid()) OR (updated_by = current_uid()))	(updated_by = current_uid())
+public	notifications	notif_delete_own	DELETE	{authenticated}	(user_id = current_uid())	
+public	notifications	notif_select_own	SELECT	{authenticated}	(user_id = current_uid())	
+public	notifications	notif_update_own	UPDATE	{authenticated}	(user_id = current_uid())	
+public	ocr_artifact	Read artifact via link	SELECT	{authenticated}	(EXISTS ( SELECT 1
    FROM tai_lieu_ocr_link l
   WHERE ((l.artifact_id = l.id) AND (((l.source_type = 'model_tai_lieu'::text) AND (EXISTS ( SELECT 1
            FROM model_tai_lieu m
           WHERE (m.id = l.source_id)))) OR ((l.source_type = 'thiet_bi_tep_dinh_kem'::text) AND (EXISTS ( SELECT 1
            FROM thiet_bi_tep_dinh_kem t
           WHERE (t.id = l.source_id))))))))	
-ocr_runtime_profile_stats	Read anonymized stats	SELECT	{authenticated}	true	
-phan_mem_ban_quyen	pmbq_read_scope	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((don_vi_id IS NOT NULL) AND (don_vi_id = get_user_don_vi_id(current_uid())))))	
-phan_mem_ban_quyen	pmbq_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-phan_mem_ban_quyen_cap_phat	pmbq_cp_read_scope	SELECT	{authenticated}	(is_active_user(current_uid()) AND (EXISTS ( SELECT 1
+public	ocr_runtime_profile_stats	Read anonymized stats	SELECT	{authenticated}	true	
+public	phan_mem_ban_quyen	pmbq_read_scope	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((don_vi_id IS NOT NULL) AND (don_vi_id = get_user_don_vi_id(current_uid())))))	
+public	phan_mem_ban_quyen	pmbq_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	phan_mem_ban_quyen_cap_phat	pmbq_cp_read_scope	SELECT	{authenticated}	(is_active_user(current_uid()) AND (EXISTS ( SELECT 1
    FROM phan_mem_ban_quyen bq
   WHERE ((bq.id = phan_mem_ban_quyen_cap_phat.ban_quyen_id) AND (can_manage_equipment(current_uid()) OR ((bq.don_vi_id IS NOT NULL) AND (bq.don_vi_id = get_user_don_vi_id(current_uid()))))))))	
-phan_mem_ban_quyen_cap_phat	pmbq_cp_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-phan_mem_ban_quyen_tep	pmbq_tep_read_scope	SELECT	{authenticated}	(is_active_user(current_uid()) AND (EXISTS ( SELECT 1
+public	phan_mem_ban_quyen_cap_phat	pmbq_cp_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	phan_mem_ban_quyen_tep	pmbq_tep_read_scope	SELECT	{authenticated}	(is_active_user(current_uid()) AND (EXISTS ( SELECT 1
    FROM phan_mem_ban_quyen bq
   WHERE ((bq.id = phan_mem_ban_quyen_tep.ban_quyen_id) AND (can_manage_equipment(current_uid()) OR (bq.don_vi_id IS NULL) OR (bq.don_vi_id = get_user_don_vi_id(current_uid())))))))	
-phan_mem_ban_quyen_tep	pmbq_tep_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-pitch_scopes	pitch_scopes_select	SELECT	{authenticated}	(EXISTS ( SELECT 1
+public	phan_mem_ban_quyen_tep	pmbq_tep_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	pitch_scopes	pitch_scopes_select	SELECT	{authenticated}	(EXISTS ( SELECT 1
    FROM pitches p
   WHERE ((p.id = pitch_scopes.pitch_id) AND can_access_du_an(p.project_id, current_uid()))))	
-pitch_scopes	pitch_scopes_write	ALL	{authenticated}	(EXISTS ( SELECT 1
+public	pitch_scopes	pitch_scopes_write	ALL	{authenticated}	(EXISTS ( SELECT 1
    FROM pitches p
   WHERE ((p.id = pitch_scopes.pitch_id) AND can_manage_du_an(p.project_id, current_uid()))))	(EXISTS ( SELECT 1
    FROM pitches p
   WHERE ((p.id = pitch_scopes.pitch_id) AND can_manage_du_an(p.project_id, current_uid()))))
-pitches	pitches_select	SELECT	{authenticated}	can_access_du_an(project_id, current_uid())	
-pitches	pitches_write	ALL	{authenticated}	can_manage_du_an(project_id, current_uid())	can_manage_du_an(project_id, current_uid())
-pm_cong_viec	pm_cv_select	SELECT	{authenticated}	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (don_vi_id IN ( SELECT user_scope.don_vi_id
+public	pitches	pitches_select	SELECT	{authenticated}	can_access_du_an(project_id, current_uid())	
+public	pitches	pitches_write	ALL	{authenticated}	can_manage_du_an(project_id, current_uid())	can_manage_du_an(project_id, current_uid())
+public	pm_cong_viec	pm_cv_select	SELECT	{authenticated}	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (don_vi_id IN ( SELECT user_scope.don_vi_id
    FROM user_scope
   WHERE (user_scope.user_id = auth.uid()))))	
-pm_cong_viec	pm_cv_update	UPDATE	{authenticated}	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (don_vi_id IN ( SELECT user_scope.don_vi_id
+public	pm_cong_viec	pm_cv_update	UPDATE	{authenticated}	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (don_vi_id IN ( SELECT user_scope.don_vi_id
    FROM user_scope
   WHERE (user_scope.user_id = auth.uid()))))	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (don_vi_id IN ( SELECT user_scope.don_vi_id
    FROM user_scope
   WHERE (user_scope.user_id = auth.uid()))))
-profiles	Admins can update all profiles	UPDATE	{authenticated}	has_role(auth.uid(), 'admin'::app_role)	
-profiles	Admins can view all profiles	SELECT	{authenticated}	has_role(auth.uid(), 'admin'::app_role)	
-profiles	Users can view their own profile	SELECT	{authenticated}	(auth.uid() = id)	
-profiles	profiles_admin_select_all	SELECT	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	
-profiles	profiles_admin_update_all	UPDATE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
-profiles	profiles_self_insert	INSERT	{authenticated}		(id = current_uid())
-profiles	profiles_self_select	SELECT	{authenticated}	(id = current_uid())	
-profiles	profiles_self_update	UPDATE	{public}	(id = current_uid())	(id = current_uid())
-project_dossiers	project_dossiers_select	SELECT	{authenticated}	can_access_du_an(project_id, current_uid())	
-project_dossiers	project_dossiers_write	ALL	{authenticated}	can_manage_du_an(project_id, current_uid())	can_manage_du_an(project_id, current_uid())
-r2_access_log	r2_log_admin_select	SELECT	{authenticated}	((user_id = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role))	
-r2_cau_hinh	r2_cau_hinh_admin_all	ALL	{authenticated}	has_role(auth.uid(), 'admin'::app_role)	has_role(auth.uid(), 'admin'::app_role)
-r2_file	r2_file_owner_del	DELETE	{authenticated}	((user_id = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role))	
-r2_file	r2_file_owner_ins	INSERT	{authenticated}		(user_id = auth.uid())
-r2_file	r2_file_owner_select	SELECT	{authenticated}	((user_id = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role))	
-r2_file	r2_file_owner_upd	UPDATE	{authenticated}	((user_id = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role))	((user_id = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role))
-role_permission	role_perm_admin_write	ALL	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
-role_permission	role_perm_read_admin	SELECT	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
-search_index	search_index_read_mgr	SELECT	{authenticated}	can_manage_equipment(current_uid())	
-so_do_he_thong	so_do_delete_scope	DELETE	{authenticated}	(can_manage_equipment(current_uid()) OR (created_by = current_uid()) OR ((don_vi_ma IS NOT NULL) AND (don_vi_ma = get_user_don_vi_ma(current_uid()))))	
-so_do_he_thong	so_do_insert_scope	INSERT	{authenticated}		(is_active_user(current_uid()) AND (created_by = current_uid()) AND (can_manage_equipment(current_uid()) OR ((don_vi_ma IS NOT NULL) AND (don_vi_ma = get_user_don_vi_ma(current_uid())))))
-so_do_he_thong	so_do_read_scope	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (created_by = current_uid()) OR ((don_vi_ma IS NOT NULL) AND (don_vi_ma = get_user_don_vi_ma(current_uid())))))	
-so_do_he_thong	so_do_update_scope	UPDATE	{authenticated}	(can_manage_equipment(current_uid()) OR (created_by = current_uid()) OR ((don_vi_ma IS NOT NULL) AND (don_vi_ma = get_user_don_vi_ma(current_uid()))))	(can_manage_equipment(current_uid()) OR (created_by = current_uid()) OR ((don_vi_ma IS NOT NULL) AND (don_vi_ma = get_user_don_vi_ma(current_uid()))))
-so_do_tep_dinh_kem	so_do_tep_delete	DELETE	{authenticated}	(can_access_so_do(so_do_id, current_uid()) AND ((created_by = current_uid()) OR can_manage_equipment(current_uid())))	
-so_do_tep_dinh_kem	so_do_tep_insert	INSERT	{authenticated}		((created_by = current_uid()) AND can_access_so_do(so_do_id, current_uid()))
-so_do_tep_dinh_kem	so_do_tep_read	SELECT	{authenticated}	(is_active_user(current_uid()) AND can_access_so_do(so_do_id, current_uid()))	
-so_do_thu_vien_hinh	thu_vien_delete	DELETE	{authenticated}	((created_by = current_uid()) OR can_manage_equipment(current_uid()))	
-so_do_thu_vien_hinh	thu_vien_insert	INSERT	{authenticated}		(is_active_user(current_uid()) AND (created_by = current_uid()))
-so_do_thu_vien_hinh	thu_vien_read	SELECT	{authenticated}	is_active_user(current_uid())	
-su_co	su_co_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((thiet_bi_id IS NOT NULL) AND can_view_thiet_bi(thiet_bi_id, current_uid()))))	
-su_co	su_co_write	ALL	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))
-su_co_lich_su	su_co_lich_su_no_write	ALL	{authenticated}	false	false
-su_co_lich_su	su_co_lich_su_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((doi_tuong_bang = 'su_co'::text) AND (EXISTS ( SELECT 1
+public	profiles	Admins can update all profiles	UPDATE	{authenticated}	has_role(auth.uid(), 'admin'::app_role)	
+public	profiles	Admins can view all profiles	SELECT	{authenticated}	has_role(auth.uid(), 'admin'::app_role)	
+public	profiles	Users can view their own profile	SELECT	{authenticated}	(auth.uid() = id)	
+public	profiles	profiles_admin_select_all	SELECT	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	
+public	profiles	profiles_admin_update_all	UPDATE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
+public	profiles	profiles_self_insert	INSERT	{authenticated}		(id = current_uid())
+public	profiles	profiles_self_select	SELECT	{authenticated}	(id = current_uid())	
+public	profiles	profiles_self_update	UPDATE	{public}	(id = current_uid())	(id = current_uid())
+public	project_dossiers	project_dossiers_select	SELECT	{authenticated}	can_access_du_an(project_id, current_uid())	
+public	project_dossiers	project_dossiers_write	ALL	{authenticated}	can_manage_du_an(project_id, current_uid())	can_manage_du_an(project_id, current_uid())
+public	r2_access_log	r2_log_admin_select	SELECT	{authenticated}	((user_id = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role))	
+public	r2_cau_hinh	r2_cau_hinh_admin_all	ALL	{authenticated}	has_role(auth.uid(), 'admin'::app_role)	has_role(auth.uid(), 'admin'::app_role)
+public	r2_file	r2_file_owner_del	DELETE	{authenticated}	((user_id = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role))	
+public	r2_file	r2_file_owner_ins	INSERT	{authenticated}		(user_id = auth.uid())
+public	r2_file	r2_file_owner_select	SELECT	{authenticated}	((user_id = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role))	
+public	r2_file	r2_file_owner_upd	UPDATE	{authenticated}	((user_id = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role))	((user_id = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role))
+public	role_permission	role_perm_admin_write	ALL	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
+public	role_permission	role_perm_read_admin	SELECT	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
+public	search_index	search_index_read_mgr	SELECT	{authenticated}	can_manage_equipment(current_uid())	
+public	so_do_he_thong	so_do_delete_scope	DELETE	{authenticated}	(can_manage_equipment(current_uid()) OR (created_by = current_uid()) OR ((don_vi_ma IS NOT NULL) AND (don_vi_ma = get_user_don_vi_ma(current_uid()))))	
+public	so_do_he_thong	so_do_insert_scope	INSERT	{authenticated}		(is_active_user(current_uid()) AND (created_by = current_uid()) AND (can_manage_equipment(current_uid()) OR ((don_vi_ma IS NOT NULL) AND (don_vi_ma = get_user_don_vi_ma(current_uid())))))
+public	so_do_he_thong	so_do_read_scope	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (created_by = current_uid()) OR ((don_vi_ma IS NOT NULL) AND (don_vi_ma = get_user_don_vi_ma(current_uid())))))	
+public	so_do_he_thong	so_do_update_scope	UPDATE	{authenticated}	(can_manage_equipment(current_uid()) OR (created_by = current_uid()) OR ((don_vi_ma IS NOT NULL) AND (don_vi_ma = get_user_don_vi_ma(current_uid()))))	(can_manage_equipment(current_uid()) OR (created_by = current_uid()) OR ((don_vi_ma IS NOT NULL) AND (don_vi_ma = get_user_don_vi_ma(current_uid()))))
+public	so_do_tep_dinh_kem	so_do_tep_delete	DELETE	{authenticated}	(can_access_so_do(so_do_id, current_uid()) AND ((created_by = current_uid()) OR can_manage_equipment(current_uid())))	
+public	so_do_tep_dinh_kem	so_do_tep_insert	INSERT	{authenticated}		((created_by = current_uid()) AND can_access_so_do(so_do_id, current_uid()))
+public	so_do_tep_dinh_kem	so_do_tep_read	SELECT	{authenticated}	(is_active_user(current_uid()) AND can_access_so_do(so_do_id, current_uid()))	
+public	so_do_thu_vien_hinh	thu_vien_delete	DELETE	{authenticated}	((created_by = current_uid()) OR can_manage_equipment(current_uid()))	
+public	so_do_thu_vien_hinh	thu_vien_insert	INSERT	{authenticated}		(is_active_user(current_uid()) AND (created_by = current_uid()))
+public	so_do_thu_vien_hinh	thu_vien_read	SELECT	{authenticated}	is_active_user(current_uid())	
+public	su_co	su_co_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((thiet_bi_id IS NOT NULL) AND can_view_thiet_bi(thiet_bi_id, current_uid()))))	
+public	su_co	su_co_write	ALL	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))
+public	su_co_lich_su	su_co_lich_su_no_write	ALL	{authenticated}	false	false
+public	su_co_lich_su	su_co_lich_su_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((doi_tuong_bang = 'su_co'::text) AND (EXISTS ( SELECT 1
    FROM su_co s
   WHERE ((s.id = su_co_lich_su.doi_tuong_id) AND (s.thiet_bi_id IS NOT NULL) AND can_view_thiet_bi(s.thiet_bi_id, current_uid()))))) OR ((doi_tuong_bang = 'hong_hoc'::text) AND (EXISTS ( SELECT 1
    FROM hong_hoc h
   WHERE ((h.id = su_co_lich_su.doi_tuong_id) AND (h.thiet_bi_hong_id IS NOT NULL) AND can_view_thiet_bi(h.thiet_bi_hong_id, current_uid())))))))	
-supabase_ngoai	service role only	ALL	{service_role}	true	true
-supabase_ngoai_job	Admin xem phien di chuyen	SELECT	{authenticated}	has_role(auth.uid(), 'admin'::app_role)	
-supabase_ngoai_job_bang	Admin xem chi tiet phien	SELECT	{authenticated}	has_role(auth.uid(), 'admin'::app_role)	
-system_signing_key	signing_key_service_role_only	ALL	{public}	false	false
-tai_lieu_ocr	Manage OCR if can manage source document	ALL	{authenticated}	
+public	supabase_ngoai	service role only	ALL	{service_role}	true	true
+public	supabase_ngoai_job	Admin xem phien di chuyen	SELECT	{authenticated}	has_role(auth.uid(), 'admin'::app_role)	
+public	supabase_ngoai_job_bang	Admin xem chi tiet phien	SELECT	{authenticated}	has_role(auth.uid(), 'admin'::app_role)	
+public	system_signing_key	signing_key_service_role_only	ALL	{public}	false	false
+public	tai_lieu_ocr	Manage OCR if can manage source document	ALL	{authenticated}	
 CASE
     WHEN (source_type = 'model_tai_lieu'::text) THEN (EXISTS ( SELECT 1
        FROM model_tai_lieu m
@@ -423,7 +421,7 @@ CASE
       WHERE (t.id = tai_lieu_ocr.source_id)))
     ELSE false
 END
-tai_lieu_ocr	Select OCR if can read source document	SELECT	{authenticated}	
+public	tai_lieu_ocr	Select OCR if can read source document	SELECT	{authenticated}	
 CASE
     WHEN (source_type = 'model_tai_lieu'::text) THEN (EXISTS ( SELECT 1
        FROM model_tai_lieu m
@@ -433,81 +431,81 @@ CASE
       WHERE (t.id = tai_lieu_ocr.source_id)))
     ELSE false
 END	
-tai_lieu_ocr_link	Manage link if can read source	ALL	{authenticated}	(((source_type = 'model_tai_lieu'::text) AND (EXISTS ( SELECT 1
+public	tai_lieu_ocr_link	Manage link if can read source	ALL	{authenticated}	(((source_type = 'model_tai_lieu'::text) AND (EXISTS ( SELECT 1
    FROM model_tai_lieu m
   WHERE (m.id = tai_lieu_ocr_link.source_id)))) OR ((source_type = 'thiet_bi_tep_dinh_kem'::text) AND (EXISTS ( SELECT 1
    FROM thiet_bi_tep_dinh_kem t
   WHERE (t.id = tai_lieu_ocr_link.source_id)))))	
-telegram_da_gui	tele_dagui_select_admin	SELECT	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
-telegram_subscriber	tele_sub_delete_own_or_admin	DELETE	{authenticated}	((current_uid() = user_id) OR has_role(current_uid(), 'admin'::app_role))	
-telegram_subscriber	tele_sub_insert_self_or_admin	INSERT	{authenticated}		((current_uid() = user_id) OR has_role(current_uid(), 'admin'::app_role))
-telegram_subscriber	tele_sub_select_own_or_admin	SELECT	{authenticated}	((current_uid() = user_id) OR (current_uid() = created_by) OR has_role(current_uid(), 'admin'::app_role))	
-telegram_subscriber	tele_sub_update_own_or_admin	UPDATE	{authenticated}	((current_uid() = user_id) OR has_role(current_uid(), 'admin'::app_role))	((current_uid() = user_id) OR has_role(current_uid(), 'admin'::app_role))
-thiet_bi	thiet_bi_read_scope	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (don_vi_quan_ly_id = get_user_don_vi_id(current_uid())) OR (don_vi_id = get_user_don_vi_id(current_uid()))))	
-thiet_bi	thiet_bi_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-thiet_bi_cap_phat	Quản lý thiết bị ghi lịch sử cấp phát	INSERT	{authenticated}		can_manage_equipment(current_uid())
-thiet_bi_cap_phat	Quản trị sửa lịch sử cấp phát	UPDATE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
-thiet_bi_cap_phat	Quản trị xoá lịch sử cấp phát	DELETE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
-thiet_bi_cap_phat	Xem lịch sử cấp phát theo phạm vi thiết bị	SELECT	{authenticated}	can_view_thiet_bi(thiet_bi_id, current_uid())	
-thiet_bi_do_dac	thiet_bi_do_dac_select	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR can_view_thiet_bi(thiet_bi_id, current_uid())))	
-thiet_bi_do_dac	thiet_bi_do_dac_write	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-thiet_bi_he_thong_tuong_thich	Allow authenticated users to manage compatibility	ALL	{authenticated}	true	true
-thiet_bi_he_thong_tuong_thich	Allow authenticated users to read compatibility	SELECT	{authenticated}	true	
-thiet_bi_ket_noi	tbkn_insert	INSERT	{public}		(is_active_user(current_uid()) AND can_view_thiet_bi(tu_thiet_bi_id, current_uid()) AND can_view_thiet_bi(den_thiet_bi_id, current_uid()))
-thiet_bi_ket_noi	tbkn_select	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR can_view_thiet_bi(tu_thiet_bi_id, current_uid()) OR can_view_thiet_bi(den_thiet_bi_id, current_uid()) OR ((don_vi_id_snapshot IS NOT NULL) AND (don_vi_id_snapshot = get_user_don_vi_id(current_uid())))))	
-thiet_bi_ket_noi	tbkn_write_manager	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-thiet_bi_khe_linh_kien	khe_lk_select	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR can_view_thiet_bi(thiet_bi_id, current_uid())))	
-thiet_bi_khe_linh_kien	khe_lk_write_manager	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-thiet_bi_tep_dinh_kem	tep_select_scope	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (EXISTS ( SELECT 1
+public	telegram_da_gui	tele_dagui_select_admin	SELECT	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
+public	telegram_subscriber	tele_sub_delete_own_or_admin	DELETE	{authenticated}	((current_uid() = user_id) OR has_role(current_uid(), 'admin'::app_role))	
+public	telegram_subscriber	tele_sub_insert_self_or_admin	INSERT	{authenticated}		((current_uid() = user_id) OR has_role(current_uid(), 'admin'::app_role))
+public	telegram_subscriber	tele_sub_select_own_or_admin	SELECT	{authenticated}	((current_uid() = user_id) OR (current_uid() = created_by) OR has_role(current_uid(), 'admin'::app_role))	
+public	telegram_subscriber	tele_sub_update_own_or_admin	UPDATE	{authenticated}	((current_uid() = user_id) OR has_role(current_uid(), 'admin'::app_role))	((current_uid() = user_id) OR has_role(current_uid(), 'admin'::app_role))
+public	thiet_bi	thiet_bi_read_scope	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (don_vi_quan_ly_id = get_user_don_vi_id(current_uid())) OR (don_vi_id = get_user_don_vi_id(current_uid()))))	
+public	thiet_bi	thiet_bi_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	thiet_bi_cap_phat	Quản lý thiết bị ghi lịch sử cấp phát	INSERT	{authenticated}		can_manage_equipment(current_uid())
+public	thiet_bi_cap_phat	Quản trị sửa lịch sử cấp phát	UPDATE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
+public	thiet_bi_cap_phat	Quản trị xoá lịch sử cấp phát	DELETE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
+public	thiet_bi_cap_phat	Xem lịch sử cấp phát theo phạm vi thiết bị	SELECT	{authenticated}	can_view_thiet_bi(thiet_bi_id, current_uid())	
+public	thiet_bi_do_dac	thiet_bi_do_dac_select	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR can_view_thiet_bi(thiet_bi_id, current_uid())))	
+public	thiet_bi_do_dac	thiet_bi_do_dac_write	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	thiet_bi_he_thong_tuong_thich	Allow authenticated users to manage compatibility	ALL	{authenticated}	true	true
+public	thiet_bi_he_thong_tuong_thich	Allow authenticated users to read compatibility	SELECT	{authenticated}	true	
+public	thiet_bi_ket_noi	tbkn_insert	INSERT	{public}		(is_active_user(current_uid()) AND can_view_thiet_bi(tu_thiet_bi_id, current_uid()) AND can_view_thiet_bi(den_thiet_bi_id, current_uid()))
+public	thiet_bi_ket_noi	tbkn_select	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR can_view_thiet_bi(tu_thiet_bi_id, current_uid()) OR can_view_thiet_bi(den_thiet_bi_id, current_uid()) OR ((don_vi_id_snapshot IS NOT NULL) AND (don_vi_id_snapshot = get_user_don_vi_id(current_uid())))))	
+public	thiet_bi_ket_noi	tbkn_write_manager	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	thiet_bi_khe_linh_kien	khe_lk_select	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR can_view_thiet_bi(thiet_bi_id, current_uid())))	
+public	thiet_bi_khe_linh_kien	khe_lk_write_manager	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	thiet_bi_tep_dinh_kem	tep_select_scope	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (EXISTS ( SELECT 1
    FROM thiet_bi tb
   WHERE ((tb.id = thiet_bi_tep_dinh_kem.thiet_bi_id) AND (NOT (tb.don_vi_quan_ly_id IS DISTINCT FROM get_user_don_vi_id(current_uid()))))))))	
-thiet_bi_tep_dinh_kem	tep_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-thiet_bi_vong_doi	thiet_bi_vong_doi_select	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR can_view_thiet_bi(thiet_bi_id, current_uid())))	
-thiet_bi_vong_doi	thiet_bi_vong_doi_write	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-thong_bao	thong_bao_select	SELECT	{authenticated}	((nguoi_nhan = auth.uid()) OR ((nguoi_nhan IS NULL) AND (don_vi_id IN ( SELECT user_scope.don_vi_id
+public	thiet_bi_tep_dinh_kem	tep_write_manager	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	thiet_bi_vong_doi	thiet_bi_vong_doi_select	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR can_view_thiet_bi(thiet_bi_id, current_uid())))	
+public	thiet_bi_vong_doi	thiet_bi_vong_doi_write	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	thong_bao	thong_bao_select	SELECT	{authenticated}	((nguoi_nhan = auth.uid()) OR ((nguoi_nhan IS NULL) AND (don_vi_id IN ( SELECT user_scope.don_vi_id
    FROM user_scope
   WHERE (user_scope.user_id = auth.uid())))) OR has_role(auth.uid(), 'admin'::app_role))	
-thong_bao	thong_bao_update_read	UPDATE	{authenticated}	((nguoi_nhan = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role) OR ((nguoi_nhan IS NULL) AND (don_vi_id IN ( SELECT user_scope.don_vi_id
+public	thong_bao	thong_bao_update_read	UPDATE	{authenticated}	((nguoi_nhan = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role) OR ((nguoi_nhan IS NULL) AND (don_vi_id IN ( SELECT user_scope.don_vi_id
    FROM user_scope
   WHERE (user_scope.user_id = auth.uid())))))	((nguoi_nhan = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role) OR ((nguoi_nhan IS NULL) AND (don_vi_id IN ( SELECT user_scope.don_vi_id
    FROM user_scope
   WHERE (user_scope.user_id = auth.uid())))))
-thong_bao_cau_hinh	thong_bao_cau_hinh_read	SELECT	{authenticated}	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (don_vi_id = get_user_don_vi_id(auth.uid())) OR (don_vi_id IS NULL))	
-thong_bao_cau_hinh	thong_bao_cau_hinh_write	ALL	{authenticated}	has_role(auth.uid(), 'admin'::app_role)	has_role(auth.uid(), 'admin'::app_role)
-thong_bao_email_queue	thong_bao_email_queue_admin	SELECT	{authenticated}	has_role(auth.uid(), 'admin'::app_role)	
-ticket_comment	tc_delete_own_or_admin	DELETE	{authenticated}	((user_id = current_uid()) OR has_role(current_uid(), 'admin'::app_role))	
-ticket_comment	tc_insert	INSERT	{authenticated}		((user_id = current_uid()) AND can_access_ticket(ticket_id, current_uid()))
-ticket_comment	tc_select	SELECT	{authenticated}	can_access_ticket(ticket_id, current_uid())	
-tickets	tickets_delete_admin	DELETE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
-tickets	tickets_insert_self	INSERT	{authenticated}		(created_by = current_uid())
-tickets	tickets_select_own_or_admin	SELECT	{authenticated}	((created_by = current_uid()) OR (assigned_to = current_uid()) OR has_role(current_uid(), 'admin'::app_role))	
-tickets	tickets_update_own_or_admin	UPDATE	{authenticated}	((created_by = current_uid()) OR (assigned_to = current_uid()) OR has_role(current_uid(), 'admin'::app_role))	
-user_layout_prefs	own prefs delete	DELETE	{authenticated}	(auth.uid() = user_id)	
-user_layout_prefs	own prefs insert	INSERT	{authenticated}		(auth.uid() = user_id)
-user_layout_prefs	own prefs select	SELECT	{authenticated}	(auth.uid() = user_id)	
-user_layout_prefs	own prefs update	UPDATE	{authenticated}	(auth.uid() = user_id)	(auth.uid() = user_id)
-user_pinned	own pinned delete	DELETE	{authenticated}	(auth.uid() = user_id)	
-user_pinned	own pinned insert	INSERT	{authenticated}		(auth.uid() = user_id)
-user_pinned	own pinned select	SELECT	{authenticated}	(auth.uid() = user_id)	
-user_pinned	own pinned update	UPDATE	{authenticated}	(auth.uid() = user_id)	(auth.uid() = user_id)
-user_recent	own recent delete	DELETE	{authenticated}	(auth.uid() = user_id)	
-user_recent	own recent insert	INSERT	{authenticated}		(auth.uid() = user_id)
-user_recent	own recent select	SELECT	{authenticated}	(auth.uid() = user_id)	
-user_recent	own recent update	UPDATE	{authenticated}	(auth.uid() = user_id)	(auth.uid() = user_id)
-user_roles	user_roles_admin_all	ALL	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
-user_roles	user_roles_admin_select_all	SELECT	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	
-user_roles	user_roles_self_select	SELECT	{authenticated}	(user_id = current_uid())	
-user_scope	user_scope_admin_write	ALL	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
-user_scope	user_scope_self_read	SELECT	{authenticated}	((user_id = current_uid()) OR has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	
-van_de	van_de_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((thiet_bi_id IS NOT NULL) AND can_view_thiet_bi(thiet_bi_id, current_uid())) OR ((don_vi_id_snapshot IS NOT NULL) AND (don_vi_id_snapshot = get_user_don_vi_id(current_uid())))))	
-van_de	van_de_write	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-vat_tu	vat_tu_select	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (don_vi_id IS NULL) OR (don_vi_id = get_user_don_vi_id(current_uid()))))	
-vat_tu	vat_tu_write	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
-vi_tri_media	vi_tri_media_delete	DELETE	{authenticated}	((created_by = current_uid()) OR can_manage_equipment(current_uid()))	
-vi_tri_media	vi_tri_media_insert	INSERT	{authenticated}		((created_by = current_uid()) AND is_active_user(current_uid()))
-vi_tri_media	vi_tri_media_read	SELECT	{authenticated}	is_active_user(current_uid())	
-vi_tri_media	vi_tri_media_update	UPDATE	{authenticated}	((created_by = current_uid()) OR can_manage_equipment(current_uid()))	
-webauthn_credentials	Users can delete their own passkeys	DELETE	{authenticated}	(current_uid() = user_id)	
-webauthn_credentials	Users can view their own passkeys	SELECT	{authenticated}	(current_uid() = user_id)	
-weekly_report_import	wri_insert_self	INSERT	{authenticated}		((created_by = auth.uid()) OR (created_by IS NULL))
-weekly_report_import	wri_select_scope	SELECT	{authenticated}	((created_by = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR ((don_vi_ma IS NOT NULL) AND (don_vi_ma = get_user_don_vi_ma(auth.uid()))))	
+public	thong_bao_cau_hinh	thong_bao_cau_hinh_read	SELECT	{authenticated}	(has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR (don_vi_id = get_user_don_vi_id(auth.uid())) OR (don_vi_id IS NULL))	
+public	thong_bao_cau_hinh	thong_bao_cau_hinh_write	ALL	{authenticated}	has_role(auth.uid(), 'admin'::app_role)	has_role(auth.uid(), 'admin'::app_role)
+public	thong_bao_email_queue	thong_bao_email_queue_admin	SELECT	{authenticated}	has_role(auth.uid(), 'admin'::app_role)	
+public	ticket_comment	tc_delete_own_or_admin	DELETE	{authenticated}	((user_id = current_uid()) OR has_role(current_uid(), 'admin'::app_role))	
+public	ticket_comment	tc_insert	INSERT	{authenticated}		((user_id = current_uid()) AND can_access_ticket(ticket_id, current_uid()))
+public	ticket_comment	tc_select	SELECT	{authenticated}	can_access_ticket(ticket_id, current_uid())	
+public	tickets	tickets_delete_admin	DELETE	{authenticated}	has_role(current_uid(), 'admin'::app_role)	
+public	tickets	tickets_insert_self	INSERT	{authenticated}		(created_by = current_uid())
+public	tickets	tickets_select_own_or_admin	SELECT	{authenticated}	((created_by = current_uid()) OR (assigned_to = current_uid()) OR has_role(current_uid(), 'admin'::app_role))	
+public	tickets	tickets_update_own_or_admin	UPDATE	{authenticated}	((created_by = current_uid()) OR (assigned_to = current_uid()) OR has_role(current_uid(), 'admin'::app_role))	
+public	user_layout_prefs	own prefs delete	DELETE	{authenticated}	(auth.uid() = user_id)	
+public	user_layout_prefs	own prefs insert	INSERT	{authenticated}		(auth.uid() = user_id)
+public	user_layout_prefs	own prefs select	SELECT	{authenticated}	(auth.uid() = user_id)	
+public	user_layout_prefs	own prefs update	UPDATE	{authenticated}	(auth.uid() = user_id)	(auth.uid() = user_id)
+public	user_pinned	own pinned delete	DELETE	{authenticated}	(auth.uid() = user_id)	
+public	user_pinned	own pinned insert	INSERT	{authenticated}		(auth.uid() = user_id)
+public	user_pinned	own pinned select	SELECT	{authenticated}	(auth.uid() = user_id)	
+public	user_pinned	own pinned update	UPDATE	{authenticated}	(auth.uid() = user_id)	(auth.uid() = user_id)
+public	user_recent	own recent delete	DELETE	{authenticated}	(auth.uid() = user_id)	
+public	user_recent	own recent insert	INSERT	{authenticated}		(auth.uid() = user_id)
+public	user_recent	own recent select	SELECT	{authenticated}	(auth.uid() = user_id)	
+public	user_recent	own recent update	UPDATE	{authenticated}	(auth.uid() = user_id)	(auth.uid() = user_id)
+public	user_roles	user_roles_admin_all	ALL	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
+public	user_roles	user_roles_admin_select_all	SELECT	{authenticated}	(has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	
+public	user_roles	user_roles_self_select	SELECT	{authenticated}	(user_id = current_uid())	
+public	user_scope	user_scope_admin_write	ALL	{authenticated}	has_role(current_uid(), 'admin'::app_role)	has_role(current_uid(), 'admin'::app_role)
+public	user_scope	user_scope_self_read	SELECT	{authenticated}	((user_id = current_uid()) OR has_role(current_uid(), 'admin'::app_role) OR has_role(current_uid(), 'phong_kt'::app_role))	
+public	van_de	van_de_select	SELECT	{authenticated}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR ((thiet_bi_id IS NOT NULL) AND can_view_thiet_bi(thiet_bi_id, current_uid())) OR ((don_vi_id_snapshot IS NOT NULL) AND (don_vi_id_snapshot = get_user_don_vi_id(current_uid())))))	
+public	van_de	van_de_write	ALL	{authenticated}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	vat_tu	vat_tu_select	SELECT	{public}	(is_active_user(current_uid()) AND (can_manage_equipment(current_uid()) OR (don_vi_id IS NULL) OR (don_vi_id = get_user_don_vi_id(current_uid()))))	
+public	vat_tu	vat_tu_write	ALL	{public}	can_manage_equipment(current_uid())	can_manage_equipment(current_uid())
+public	vi_tri_media	vi_tri_media_delete	DELETE	{authenticated}	((created_by = current_uid()) OR can_manage_equipment(current_uid()))	
+public	vi_tri_media	vi_tri_media_insert	INSERT	{authenticated}		((created_by = current_uid()) AND is_active_user(current_uid()))
+public	vi_tri_media	vi_tri_media_read	SELECT	{authenticated}	is_active_user(current_uid())	
+public	vi_tri_media	vi_tri_media_update	UPDATE	{authenticated}	((created_by = current_uid()) OR can_manage_equipment(current_uid()))	
+public	webauthn_credentials	Users can delete their own passkeys	DELETE	{authenticated}	(current_uid() = user_id)	
+public	webauthn_credentials	Users can view their own passkeys	SELECT	{authenticated}	(current_uid() = user_id)	
+public	weekly_report_import	wri_insert_self	INSERT	{authenticated}		((created_by = auth.uid()) OR (created_by IS NULL))
+public	weekly_report_import	wri_select_scope	SELECT	{authenticated}	((created_by = auth.uid()) OR has_role(auth.uid(), 'admin'::app_role) OR has_role(auth.uid(), 'phong_kt'::app_role) OR ((don_vi_ma IS NOT NULL) AND (don_vi_ma = get_user_don_vi_ma(auth.uid()))))	
