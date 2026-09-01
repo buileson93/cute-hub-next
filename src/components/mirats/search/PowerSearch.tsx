@@ -100,7 +100,11 @@ export function PowerSearch({
   } | null>(null);
   const navigate = useNavigate();
 
-  const { ket_qua: globalResults, dang_tai: globalLoading } = useTimKiemToanCuc(query);
+  const {
+    ket_qua: globalResults,
+    dang_tai: globalLoading,
+    loi: globalError,
+  } = useTimKiemToanCuc(query);
   const { search: searchOcr, isReady: ocrReady, isSyncing: ocrSyncing } = useOcrSearch();
   const { hasRole } = useSession();
 
@@ -148,10 +152,18 @@ export function PowerSearch({
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setIsOpen(!isOpen);
-      }
+      if (e.key.toLowerCase() !== "k" || !(e.metaKey || e.ctrlKey)) return;
+      const el = document.activeElement as HTMLElement | null;
+      const typing =
+        !!el &&
+        (el.tagName === "INPUT" ||
+          el.tagName === "TEXTAREA" ||
+          el.tagName === "SELECT" ||
+          el.isContentEditable);
+      // Vẫn cho phép ⌘K khi đang gõ chính trong ô tìm kiếm của palette.
+      if (typing && !isOpen) return;
+      e.preventDefault();
+      setIsOpen(!isOpen);
     };
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
@@ -267,7 +279,14 @@ export function PowerSearch({
           {ocrSyncing && <Loader2 className="h-4 w-4 animate-spin opacity-50 shrink-0" />}
         </div>
         <CommandList className="max-h-[42rem] overflow-y-auto overflow-x-hidden">
-          <CommandEmpty>Không tìm thấy kết quả nào.</CommandEmpty>
+          <CommandEmpty>
+            <div className="px-4 py-6 text-center">
+              <p className="text-sm font-medium">Không có kết quả cho “{query}”</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Thử từ khoá ngắn hơn, bỏ dấu, hoặc tìm theo mã tài sản, tên hệ thống, số phiếu.
+              </p>
+            </div>
+          </CommandEmpty>
 
           {commandGroups.map((group) => (
             <CommandGroup key={group.group} heading={group.label}>
@@ -362,6 +381,30 @@ export function PowerSearch({
           )}
         </CommandList>
       </CommandDialog>
+
+      <AlertDialog
+        open={!!pendingCommand}
+        onOpenChange={(open) => !open && setPendingCommand(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{pendingCommand?.confirm?.title}</AlertDialogTitle>
+            <AlertDialogDescription>{pendingCommand?.confirm?.description}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Huỷ</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                const cmd = pendingCommand;
+                setPendingCommand(null);
+                if (cmd) executeCommand(cmd);
+              }}
+            >
+              {pendingCommand?.confirm?.actionLabel ?? "Xác nhận"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {selectedDoc && (
         <DocViewerDialog

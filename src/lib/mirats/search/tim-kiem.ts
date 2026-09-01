@@ -83,6 +83,7 @@ export function useTimKiemToanCuc(
   return {
     ket_qua: (query.data ?? []) as KetQuaTim[],
     dang_tai: enabled && (query.isFetching || term !== debounced),
+    loi: query.error as Error | null,
     activeTerm: debounced,
     hasQuery: enabled,
   };
