@@ -17,6 +17,13 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { InheritedValue, TextCell } from "./InheritedValue";
+import { ContactCell, MetaPopover } from "./ContactCell";
+import {
+  buildContacts,
+  buildMetaItems,
+  formatContactsForExport,
+  toDisplayString,
+} from "@/lib/mirats/inventory/contact-format";
 import { BulkActionButton } from "@/components/mirats/BulkActionButton";
 import { TableExportDialog } from "@/components/mirats/TableExportDialog";
 import { AnomalyBadge } from "@/components/mirats/AnomalyBadge";
