@@ -114,12 +114,26 @@ export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
 
             {isLoading ? (
               <TimelineLoading />
+            ) : isError ? (
+              <div
+                role="alert"
+                className="flex flex-col items-center justify-center py-10 gap-2 text-center"
+              >
+                <p className="text-sm text-foreground">Không tải được dòng thời gian.</p>
+                <p className="text-xs text-muted-foreground">
+                  {error instanceof Error ? error.message : "Lỗi không xác định"}
+                </p>
+                <Button size="sm" variant="outline" className="h-8" onClick={() => void refetch()}>
+                  Thử lại
+                </Button>
+              </div>
             ) : filteredEvents.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <History className="h-10 w-10 mb-3 opacity-20" />
+              <div className="flex flex-col items-center justify-center py-10 text-muted-foreground">
+                <History className="h-8 w-8 mb-2 opacity-20" />
                 <p className="text-sm">Không tìm thấy sự kiện nào</p>
               </div>
             ) : (
+
               <div className="space-y-8 relative">
                 {/* Vertical axis line */}
                 <div className="absolute left-[17px] top-2 bottom-0 w-[2px] bg-border z-0" />
