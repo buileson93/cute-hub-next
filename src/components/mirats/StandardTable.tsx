@@ -222,6 +222,8 @@ export function StandardTable<T>({
 }: StandardTableProps<T>) {
   const [textFilters, setTextFilters] = useState<Record<string, string>>({});
   const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
+  const [globalQuery, setGlobalQuery] = useState("");
+
   const [adaptiveOverscan, setAdaptiveOverscan] = useState(8);
   const frameCount = useRef(0);
   const lastTime = useRef(performance.now());
