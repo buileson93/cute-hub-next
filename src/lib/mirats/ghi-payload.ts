@@ -128,6 +128,8 @@ export interface BuildHongHocPayloadArgs {
   thanh_phan_id?: string | null;
   bo_phan_hong?: string | null;
   su_co?: string | null;
+  /** FK tới su_co.id — nguồn truy ngược sự cố gốc. */
+  su_co_id?: string | null;
   trang_thai?: string;
   nguoi_thuc_hien?: readonly string[];
   vat_tu?: readonly { vat_tu_id: string; kho_id: string; so_luong: number }[];
@@ -146,6 +148,7 @@ export function buildHongHocPayload(a: BuildHongHocPayloadArgs): Record<string, 
     thanh_phan_id: a.thanh_phan_id ?? null,
     bo_phan_hong: a.bo_phan_hong ?? null,
     su_co: a.su_co ?? null,
+    su_co_id: a.su_co_id ?? null,
     trang_thai: a.trang_thai ?? "Mới",
     nguoi_thuc_hien: [...(a.nguoi_thuc_hien ?? [])],
     vat_tu: (a.vat_tu ?? []).map((v) => ({ ...v })),
