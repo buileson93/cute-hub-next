@@ -1138,9 +1138,49 @@ export function StandardTable<T>({
                       c.sticky && "border-r border-border/20"
                     )}
                   >
-                    <div className="flex items-center justify-between gap-2 overflow-hidden">
-                      <span className="truncate">{c.header || c.label}</span>
+                    <div className="flex items-center justify-between gap-1 overflow-hidden">
+                      <button
+                        type="button"
+                        className={cn(
+                          "flex min-w-0 flex-1 items-center gap-1 text-left uppercase tracking-wider",
+                          "rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                          "hover:text-foreground",
+                        )}
+                        onClick={() =>
+                          setSort((prev) =>
+                            prev?.key !== c.key
+                              ? { key: c.key, dir: "asc" }
+                              : prev.dir === "asc"
+                                ? { key: c.key, dir: "desc" }
+                                : null,
+                          )
+                        }
+                        aria-label={`Sắp xếp theo ${c.header || c.label || c.key}`}
+                      >
+                        <span className="truncate">{c.header || c.label}</span>
+                        {sort?.key === c.key && (
+                          <span aria-hidden className="shrink-0 text-primary">
+                            {sort.dir === "asc" ? "▲" : "▼"}
+                          </span>
+                        )}
+                      </button>
+                      {filterKinds[c.key] && (
+                        <ColumnFilterMenu
+                          label={c.header || c.label || c.key}
+                          kind={filterKinds[c.key]}
+                          textValue={textFilters[c.key] ?? ""}
+                          onTextChange={(v) => setTextFilter(c.key, v)}
+                          options={catOptions[c.key]}
+                          selected={catFilters[c.key]}
+                          onToggleValue={(v) => toggleCat(c.key, v)}
+                          onSelectOnly={(v) => selectOnlyCat(c.key, v)}
+                          onClear={() => clearColumnFilter(c.key)}
+                          sortDir={sort?.key === c.key ? sort.dir : null}
+                          onSort={(dir) => setSort(dir ? { key: c.key, dir } : null)}
+                        />
+                      )}
                     </div>
+
                     <div
                       onMouseDown={(e) => onHandleMouseDown(e, c.key, prefs.widths[c.key] || 150)}
                       className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-primary/30 z-10"
