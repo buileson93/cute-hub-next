@@ -125,110 +125,77 @@ export function TreeView({
     const chips = deviceChips(d.tb);
     const identity = resolveDeviceDisplayIdentity(d.tb);
 
-
     return (
-      <div key={d.tb.ma_thiet_bi} className="space-y-1">
-        <div
-          className={cn(
-            "group flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-muted/50",
-            level > 0 && "ml-4",
-          )}
-        >
-          <div className="flex w-6 items-center justify-center shrink-0">
-            {hasKids ? (
-              <button onClick={() => toggle(tbId)} className="rounded p-0.5 hover:bg-muted">
-                {isExpanded ? (
-                  <ChevronDown className="h-3.5 w-3.5" />
-                ) : (
-                  <ChevronRight className="h-3.5 w-3.5" />
-                )}
-              </button>
-            ) : (
-              <Puzzle className="h-3 w-3 opacity-30" />
-            )}
-          </div>
-          <Cpu className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-          <div
-            role="button"
-            tabIndex={0}
-            title="Mở bảng chỉnh sửa tài sản / thành phần"
-            onClick={() => onOpenEditor("tb", d.tb.ma_thiet_bi)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                onOpenEditor("tb", d.tb.ma_thiet_bi);
-              }
-            }}
-            className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 overflow-hidden rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          ><TruncatedNodeLabel label={identity.primaryLabel} code={d.tb.ma_thiet_bi} identity={identity} />
-            {chips.map((c, i) => (
-              <Badge
-                key={i}
-                variant="outline"
-                className={cn("px-1 py-0 text-[9px]", c.className)}
-                title={c.title}
-              >
-                {c.text}
-              </Badge>
-            ))}
-          </div>
-
-
-          <div className="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100">
-            {canManageNodes && (
-              <button
-                onClick={() => onOpenEditor("tb", d.tb.ma_thiet_bi)}
-                className="rounded p-1 hover:bg-muted"
-                title="Sửa"
-              >
-                <Eye className="h-3.5 w-3.5" />
-              </button>
-            )}
-
-            <button
-              onClick={() => onIncident(htMa)}
-              className="rounded p-1 hover:bg-muted"
-              title="Sự cố"
+      <div key={d.tb.ma_thiet_bi} className="space-y-0.5">
+        <HierarchyRow
+          icon={Cpu}
+          tone="muted"
+          expandable={hasKids}
+          expanded={isExpanded}
+          onToggle={() => toggle(tbId)}
+          toggleLabel={identity.primaryLabel}
+          leafIcon={Puzzle}
+          onActivate={() => onOpenEditor("tb", d.tb.ma_thiet_bi)}
+          activateHint="Mở bảng chỉnh sửa tài sản / thành phần"
+          title={
+            <TruncatedNodeLabel
+              label={identity.primaryLabel}
+              code={d.tb.ma_thiet_bi}
+              identity={identity}
+            />
+          }
+          badges={chips.map((c, i) => (
+            <Badge
+              key={i}
+              variant="outline"
+              className={cn("px-1 py-0 text-[9px]", c.className)}
+              title={c.title}
             >
-              <AlertTriangle className="h-3.5 w-3.5" />
-            </button>
-            <button
-              onClick={() => onMaint(htMa)}
-              className="rounded p-1 hover:bg-muted"
-              title="Bảo trì"
-            >
-              <Wrench className="h-3.5 w-3.5" />
-            </button>
-            <button
-              onClick={() => onRecord("tb", d.tb.ma_thiet_bi, tbLabel(d.tb))}
-              className="rounded p-1 hover:bg-muted"
-              title="Lý lịch tài sản"
-            >
-              <History className="h-3.5 w-3.5" />
-            </button>
-            {d.tb._thanhPhanId && (
-              <button
-                onClick={() =>
-                  setSelectedTp({
-                    vt: {
-                      id: d.tb._thanhPhanId,
-                      ma_thanh_phan: d.tb._thanhPhanMa,
-                      ten: d.tb._thanhPhanTen || "Thành phần",
-                      device: d.tb,
-                    },
-                    htId: htMa,
-                  })
-                }
-                className="rounded p-1 hover:bg-muted"
-                title="Chi tiết thành phần"
-              >
-                <Eye className="h-3.5 w-3.5 text-sky-600" />
-              </button>
-            )}
-          </div>
-        </div>
-        {isExpanded &&
-          d.children.map((c) => renderDevice({ tb: c, children: [] }, htMa, level + 1))}
+              {c.text}
+            </Badge>
+          ))}
+          actions={
+            <>
+              {canManageNodes && (
+                <NodeAction
+                  icon={Eye}
+                  label="Sửa"
+                  onClick={() => onOpenEditor("tb", d.tb.ma_thiet_bi)}
+                />
+              )}
+              <NodeAction icon={AlertTriangle} label="Sự cố" onClick={() => onIncident(htMa)} />
+              <NodeAction icon={Wrench} label="Bảo trì" onClick={() => onMaint(htMa)} />
+              <NodeAction
+                icon={History}
+                label="Lý lịch tài sản"
+                onClick={() => onRecord("tb", d.tb.ma_thiet_bi, tbLabel(d.tb))}
+              />
+              {d.tb._thanhPhanId && (
+                <NodeAction
+                  icon={Eye}
+                  label="Chi tiết thành phần"
+                  className="text-sky-600"
+                  onClick={() =>
+                    setSelectedTp({
+                      vt: {
+                        id: d.tb._thanhPhanId,
+                        ma_thanh_phan: d.tb._thanhPhanMa,
+                        ten: d.tb._thanhPhanTen || "Thành phần",
+                        device: d.tb,
+                      },
+                      htId: htMa,
+                    })
+                  }
+                />
+              )}
+            </>
+          }
+        />
+        {isExpanded && (
+          <HierarchyChildren>
+            {d.children.map((c) => renderDevice({ tb: c, children: [] }, htMa, level + 1))}
+          </HierarchyChildren>
+        )}
       </div>
     );
   };
@@ -236,83 +203,58 @@ export function TreeView({
   const renderSystem = (ht: HtGroup, parentId: string) => {
     const htId = `${parentId}:${ht.ma}`;
     const isExpanded = expanded.has(htId);
+    const htTen = htMind(ht.ma);
 
     return (
-      <div key={ht.ma} className="space-y-1">
-        <div className="group flex items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-muted/50">
-          <button onClick={() => toggle(htId)} className="rounded p-0.5 hover:bg-muted shrink-0">
-            {isExpanded ? (
-              <ChevronDown className="h-3.5 w-3.5" />
-            ) : (
-              <ChevronRight className="h-3.5 w-3.5" />
-            )}
-          </button>
-          <Network className="h-3.5 w-3.5 shrink-0 text-primary" />
-          <div
-            role="button"
-            tabIndex={0}
-            title="Mở bảng chỉnh sửa hệ thống (thêm/sửa/xoá thành phần)"
-            onClick={() => onOpenEditor("ht", ht.ma)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                onOpenEditor("ht", ht.ma);
-              }
-            }}
-            className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 overflow-hidden rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <TruncatedNodeLabel label={htMind(ht.ma)} code={ht.ma} />
-          </div>
-
-          <Badge
-            variant="outline"
-            className="shrink-0 text-[10px] px-1 py-0 h-4 min-w-[1.25rem] justify-center"
-          >
-            {ht.count}
-          </Badge>
-
-          <div className="flex shrink-0 items-center gap-1 opacity-0 group-hover:opacity-100">
-            <button
-              onClick={() => onIncident(ht.ma)}
-              className="rounded p-1 hover:bg-muted"
-              title="Sự cố"
+      <div key={ht.ma} className="space-y-0.5">
+        <HierarchyRow
+          icon={Network}
+          tone="primary"
+          expandable
+          expanded={isExpanded}
+          onToggle={() => toggle(htId)}
+          toggleLabel={htTen}
+          onActivate={() => onOpenEditor("ht", ht.ma)}
+          activateHint="Mở bảng chỉnh sửa hệ thống (thêm/sửa/xoá thành phần)"
+          title={<TruncatedNodeLabel label={htTen} code={ht.ma} />}
+          badges={
+            <Badge
+              variant="outline"
+              className="h-4 min-w-[1.25rem] justify-center px-1 py-0 text-[10px]"
+              title={`${ht.count} tài sản`}
             >
-              <AlertTriangle className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => onMaint(ht.ma)}
-              className="rounded p-1 hover:bg-muted"
-              title="Bảo trì"
-            >
-              <Wrench className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => onHistory(ht.ma)}
-              className="rounded p-1 hover:bg-muted"
-              title="Lý lịch hệ thống"
-            >
-              <History className="h-4 w-4" />
-            </button>
-            {canManageNodes && (
-              <button
-                onClick={() => onOpenEditor("ht", ht.ma)}
-                className="rounded p-1 hover:bg-muted"
-                title="Thông tin"
-              >
-                <Eye className="h-4 w-4" />
-              </button>
-            )}
-
-          </div>
-        </div>
+              {ht.count}
+            </Badge>
+          }
+          actions={
+            <>
+              <NodeAction icon={AlertTriangle} label="Sự cố" onClick={() => onIncident(ht.ma)} />
+              <NodeAction icon={Wrench} label="Bảo trì" onClick={() => onMaint(ht.ma)} />
+              <NodeAction
+                icon={History}
+                label="Lý lịch hệ thống"
+                onClick={() => onHistory(ht.ma)}
+              />
+              {canManageNodes && (
+                <NodeAction
+                  icon={Eye}
+                  label="Thông tin"
+                  onClick={() => onOpenEditor("ht", ht.ma)}
+                />
+              )}
+            </>
+          }
+        />
 
         {isExpanded && (
-          <div className="ml-6 border-l pl-2 space-y-1">
+          <HierarchyChildren>
             {ht.devices.map((d) => renderDevice(d, ht.ma, 0))}
             {ht.devices.length === 0 && (
-              <p className="py-2 text-xs italic text-muted-foreground">Trống</p>
+              <p className="px-2 py-1.5 text-xs italic text-muted-foreground">
+                Hệ thống chưa có tài sản/thành phần nào.
+              </p>
             )}
-          </div>
+          </HierarchyChildren>
         )}
       </div>
     );
@@ -321,52 +263,46 @@ export function TreeView({
   const renderGroup = (nh: NhGroup, plId: string) => {
     const nhId = `nh:${plId}:${nh.ma}`;
     const isExpanded = expanded.has(nhId);
+    const nhTen = nhLabel(nh.ma);
 
     return (
-      <div key={nh.ma} className="space-y-1">
-        <div className="group flex items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-muted/50">
-          <button onClick={() => toggle(nhId)} className="rounded p-0.5 hover:bg-muted shrink-0">
-            {isExpanded ? (
-              <ChevronDown className="h-3.5 w-3.5" />
-            ) : (
-              <ChevronRight className="h-3.5 w-3.5" />
-            )}
-          </button>
-          <FolderTree className="h-3.5 w-3.5 shrink-0 text-violet-500" />
-          <div
-            role="button"
-            tabIndex={0}
-            title="Mở bảng chỉnh sửa nhóm hệ thống"
-            onClick={() => onOpenEditor("nh", nh.ma)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                onOpenEditor("nh", nh.ma);
-              }
-            }}
-            className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 overflow-hidden rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <TruncatedNodeLabel label={nhLabel(nh.ma)} code={nh.ma} />
-          </div>
-
-          <Badge
-            variant="secondary"
-            className="shrink-0 text-[10px] px-1 py-0 h-4 min-w-[1.25rem] justify-center"
-          >
-            {nh.count}
-          </Badge>
-        </div>
+      <div key={nh.ma} className="space-y-0.5">
+        <HierarchyRow
+          icon={FolderTree}
+          tone="accent"
+          expandable
+          expanded={isExpanded}
+          onToggle={() => toggle(nhId)}
+          toggleLabel={nhTen}
+          onActivate={() => onOpenEditor("nh", nh.ma)}
+          activateHint="Mở bảng chỉnh sửa nhóm hệ thống"
+          title={<TruncatedNodeLabel label={nhTen} code={nh.ma} />}
+          badges={
+            <Badge
+              variant="secondary"
+              className="h-4 min-w-[1.25rem] justify-center px-1 py-0 text-[10px]"
+              title={`${nh.count} hệ thống`}
+            >
+              {nh.count}
+            </Badge>
+          }
+        />
         {isExpanded && (
-          <div className="ml-6 space-y-1 border-l pl-2">
+          <HierarchyChildren>
             {nh.systems.map((ht) => renderSystem(ht, nhId))}
-          </div>
+          </HierarchyChildren>
         )}
       </div>
     );
   };
 
   return (
-    <div className="space-y-4 py-2">
+    <div className="space-y-3 py-2">
+      {tree.length === 0 && (
+        <p className="rounded-lg border border-dashed px-3 py-6 text-center text-sm text-muted-foreground">
+          Chưa có dữ liệu phân cấp để hiển thị.
+        </p>
+      )}
       {tree.map((pl) => {
         const plId = `pl:${pl.id}`;
         const isExpanded = expanded.has(plId);
@@ -376,41 +312,39 @@ export function TreeView({
           <div
             key={pl.id}
             className={cn(
-              "rounded-lg border bg-card p-2 shadow-sm",
+              "rounded-xl border bg-card p-2 shadow-sm transition-shadow hover:shadow-md",
               isStopped && "border-dashed opacity-80",
             )}
           >
-            <div className="flex items-center gap-2">
-              <button onClick={() => toggle(plId)} className="rounded p-1 hover:bg-muted shrink-0">
-                {isExpanded ? (
-                  <ChevronDown className="h-3.5 w-3.5" />
-                ) : (
-                  <ChevronRight className="h-3.5 w-3.5" />
-                )}
-              </button>
-              <Boxes
-                className={cn(
-                  "h-4 w-4 shrink-0",
-                  isStopped ? "text-muted-foreground" : "text-rose-500",
-                )}
-              />
-              <span className="text-sm font-bold tracking-tight">{pl.ten}</span>
-              <Badge
-                variant="outline"
-                className="ml-auto text-[10px] px-1 py-0 h-4 min-w-[1.5rem] justify-center bg-muted/30"
-              >
-                {pl.count}
-              </Badge>
-            </div>
+            <HierarchyRow
+              icon={Boxes}
+              tone={isStopped ? "muted" : "danger"}
+              expandable
+              expanded={isExpanded}
+              onToggle={() => toggle(plId)}
+              toggleLabel={pl.ten}
+              title={<span className="font-semibold tracking-tight">{pl.ten}</span>}
+              badges={
+                <Badge
+                  variant="outline"
+                  className="h-4 min-w-[1.5rem] justify-center bg-muted/30 px-1 py-0 text-[10px]"
+                  title={`${pl.count} hệ thống`}
+                >
+                  {pl.count}
+                </Badge>
+              }
+              className="hover:bg-transparent"
+            />
 
             {isExpanded && (
-              <div className="mt-4 space-y-2 pl-2">
+              <HierarchyChildren className="mt-1.5">
                 {pl.fields.flatMap((lv) => lv.groups).map((nh) => renderGroup(nh, pl.id))}
-              </div>
+              </HierarchyChildren>
             )}
           </div>
         );
       })}
+
 
       {selectedTp && (
         <ThanhPhanChiTietDialog
