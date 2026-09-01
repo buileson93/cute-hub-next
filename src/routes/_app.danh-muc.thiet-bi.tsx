@@ -72,6 +72,8 @@ import {
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { PageHeader } from "@/components/mirats/PageHeader";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
+import { PageBody } from "@/components/mirats/PageBody";
 import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
 import { THIET_BI_PRESETS } from "@/lib/mirats/ui/view-presets";
 import { getTrangThaiToken } from "@/lib/mirats/ui/status-tokens";
@@ -1099,21 +1101,6 @@ function DanhMucThietBiPage() {
     [EXPORT_MAP, FULL_EXPORT_KEYS],
   );
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center gap-2 p-16 text-muted-foreground">
-        <Loader2 className="h-5 w-5 animate-spin" /> Đang tải danh mục tài sản…
-      </div>
-    );
-  }
-  if (error) {
-    return (
-      <div className="p-8 text-center text-sm text-destructive">
-        Không tải được dữ liệu tài sản.
-      </div>
-    );
-  }
-
   // ---- KPI Stats & Click-to-filter ----
   const kpiStats = useMemo(() => {
     const total = totalCount;
@@ -1163,14 +1150,27 @@ function DanhMucThietBiPage() {
     ];
   }, [devices]);
 
-  return (
-    <div className="flex h-full flex-col gap-4 overflow-hidden p-4">
-      <div className="flex items-center justify-between">
-        <div className="text-[11px] font-mono text-muted-foreground bg-muted/30 px-2 py-0.5 rounded border border-dashed">
-          PHASE 10H: Paged Load ({devices.length}/{totalCount})
-        </div>
-      </div>
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center gap-2 p-16 text-muted-foreground">
+        <Loader2 className="h-5 w-5 animate-spin" /> Đang tải danh mục tài sản…
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="p-8 text-center text-sm text-destructive">
+        Không tải được dữ liệu tài sản.
+      </div>
+    );
+  }
+  return (
+    // Khung chuẩn PageFrame → PageBody: PageBody sở hữu cuộn dọc, khối bảng
+    // bên dưới nhận chiều cao còn lại nên StandardTable tự cuộn (thanh cuộn
+    // ngang luôn nằm trong tầm nhìn thay vì bị đẩy xuống đáy trang).
+    <PageFrame>
+      <PageBody className="flex flex-col gap-4">
       {/* KPI Header */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {kpiStats.map((kpi) => (
@@ -1244,8 +1244,8 @@ function DanhMucThietBiPage() {
         }
       />
 
-      <Card>
-        <CardContent className="p-3">
+      <Card className="flex min-h-[40rem] flex-1 flex-col overflow-hidden">
+        <CardContent className="flex min-h-0 flex-1 flex-col p-3">
           {/* Thanh tìm kiếm & lọc nhanh */}
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <div className="relative min-w-[240px] flex-1 sm:max-w-sm">
@@ -1863,6 +1863,7 @@ function DanhMucThietBiPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+      </PageBody>
+    </PageFrame>
   );
 }

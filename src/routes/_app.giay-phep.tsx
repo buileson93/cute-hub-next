@@ -38,6 +38,8 @@ import { GpktBulkImportDialog } from "@/components/mirats/GpktBulkImportDialog";
 import { AssetRegistryBook } from "@/components/mirats/tuan-thu/AssetRegistryBook";
 import { ComplianceTimeline } from "@/components/mirats/tuan-thu/ComplianceTimeline";
 import { cn } from "@/lib/utils";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
+import { PageBody } from "@/components/mirats/PageBody";
 
 export const Route = createFileRoute("/_app/giay-phep")({
   head: () => ({
@@ -192,7 +194,7 @@ function GiayPhepPage() {
 
   if (isError) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 space-y-4">
+      <div className="flex h-full flex-col items-center justify-center p-12 space-y-4">
         <AlertTriangle className="h-12 w-12 text-red-500" />
         <h2 className="text-xl font-semibold">Không tải được dữ liệu giấy phép</h2>
         <p className="text-muted-foreground">Vui lòng kiểm tra lại kết nối mạng hoặc quyền truy cập.</p>
@@ -202,7 +204,10 @@ function GiayPhepPage() {
   }
 
   return (
-    <div className="flex flex-col p-4 md:p-6 gap-4">
+    // Khung chuẩn: PageFrame giữ chiều cao viewport, PageBody là chủ sở hữu
+    // cuộn dọc duy nhất của trang (trước đây trang tự trôi dài nên thanh cuộn
+    // ngang của bảng bị đẩy xuống đáy nội dung, người dùng không thấy).
+    <PageFrame>
       <PageHeader
         icon={ShieldCheck}
         title="Giấy phép & Tuân thủ"
@@ -230,6 +235,7 @@ function GiayPhepPage() {
         }
       />
 
+      <PageBody className="flex flex-col gap-4">
       {isLoading ? (
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
@@ -378,7 +384,8 @@ function GiayPhepPage() {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+      </PageBody>
+    </PageFrame>
   );
 }
 
