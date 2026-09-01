@@ -354,14 +354,15 @@ export function NodeEditorSheet({
 
                 </div>
               )}
-            </div>
+            </FormSection>
           )}
 
           {target?.kind === "ht" && (
-            <div className="space-y-2 rounded-md border p-3">
-              <div className="flex items-center gap-1.5 text-sm font-medium">
-                <Cpu className="h-4 w-4 text-sky-600" /> Thành phần hệ thống
-              </div>
+            <FormSection
+              title="Thành phần hệ thống"
+              icon={Cpu}
+              description="Thành phần có thể chưa được gắn tài sản. Gỡ liên kết không xoá tài sản."
+            >
               <ThanhPhanManager heThongId={physKeyValue("ht", target.ma)} canManage={canManage} />
             </div>
           )}
