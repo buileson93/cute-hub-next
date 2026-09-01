@@ -43,6 +43,11 @@ import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageBody } from "@/components/mirats/PageBody";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { CodeBadge } from "@/components/mirats/CodeBadge";
+import {
+  HierarchyRow,
+  HierarchyChildren,
+  HierarchySkeleton,
+} from "@/components/mirats/hierarchy/HierarchyNode";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -205,7 +210,9 @@ export function CatalogTable({
   const {
     data: rows,
     isLoading,
+    isFetching,
     error,
+    refetch,
   } = useQuery({
     queryKey: ["catalog", table],
     queryFn: async (): Promise<Row[]> => {
@@ -1186,13 +1193,14 @@ function DonViTree({
   }
   return (
     <div className="overflow-auto rounded-lg border bg-card p-3 sm:p-5">
-      <div className="space-y-1">
+      <div className="space-y-1" role="tree" aria-label="Cây danh mục">
         {rootRows.map((r) => (
           <DonViNode
             key={r.id}
             row={r}
             childrenMap={childrenMap}
             depth={0}
+            ancestors={EMPTY_ANCESTORS}
             canManage={canManage}
             childLabel={childLabel}
             extraRowActions={extraRowActions}
@@ -1207,10 +1215,16 @@ function DonViTree({
   );
 }
 
+/** Tập rỗng dùng chung để tránh tạo Set mới mỗi lần render gốc. */
+const EMPTY_ANCESTORS: ReadonlySet<string> = new Set<string>();
+/** Chặn cây quá sâu do dữ liệu lỗi (phòng thủ, không giới hạn nghiệp vụ thật). */
+const MAX_TREE_DEPTH = 24;
+
 function DonViNode({
   row,
   childrenMap,
   depth,
+  ancestors,
   canManage,
   childLabel,
   extraRowActions,
@@ -1222,6 +1236,8 @@ function DonViNode({
   row: Row;
   childrenMap: Map<string | null, Row[]>;
   depth: number;
+  /** Chuỗi id tổ tiên — dùng để phát hiện quan hệ cha/con vòng lặp. */
+  ancestors: ReadonlySet<string>;
   canManage: boolean;
   childLabel: string;
   extraRowActions?: (r: { id: string; ma: string | null; ten: string }) => ReactNode;
@@ -1230,106 +1246,113 @@ function DonViNode({
   onInfo: (r: Row) => void;
   onDelete: (r: Row) => void;
 }) {
-  const kids = childrenMap.get(row.id) ?? [];
+  // Dữ liệu phân cấp hỏng (A là cha của B và ngược lại) sẽ gây đệ quy vô hạn.
+  // Cắt nhánh tại điểm lặp và báo rõ thay vì để trang treo.
+  const cyclic = ancestors.has(row.id);
+  const tooDeep = depth >= MAX_TREE_DEPTH;
+  const kids = cyclic || tooDeep ? [] : (childrenMap.get(row.id) ?? []);
   const hasKids = kids.length > 0;
   const [open, setOpen] = useState(true);
+  const nextAncestors = useMemo(() => {
+    const s = new Set(ancestors);
+    s.add(row.id);
+    return s;
+  }, [ancestors, row.id]);
+
   return (
-    <div>
-      <div
-        className="group flex items-center gap-2 rounded-md border border-transparent px-2 py-1.5 transition-colors hover:border-border hover:bg-muted/40"
-        style={{ marginLeft: depth * 20 }}
-      >
-        {hasKids ? (
-          <button
-            onClick={() => setOpen((v) => !v)}
-            className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-muted"
-            title={open ? "Thu gọn" : "Mở rộng"}
-          >
-            {open ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-          </button>
-        ) : (
-          <span className="inline-block h-5 w-5 shrink-0" />
-        )}
-        <span
-          className={cn(
-            "h-2 w-2 shrink-0 rounded-full",
-            depth === 0 ? "bg-primary" : "bg-muted-foreground/40",
-          )}
-        />
-        <span
-          className={cn(
-            "truncate",
-            depth === 0 ? "font-semibold" : "font-medium",
-            !row.active && "opacity-50",
-          )}
-        >
-          {row.ten}
-        </span>
-        {row.ma && !hideCode && <CodeBadge code={row.ma} className="mr-0.5" />}
-        {row.soThietBi > 0 && (
-          <Badge variant="secondary" className="gap-1 text-[10px]">
-            <Boxes className="h-3 w-3" /> {row.soThietBi.toLocaleString("vi-VN")}
-          </Badge>
-        )}
-        {hasKids && (
-          <span className="text-[11px] text-muted-foreground">
-            · {kids.length} {childLabel} con
-          </span>
-        )}
-        <div className="ml-auto flex shrink-0 items-center gap-0.5">
-          <AppTooltip noiDung={`Xem ${row.soThietBi} tài sản đang ở "${row.ten}"`}>
-            <Button
-              size="icon"
-              variant="ghost"
-              className="h-7 w-7 text-muted-foreground hover:text-primary"
-              onClick={() => onInfo(row)}
-            >
-              <Info className="h-3.5 w-3.5" />
-              <span className="sr-only">Chi tiết tài sản</span>
-            </Button>
-          </AppTooltip>
-          {extraRowActions?.(row)}
-          {canManage && (
-            <div className="flex items-center opacity-0 transition-opacity group-hover:opacity-100">
-              <AppTooltip noiDung="Chỉnh sửa thông tin">
-                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => onEdit(row)}>
-                  <Pencil className="h-3.5 w-3.5" />
-                  <span className="sr-only">Sửa</span>
-                </Button>
-              </AppTooltip>
-              <AppTooltip noiDung="Xoá mục này">
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-7 w-7 text-destructive"
-                  onClick={() => onDelete(row)}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                  <span className="sr-only">Xoá</span>
-                </Button>
-              </AppTooltip>
-            </div>
-          )}
-        </div>
-      </div>
+    <div role="treeitem" aria-expanded={hasKids ? open : undefined}>
+      <HierarchyRow
+        icon={depth === 0 ? Building2 : Layers}
+        tone={depth === 0 ? "primary" : "muted"}
+        surface="card"
+        disabled={!row.active}
+        title={row.ten}
+        toggleLabel={row.ten}
+        expandable={hasKids}
+        expanded={open}
+        onToggle={() => setOpen((v) => !v)}
+        onActivate={canManage ? () => onEdit(row) : undefined}
+        activateHint={canManage ? `Chỉnh sửa "${row.ten}"` : undefined}
+        meta={
+          <>
+            {row.ma && !hideCode ? <CodeBadge code={row.ma} /> : null}
+            {hasKids ? (
+              <span>
+                {kids.length} {childLabel} con
+              </span>
+            ) : null}
+            {!row.active ? <span>Ngừng dùng</span> : null}
+            {cyclic ? (
+              <span className="text-destructive">Phân cấp vòng lặp — đã dừng hiển thị nhánh</span>
+            ) : null}
+          </>
+        }
+        badges={
+          row.soThietBi > 0 ? (
+            <Badge variant="secondary" className="gap-1 text-[10px]">
+              <Boxes className="h-3 w-3" /> {row.soThietBi.toLocaleString("vi-VN")}
+            </Badge>
+          ) : null
+        }
+        actions={
+          <>
+            <AppTooltip noiDung={`Xem ${row.soThietBi} tài sản đang ở "${row.ten}"`}>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-7 w-7 text-muted-foreground hover:text-primary"
+                onClick={() => onInfo(row)}
+              >
+                <Info className="h-3.5 w-3.5" />
+                <span className="sr-only">Chi tiết tài sản</span>
+              </Button>
+            </AppTooltip>
+            {extraRowActions?.(row)}
+            {canManage && (
+              <>
+                <AppTooltip noiDung="Chỉnh sửa thông tin">
+                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => onEdit(row)}>
+                    <Pencil className="h-3.5 w-3.5" />
+                    <span className="sr-only">Sửa</span>
+                  </Button>
+                </AppTooltip>
+                <AppTooltip noiDung="Xoá mục này">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-7 w-7 text-destructive"
+                    onClick={() => onDelete(row)}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span className="sr-only">Xoá</span>
+                  </Button>
+                </AppTooltip>
+              </>
+            )}
+          </>
+        }
+      />
       {hasKids && open && (
-        <div className="border-l border-dashed" style={{ marginLeft: depth * 20 + 12 }}>
-          {kids.map((k) => (
-            <DonViNode
-              key={k.id}
-              row={k}
-              childrenMap={childrenMap}
-              depth={depth + 1}
-              canManage={canManage}
-              childLabel={childLabel}
-              extraRowActions={extraRowActions}
-              hideCode={hideCode}
-              onEdit={onEdit}
-              onInfo={onInfo}
-              onDelete={onDelete}
-            />
-          ))}
-        </div>
+        <HierarchyChildren className="mt-1">
+          <div role="group">
+            {kids.map((k) => (
+              <DonViNode
+                key={k.id}
+                row={k}
+                childrenMap={childrenMap}
+                depth={depth + 1}
+                ancestors={nextAncestors}
+                canManage={canManage}
+                childLabel={childLabel}
+                extraRowActions={extraRowActions}
+                hideCode={hideCode}
+                onEdit={onEdit}
+                onInfo={onInfo}
+                onDelete={onDelete}
+              />
+            ))}
+          </div>
+        </HierarchyChildren>
       )}
     </div>
   );
