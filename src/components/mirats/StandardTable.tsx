@@ -112,6 +112,20 @@ export interface ColumnDef<T> {
 
 export type StdColumn<T> = ColumnDef<T>;
 
+/**
+ * Lấy **giá trị gốc (raw/domain value)** của một cột cho một dòng.
+ * Ưu tiên accessor `value`, nếu cột không khai báo thì đọc thẳng trường cùng
+ * tên `key` trong row model. Nhờ vậy các cột chỉ khai báo `key` (ví dụ
+ * `nhomHeThong`, `phanLoai`) vẫn có dữ liệu để hiển thị, lọc, sắp xếp và xuất
+ * file — không bao giờ phải suy ngược từ chuỗi hiển thị đã gộp.
+ */
+export function columnRawValue<T>(col: ColumnDef<T>, row: T): unknown {
+  if (col.value) return col.value(row);
+  if (row && typeof row === "object") return (row as Record<string, unknown>)[col.key];
+  return undefined;
+}
+
+
 interface StandardTableProps<T> {
   rows: T[];
   columns: ColumnDef<T>[];
@@ -479,9 +493,10 @@ export function StandardTable<T>({
   }, [rows, selected, getRowIdInternal]);
 
   const colText = useCallback((col: ColumnDef<T>, row: T): string => {
-    const v = col.value ? col.value(row) : "";
+    const v = columnRawValue(col, row);
     return v == null ? "" : String(v);
   }, []);
+
 
   const globalNeedle = useMemo(() => normalize(globalQuery).trim(), [globalQuery]);
 
@@ -519,13 +534,16 @@ export function StandardTable<T>({
         out[c.key] = c.filter;
         continue;
       }
-      if (!c.value || c.type === "actions") continue;
+      if (c.type === "actions") continue;
       const distinct = new Set<string>();
       for (const r of sample) {
         distinct.add(colText(c, r));
         if (distinct.size > 25) break;
       }
+      // Cột thuần JSX (không có giá trị gốc) thì không sinh bộ lọc.
+      if (distinct.size === 0 || (distinct.size === 1 && distinct.has(""))) continue;
       out[c.key] = distinct.size > 25 ? "text" : "cat";
+
     }
     return out;
   }, [columns, dedupedRows, colText]);
@@ -607,7 +625,7 @@ export function StandardTable<T>({
     const col = columns.find((c) => c.key === sort.key);
     if (!col) return filtered;
     const get = (r: T) => {
-      const v = col.sortValue ? col.sortValue(r) : col.value ? col.value(r) : "";
+      const v = col.sortValue ? col.sortValue(r) : columnRawValue(col, r);
       return v == null ? "" : v;
     };
     const dir = sort.dir === "asc" ? 1 : -1;
@@ -880,7 +898,7 @@ export function StandardTable<T>({
   const exportCols = columns;
 
   function renderAutoCell(c: ColumnDef<T>, r: T) {
-    const val = c.value?.(r);
+    const val = columnRawValue(c, r);
     if (val === undefined || val === null) return KHONG_CO;
     switch (c.type) {
       case "id": return <CodeBadge code={String(val)} title={String(val)} />;
@@ -909,7 +927,11 @@ export function StandardTable<T>({
         );
       case "number": return <span className="tabular-nums font-mono text-right w-full inline-block pr-1 truncate">{fmtSo(Number(val))}</span>;
       case "currency": return <span className="tabular-nums font-mono text-right w-full inline-block pr-1 truncate">{fmtVND(Number(val))}</span>;
-      default: return String(val);
+      default:
+        // Giá trị dạng object/array không có accessor riêng → không ép chuỗi thô.
+        if (typeof val === "object") return KHONG_CO;
+        return String(val);
+
     }
   }
 
