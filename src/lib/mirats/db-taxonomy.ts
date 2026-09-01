@@ -15,7 +15,7 @@ import { useQuery, type QueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchAllRows } from "@/lib/mirats/paginate";
 import type { ThietBi } from "@/lib/mirats/types";
-import { parseHtSysMa, NONE_HT } from "@/components/mirats/he-thong-cay/utils";
+import { parseHtSysMa, NONE_HT, displayLabel } from "@/components/mirats/he-thong-cay/utils";
 
 
 /** Tài sản lấy từ CSDL, kèm mã phân lớp taxonomy để dựng cây. */
@@ -310,10 +310,14 @@ export function resolveHeThong(ref: string | null | undefined, taxonomy: DbTaxon
   const sysId = parsed.sysName;
   
   if (!sysId || sysId === NONE_HT) {
-    return { id: NONE_HT, ma: NONE_HT, label: "Hệ thống khác" };
+    return { id: NONE_HT, ma: NONE_HT, label: "Chưa gán hệ thống" };
   }
 
-  const label = taxonomy?.htNameMap.get(sysId) || taxonomy?.htMaMap.get(sysId) || sysId;
+  const label = displayLabel(
+    taxonomy?.htNameMap.get(sysId) || taxonomy?.htMaMap.get(sysId),
+    sysId,
+    "Hệ thống chưa đặt tên",
+  );
   const canonicalMa = taxonomy?.htList.find(h => h.id === sysId || h.ma === sysId)?.ma || sysId;
   
   return { id: sysId, ma: canonicalMa, label };
