@@ -896,10 +896,51 @@ export function StandardTable<T>({
 
   return (
     <div className={cn("flex flex-col gap-3 min-h-0 h-full w-full overflow-hidden", className)}>
-      {(toolbar || toolbarRight || toolbarLeft) && (
+      {(
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-1 shrink-0">
           <div className="flex items-center gap-2 flex-1 w-full sm:w-auto">
             {toolbarLeft}
+            {/* Ô tìm kiếm toàn bộ dữ liệu (không chỉ các dòng đang hiển thị) */}
+            <div className="relative w-full sm:w-64">
+              <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={globalQuery}
+                onChange={(e) => setGlobalQuery(e.target.value)}
+                placeholder={`Tìm trong toàn bộ ${countUnit || "dữ liệu"}…`}
+                aria-label="Tìm kiếm toàn bộ dữ liệu trong bảng"
+                className="h-8 pl-7 pr-7 text-[12px]"
+              />
+              {globalQuery && (
+                <button
+                  type="button"
+                  aria-label="Xóa từ khóa tìm kiếm"
+                  onClick={() => setGlobalQuery("")}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:text-foreground"
+                >
+                  <XIcon className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+            {isLoadingAllForSearch && (
+              <span className="flex items-center gap-1 whitespace-nowrap text-[11px] text-muted-foreground">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                Đang tải toàn bộ dữ liệu…
+                {infiniteScroll?.totalCount
+                  ? ` (${dedupedRows.length}/${infiniteScroll.totalCount})`
+                  : ""}
+              </span>
+            )}
+            {hasFilter && !isLoadingAllForSearch && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-8 shrink-0 px-2 text-[11px]"
+                onClick={clearAllFilters}
+              >
+                <XIcon className="mr-1 h-3 w-3" />
+                Xóa lọc ({fullDisplay.length})
+              </Button>
+            )}
             {toolbar && renderToolbar(toolbar, {
               filteredRows: fullDisplay,
               visibleColumns: shownCols,
@@ -909,6 +950,7 @@ export function StandardTable<T>({
               clear: clearSelection,
             })}
           </div>
+
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
             {/* Chế độ cột: Gọn (mặc định) ↔ Tất cả cột */}
             <div
