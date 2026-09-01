@@ -12,7 +12,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
   const reduce = useReducedMotion();
 
   if (reduce) {
-    return <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto">{children}</div>;
+    return <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden">{children}</div>;
   }
 
   return (
@@ -24,7 +24,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
         duration: getMotionDurationSeconds("base"),
         ease: getMotionEase("standard"),
       }}
-      className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto"
+      className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto overflow-x-hidden"
     >
       {children}
     </motion.div>

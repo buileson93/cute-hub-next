@@ -1096,18 +1096,20 @@ export function StandardTable<T>({
           )}
         </div>
       ) : (
+        // Một chủ sở hữu cuộn dọc (outer) + một chủ sở hữu cuộn ngang (inner,
+        // cao bằng nội dung) → bảng ngắn không sinh thanh cuộn ngang thứ hai.
         <div 
-          className="relative min-h-0 border rounded-md shadow-none bg-background astryx-table-container flex flex-col flex-1 overflow-auto mirats-scroll mirats-table-scroll-container will-change-transform" 
+          className="relative min-h-0 border rounded-md shadow-none bg-background astryx-table-container flex flex-col flex-1 mirats-scroll will-change-transform" 
           ref={scrollContainerRef}
           style={{
-            overflowX: 'auto',
+            overflowX: 'hidden',
             overflowY: 'auto',
             contain: 'content',
             WebkitOverflowScrolling: 'touch',
             transform: 'translate3d(0,0,0)'
           }}
         >
-
+          <div className="w-full max-w-full shrink-0 overflow-x-auto overflow-y-visible mirats-scroll mirats-table-scroll-container">
           <Table 
             className="border-collapse border-separate border-spacing-0 w-full mirats-standard-table-element"
             style={{
@@ -1292,6 +1294,8 @@ export function StandardTable<T>({
               )}
             </TableBody>
           </Table>
+          </div>
+          
           
           {infiniteScroll?.isFetchingNextPage && (
             <div className="flex items-center justify-center py-6 gap-3 text-muted-foreground bg-background/50 border-t backdrop-blur-sm sticky bottom-0 z-20">
