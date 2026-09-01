@@ -6,6 +6,7 @@ import { Icon } from "@/components/mirats/ui/Icon";
 import { useUnifiedDashboardStats } from "@/lib/mirats/use-dashboard-unified";
 import { getCompletenessStats, getCompletenessOverview } from "@/lib/mirats/completeness.functions";
 import { HeartBeatStrip } from "@/components/mirats/dashboard/HeartBeatStrip";
+import { ScopeSummaryStrip } from "@/components/mirats/dashboard/ScopeSummaryStrip";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { DashboardGrid } from "@/components/mirats/dashboard/grid/DashboardGrid";
