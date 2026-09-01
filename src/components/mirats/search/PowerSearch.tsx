@@ -37,7 +37,26 @@ import { useNavigate } from "@tanstack/react-router";
 import { DocViewerDialog } from "../DocViewerDialog";
 import { storage } from "@/lib/storage";
 import { supabase } from "@/integrations/supabase/client";
-import { workspaces, type NavItem } from "@/lib/mirats/nav-contract";
+import {
+  buildCommands,
+  filterByRole,
+  groupCommands,
+  pushRecentId,
+  rankCommands,
+  readRecentIds,
+  writeRecentIds,
+  type AppCommand,
+} from "@/lib/mirats/command-palette/registry";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useSession } from "@/hooks/use-session";
 import { toast } from "sonner";
 
@@ -85,37 +104,33 @@ export function PowerSearch({
   const { search: searchOcr, isReady: ocrReady, isSyncing: ocrSyncing } = useOcrSearch();
   const { hasRole } = useSession();
 
-  // 1. Phẳng hoá toàn bộ danh mục từ nav-contract để tìm kiếm điều hướng
-  const allNavItems = useMemo(() => {
-    const items: Array<{ to: string; label: string; icon: any; workspace: string }> = [];
-    workspaces.forEach((ws) => {
-      if (ws.roles && !ws.roles.some((r) => hasRole(r))) return;
-      ws.groups.forEach((group) => {
-        group.items.forEach((item) => {
-          if (item.divider) return;
-          if (item.roles && !item.roles.some((r) => hasRole(r))) return;
-          items.push({ to: item.to, label: item.label, icon: item.icon, workspace: ws.label });
-          item.children?.forEach((child) => {
-            if (child.divider) return;
-            if (child.roles && !child.roles.some((r) => hasRole(r))) return;
-            items.push({ to: child.to, label: child.label, icon: child.icon, workspace: ws.label });
-          });
-        });
-      });
-    });
-    return items;
-  }, [hasRole]);
+  // 1. Toàn bộ lệnh của hệ thống (điều hướng lấy từ nav-contract) đã lọc quyền.
+  const commands = useMemo(() => filterByRole(buildCommands(), hasRole), [hasRole]);
 
-  // 2. Lọc danh mục theo query
-  const filteredNavItems = useMemo(() => {
-    if (!query.trim()) return [];
-    const q = query.toLowerCase();
-    return allNavItems
-      .filter(
-        (item) => item.label.toLowerCase().includes(q) || item.workspace.toLowerCase().includes(q),
-      )
-      .slice(0, 5);
-  }, [query, allNavItems]);
+  // 2. Lịch sử lệnh gần đây (localStorage, chịu lỗi khi bị chặn).
+  const [recentIds, setRecentIds] = useState<string[]>([]);
+  useEffect(() => {
+    if (isOpen) setRecentIds(readRecentIds(typeof window === "undefined" ? null : localStorage));
+  }, [isOpen]);
+
+  const recentCommands = useMemo(
+    () =>
+      recentIds
+        .map((id) => commands.find((c) => c.id === id))
+        .filter((c): c is AppCommand => Boolean(c))
+        .map((c) => ({ ...c, group: "recent" as const })),
+    [recentIds, commands],
+  );
+
+  const matchedCommands = useMemo(
+    () => (query.trim() ? rankCommands(commands, query, 12) : []),
+    [commands, query],
+  );
+
+  const commandGroups = useMemo(
+    () => groupCommands(query.trim() ? matchedCommands : [...recentCommands, ...commands]),
+    [query, matchedCommands, recentCommands, commands],
+  );
 
   const ocrResults = React.useMemo(() => {
     if (!query.trim()) return [];
@@ -182,6 +197,46 @@ export function PowerSearch({
       }
     },
     [navigate, setIsOpen],
+  );
+
+  const [pendingCommand, setPendingCommand] = useState<AppCommand | null>(null);
+
+  const executeCommand = useCallback(
+    (cmd: AppCommand) => {
+      setRecentIds((prev) => {
+        const next = pushRecentId(prev, cmd.id);
+        writeRecentIds(typeof window === "undefined" ? null : localStorage, next);
+        return next;
+      });
+      setIsOpen(false);
+      if (cmd.target.kind === "navigate") {
+        navigate({ to: cmd.target.to as string });
+        return;
+      }
+      if (cmd.target.action === "qr-scan") {
+        window.dispatchEvent(new CustomEvent("mirats:open-qr-scanner"));
+        return;
+      }
+      // Đăng xuất: dùng đúng luồng auth hiện có.
+      void supabase.auth
+        .signOut()
+        .then(() => navigate({ to: "/auth" }))
+        .catch(() => toast.error("Không thể đăng xuất, vui lòng thử lại"));
+    },
+    [navigate, setIsOpen],
+  );
+
+  /** Lệnh có hậu quả phải qua bước xác nhận, không chạy do bấm nhầm. */
+  const runCommand = useCallback(
+    (cmd: AppCommand) => {
+      if (cmd.confirm) {
+        setIsOpen(false);
+        setPendingCommand(cmd);
+        return;
+      }
+      executeCommand(cmd);
+    },
+    [executeCommand, setIsOpen],
   );
 
   const handleAction = (action: string) => {
