@@ -45,7 +45,9 @@ export async function fetchThietBi(from: number, to: number, donViCode?: string 
     serial: r.ma_serial || "",
     p_n: r.p_n || "",
     model: r.model || "",
-    don_vi: r.don_vi_id || "", 
+    // Presentation: mã đơn vị (VD "PLK") — KHÔNG dùng UUID để hiển thị.
+    don_vi: dvMap.get(r.don_vi_id)?.ma || "",
+    _donViTen: dvMap.get(r.don_vi_id)?.ten || "",
     he_thong: r.he_thong_id || "",
     nhom_he_thong: r.nhom_he_thong_id || "",
     loai: "",
