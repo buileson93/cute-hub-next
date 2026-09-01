@@ -494,16 +494,50 @@ export function StandardTable<T>({
     [columns, colText, globalNeedle],
   );
 
+  const dedupedRows = useMemo(() => {
+    const seen = new Set<string>();
+    return localRows.filter((r) => {
+      const id = getRowIdInternal(r);
+      if (seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    });
+  }, [localRows, getRowIdInternal]);
+
+  /**
+   * Kiểu lọc hiệu lực của từng cột. Nếu cột không khai báo `filter`, hệ thống
+   * tự suy luận: ít giá trị khác nhau → droplist ("cat"), ngược lại → ô tìm kiếm.
+   */
+  const filterKinds = useMemo(() => {
+    const sample = dedupedRows.slice(0, 500);
+    const out: Record<string, "text" | "cat"> = {};
+    for (const c of columns) {
+      if (c.filter) {
+        out[c.key] = c.filter;
+        continue;
+      }
+      if (!c.value || c.type === "actions") continue;
+      const distinct = new Set<string>();
+      for (const r of sample) {
+        distinct.add(colText(c, r));
+        if (distinct.size > 25) break;
+      }
+      out[c.key] = distinct.size > 25 ? "text" : "cat";
+    }
+    return out;
+  }, [columns, dedupedRows, colText]);
+
   const matchesFilters = useCallback(
     (r: T, exceptKey?: string) => {
       if (!matchesGlobal(r)) return false;
       for (const c of columns) {
         if (c.key === exceptKey) continue;
-        if (c.filter === "cat") {
+        const kind = filterKinds[c.key];
+        if (kind === "cat") {
           const sel = catFilters[c.key];
           const text = colText(c, r);
           if (sel && sel.size > 0 && !sel.has(text)) return false;
-        } else if (c.filter === "text") {
+        } else if (kind === "text") {
           const val = textFilters[c.key];
           if (val) {
             const t = normalize(val).trim();
@@ -514,18 +548,8 @@ export function StandardTable<T>({
       }
       return true;
     },
-    [columns, catFilters, textFilters, colText, matchesGlobal],
+    [columns, catFilters, textFilters, colText, matchesGlobal, filterKinds],
   );
-
-  const dedupedRows = useMemo(() => {
-    const seen = new Set<string>();
-    return localRows.filter((r) => {
-      const id = getRowIdInternal(r);
-      if (seen.has(id)) return false;
-      seen.add(id);
-      return true;
-    });
-  }, [localRows, getRowIdInternal]);
 
   const filtered = useMemo(() => dedupedRows.filter((r) => matchesFilters(r)), [dedupedRows, matchesFilters]);
 
@@ -537,7 +561,7 @@ export function StandardTable<T>({
   const catOptions = useMemo(() => {
     const out: Record<string, { value: string; count: number }[]> = {};
     for (const c of columns) {
-      if (c.filter !== "cat") continue;
+      if (filterKinds[c.key] !== "cat") continue;
       const counter = new Map<string, number>();
       for (const r of dedupedRows) {
         if (!matchesFilters(r, c.key)) continue;
@@ -549,16 +573,16 @@ export function StandardTable<T>({
         .sort((a, b) => a.value.localeCompare(b.value, "vi", { numeric: true }));
     }
     return out;
-  }, [columns, dedupedRows, matchesFilters, colText]);
+  }, [columns, dedupedRows, matchesFilters, colText, filterKinds]);
 
   const hasFilter = useMemo(() => {
     if (globalNeedle.length > 0) return true;
     return columns.some((c) =>
-      c.filter === "cat"
-        ? (catFilters[c.key]?.size ?? 0) > 0
-        : (textFilters[c.key] ?? "").trim().length > 0,
+      (catFilters[c.key]?.size ?? 0) > 0 ||
+      (textFilters[c.key] ?? "").trim().length > 0,
     );
   }, [columns, catFilters, textFilters, globalNeedle]);
+
 
   /**
    * Tìm kiếm trên TOÀN BỘ dữ liệu: khi có từ khóa/bộ lọc mà nguồn dữ liệu
