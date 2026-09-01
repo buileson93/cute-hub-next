@@ -42,6 +42,6 @@ describe("Danh mục — hợp đồng nút thao tác dòng", () => {
 
   it("hành động phá huỷ giữ tông cảnh báo", () => {
     const src = read("src/components/mirats/table/RowActions.tsx");
-    expect(src).toContain("destructive: \"text-destructive");
+    expect(src).toContain('destructive: "text-destructive');
   });
 });
