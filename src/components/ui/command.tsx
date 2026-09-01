@@ -6,7 +6,7 @@ import { Command as CommandPrimitive } from "cmdk";
 import { Search } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
@@ -41,6 +41,12 @@ const CommandDialog = ({
   return (
     <Dialog {...props}>
       <DialogContent className="overflow-hidden p-0 gap-0 border-none bg-transparent shadow-none sm:max-w-xl w-[calc(100vw-2rem)] sm:w-[42rem]">
+        {/* Tiêu đề ẩn: bắt buộc cho screen reader theo Radix Dialog. */}
+        <DialogTitle className="sr-only">Bảng lệnh và tìm kiếm</DialogTitle>
+        <DialogDescription className="sr-only">
+          Gõ để tìm chức năng, trang hoặc dữ liệu. Dùng phím mũi tên để chọn, Enter để thực thi,
+          Escape để đóng.
+        </DialogDescription>
         <Command
           filter={filter}
           shouldFilter={shouldFilter}

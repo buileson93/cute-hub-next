@@ -32,14 +32,39 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "@tanstack/react-router";
 import { DocViewerDialog } from "../DocViewerDialog";
 import { storage } from "@/lib/storage";
 import { supabase } from "@/integrations/supabase/client";
-import { workspaces, type NavItem } from "@/lib/mirats/nav-contract";
+import {
+  buildCommands,
+  filterByRole,
+  groupCommands,
+  pushRecentId,
+  rankCommands,
+  readRecentIds,
+  writeRecentIds,
+  type AppCommand,
+} from "@/lib/mirats/command-palette/registry";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useSession } from "@/hooks/use-session";
 import { toast } from "sonner";
+
+/** Một kết quả tìm trong chỉ mục OCR cục bộ. */
+type OcrHit = ReturnType<ReturnType<typeof useOcrSearch>["search"]>[number];
+/** Một bản ghi trả về từ RPC tìm kiếm toàn cục. */
+type GlobalHit = ReturnType<typeof useTimKiemToanCuc>["ket_qua"][number];
 
 function SnippetHighlight({ text }: { text: string }) {
   if (!text) return null;
@@ -81,85 +106,92 @@ export function PowerSearch({
   } | null>(null);
   const navigate = useNavigate();
 
-  const { ket_qua: globalResults, dang_tai: globalLoading } = useTimKiemToanCuc(query);
+  const {
+    ket_qua: globalResults,
+    dang_tai: globalLoading,
+    loi: globalError,
+  } = useTimKiemToanCuc(query);
   const { search: searchOcr, isReady: ocrReady, isSyncing: ocrSyncing } = useOcrSearch();
   const { hasRole } = useSession();
 
-  // 1. Phẳng hoá toàn bộ danh mục từ nav-contract để tìm kiếm điều hướng
-  const allNavItems = useMemo(() => {
-    const items: Array<{ to: string; label: string; icon: any; workspace: string }> = [];
-    workspaces.forEach((ws) => {
-      if (ws.roles && !ws.roles.some((r) => hasRole(r))) return;
-      ws.groups.forEach((group) => {
-        group.items.forEach((item) => {
-          if (item.divider) return;
-          if (item.roles && !item.roles.some((r) => hasRole(r))) return;
-          items.push({ to: item.to, label: item.label, icon: item.icon, workspace: ws.label });
-          item.children?.forEach((child) => {
-            if (child.divider) return;
-            if (child.roles && !child.roles.some((r) => hasRole(r))) return;
-            items.push({ to: child.to, label: child.label, icon: child.icon, workspace: ws.label });
-          });
-        });
-      });
-    });
-    return items;
-  }, [hasRole]);
+  // 1. Toàn bộ lệnh của hệ thống (điều hướng lấy từ nav-contract) đã lọc quyền.
+  const commands = useMemo(() => filterByRole(buildCommands(), hasRole), [hasRole]);
 
-  // 2. Lọc danh mục theo query
-  const filteredNavItems = useMemo(() => {
-    if (!query.trim()) return [];
-    const q = query.toLowerCase();
-    return allNavItems
-      .filter(
-        (item) => item.label.toLowerCase().includes(q) || item.workspace.toLowerCase().includes(q),
-      )
-      .slice(0, 5);
-  }, [query, allNavItems]);
+  // 2. Lịch sử lệnh gần đây (localStorage, chịu lỗi khi bị chặn).
+  const [recentIds, setRecentIds] = useState<string[]>([]);
+  useEffect(() => {
+    if (isOpen) setRecentIds(readRecentIds(typeof window === "undefined" ? null : localStorage));
+  }, [isOpen]);
+
+  const recentCommands = useMemo(
+    () =>
+      recentIds
+        .map((id) => commands.find((c) => c.id === id))
+        .filter((c): c is AppCommand => Boolean(c))
+        .map((c) => ({ ...c, group: "recent" as const })),
+    [recentIds, commands],
+  );
+
+  const matchedCommands = useMemo(
+    () => (query.trim() ? rankCommands(commands, query, 12) : []),
+    [commands, query],
+  );
+
+  const commandGroups = useMemo(
+    () => groupCommands(query.trim() ? matchedCommands : [...recentCommands, ...commands]),
+    [query, matchedCommands, recentCommands, commands],
+  );
 
   const ocrResults = React.useMemo(() => {
     if (!query.trim()) return [];
     // Deduplicate and rank
     const raw = searchOcr(query);
-    const unique = new Map<string, any>();
+    const unique = new Map<string, OcrHit>();
     raw.forEach((r) => {
       const key = `${r.sourceType}-${r.sourceId}-${r.page || 0}`;
-      if (!unique.has(key) || unique.get(key).score < r.score) {
-        unique.set(key, r);
-      }
+      const current = unique.get(key);
+      if (!current || current.score < r.score) unique.set(key, r);
     });
     return Array.from(unique.values()).sort((a, b) => b.score - a.score);
   }, [query, searchOcr]);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setIsOpen(!isOpen);
-      }
+      if (e.key.toLowerCase() !== "k" || !(e.metaKey || e.ctrlKey)) return;
+      const el = document.activeElement as HTMLElement | null;
+      const typing =
+        !!el &&
+        (el.tagName === "INPUT" ||
+          el.tagName === "TEXTAREA" ||
+          el.tagName === "SELECT" ||
+          el.isContentEditable);
+      // Vẫn cho phép ⌘K khi đang gõ chính trong ô tìm kiếm của palette.
+      if (typing && !isOpen) return;
+      e.preventDefault();
+      setIsOpen(!isOpen);
     };
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
   }, [setIsOpen, isOpen]);
 
   const handleSelect = useCallback(
-    async (res: any) => {
+    async (res: string | OcrHit | GlobalHit) => {
       // Nếu truyền chuỗi trực tiếp (vd: route)
       if (typeof res === "string") {
         setIsOpen(false);
-        navigate({ to: res as any });
+        navigate({ to: res });
         return;
       }
 
       // Xử lý tài liệu OCR
-      if (res.page !== undefined) {
+      if ("page" in res && res.page !== undefined) {
         try {
           const table = res.sourceType === "thiet_bi" ? "thiet_bi_tep_dinh_kem" : "model_tai_lieu";
-          const { data: doc, error } = await (supabase
-            .from(table as any)
+          const { data: doc, error } = await supabase
+            .from(table)
             .select("bucket, file_path")
             .eq("id", res.sourceId)
-            .single() as any);
+            .maybeSingle<{ bucket: string; file_path: string }>();
 
           if (doc && !error) {
             const { data } = await storage.from(doc.bucket).createSignedUrl(doc.file_path, 3600);
@@ -175,47 +207,73 @@ export function PowerSearch({
       }
 
       // Xử lý kết quả từ timKiemToanCuc hoặc NavItem
-      const route = res.route || res.to;
+      const route = "route" in res ? res.route : undefined;
       if (route) {
         setIsOpen(false);
-        navigate({ to: route as any });
+        navigate({ to: route });
       }
     },
     [navigate, setIsOpen],
   );
 
-  const handleAction = (action: string) => {
-    setIsOpen(false);
-    switch (action) {
-      case "qr-scan":
+  const [pendingCommand, setPendingCommand] = useState<AppCommand | null>(null);
+
+  const executeCommand = useCallback(
+    (cmd: AppCommand) => {
+      setRecentIds((prev) => {
+        const next = pushRecentId(prev, cmd.id);
+        writeRecentIds(typeof window === "undefined" ? null : localStorage, next);
+        return next;
+      });
+      setIsOpen(false);
+      if (cmd.target.kind === "navigate") {
+        navigate({ to: cmd.target.to as string });
+        return;
+      }
+      if (cmd.target.action === "qr-scan") {
         window.dispatchEvent(new CustomEvent("mirats:open-qr-scanner"));
-        break;
-      case "logout":
-        supabase.auth.signOut().then(() => {
-          navigate({ to: "/auth" as any });
-        });
-        break;
-      case "profile":
-        navigate({ to: "/cai-dat/tai-khoan" as any });
-        break;
-      default:
-        toast.info("Tính năng đang được phát triển");
-    }
-  };
+        return;
+      }
+      // Đăng xuất: dùng đúng luồng auth hiện có.
+      void supabase.auth
+        .signOut()
+        .then(() => navigate({ to: "/auth" }))
+        .catch(() => toast.error("Không thể đăng xuất, vui lòng thử lại"));
+    },
+    [navigate, setIsOpen],
+  );
+
+  /** Lệnh có hậu quả phải qua bước xác nhận, không chạy do bấm nhầm. */
+  const runCommand = useCallback(
+    (cmd: AppCommand) => {
+      if (cmd.confirm) {
+        setIsOpen(false);
+        setPendingCommand(cmd);
+        return;
+      }
+      executeCommand(cmd);
+    },
+    [executeCommand, setIsOpen],
+  );
 
   return (
     <>
       {!isControlled && (
-        <button
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          aria-label="Mở bảng lệnh, phím tắt Ctrl hoặc Command K"
+          aria-keyshortcuts="Meta+K Control+K"
           onClick={() => setIsOpen(true)}
-          className="flex items-center gap-2 rounded-lg border bg-muted/50 px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted"
+          className="gap-2 bg-muted/50 font-normal text-muted-foreground hover:bg-muted"
         >
-          <Search className="h-4 w-4" />
-          <span className="hidden sm:inline-block">Tìm kiếm...</span>
-          <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+          <Search className="h-4 w-4" aria-hidden="true" />
+          <span className="hidden sm:inline-block">Tìm kiếm hoặc gõ lệnh…</span>
+          <kbd className="pointer-events-none ml-1 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium sm:flex">
             <span className="text-xs">⌘</span>K
           </kbd>
-        </button>
+        </Button>
       )}
 
       <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
@@ -230,70 +288,60 @@ export function PowerSearch({
           {ocrSyncing && <Loader2 className="h-4 w-4 animate-spin opacity-50 shrink-0" />}
         </div>
         <CommandList className="max-h-[42rem] overflow-y-auto overflow-x-hidden">
-          <CommandEmpty>Không tìm thấy kết quả nào.</CommandEmpty>
+          <CommandEmpty>
+            <div className="px-4 py-6 text-center">
+              <p className="text-sm font-medium">Không có kết quả cho “{query}”</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Thử từ khoá ngắn hơn, bỏ dấu, hoặc tìm theo mã tài sản, tên hệ thống, số phiếu.
+              </p>
+            </div>
+          </CommandEmpty>
 
-          {query.trim() === "" ? (
+          {commandGroups.map((group) => (
+            <CommandGroup key={group.group} heading={group.label}>
+              {group.items.map((cmd) => (
+                <CommandItem
+                  key={`${group.group}-${cmd.id}`}
+                  value={`${cmd.title} ${cmd.description ?? ""} ${(cmd.keywords ?? []).join(" ")}`}
+                  onSelect={() => runCommand(cmd)}
+                >
+                  <cmd.icon className="mr-2 h-4 w-4 shrink-0 opacity-70" aria-hidden="true" />
+                  <div className="flex min-w-0 flex-col">
+                    <span className="truncate">{cmd.title}</span>
+                    {cmd.description ? (
+                      <span className="truncate text-[10px] text-muted-foreground">
+                        {cmd.description}
+                      </span>
+                    ) : null}
+                  </div>
+                  {cmd.shortcut ? (
+                    <kbd className="ml-auto hidden rounded border bg-muted px-1.5 font-mono text-[10px] sm:inline-block">
+                      {cmd.shortcut}
+                    </kbd>
+                  ) : null}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          ))}
+
+          {query.trim() !== "" && (
             <>
-              <CommandGroup heading="Hành động nhanh">
-                <CommandItem onSelect={() => handleSelect("/su-co/moi")}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  <span>Báo cáo sự cố mới</span>
-                </CommandItem>
-                <CommandItem onSelect={() => handleAction("qr-scan")}>
-                  <QrCode className="mr-2 h-4 w-4" />
-                  <span>Quét mã QR thiết bị</span>
-                </CommandItem>
-                <CommandItem onSelect={() => handleSelect("/kiem-ke")}>
-                  <ClipboardCheck className="mr-2 h-4 w-4" />
-                  <span>Kiểm kê tài sản</span>
-                </CommandItem>
-              </CommandGroup>
-
-              <CommandSeparator />
-
-              <CommandGroup heading="Gợi ý điều hướng">
-                <CommandItem onSelect={() => handleSelect("/thiet-bi")}>
-                  <Database className="mr-2 h-4 w-4" />
-                  <span>Sổ lý lịch thiết bị</span>
-                </CommandItem>
-                <CommandItem onSelect={() => handleSelect("/he-thong/cay")}>
-                  <LayoutGrid className="mr-2 h-4 w-4" />
-                  <span>Cấu trúc hệ thống</span>
-                </CommandItem>
-                <CommandItem onSelect={() => handleSelect("/du-an")}>
-                  <FolderKanban className="mr-2 h-4 w-4" />
-                  <span>Danh sách dự án</span>
-                </CommandItem>
-              </CommandGroup>
-
-              <CommandSeparator />
-
-              <CommandGroup heading="Hệ thống">
-                <CommandItem onSelect={() => handleAction("profile")}>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Cài đặt tài khoản</span>
-                </CommandItem>
-                <CommandItem onSelect={() => handleAction("logout")}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Đăng xuất</span>
-                </CommandItem>
-              </CommandGroup>
-            </>
-          ) : (
-            <>
-              {filteredNavItems.length > 0 && (
-                <CommandGroup heading="Điều hướng">
-                  {filteredNavItems.map((item, idx) => (
-                    <CommandItem key={`nav-${idx}`} onSelect={() => handleSelect(item.to)}>
-                      <item.icon className="mr-2 h-4 w-4 opacity-70" />
-                      <div className="flex flex-col">
-                        <span>{item.label}</span>
-                        <span className="text-[10px] text-muted-foreground">{item.workspace}</span>
-                      </div>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
+              {(globalLoading || ocrSyncing) && (
+                <div className="flex items-center gap-2 px-4 py-3 text-xs text-muted-foreground">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                  Đang tìm trong dữ liệu hệ thống…
+                </div>
               )}
+
+              {globalError ? (
+                <div
+                  role="alert"
+                  className="flex items-start gap-2 px-4 py-3 text-xs text-destructive"
+                >
+                  <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                  Không tải được kết quả dữ liệu. Lệnh điều hướng phía trên vẫn dùng được.
+                </div>
+              ) : null}
 
               {ocrResults.length > 0 && (
                 <CommandGroup heading="Nội dung tài liệu (OCR)">
@@ -342,6 +390,30 @@ export function PowerSearch({
           )}
         </CommandList>
       </CommandDialog>
+
+      <AlertDialog
+        open={!!pendingCommand}
+        onOpenChange={(open) => !open && setPendingCommand(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{pendingCommand?.confirm?.title}</AlertDialogTitle>
+            <AlertDialogDescription>{pendingCommand?.confirm?.description}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Huỷ</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                const cmd = pendingCommand;
+                setPendingCommand(null);
+                if (cmd) executeCommand(cmd);
+              }}
+            >
+              {pendingCommand?.confirm?.actionLabel ?? "Xác nhận"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {selectedDoc && (
         <DocViewerDialog
