@@ -20,7 +20,16 @@ import {
   DEFAULT_OVERVIEW_LAYOUT,
   AVAILABLE_WIDGETS,
   WidgetType,
+  WIDGET_GROUPS,
+  normalizeWidgetGroup,
 } from "@/lib/mirats/dashboard/widget-registry";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/tong-quan")({
@@ -47,6 +56,7 @@ function OverviewReport() {
   const { scope } = useUnifiedDashboardStats();
   const [isEditing, setIsEditing] = useState(false);
   const [tab, setTab] = useUserPref<WidgetGroup>("dashboard:overview:tab", "tong-quan");
+  const activeTab = normalizeWidgetGroup(tab);
   const [layout, setLayout] = useUserPref<DashboardWidgetConfig[]>(
     "dashboard:layout:overview",
     DEFAULT_OVERVIEW_LAYOUT,
