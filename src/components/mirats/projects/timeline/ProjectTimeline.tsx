@@ -29,7 +29,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { LayoutPanel } from "@/components/astryx/layout-panel";
 import {
   useProjectEvents,
@@ -45,7 +44,7 @@ interface ProjectTimelineProps {
 export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
   const [selectedEventId, setSelectedEventId] = React.useState<string | null>(null);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const { data: events, isLoading } = useProjectEvents(projectId);
+  const { data: events, isLoading, isError, error, refetch } = useProjectEvents(projectId);
 
   const filteredEvents = React.useMemo(() => {
     if (!events) return [];
@@ -72,10 +71,16 @@ export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
   const selectedEvent = events?.find((e) => e.id === selectedEventId);
 
   return (
-    <div className="flex h-full min-h-[500px] overflow-hidden border-none rounded-none bg-transparent shadow-none">
-      <div className="flex-1 flex flex-col min-w-0">
+    <div
+      className={cn(
+        // Scroll owner cục bộ: cao theo viewport khả dụng, không đẩy scroll ra toàn trang.
+        "flex flex-col md:flex-row overflow-hidden rounded-xl border border-border bg-card",
+        "h-[calc(100dvh-19rem)] min-h-[360px] max-h-[calc(100dvh-12rem)]",
+      )}
+    >
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
         {/* Toolbar */}
-        <div className="flex items-center justify-between p-3 border-b bg-muted/20 gap-3">
+        <div className="flex items-center justify-between p-2 border-b bg-muted/20 gap-2 shrink-0">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
@@ -83,6 +88,7 @@ export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
               className="pl-8 h-8 text-xs bg-background"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Tìm kiếm sự kiện dòng thời gian"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -90,20 +96,38 @@ export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
               <Filter className="h-3.5 w-3.5" /> Bộ lọc
             </Button>
             <Separator orientation="vertical" className="h-6" />
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" aria-label="Tuỳ chọn khác">
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </div>
         </div>
 
-        {/* Timeline Content */}
-        <ScrollArea className="flex-1">
-          <div className="p-6">
+        {/* Timeline Content — vùng cuộn duy nhất */}
+        <div
+          className="flex-1 min-h-0 overflow-y-auto overscroll-contain mirats-scroll"
+          tabIndex={0}
+          role="region"
+          aria-label="Danh sách sự kiện dòng thời gian"
+        >
+          <div className="p-3 sm:p-4">
             {isLoading ? (
               <TimelineLoading />
+            ) : isError ? (
+              <div
+                role="alert"
+                className="flex flex-col items-center justify-center py-10 gap-2 text-center"
+              >
+                <p className="text-sm text-foreground">Không tải được dòng thời gian.</p>
+                <p className="text-xs text-muted-foreground">
+                  {error instanceof Error ? error.message : "Lỗi không xác định"}
+                </p>
+                <Button size="sm" variant="outline" className="h-8" onClick={() => void refetch()}>
+                  Thử lại
+                </Button>
+              </div>
             ) : filteredEvents.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <History className="h-10 w-10 mb-3 opacity-20" />
+              <div className="flex flex-col items-center justify-center py-10 text-muted-foreground">
+                <History className="h-8 w-8 mb-2 opacity-20" />
                 <p className="text-sm">Không tìm thấy sự kiện nào</p>
               </div>
             ) : (
@@ -137,12 +161,12 @@ export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
               </div>
             )}
           </div>
-        </ScrollArea>
+        </div>
       </div>
 
       {/* Inspector Panel */}
       {selectedEventId && (
-        <div className="w-[380px] border-l bg-card flex flex-col shrink-0 animate-in slide-in-from-right duration-200">
+        <div className="w-full md:w-[360px] border-t md:border-t-0 md:border-l bg-card flex flex-col shrink-0 min-h-0 overflow-hidden animate-in slide-in-from-right duration-200">
           <TimelineInspector event={selectedEvent} onClose={() => setSelectedEventId(null)} />
         </div>
       )}
@@ -236,7 +260,7 @@ function TimelineInspector({ event, onClose }: { event: any; onClose: () => void
         </Button>
       }
     >
-      <div className="p-4 space-y-6 overflow-y-auto">
+      <div className="p-3 sm:p-4 space-y-5 overflow-y-auto min-h-0 flex-1 mirats-scroll">
         <div className="flex items-start gap-3">
           <div className={cn("p-2 rounded-lg border", color.bg, color.border)}>
             <Icon className={cn("h-5 w-5", color.text)} />
@@ -324,7 +348,7 @@ function TimelineInspector({ event, onClose }: { event: any; onClose: () => void
         )}
       </div>
 
-      <div className="mt-auto p-4 border-t bg-muted/10">
+      <div className="mt-auto p-3 border-t bg-muted/10">
         <Button className="w-full h-9 bg-primary text-primary-foreground hover:bg-primary/90 gap-2 font-semibold">
           <Eye className="h-4 w-4" /> Xem chi tiết
         </Button>
