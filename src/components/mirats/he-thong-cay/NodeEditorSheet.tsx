@@ -9,20 +9,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { EditKind, OverrideMap, HtGroup } from "./types";
 import { HT_KHAC } from "@/lib/mirats/phan-loai";
 import { physKeyValue } from "@/lib/mirats/editable-columns";
 import { ThanhPhanManager } from "@/components/mirats/ThanhPhanManager";
 import { HeThongTruongEditor } from "@/components/mirats/HeThongTruongEditor";
 import { Save, Loader2, Trash2, FolderTree, Network, Plus, Cpu, RefreshCcw } from "lucide-react";
+import { Combobox, type ComboOption } from "@/components/mirats/Combobox";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  EntityFormHeader,
+  FormActionBar,
+  FormSection,
+  type EntityKind,
+} from "@/components/mirats/form/EntityFormKit";
 import { useCayMutations } from "./mutations";
 import { useCayContext } from "./CayContext";
 import { useSession } from "@/hooks/use-session";
@@ -137,6 +137,19 @@ export function NodeEditorSheet({
     : "";
   const coThayDoi = canManage && ten.trim() !== tenGoc.trim();
 
+  // Danh sách đơn vị dạng combobox có tìm kiếm — tránh dropdown quá lớn.
+  const donViOptions: ComboOption[] = useMemo(
+    () =>
+      (Array.isArray(donViList) ? donViList : [])
+        .filter((dv) => dv?.id)
+        .map((dv) => ({
+          value: String(dv.id),
+          label: String(dv.ten ?? dv.ma ?? dv.id),
+          hint: dv.ma ? String(dv.ma) : undefined,
+        })),
+    [donViList],
+  );
+
   const yeuCauDong = () => {
     if (
       coThayDoi &&
@@ -149,22 +162,28 @@ export function NodeEditorSheet({
   return (
     <Sheet open={!!target} onOpenChange={(o) => !o && yeuCauDong()}>
       <SheetContent side="right" className="flex w-full flex-col sm:max-w-md">
-        <SheetHeader>
-          <SheetTitle className="flex items-center gap-2">
-            <span>{title}</span>
-            {target && target.kind !== "pl" && (
-              <Badge
-                variant="outline"
-                className="shrink-0 border-primary/30 bg-primary/10 font-mono text-[11px] font-semibold text-primary"
-              >
-                {target.ma}
-              </Badge>
-            )}
+        <SheetHeader className="space-y-0 text-left">
+          <SheetTitle className="sr-only">
+            {title} {target?.ma ?? ""}
           </SheetTitle>
-          <SheetDescription>
+          <SheetDescription className="sr-only">
             {canManage ? "Thay đổi được lưu vào cơ sở dữ liệu." : "Chế độ xem (chỉ đọc)."}
           </SheetDescription>
+          {target && (
+            <EntityFormHeader
+              kind={target.kind as EntityKind}
+              title={ten || title}
+              code={target.kind === "pl" ? null : target.ma}
+              mode={canManage ? "edit" : "view"}
+              description={
+                canManage
+                  ? "Thay đổi được lưu vào cơ sở dữ liệu. Liên kết tài sản là quan hệ dùng chung — gỡ liên kết không xoá tài sản."
+                  : "Chế độ xem (chỉ đọc). Bạn không có quyền chỉnh sửa đối tượng này."
+              }
+            />
+          )}
         </SheetHeader>
+
 
         <fieldset
           disabled={!canManage}
@@ -297,29 +316,31 @@ export function NodeEditorSheet({
           )}
 
           {target?.kind === "nh" && (
-            <div className="space-y-3 rounded-md border p-3">
-              <div className="flex items-center gap-1.5 text-sm font-medium">
-                <Network className="h-4 w-4 text-primary" /> Hệ thống con
-              </div>
+            <FormSection
+              title="Hệ thống con"
+              icon={Network}
+              description="Hệ thống là tập hợp đang vận hành thuộc nhóm này."
+            >
               {canManage && (
                 <div className="space-y-2 border-t pt-3">
+                  <Label htmlFor="new-ht-ten" className="text-xs">
+                    Tên hệ thống mới
+                  </Label>
                   <Input
+                    id="new-ht-ten"
                     value={newSystemTen}
                     onChange={(e) => setNewSystemTen(e.target.value)}
-                    placeholder="Tên hệ thống mới..."
+                    placeholder="VD: Hệ thống điện nguồn…"
                   />
-                  <Select value={newSystemDonViId} onValueChange={setNewSystemDonViId}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn đơn vị..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {donViList.map((dv) => (
-                        <SelectItem key={dv.id} value={dv.id}>
-                          {dv.ten}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label className="text-xs">Đơn vị quản lý</Label>
+                  <Combobox
+                    options={donViOptions}
+                    value={newSystemDonViId}
+                    onChange={setNewSystemDonViId}
+                    placeholder="Chọn đơn vị…"
+                    searchPlaceholder="Tìm theo tên hoặc mã đơn vị…"
+                    emptyText="Không tìm thấy đơn vị phù hợp"
+                  />
                   <Button
                     size="sm"
                     disabled={addSystem.isPending || !newSystemTen.trim() || !newSystemDonViId}
@@ -346,23 +367,25 @@ export function NodeEditorSheet({
 
                 </div>
               )}
-            </div>
+            </FormSection>
           )}
 
           {target?.kind === "ht" && (
-            <div className="space-y-2 rounded-md border p-3">
-              <div className="flex items-center gap-1.5 text-sm font-medium">
-                <Cpu className="h-4 w-4 text-sky-600" /> Thành phần hệ thống
-              </div>
+            <FormSection
+              title="Thành phần hệ thống"
+              icon={Cpu}
+              description="Thành phần có thể chưa được gắn tài sản. Gỡ liên kết không xoá tài sản."
+            >
               <ThanhPhanManager heThongId={physKeyValue("ht", target.ma)} canManage={canManage} />
-            </div>
+            </FormSection>
           )}
 
           {target?.kind === "ht" && canManage && (
-            <div className="space-y-2 rounded-md border p-3">
-              <div className="flex items-center gap-1.5 text-sm font-medium">
-                <Plus className="h-4 w-4 text-emerald-600" /> Thêm tài sản vào hệ thống
-              </div>
+            <FormSection
+              title="Thêm tài sản vào hệ thống"
+              icon={Plus}
+              description="Tài sản là đối tượng vật lý; một tài sản có thể dùng chung cho nhiều thành phần."
+            >
               <Input
                 value={newDeviceTen}
                 onChange={(e) => setNewDeviceTen(e.target.value)}
@@ -400,7 +423,7 @@ export function NodeEditorSheet({
                 )}
                 Thêm tài sản
               </Button>
-            </div>
+            </FormSection>
           )}
 
 
@@ -417,8 +440,10 @@ export function NodeEditorSheet({
           )}
         </fieldset>
 
-        <div className="space-y-2 border-t pt-3">
-          {canManage && (
+        <FormActionBar
+          dirty={coThayDoi}
+          primary={
+            canManage ? (
             <Button
               className="w-full"
               onClick={() => {
@@ -462,9 +487,23 @@ export function NodeEditorSheet({
               )}
               Lưu thay đổi
             </Button>
-          )}
-
-          {target && canManage && (
+            ) : null
+          }
+          secondary={
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                if (coThayDoi) setTen(tenGoc);
+                else setReorgOpen(true);
+              }}
+            >
+              <RefreshCcw className="mr-1.5 h-4 w-4" />
+              {coThayDoi ? "Hoàn tác thay đổi" : "Lịch sử thay đổi"}
+            </Button>
+          }
+          destructive={
+            target && canManage ? (
             <Button
               variant="outline"
               className="w-full text-destructive"
@@ -490,12 +529,9 @@ export function NodeEditorSheet({
               )}
               Xoá {title}
             </Button>
-          )}
-
-          <Button variant="outline" className="w-full" onClick={() => setReorgOpen(true)}>
-            <RefreshCcw className="mr-1.5 h-4 w-4" /> Lịch sử thay đổi
-          </Button>
-        </div>
+            ) : null
+          }
+        />
       </SheetContent>
     </Sheet>
   );
