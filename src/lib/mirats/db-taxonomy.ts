@@ -288,16 +288,21 @@ export interface TaxonomyResolved {
 
 export function resolvePhanLoai(ref: string | null | undefined, taxonomy: DbTaxonomy | undefined): TaxonomyResolved {
   const id = ref || "KHAC";
-  const label = taxonomy?.plNameMap.get(id) || id;
+  const label = displayLabel(taxonomy?.plNameMap.get(id), id, "Chưa phân loại");
   return { id, ma: id, label };
 }
 
 export function resolveNhom(ref: string | null | undefined, taxonomy: DbTaxonomy | undefined): TaxonomyResolved {
   const id = ref || "KHAC";
-  const label = taxonomy?.nhomNameMap.get(id) || taxonomy?.nhomMaMap.get(id) || id;
   const ma = taxonomy?.nhomList.find(n => n.id === id)?.ma || id;
+  const label = displayLabel(
+    taxonomy?.nhomNameMap.get(id) || taxonomy?.nhomMaMap.get(id),
+    ma,
+    "Chưa gán nhóm hệ thống",
+  );
   return { id, ma, label };
 }
+
 
 export function resolveHeThong(ref: string | null | undefined, taxonomy: DbTaxonomy | undefined): TaxonomyResolved {
   const ma = ref || NONE_HT;
