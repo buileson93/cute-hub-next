@@ -39,6 +39,26 @@ import {
   toDisplayString,
 } from "@/lib/mirats/inventory/contact-format";
 import { guardMutation } from "@/lib/mirats/he-thong/edit-mode";
+import { csvFileName, downloadCsv, toCsv, trangThaiBaoHanh } from "@/lib/mirats/inventory/csv";
+
+/** Xuất CSV 4 cột nghiệp vụ cho tập thành phần đang lọc. */
+function xuatCsvThanhPhan(rows: readonly ThanhPhanRow[]) {
+  if (rows.length === 0) {
+    toast.error("Không có dữ liệu để xuất.");
+    return;
+  }
+  const csv = toCsv([
+    ["MODEL", "SERIAL", "Người liên hệ", "Trạng thái bảo hành"],
+    ...rows.map((r) => [
+      r.model ?? "",
+      r.thietBiSerial ?? "",
+      formatContactsForExport(buildContacts(r)),
+      trangThaiBaoHanh(r.hanBaoHanh),
+    ]),
+  ]);
+  downloadCsv(csvFileName("thanh-phan"), csv);
+  toast.success(`Đã xuất ${rows.length} dòng ra CSV.`);
+}
 
 export function ComponentTablePanel({
   tableKey,
@@ -295,6 +315,20 @@ export function ComponentTablePanel({
             </div>
           </div>
         }
+        toolbarRight={({ filteredRows }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 gap-1.5 px-2 text-[11px] font-semibold"
+            disabled={isLoading || filteredRows.length === 0}
+            aria-label="Xuất CSV danh sách thành phần đang lọc"
+            title="Xuất CSV: Model, Serial, Người liên hệ, Trạng thái bảo hành"
+            onClick={() => xuatCsvThanhPhan(filteredRows)}
+          >
+            <Download className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Xuất CSV</span>
+          </Button>
+        )}
         columns={[
           {
             key: "ten",

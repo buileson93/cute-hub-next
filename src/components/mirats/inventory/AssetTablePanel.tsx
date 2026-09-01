@@ -30,6 +30,30 @@ import { AnomalyBadge } from "@/components/mirats/AnomalyBadge";
 import { MultiRoleBadge } from "@/components/mirats/MultiRoleBadge";
 import { CellPreview, ModelCell, type TaiSanRow, useInfiniteTaiSanRows, useModelRegistry, useMultiRoleMap } from "../ThanhPhanTable";
 import { normalize } from "@/lib/mirats/global-search";
+import { csvFileName, downloadCsv, toCsv, trangThaiBaoHanh } from "@/lib/mirats/inventory/csv";
+
+/**
+ * Xuất CSV đúng 4 cột nghiệp vụ bắt buộc cho tập kết quả đang lọc.
+ * ponytail: cố định 4 cột theo yêu cầu nghiệp vụ; cần xuất tuỳ biến thì dùng
+ * hộp thoại "Xuất dữ liệu" sẵn có trên thanh công cụ bảng.
+ */
+function xuatCsvTaiSan(rows: readonly TaiSanRow[]) {
+  if (rows.length === 0) {
+    toast.error("Không có dữ liệu để xuất.");
+    return;
+  }
+  const csv = toCsv([
+    ["MODEL", "SERIAL", "Người liên hệ", "Trạng thái bảo hành"],
+    ...rows.map((r) => [
+      r.model ?? "",
+      r.serial ?? "",
+      formatContactsForExport(buildContacts(r)),
+      trangThaiBaoHanh(r.hanBaoHanh),
+    ]),
+  ]);
+  downloadCsv(csvFileName("thanh-phan-tai-san"), csv);
+  toast.success(`Đã xuất ${rows.length} dòng ra CSV.`);
+}
 
 export function AssetTablePanel({
   tableKey,
@@ -86,7 +110,9 @@ export function AssetTablePanel({
         [
           r.ma, r.ten, r.serial, r.model, r.chungLoai, r.nhaSanXuat, r.nhaCungCap,
           r.donViQuanLy, r.viTri, r.danhSachHeThong, r.danhSachThanhPhan, r.pN,
-          r.maTaiSanBravo, r.namSanXuat, r.namKhaiThac, r.tinhTrangKyThuat, r.cheDoKdHc
+          r.maTaiSanBravo, r.namSanXuat, r.namKhaiThac, r.tinhTrangKyThuat, r.cheDoKdHc,
+          r.trangThai, r.hanBaoHanh, trangThaiBaoHanh(r.hanBaoHanh),
+          formatContactsForExport(buildContacts(r)),
         ].join(" ")
       ).includes(t);
     });
@@ -221,6 +247,22 @@ export function AssetTablePanel({
           </div>
         </div>
       }
+      toolbarRight={({ filteredRows }) => (
+        <AppTooltip noiDung="Xuất CSV: Model, Serial, Người liên hệ, Trạng thái bảo hành">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 gap-1.5 px-2 text-[11px] font-semibold"
+            disabled={loadingTsReal || filteredRows.length === 0}
+            aria-label="Xuất CSV danh sách thành phần & tài sản đang lọc"
+            onClick={() => xuatCsvTaiSan(filteredRows)}
+          >
+            <Download className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Xuất CSV</span>
+          </Button>
+        </AppTooltip>
+      )}
+
       columns={[
         {
           key: "ma",
