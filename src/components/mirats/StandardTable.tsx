@@ -762,7 +762,10 @@ export function StandardTable<T>({
   }, [trangThai, fullDisplay.length, errorContent, emptyContent, loadingContent, emptyText, columns.length, hasFilter, clearAllFilters, countUnit]);
 
   const isMobile = isClient && window.innerWidth < BP_PX.md;
-  const shownCols = useMemo(() => columns.filter(c => !prefs.hidden.has(c.key)), [columns, prefs.hidden]);
+  const shownCols = useMemo(
+    () => (colMode === "all" ? columns : columns.filter(c => !prefs.hidden.has(c.key))),
+    [columns, prefs.hidden, colMode],
+  );
   const exportCols = columns;
 
   function renderAutoCell(c: ColumnDef<T>, r: T) {
