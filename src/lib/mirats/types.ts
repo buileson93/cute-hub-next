@@ -118,7 +118,7 @@ export interface DeviceIdentitySnapshot {
 }
 export interface SuCo extends DeviceIdentitySnapshot {
   /** UUID gốc của sự cố (dùng cho liên kết FK, ví dụ hong_hoc.su_co_id). */
-  id?: string | null;
+  id?: string;
   ma_su_co: string;
   thiet_bi: string;
   /** Khoá ngoại chuẩn tới thiet_bi.id (ưu tiên khi khớp lý lịch). */
@@ -216,7 +216,7 @@ export interface HongHocThayThe extends DeviceIdentitySnapshot {
   thiet_bi_hong_id: string | null;
   su_co: string | null;
   /** FK chuẩn tới su_co.id — nguồn truy ngược sự cố gốc (thay cho text tự do). */
-  su_co_id: string | null;
+  su_co_id?: string | null;
   ngay_hong: string;
   bo_phan_hong: string;
   mo_ta_hong_hoc: string;

@@ -89,7 +89,7 @@ async function loadOperations(): Promise<OperationsData> {
   ]);
 
   const suCo: SuCo[] = scRes.map((r: Row) => ({
-    id: sn(r.id),
+    id: sn(r.id) ?? undefined,
     ma_su_co: s(r.ma_su_co) || s(r.id),
     thiet_bi: s(r.thiet_bi),
     thiet_bi_id: sn(r.thiet_bi_id),
