@@ -60,6 +60,11 @@ import {
 import { useSession } from "@/hooks/use-session";
 import { toast } from "sonner";
 
+/** Một kết quả tìm trong chỉ mục OCR cục bộ. */
+type OcrHit = ReturnType<ReturnType<typeof useOcrSearch>["search"]>[number];
+/** Một bản ghi trả về từ RPC tìm kiếm toàn cục. */
+type GlobalHit = ReturnType<typeof useTimKiemToanCuc>["ket_qua"][number];
+
 function SnippetHighlight({ text }: { text: string }) {
   if (!text) return null;
   const parts = text.split(/(\*\*.*?\*\*)/g);
@@ -140,12 +145,11 @@ export function PowerSearch({
     if (!query.trim()) return [];
     // Deduplicate and rank
     const raw = searchOcr(query);
-    const unique = new Map<string, any>();
+    const unique = new Map<string, OcrHit>();
     raw.forEach((r) => {
       const key = `${r.sourceType}-${r.sourceId}-${r.page || 0}`;
-      if (!unique.has(key) || unique.get(key).score < r.score) {
-        unique.set(key, r);
-      }
+      const current = unique.get(key);
+      if (!current || current.score < r.score) unique.set(key, r);
     });
     return Array.from(unique.values()).sort((a, b) => b.score - a.score);
   }, [query, searchOcr]);
@@ -170,23 +174,23 @@ export function PowerSearch({
   }, [setIsOpen, isOpen]);
 
   const handleSelect = useCallback(
-    async (res: any) => {
+    async (res: string | OcrHit | GlobalHit) => {
       // Nếu truyền chuỗi trực tiếp (vd: route)
       if (typeof res === "string") {
         setIsOpen(false);
-        navigate({ to: res as any });
+        navigate({ to: res });
         return;
       }
 
       // Xử lý tài liệu OCR
-      if (res.page !== undefined) {
+      if ("page" in res && res.page !== undefined) {
         try {
           const table = res.sourceType === "thiet_bi" ? "thiet_bi_tep_dinh_kem" : "model_tai_lieu";
-          const { data: doc, error } = await (supabase
-            .from(table as any)
+          const { data: doc, error } = await supabase
+            .from(table)
             .select("bucket, file_path")
             .eq("id", res.sourceId)
-            .single() as any);
+            .maybeSingle<{ bucket: string; file_path: string }>();
 
           if (doc && !error) {
             const { data } = await storage.from(doc.bucket).createSignedUrl(doc.file_path, 3600);
@@ -202,10 +206,10 @@ export function PowerSearch({
       }
 
       // Xử lý kết quả từ timKiemToanCuc hoặc NavItem
-      const route = res.route || res.to;
+      const route = "route" in res ? res.route : undefined;
       if (route) {
         setIsOpen(false);
-        navigate({ to: route as any });
+        navigate({ to: route });
       }
     },
     [navigate, setIsOpen],
