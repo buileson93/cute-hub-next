@@ -184,7 +184,7 @@ function Timeline({
     );
 
   return (
-    <ol className="relative ml-3 border-l border-border pl-6 sm:pl-8">
+    <HierarchyTimeline>
       {data.map((it, i) => {
         const m = META[it.loai_su_kien] ?? {
           icon: Clock,
@@ -192,15 +192,14 @@ function Timeline({
           tone: "muted" as NodeTone,
           chip: "bg-muted text-muted-foreground border-border",
         };
-        const Icon = m.icon;
         const editableLap = canEdit && it.loai_su_kien === "lap" && it.nguon === "gan_chuc_nang";
         return (
-          <li key={`${it.nguon}-${it.nguon_id}-${i}`} className="relative mb-5 last:mb-0">
-            <span className="absolute -left-[38px] rounded-full bg-background p-0.5 shadow-sm">
-              <NodeIcon icon={Icon} tone={m.tone} size="md" />
-            </span>
-            <div className="rounded-lg border p-3 text-sm transition-colors hover:bg-muted/40">
-              <div className="flex flex-wrap items-center gap-2">
+          <HierarchyEvent
+            key={`${it.nguon}-${it.nguon_id}-${i}`}
+            icon={m.icon}
+            tone={m.tone}
+            header={
+              <>
                 <span className="text-xs font-medium text-muted-foreground">
                   {it.thoi_diem
                     ? new Date(it.thoi_diem).toLocaleDateString("vi-VN")
@@ -220,14 +219,14 @@ function Timeline({
                     <SuaNgayLapButton ganId={it.nguon_id} thoiDiem={it.thoi_diem} />
                   </span>
                 )}
-              </div>
-              <div className="mt-1 font-medium">{it.tieu_de || "—"}</div>
-              {it.mo_ta && <div className="mt-0.5 text-muted-foreground">{it.mo_ta}</div>}
-            </div>
-          </li>
+              </>
+            }
+            title={it.tieu_de || "—"}
+            description={it.mo_ta || undefined}
+          />
         );
       })}
-    </ol>
+    </HierarchyTimeline>
   );
 }
 
