@@ -7,6 +7,22 @@ import type { DbDevice } from "./db-taxonomy";
 export const TB_COLS =
   "id, ma_thiet_bi, ma_tai_san_bravo, ten_thiet_bi, ma_serial, p_n, model, model_id, nha_san_xuat, nha_cung_cap, vi_tri, vi_tri_id, ngay_mua, han_bao_hanh, ghi_chu, he_thong_id, phan_loai_id, nhom_he_thong_id, don_vi_id, trang_thai_id, loai_thiet_bi_id, phan_loai, nam_san_xuat, nam_dua_vao_khai_thac, ty_le_tuoi_tho, noi_quan_ly, thanh_phan, nguoi_giu, don_vi_giu_id, ngay_cap_phat, trang_thai_cap_phat";
 
+// Danh mục đơn vị rất nhỏ (≈15 dòng) — nạp một lần để đổi don_vi_id (UUID)
+// sang mã/tên nghiệp vụ. UUID vẫn được giữ nguyên ở `don_vi_id` cho logic.
+type DonViInfo = { ma: string; ten: string };
+let donViMapPromise: Promise<Map<string, DonViInfo>> | null = null;
+function loadDonViMap(): Promise<Map<string, DonViInfo>> {
+  if (!donViMapPromise) {
+    donViMapPromise = (async () => {
+      const { data } = await supabase.from("dm_don_vi").select("id, ma, ten");
+      const m = new Map<string, DonViInfo>();
+      for (const r of data ?? []) m.set(r.id as string, { ma: r.ma ?? "", ten: r.ten ?? "" });
+      return m;
+    })();
+  }
+  return donViMapPromise;
+}
+
 export async function fetchThietBi(from: number, to: number, donViCode?: string | null) {
   let q = supabase
     .from("thiet_bi")
@@ -18,7 +34,7 @@ export async function fetchThietBi(from: number, to: number, donViCode?: string 
     q = q.eq("don_vi_id", donViCode); 
   }
 
-  const { data, count, error } = await q;
+  const [{ data, count, error }, dvMap] = await Promise.all([q, loadDonViMap()]);
   if (error) throw error;
 
   const rows = (data ?? []).map((r: any) => ({
@@ -28,7 +44,9 @@ export async function fetchThietBi(from: number, to: number, donViCode?: string 
     serial: r.ma_serial || "",
     p_n: r.p_n || "",
     model: r.model || "",
-    don_vi: r.don_vi_id || "", 
+    // Presentation: mã đơn vị (VD "PLK") — KHÔNG dùng UUID để hiển thị.
+    don_vi: dvMap.get(r.don_vi_id)?.ma || "",
+    _donViTen: dvMap.get(r.don_vi_id)?.ten || "",
     he_thong: r.he_thong_id || "",
     nhom_he_thong: r.nhom_he_thong_id || "",
     loai: "",

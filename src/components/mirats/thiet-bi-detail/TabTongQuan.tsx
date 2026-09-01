@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useSearch } from "@tanstack/react-router";
+import { laMaKyThuat, DON_VI_FALLBACK } from "@/lib/mirats/display/don-vi";
 import { QRCodeSVG } from "qrcode.react";
 import {
   FileText,
@@ -185,20 +186,24 @@ export default function TabTongQuan({
             <InfoRow
               icon={Building2}
               label="Đơn vị quản lý"
-              value={
-                tb.don_vi || tb._donViTen ? (
+              value={(() => {
+                // Chỉ hiển thị mã/tên nghiệp vụ; UUID chỉ dùng cho điều hướng.
+                const ma = laMaKyThuat(tb.don_vi as string) ? "" : ((tb.don_vi as string) || "");
+                const ten = ((tb._donViTen as string) || "").trim();
+                if (!ma && !ten) return DON_VI_FALLBACK;
+                return (
                   <Link
                     to="/danh-muc/don-vi"
                     search={{ f_id: tb._donViGiuId || tb.don_vi }}
-                    className="inline-flex items-center gap-1 text-primary hover:underline"
+                    className="inline-flex min-w-0 items-center gap-1 text-primary hover:underline"
                   >
-                    {`${tb.don_vi || "—"}${tb._donViTen ? " — " + tb._donViTen : ""}`}
-                    <ExternalLink className="h-3 w-3" />
+                    <span className="truncate" title={ten || ma}>
+                      {ten ? (ma ? `${ma} — ${ten}` : ten) : ma}
+                    </span>
+                    <ExternalLink className="h-3 w-3 shrink-0" />
                   </Link>
-                ) : (
-                  "—"
-                )
-              }
+                );
+              })()}
             />
 
             <InfoRow
