@@ -1096,9 +1096,8 @@ export function StandardTable<T>({
           )}
         </div>
       ) : (
-        {/* Chỉ MỘT chủ sở hữu cuộn dọc (outer) và MỘT chủ sở hữu cuộn ngang
-            (inner, cao bằng nội dung) → khi bảng ngắn hơn màn hình, thanh cuộn
-            ngang nằm ngay dưới hàng cuối, không sinh thêm thanh thứ hai. */}
+        // Một chủ sở hữu cuộn dọc (outer) + một chủ sở hữu cuộn ngang (inner,
+        // cao bằng nội dung) → bảng ngắn không sinh thanh cuộn ngang thứ hai.
         <div 
           className="relative min-h-0 border rounded-md shadow-none bg-background astryx-table-container flex flex-col flex-1 mirats-scroll will-change-transform" 
           ref={scrollContainerRef}
