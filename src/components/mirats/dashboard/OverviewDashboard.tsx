@@ -146,6 +146,8 @@ export function OverviewDashboard({ title = "Báo cáo Tổng quan KPI" }: { tit
           </div>
         </div>
 
+        <ScopeSummaryStrip />
+
         <div className="mt-2 mb-4 empty:hidden">
           <HeartBeatStrip />
         </div>
