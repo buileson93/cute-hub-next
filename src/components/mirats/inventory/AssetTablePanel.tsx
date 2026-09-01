@@ -17,6 +17,13 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { InheritedValue, TextCell } from "./InheritedValue";
+import { ContactCell, MetaPopover } from "./ContactCell";
+import {
+  buildContacts,
+  buildMetaItems,
+  formatContactsForExport,
+  toDisplayString,
+} from "@/lib/mirats/inventory/contact-format";
 import { BulkActionButton } from "@/components/mirats/BulkActionButton";
 import { TableExportDialog } from "@/components/mirats/TableExportDialog";
 import { AnomalyBadge } from "@/components/mirats/AnomalyBadge";
@@ -307,18 +314,38 @@ export function AssetTablePanel({
           hideBelow: "lg",
           value: (r) => `${r.model} ${r.serial}`,
           priority: "secondary",
-          cell: (r) => (
-            <div className="flex min-w-0 flex-col gap-0.5">
-              <ModelCell model={r.model} modelId={r.modelId || undefined} registry={modelRegistry} />
-              {r.serial ? (
-                <AppTooltip noiDung={`Serial: ${r.serial}`}>
-                  <span tabIndex={0} className="block truncate font-mono text-[11px] text-muted-foreground">
+          cell: (r) => {
+            // Popover chỉ chứa metadata BỔ SUNG — không lặp lại Model/Serial.
+            const meta = buildMetaItems(
+              [
+                { label: "Chủng loại", value: r.chungLoai },
+                { label: "Hãng SX", value: r.nhaSanXuat },
+                { label: "P/N", value: r.pN },
+                { label: "Mã Bravo", value: r.maTaiSanBravo },
+                { label: "Năm SX", value: r.namSanXuat },
+                { label: "Hạn bảo hành", value: r.hanBaoHanh },
+                { label: "Nhà cung cấp", value: r.nhaCungCap },
+              ],
+              [r.model, r.serial],
+            );
+            return (
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <div className="flex min-w-0 items-center gap-1">
+                  <ModelCell model={r.model} modelId={r.modelId || undefined} registry={modelRegistry} />
+                  <MetaPopover
+                    title="Thông tin bổ sung"
+                    items={meta}
+                    label={`Xem thông tin bổ sung của tài sản ${r.ma}`}
+                  />
+                </div>
+                {r.serial ? (
+                  <span className="block truncate font-mono text-[11px] text-muted-foreground">
                     {r.serial}
                   </span>
-                </AppTooltip>
-              ) : null}
-            </div>
-          ),
+                ) : null}
+              </div>
+            );
+          },
         },
         {
           key: "serial",
@@ -328,6 +355,27 @@ export function AssetTablePanel({
           defaultHidden: true,
           value: (r) => r.serial,
           cell: (r) => <span className="break-all font-mono text-xs text-muted-foreground">{r.serial || "—"}</span>,
+        },
+        {
+          key: "lienHe",
+          label: "Liên hệ",
+          minW: "min-w-[180px]",
+          cellClassName: "max-w-[240px]",
+          filter: "text",
+          hideBelow: "xl",
+          priority: "secondary",
+          value: (r) => formatContactsForExport(buildContacts(r)),
+          cell: (r) => <ContactCell contacts={buildContacts(r)} />,
+        },
+        {
+          key: "nhaCungCap",
+          label: "Nhà cung cấp",
+          minW: "min-w-[170px]",
+          cellClassName: "max-w-[220px]",
+          filter: "cat",
+          defaultHidden: true,
+          value: (r) => r.nhaCungCap,
+          cell: (r) => <TextCell value={r.nhaCungCap} />,
         },
         {
           key: "chungLoai",
@@ -391,6 +439,27 @@ export function AssetTablePanel({
           priority: "secondary",
           cell: (r) => r.trangThai ? <Badge variant="secondary" className="text-[10px]">{r.trangThai}</Badge> : <span className="text-xs text-muted-foreground">—</span>,
         },
+        // ---- Metadata (chỉ hiện ở chế độ "Tất cả cột" / khi bật thủ công) ----
+        ...([
+          ["pN", "P/N", (r: TaiSanRow) => r.pN],
+          ["maTaiSanBravo", "Mã tài sản Bravo", (r: TaiSanRow) => r.maTaiSanBravo],
+          ["namSanXuat", "Năm sản xuất", (r: TaiSanRow) => r.namSanXuat],
+          ["namKhaiThac", "Năm khai thác", (r: TaiSanRow) => r.namKhaiThac],
+          ["ngayMua", "Ngày mua", (r: TaiSanRow) => r.ngayMua],
+          ["hanBaoHanh", "Hạn bảo hành", (r: TaiSanRow) => r.hanBaoHanh],
+          ["tyLeTuoiTho", "Tỷ lệ tuổi thọ", (r: TaiSanRow) => r.tyLeTuoiTho],
+          ["tinhTrangKyThuat", "Tình trạng kỹ thuật", (r: TaiSanRow) => r.tinhTrangKyThuat],
+          ["cheDoKdHc", "Chế độ KĐ/HC", (r: TaiSanRow) => r.cheDoKdHc],
+          ["ngayBaoTriGanNhat", "Bảo trì gần nhất", (r: TaiSanRow) => r.ngayBaoTriGanNhat],
+          ["ngayBaoTriKeTiep", "Bảo trì kế tiếp", (r: TaiSanRow) => r.ngayBaoTriKeTiep],
+        ] as const).map(([key, label, get]) => ({
+          key,
+          label,
+          minW: "min-w-[140px]",
+          defaultHidden: true,
+          value: (r: TaiSanRow) => toDisplayString(get(r)),
+          cell: (r: TaiSanRow) => <TextCell value={toDisplayString(get(r))} dong={1} />,
+        })),
         {
           key: "actions",
           label: "",

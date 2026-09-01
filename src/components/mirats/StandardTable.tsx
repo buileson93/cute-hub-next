@@ -318,7 +318,36 @@ export function StandardTable<T>({
     }
   }, [rows, tableKeyEffective, performActualDeletion]);
 
-  const prefs = useColumnPrefs(tableKeyEffective, columns.map(c => c.key));
+  const prefs = useColumnPrefs(
+    tableKeyEffective,
+    columns.map(c => c.key),
+    columns.filter(c => c.defaultHidden).map(c => c.key),
+  );
+
+  // Chế độ cột: "gọn" (mặc định, theo tuỳ chỉnh người dùng) hoặc "tất cả cột"
+  // (bỏ qua ẩn/hiện để đối soát & chuẩn bị xuất CSV). Ghi nhớ theo bảng.
+  const colModeKey = `mirats:colmode:${tableKeyEffective}`;
+  const [colMode, setColMode] = useState<"compact" | "all">("compact");
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(colModeKey);
+      setColMode(saved === "all" ? "all" : "compact");
+    } catch {
+      setColMode("compact");
+    }
+  }, [colModeKey]);
+  const changeColMode = useCallback(
+    (mode: "compact" | "all") => {
+      setColMode(mode);
+      try {
+        window.localStorage.setItem(colModeKey, mode);
+      } catch {
+        /* bỏ qua khi localStorage bị chặn */
+      }
+    },
+    [colModeKey],
+  );
+
   const scrollOffsetKey = `scroll-offset:${tableKeyEffective}`;
 
   const getRowIdInternal = useCallback(
@@ -733,7 +762,10 @@ export function StandardTable<T>({
   }, [trangThai, fullDisplay.length, errorContent, emptyContent, loadingContent, emptyText, columns.length, hasFilter, clearAllFilters, countUnit]);
 
   const isMobile = isClient && window.innerWidth < BP_PX.md;
-  const shownCols = useMemo(() => columns.filter(c => !prefs.hidden.has(c.key)), [columns, prefs.hidden]);
+  const shownCols = useMemo(
+    () => (colMode === "all" ? columns : columns.filter(c => !prefs.hidden.has(c.key))),
+    [columns, prefs.hidden, colMode],
+  );
   const exportCols = columns;
 
   function renderAutoCell(c: ColumnDef<T>, r: T) {
@@ -794,12 +826,38 @@ export function StandardTable<T>({
             })}
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <ColumnVisibilityMenu
-              columns={columns}
-              hidden={prefs.hidden}
-              toggle={prefs.toggle}
-              reset={prefs.reset}
-            />
+            {/* Chế độ cột: Gọn (mặc định) ↔ Tất cả cột */}
+            <div
+              role="group"
+              aria-label="Chế độ hiển thị cột"
+              className="flex h-8 items-center rounded-md border border-border/60 bg-muted/30 p-0.5"
+            >
+              {(["compact", "all"] as const).map(mode => (
+                <button
+                  key={mode}
+                  type="button"
+                  aria-pressed={colMode === mode}
+                  onClick={() => changeColMode(mode)}
+                  className={cn(
+                    "h-7 rounded-[5px] px-2 text-[11px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    colMode === mode
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {mode === "compact" ? "Gọn" : "Tất cả cột"}
+                </button>
+              ))}
+            </div>
+
+            {colMode === "compact" && (
+              <ColumnVisibilityMenu
+                columns={columns}
+                hidden={prefs.hidden}
+                toggle={prefs.toggle}
+                reset={prefs.reset}
+              />
+            )}
 
             {exportable && (
               <TableExportDialog<T>
