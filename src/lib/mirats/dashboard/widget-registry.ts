@@ -159,3 +159,15 @@ export const WIDGET_GROUP_LABEL: Record<WidgetGroup, string> = {
   "cong-viec": "Công việc",
   "van-hanh": "Vận hành",
 };
+
+/** Thứ tự hiển thị tab trên dashboard (tab đầu tiên là mặc định). */
+export const WIDGET_GROUPS: readonly WidgetGroup[] = [
+  "tong-quan",
+  "cong-viec",
+  "van-hanh",
+] as const;
+
+/** Chuẩn hóa giá trị tab đã lưu (localStorage có thể chứa giá trị cũ/không hợp lệ). */
+export function normalizeWidgetGroup(value: unknown): WidgetGroup {
+  return WIDGET_GROUPS.includes(value as WidgetGroup) ? (value as WidgetGroup) : WIDGET_GROUPS[0]!;
+}

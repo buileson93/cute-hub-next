@@ -20,7 +20,16 @@ import {
   DEFAULT_OVERVIEW_LAYOUT,
   AVAILABLE_WIDGETS,
   WidgetType,
+  WIDGET_GROUPS,
+  normalizeWidgetGroup,
 } from "@/lib/mirats/dashboard/widget-registry";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/tong-quan")({
@@ -47,6 +56,7 @@ function OverviewReport() {
   const { scope } = useUnifiedDashboardStats();
   const [isEditing, setIsEditing] = useState(false);
   const [tab, setTab] = useUserPref<WidgetGroup>("dashboard:overview:tab", "tong-quan");
+  const activeTab = normalizeWidgetGroup(tab);
   const [layout, setLayout] = useUserPref<DashboardWidgetConfig[]>(
     "dashboard:layout:overview",
     DEFAULT_OVERVIEW_LAYOUT,
@@ -160,13 +170,30 @@ function OverviewReport() {
       </div>
 
       <Tabs
-        value={tab}
-        onValueChange={(v) => setTab(v as WidgetGroup)}
+        value={activeTab}
+        onValueChange={(v) => setTab(normalizeWidgetGroup(v))}
         className="flex flex-1 min-h-0 flex-col"
       >
-        <div className="shrink-0 overflow-x-auto px-6 pb-3">
-          <TabsList className="h-9 w-max">
-            {(["tong-quan", "cong-viec", "van-hanh"] as const).map((g) => (
+        {/* Mobile: select native-like để thao tác một tay, không nén tab */}
+        <div className="shrink-0 px-6 pb-3 sm:hidden">
+          <Select value={activeTab} onValueChange={(v) => setTab(normalizeWidgetGroup(v))}>
+            <SelectTrigger className="h-10 w-full" aria-label="Chọn nhóm biểu đồ">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {WIDGET_GROUPS.map((g) => (
+                <SelectItem key={g} value={g}>
+                  {WIDGET_GROUP_LABEL[g]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Desktop/tablet: tab bar cuộn ngang */}
+        <div className="hidden shrink-0 overflow-x-auto px-6 pb-3 sm:block mirats-scroll">
+          <TabsList className="h-9 w-max" aria-label="Nhóm biểu đồ tổng quan">
+            {WIDGET_GROUPS.map((g) => (
               <TabsTrigger
                 key={g}
                 value={g}
@@ -178,7 +205,7 @@ function OverviewReport() {
           </TabsList>
         </div>
 
-        {(["tong-quan", "cong-viec", "van-hanh"] as const).map((g) => (
+        {WIDGET_GROUPS.map((g) => (
           <TabsContent
             key={g}
             value={g}
