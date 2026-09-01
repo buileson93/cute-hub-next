@@ -21,6 +21,7 @@ import { useListControls } from "@/lib/mirats/ui/use-list-controls";
 import { supabase } from "@/integrations/backend/client";
 import { useSession } from "@/hooks/use-session";
 import { Button } from "@/components/ui/button";
+import { RowActionBar, RowActionButton } from "@/components/mirats/table/RowActions";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -268,28 +269,31 @@ function DacTinhPage() {
       label: "",
       align: "right",
       cell: (r) => (
-        <div className="flex justify-end gap-1">
-          <Button
-            size="sm"
-            variant="ghost"
+        <RowActionBar>
+          <RowActionButton
+            icon={Pencil}
+            label={`Sửa ${r.ten}`}
+            tooltip={canWrite ? "Chỉnh sửa nhãn tài sản" : "Bạn không có quyền chỉnh sửa"}
             disabled={!canWrite}
             onClick={() => openEdit(r)}
-            aria-label={`Sửa ${r.ten}`}
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
+          />
+          <RowActionButton
+            icon={Trash2}
+            label={`Xoá ${r.ten}`}
+            tone="destructive"
             disabled={!canWrite || r.so_dung > 0}
+            tooltip={
+              r.so_dung > 0
+                ? "Đang được mẫu sử dụng — không thể xoá"
+                : canWrite
+                  ? "Xoá nhãn tài sản"
+                  : "Bạn không có quyền xoá"
+            }
             onClick={() => setDelTarget(r)}
-            aria-label={`Xoá ${r.ten}`}
-            title={r.so_dung > 0 ? "Đang được mẫu sử dụng" : undefined}
-          >
-            <Trash2 className="h-3.5 w-3.5 text-red-600" />
-          </Button>
-        </div>
+          />
+        </RowActionBar>
       ),
+
     },
   ];
 

@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { RowActionBar, RowActionButton } from "@/components/mirats/table/RowActions";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -832,29 +833,21 @@ function ModelCatalogPage() {
                     align: "right" as const,
                     priority: "detail" as const,
                     cell: (m: ModelRow) => (
-                      <div className="flex justify-end gap-1 whitespace-nowrap">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-7 w-7"
+                      <RowActionBar>
+                        <RowActionButton
+                          icon={Pencil}
+                          label="Sửa mẫu"
                           onClick={() => setEditing(m)}
-                          title="Sửa"
-                          aria-label="Sửa mẫu"
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-7 w-7 text-destructive"
+                        />
+                        <RowActionButton
+                          icon={Trash2}
+                          label="Xoá mẫu"
+                          tone="destructive"
                           onClick={() => delMut.mutate(m)}
-                          title="Xoá"
-                          aria-label="Xoá mẫu"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
+                        />
+                      </RowActionBar>
                     ),
+
                   },
                 ]
               : []),
