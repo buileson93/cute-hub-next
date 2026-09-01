@@ -164,15 +164,16 @@ export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
               </div>
             )}
           </div>
-        </ScrollArea>
+        </div>
       </div>
 
       {/* Inspector Panel */}
       {selectedEventId && (
-        <div className="w-[380px] border-l bg-card flex flex-col shrink-0 animate-in slide-in-from-right duration-200">
+        <div className="w-full md:w-[360px] border-t md:border-t-0 md:border-l bg-card flex flex-col shrink-0 min-h-0 overflow-hidden animate-in slide-in-from-right duration-200">
           <TimelineInspector event={selectedEvent} onClose={() => setSelectedEventId(null)} />
         </div>
       )}
+
     </div>
   );
 }
