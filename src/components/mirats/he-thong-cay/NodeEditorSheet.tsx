@@ -303,29 +303,31 @@ export function NodeEditorSheet({
           )}
 
           {target?.kind === "nh" && (
-            <div className="space-y-3 rounded-md border p-3">
-              <div className="flex items-center gap-1.5 text-sm font-medium">
-                <Network className="h-4 w-4 text-primary" /> Hệ thống con
-              </div>
+            <FormSection
+              title="Hệ thống con"
+              icon={Network}
+              description="Hệ thống là tập hợp đang vận hành thuộc nhóm này."
+            >
               {canManage && (
                 <div className="space-y-2 border-t pt-3">
+                  <Label htmlFor="new-ht-ten" className="text-xs">
+                    Tên hệ thống mới
+                  </Label>
                   <Input
+                    id="new-ht-ten"
                     value={newSystemTen}
                     onChange={(e) => setNewSystemTen(e.target.value)}
-                    placeholder="Tên hệ thống mới..."
+                    placeholder="VD: Hệ thống điện nguồn…"
                   />
-                  <Select value={newSystemDonViId} onValueChange={setNewSystemDonViId}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn đơn vị..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {donViList.map((dv) => (
-                        <SelectItem key={dv.id} value={dv.id}>
-                          {dv.ten}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label className="text-xs">Đơn vị quản lý</Label>
+                  <Combobox
+                    options={donViOptions}
+                    value={newSystemDonViId}
+                    onChange={setNewSystemDonViId}
+                    placeholder="Chọn đơn vị…"
+                    searchPlaceholder="Tìm theo tên hoặc mã đơn vị…"
+                    emptyText="Không tìm thấy đơn vị phù hợp"
+                  />
                   <Button
                     size="sm"
                     disabled={addSystem.isPending || !newSystemTen.trim() || !newSystemDonViId}
