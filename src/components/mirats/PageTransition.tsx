@@ -11,7 +11,9 @@ export function PageTransition({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const reduce = useReducedMotion();
 
-  if (reduce) return <>{children}</>;
+  if (reduce) {
+    return <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto">{children}</div>;
+  }
 
   return (
     <motion.div
@@ -22,7 +24,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
         duration: getMotionDurationSeconds("base"),
         ease: getMotionEase("standard"),
       }}
-      className="min-h-full"
+      className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto"
     >
       {children}
     </motion.div>
