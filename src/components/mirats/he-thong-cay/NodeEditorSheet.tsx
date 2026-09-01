@@ -410,7 +410,7 @@ export function NodeEditorSheet({
                 )}
                 Thêm tài sản
               </Button>
-            </div>
+            </FormSection>
           )}
 
 
