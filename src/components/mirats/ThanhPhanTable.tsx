@@ -377,54 +377,49 @@ export function ThanhPhanTable({
   const setEditMode = useCallback((v: boolean) => mode.setEditMode(v), [mode]);
 
   /**
-   * Cột thao tác (~200px) — nhóm theo ngữ cảnh: "Chế độ xem" (Thành phần /
-   * Tài sản) và "Thao tác". Trên màn hẹp rail xếp ngang phía trên bảng.
+   * Thanh điều khiển gọn — segmented control 1 hàng ngay trên bảng, thay cho
+   * rail 200px cũ (chiếm diện tích, chữ to/thô). Nhãn rút gọn trên mobile.
    */
   const ActionRail = (
-    <aside
+    <div
       aria-label="Bộ điều khiển danh sách"
-      className="flex shrink-0 flex-row flex-wrap items-center gap-2 xl:h-full xl:min-h-0 xl:flex-col xl:flex-nowrap xl:items-stretch xl:overflow-y-auto xl:border-r xl:pr-3"
+      className="flex shrink-0 flex-wrap items-center gap-2 overflow-x-hidden"
     >
-      <div className="min-w-0 flex-1 xl:flex-none">
-        <p className="mb-1 hidden text-[10px] font-bold uppercase tracking-widest text-muted-foreground xl:block">
-          Chế độ xem
-        </p>
-        <Tabs value={viewMode} onValueChange={(v) => { setViewMode(v as "component" | "asset"); setSelectedIds(new Set()); }}>
-          <TabsList className="h-8 w-full bg-muted/50 p-0.5 xl:h-auto xl:flex-col xl:items-stretch">
-            <TabsTrigger
-              value="component"
-              className="h-7 min-w-0 flex-1 gap-1.5 whitespace-nowrap px-2.5 text-[11px] font-semibold uppercase tracking-tight xl:w-full xl:justify-start"
-            >
-              <LayoutGrid className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-              <span className="truncate">Theo thành phần</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="asset"
-              className="h-7 min-w-0 flex-1 gap-1.5 whitespace-nowrap px-2.5 text-[11px] font-semibold uppercase tracking-tight xl:w-full xl:justify-start"
-            >
-              <Package className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-              <span className="truncate">Theo tài sản</span>
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
+      <Tabs
+        value={viewMode}
+        onValueChange={(v) => {
+          setViewMode(v as "component" | "asset");
+          setSelectedIds(new Set());
+        }}
+      >
+        <TabsList className="h-7 gap-0.5 bg-muted/50 p-0.5">
+          <TabsTrigger
+            value="component"
+            title="Xem theo thành phần hệ thống"
+            className="h-6 gap-1.5 whitespace-nowrap rounded-sm px-2 text-[11px] font-medium tracking-tight"
+          >
+            <LayoutGrid className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            <span className="hidden sm:inline">Thành phần</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="asset"
+            title="Xem theo tài sản"
+            className="h-6 gap-1.5 whitespace-nowrap rounded-sm px-2 text-[11px] font-medium tracking-tight"
+          >
+            <Package className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            <span className="hidden sm:inline">Tài sản</span>
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
 
-      {!isExternalEdit && (
-        <div className="shrink-0 xl:w-full">
-          <p className="mb-1 hidden text-[10px] font-bold uppercase tracking-widest text-muted-foreground xl:block">
-            Chế độ
-          </p>
-          <EditModeToggle mode={mode} className="w-full justify-start" />
-        </div>
-      )}
-    </aside>
+      {!isExternalEdit && <EditModeToggle mode={mode} className="h-7" />}
+    </div>
   );
 
   return (
     <div
       className={cn(
-        "flex h-full min-h-0 flex-col gap-2 overflow-hidden",
-        "xl:grid xl:grid-cols-[200px_minmax(0,1fr)] xl:gap-3",
+        "flex h-full min-h-0 flex-col gap-1.5 overflow-hidden",
         !hideHeader && "p-2",
       )}
     >
