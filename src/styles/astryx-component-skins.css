@@ -274,8 +274,11 @@
   }
 
   .astryx-tooltip {
-    background-color: var(--color-primary);
-    color: var(--color-primary-foreground);
+    /* Tooltip dùng nền popover trung tính (không phủ xanh) để bảo đảm tương phản
+       và dễ đọc ở cả light/dark theme. */
+    background-color: var(--color-popover);
+    color: var(--color-popover-foreground);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-element);
     font-size: 0.75rem;
     font-weight: 500;
