@@ -113,6 +113,20 @@ export const Route = createFileRoute("/_app/he-thong/cay")({
   }),
   errorComponent: ({ error, reset }: { error: Error; reset: () => void }) => {
     const router = useRouter();
+    const [retrying, setRetrying] = React.useState(false);
+    React.useEffect(() => {
+      captureError(error, { boundary: "route:/he-thong/cay" });
+    }, [error]);
+    const retry = async (hardReset: boolean) => {
+      setRetrying(true);
+      if (hardReset) resetCayLocalState();
+      try {
+        await router.invalidate();
+      } finally {
+        setRetrying(false);
+        reset();
+      }
+    };
     return (
       <div className="flex flex-col items-center justify-center p-8 bg-card border rounded-xl shadow-sm min-h-[400px]">
         <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
@@ -126,14 +140,20 @@ export const Route = createFileRoute("/_app/he-thong/cay")({
         </div>
         <div className="flex flex-col gap-3 w-full max-w-[240px]">
           <Button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
+            onClick={() => void retry(false)}
             variant="default"
             className="w-full"
+            disabled={retrying}
           >
-            Thử lại
+            {retrying ? "Đang tải lại…" : "Thử lại"}
+          </Button>
+          <Button
+            onClick={() => void retry(true)}
+            variant="secondary"
+            className="w-full"
+            disabled={retrying}
+          >
+            Đặt lại chế độ xem
           </Button>
           <Button onClick={() => (window.location.href = "/")} variant="outline" className="w-full">
             Về trang chủ
@@ -367,10 +387,16 @@ function HeThongCayPage() {
     },
   });
 
+  // Trust boundary: loại bản ghi hỏng/trùng trước khi đưa vào cây.
+  const { rows: safeDevices, report: dataReport } = useMemo(
+    () => normalizeDeviceRows(rawDevices),
+    [rawDevices],
+  );
+
   // Giải mã taxonomy ở tầng dẫn xuất → luôn đồng bộ với taxonomy mới nhất.
   const devices = useMemo(() => {
-    if (!taxonomy || rawDevices.length === 0) return EMPTY_ROWS as any[];
-    return rawDevices.map((d: any) => {
+    if (!taxonomy || safeDevices.length === 0) return EMPTY_ROWS as any[];
+    return safeDevices.map((d: any) => {
       const pl = resolvePhanLoai(d.phan_loai_id, taxonomy);
       const nh = resolveNhom(d.nhom_he_thong_id, taxonomy);
       const ht = resolveHeThong(d.he_thong_id, taxonomy);
@@ -387,7 +413,7 @@ function HeThongCayPage() {
         _modelTen: d._modelRel?.ten ?? d.model ?? null,
       };
     });
-  }, [rawDevices, taxonomy]);
+  }, [safeDevices, taxonomy]);
 
 
   const { tree } = useMemo(() => {
