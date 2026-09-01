@@ -153,9 +153,12 @@ export function HierarchyRow({
       data-selected={selected || undefined}
       className={cn(
         "group flex items-start gap-1.5 rounded-lg px-1.5 py-1 transition-colors sm:items-center sm:gap-2",
-        "hover:bg-muted/60 data-[selected]:bg-primary/5",
+        "data-[selected]:bg-primary/5",
+        surface === "card"
+          ? "border border-border/60 bg-card/60 px-2 py-1.5 shadow-[0_1px_0_0_hsl(var(--border)/0.4)] hover:border-border hover:bg-muted/40"
+          : "hover:bg-muted/60",
         // Trạng thái chọn không chỉ dựa vào màu: có viền trái đậm.
-        selected && "shadow-[inset_2px_0_0_0_hsl(var(--primary))]",
+        selected && "border-primary/40 shadow-[inset_2px_0_0_0_hsl(var(--primary))]",
         disabled && "opacity-60",
         className,
       )}
