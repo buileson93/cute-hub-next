@@ -44,6 +44,23 @@ import { createApiKey, revokeApiKey } from "@/lib/mirats/auth/api-keys.functions
 
 export const Route = createFileRoute("/_app/admin/tich-hop")({
   component: ApiKeysManagement,
+  head: () => ({
+    meta: [
+      { title: "Tích hợp & API Key — MIRATS" },
+      {
+        name: "description",
+        content:
+          "Quản lý API Key cho MIRATS Browser Extension: tạo, phân quyền phạm vi và thu hồi khoá tích hợp.",
+      },
+      { property: "og:title", content: "Tích hợp & API Key — MIRATS" },
+      {
+        property: "og:description",
+        content: "Tạo và thu hồi API Key tích hợp cho hệ thống MIRATS.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
 });
 
 type ApiKeyRow = {
