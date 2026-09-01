@@ -529,7 +529,7 @@ export function CatalogTable({
           className="flex flex-col gap-2 rounded-lg border border-destructive/40 bg-destructive/5 p-4 sm:flex-row sm:items-center sm:justify-between"
         >
           <p className="min-w-0 text-sm text-destructive break-words">
-            Không tải được danh mục: {thongDiepLoi(error)}
+            Không tải được danh mục: {thongDiepLoi(error, "Lỗi không xác định")}
           </p>
           <Button
             size="sm"
