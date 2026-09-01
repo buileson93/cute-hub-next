@@ -16,17 +16,13 @@ export class SearchSyncManager {
     const syncState = await db.get("sync_state", partitionKey);
     const lastSyncedAt = syncState?.lastSyncedAt || "1970-01-01T00:00:00Z";
 
-    // 1. Fetch incremental updates from Supabase
-    // Using manual type casting because the generated types might not have the relationships inferred correctly
+    // 1. Fetch incremental updates from Supabase.
+    // `source_id` là khoá đa hình (trỏ tới model_tai_lieu HOẶC thiet_bi_tep_dinh_kem)
+    // nên không có FK để PostgREST embed — phải nạp metadata bằng truy vấn riêng.
     const { data: ocrRows, error } = await supabase
       .from("tai_lieu_ocr")
-      .select(
-        `
-        *,
-        model_tai_lieu!source_id (file_name, mo_ta, model:model_id(ten, ma)),
-        thiet_bi_tep_dinh_kem!source_id (file_name, mo_ta, thiet_bi:thiet_bi_id(ten_thiet_bi, ma_thiet_bi))
-      `,
-      )
+      // eslint-disable-next-line no-restricted-syntax
+      .select("*")
       .gt("updated_at", lastSyncedAt)
       .eq("status", "completed")
       .order("updated_at", { ascending: true });
@@ -38,28 +34,45 @@ export class SearchSyncManager {
 
     if (!ocrRows || ocrRows.length === 0) return;
 
+    const rows = ocrRows as any[];
+    const modelIds = rows.filter((r) => r.source_type === "model_tai_lieu").map((r) => r.source_id);
+    const tepIds = rows
+      .filter((r) => r.source_type === "thiet_bi_tep_dinh_kem")
+      .map((r) => r.source_id);
+
+    const metaById = new Map<string, { name?: string; code?: string; desc?: string }>();
+
+    if (modelIds.length) {
+      const { data } = await supabase
+        .from("model_tai_lieu")
+        .select("id, file_name, mo_ta, model:model_id(ten, ma)")
+        .in("id", modelIds);
+      for (const m of (data as any[]) ?? []) {
+        metaById.set(m.id, { name: m.file_name, code: m.model?.ma, desc: m.mo_ta });
+      }
+    }
+
+    if (tepIds.length) {
+      const { data } = await supabase
+        .from("thiet_bi_tep_dinh_kem")
+        .select("id, file_name, mo_ta, thiet_bi:thiet_bi_id(ten_thiet_bi, ma_thiet_bi)")
+        .in("id", tepIds);
+      for (const t of (data as any[]) ?? []) {
+        metaById.set(t.id, { name: t.file_name, code: t.thiet_bi?.ma_thiet_bi, desc: t.mo_ta });
+      }
+    }
+
     const tx = db.transaction(["documents", "pages", "sync_state"], "readwrite");
     const docStore = tx.objectStore("documents");
     const pageStore = tx.objectStore("pages");
 
     const indexableDocs: IndexableDoc[] = [];
 
-    for (const row of ocrRows as any[]) {
+    for (const row of rows) {
       const docId = `${row.source_type}:${row.source_id}`;
 
-      // Map metadata safely
-      const meta =
-        row.source_type === "model_tai_lieu"
-          ? {
-              name: row.model_tai_lieu?.file_name,
-              code: row.model_tai_lieu?.model?.ma,
-              desc: row.model_tai_lieu?.mo_ta,
-            }
-          : {
-              name: row.thiet_bi_tep_dinh_kem?.file_name,
-              code: row.thiet_bi_tep_dinh_kem?.thiet_bi?.ma_thiet_bi,
-              desc: row.thiet_bi_tep_dinh_kem?.mo_ta,
-            };
+      const meta = metaById.get(row.source_id) ?? {};
+
 
       const doc: OcrSearchDoc = {
         id: docId,
