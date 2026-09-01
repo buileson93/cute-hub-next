@@ -9,17 +9,16 @@ export const TB_COLS =
 
 // Danh mục đơn vị rất nhỏ (≈15 dòng) — nạp một lần để đổi don_vi_id (UUID)
 // sang mã/tên nghiệp vụ. UUID vẫn được giữ nguyên ở `don_vi_id` cho logic.
-let donViMapPromise: Promise<Map<string, { ma: string; ten: string }>> | null = null;
-function loadDonViMap() {
+type DonViInfo = { ma: string; ten: string };
+let donViMapPromise: Promise<Map<string, DonViInfo>> | null = null;
+function loadDonViMap(): Promise<Map<string, DonViInfo>> {
   if (!donViMapPromise) {
-    donViMapPromise = supabase
-      .from("dm_don_vi")
-      .select("id, ma, ten")
-      .then(({ data }) => {
-        const m = new Map<string, { ma: string; ten: string }>();
-        for (const r of data ?? []) m.set(r.id as string, { ma: r.ma ?? "", ten: r.ten ?? "" });
-        return m;
-      });
+    donViMapPromise = (async () => {
+      const { data } = await supabase.from("dm_don_vi").select("id, ma, ten");
+      const m = new Map<string, DonViInfo>();
+      for (const r of data ?? []) m.set(r.id as string, { ma: r.ma ?? "", ten: r.ten ?? "" });
+      return m;
+    })();
   }
   return donViMapPromise;
 }
