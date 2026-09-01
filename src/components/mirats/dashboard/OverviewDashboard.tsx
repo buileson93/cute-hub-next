@@ -98,7 +98,7 @@ export function OverviewDashboard({ title = "Báo cáo Tổng quan KPI" }: { tit
                       className="h-9 gap-2 rounded-xl hover:bg-primary/5 hover:border-primary/40 transition-all shadow-none"
                     >
                       <Icon name="action.add" size="tiny" className="text-primary" />
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
+                      <span className="text-meta font-bold uppercase tracking-wider text-primary">
                         Thêm Widget
                       </span>
                     </Button>
@@ -111,7 +111,7 @@ export function OverviewDashboard({ title = "Báo cáo Tổng quan KPI" }: { tit
                   className="h-9 gap-2 rounded-xl text-muted-foreground hover:text-destructive transition-all"
                 >
                   <Icon name="action.undo" size="tiny" />
-                  <span className="text-[11px] font-bold uppercase tracking-wider">Khôi phục</span>
+                  <span className="text-meta font-bold uppercase tracking-wider">Khôi phục</span>
                 </Button>
               </>
             )}
@@ -127,7 +127,7 @@ export function OverviewDashboard({ title = "Báo cáo Tổng quan KPI" }: { tit
                 name={isEditing ? "status.success" : "action.settings"}
                 className={cn(isEditing ? "text-primary-foreground" : "text-primary")}
               />
-              <span className="font-bold text-[11px] uppercase tracking-wider">
+              <span className="font-bold text-meta uppercase tracking-wider">
                 {isEditing ? "Hoàn tất" : "Cá nhân hóa"}
               </span>
             </Button>
@@ -139,7 +139,7 @@ export function OverviewDashboard({ title = "Báo cáo Tổng quan KPI" }: { tit
                 className="shrink-0 flex items-center gap-2 h-9 px-4 rounded-xl hover:bg-primary/5 transition-all"
               >
                 <Icon name="action.download" className="text-primary" />
-                <span className="font-bold text-[11px] uppercase tracking-wider text-primary">
+                <span className="font-bold text-meta uppercase tracking-wider text-primary">
                   Xuất PDF
                 </span>
               </Button>
@@ -183,7 +183,7 @@ export function OverviewDashboard({ title = "Báo cáo Tổng quan KPI" }: { tit
               <TabsTrigger
                 key={g}
                 value={g}
-                className="h-7 whitespace-nowrap px-3 text-[11px] font-bold uppercase tracking-wider"
+                className="h-7 whitespace-nowrap px-3 text-meta font-bold uppercase tracking-wider"
               >
                 {WIDGET_GROUP_LABEL[g]}
               </TabsTrigger>

@@ -319,7 +319,7 @@ export function CongVanSheet({
           <SheetHeader className="pb-2">
             <SheetTitle className="flex items-center gap-2">
               {editing ? editing.so_cong_van : "Công văn mới"}
-              <Badge variant="outline" className={cn("text-[10px]", LOAI_META[draft.loai].tone)}>
+              <Badge variant="outline" className={cn("text-mini", LOAI_META[draft.loai].tone)}>
                 {LOAI_META[draft.loai].short}
               </Badge>
             </SheetTitle>
@@ -449,7 +449,7 @@ export function CongVanSheet({
                 onChange={(e) => setDraft({ ...draft, can_cu_text: e.target.value })}
               />
               {goiYCanCu && !editing && (
-                <p className="mt-1 text-[11px] text-muted-foreground">
+                <p className="mt-1 text-meta text-muted-foreground">
                   Sẽ tự nối tới công văn gốc <b>{goiYCanCu.so_cong_van}</b>.
                 </p>
               )}
@@ -560,7 +560,7 @@ export function CongVanSheet({
                     {(t.metadata as any)?.ocr_status === "completed" && (
                       <Badge
                         variant="outline"
-                        className="h-5 gap-1 border-emerald-200 bg-emerald-50 px-1 text-[9px] text-emerald-700"
+                        className="h-5 gap-1 border-emerald-200 bg-emerald-50 px-1 text-micro text-emerald-700"
                       >
                         <Sparkles className="h-2.5 w-2.5" /> OCR
                       </Badge>

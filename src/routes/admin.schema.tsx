@@ -661,7 +661,7 @@ function TableGraphNode({ data, selected }: NodeProps) {
       >
         <div className="flex items-center gap-1.5">
           <span className={cn("h-2 w-2 rounded-full shrink-0", d.colorDot)} />
-          <span className="text-[10px] uppercase tracking-wider text-muted-foreground truncate">
+          <span className="text-mini uppercase tracking-wider text-muted-foreground truncate">
             {d.group}
           </span>
           {d.expanded ? (
@@ -671,8 +671,8 @@ function TableGraphNode({ data, selected }: NodeProps) {
           )}
         </div>
         <div className="font-semibold text-sm leading-tight truncate">{d.viName}</div>
-        <div className="text-[11px] font-mono text-muted-foreground truncate">{d.rawName}</div>
-        <div className="mt-0.5 text-[11px] text-muted-foreground">
+        <div className="text-meta font-mono text-muted-foreground truncate">{d.rawName}</div>
+        <div className="mt-0.5 text-meta text-muted-foreground">
           {d.colCount} cột · {d.fkCount} liên kết
         </div>
       </button>
@@ -684,7 +684,7 @@ function TableGraphNode({ data, selected }: NodeProps) {
           {d.columns.map((col) => (
             <div
               key={col.name}
-              className="flex items-center gap-1.5 px-3 py-1 text-[11px] border-b border-slate-100 last:border-b-0"
+              className="flex items-center gap-1.5 px-3 py-1 text-meta border-b border-slate-100 last:border-b-0"
               title={typeVi(col)}
             >
               {col.is_pk && <KeyRound className="h-3 w-3 text-amber-600 shrink-0" />}
@@ -838,7 +838,7 @@ function SchemaGraph({ tables, fks }: { tables: Tbl[]; fks: FK[] }) {
         </div>
       </Panel>
       <Panel position="top-left">
-        <div className="rounded-md border bg-card/95 px-2 py-1 text-[11px] text-muted-foreground shadow-sm backdrop-blur">
+        <div className="rounded-md border bg-card/95 px-2 py-1 text-meta text-muted-foreground shadow-sm backdrop-blur">
           Bấm vào khối để mở/đóng danh sách cột
         </div>
       </Panel>
@@ -931,7 +931,7 @@ function TableNode({
               )}
               <div className="min-w-0">
                 <div className="font-medium text-sm truncate">{tableVi(tbl.table_name)}</div>
-                <div className="text-[11px] font-mono text-muted-foreground truncate">
+                <div className="text-meta font-mono text-muted-foreground truncate">
                   {tbl.table_name}
                 </div>
               </div>
@@ -1000,7 +1000,7 @@ function TableNode({
                             Mỗi {tableVi(tbl.table_name).toLowerCase()} gắn với một
                           </span>
                           <span className="font-medium">{tableVi(f.to_table)}</span>
-                          <span className="font-mono text-slate-400 text-[10px]">
+                          <span className="font-mono text-slate-400 text-mini">
                             ({f.from_column})
                           </span>
                         </li>
@@ -1018,7 +1018,7 @@ function TableNode({
                         <li key={f.constraint} className="flex items-center gap-1.5">
                           <span className="font-medium">{tableVi(f.from_table)}</span>
                           <span className="text-muted-foreground">tham chiếu đến bảng này</span>
-                          <span className="font-mono text-slate-400 text-[10px]">
+                          <span className="font-mono text-slate-400 text-mini">
                             ({f.from_column})
                           </span>
                         </li>

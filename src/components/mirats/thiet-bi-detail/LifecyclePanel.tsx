@@ -38,7 +38,7 @@ export function LifecyclePanel({ thietBiId }: { thietBiId: string }) {
                     </span>
                     <Badge
                       variant="outline"
-                      className="text-[10px] px-1.5 h-4 bg-primary/10 border-primary/20 text-primary"
+                      className="text-mini px-1.5 h-4 bg-primary/10 border-primary/20 text-primary"
                     >
                       Vòng đời
                     </Badge>

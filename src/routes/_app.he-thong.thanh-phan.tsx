@@ -58,35 +58,35 @@ function ThanhPhanListPage() {
           <TabsList className="h-8 bg-muted/50 p-0.5">
             <TabsTrigger
               value="table"
-              className="h-7 gap-2 px-3 text-[11px] font-medium tracking-tight"
+              className="h-7 gap-2 px-3 text-meta font-medium tracking-tight"
             >
               <LayoutGrid className="h-3 w-3" />
               <span>DANH SÁCH</span>
             </TabsTrigger>
             <TabsTrigger
               value="tree"
-              className="h-7 gap-2 px-3 text-[11px] font-medium tracking-tight"
+              className="h-7 gap-2 px-3 text-meta font-medium tracking-tight"
             >
               <ListTree className="h-3.5 w-3.5" />
               <span>CÂY PHÂN CẤP</span>
             </TabsTrigger>
             <TabsTrigger
               value="mindmap"
-              className="h-7 gap-2 px-3 text-[11px] font-medium tracking-tight"
+              className="h-7 gap-2 px-3 text-meta font-medium tracking-tight"
             >
               <GitFork className="h-3.5 w-3.5" />
               <span>SƠ ĐỒ TỔNG THỂ</span>
             </TabsTrigger>
             <TabsTrigger
               value="health"
-              className="h-7 gap-2 px-3 text-[11px] font-medium tracking-tight"
+              className="h-7 gap-2 px-3 text-meta font-medium tracking-tight"
             >
               <Activity className="h-3.5 w-3.5" />
               <span>SỨC KHỎE</span>
             </TabsTrigger>
             <TabsTrigger
               value="history"
-              className="h-7 gap-2 px-3 text-[11px] font-medium tracking-tight"
+              className="h-7 gap-2 px-3 text-meta font-medium tracking-tight"
             >
               <ClipboardList className="h-3.5 w-3.5" />
               <span>NHẬT KÝ</span>

@@ -157,17 +157,17 @@ export function PrepareCatalogs({
         </InfoHint>
         <span className="ml-auto flex items-center gap-1.5">
           {systemMa && (
-            <Badge variant="secondary" className="text-[10px]">
+            <Badge variant="secondary" className="text-mini">
               HT ✓
             </Badge>
           )}
           {viTriParentId && (
-            <Badge variant="secondary" className="text-[10px]">
+            <Badge variant="secondary" className="text-mini">
               Vị trí ✓
             </Badge>
           )}
           {modelMa && (
-            <Badge variant="secondary" className="text-[10px]">
+            <Badge variant="secondary" className="text-mini">
               Mẫu ✓
             </Badge>
           )}
@@ -213,7 +213,7 @@ export function PrepareCatalogs({
               </SelectContent>
             </Select>
 
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-meta text-muted-foreground">
               Phòng mới trong file (vd <i>Tower, Phòng Tài sản</i>) sẽ nằm dưới cấp cha này (vd{" "}
               <i>Đài KSKL Phú Bài</i>).
             </p>
@@ -307,11 +307,11 @@ function SystemPicker({
             <Check className="h-3.5 w-3.5 text-emerald-600" />
             <b>{picked.ten}</b>
             {picked.extra && (
-              <Badge variant="outline" className="text-[10px]">
+              <Badge variant="outline" className="text-mini">
                 {picked.extra}
               </Badge>
             )}
-            <span className="font-mono text-[10px] text-muted-foreground">{picked.ma}</span>
+            <span className="font-mono text-mini text-muted-foreground">{picked.ma}</span>
           </span>
           <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => onPick("")}>
             <X className="mr-1 h-3.5 w-3.5" /> Bỏ chọn
@@ -371,7 +371,7 @@ function SystemPicker({
           {q && (
             <div className="max-h-40 overflow-auto rounded-md border">
               {filtered.length === 0 ? (
-                <p className="px-2.5 py-2 text-[11px] text-muted-foreground">
+                <p className="px-2.5 py-2 text-meta text-muted-foreground">
                   Không thấy — có thể tạo mới bên dưới.
                 </p>
               ) : (
@@ -387,7 +387,7 @@ function SystemPicker({
                   >
                     <b className="truncate">{s.ten}</b>
                     {s.extra && (
-                      <Badge variant="outline" className="shrink-0 text-[10px]">
+                      <Badge variant="outline" className="shrink-0 text-mini">
                         {s.extra}
                       </Badge>
                     )}
@@ -486,7 +486,7 @@ function ModelPicker({
             <Check className="h-3.5 w-3.5 text-emerald-600" />
             <b>{picked.ten}</b>
             {picked.extra && (
-              <span className="text-[10px] text-muted-foreground">{picked.extra}</span>
+              <span className="text-mini text-muted-foreground">{picked.extra}</span>
             )}
           </span>
           <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => onPick("")}>
@@ -553,7 +553,7 @@ function ModelPicker({
           {q && (
             <div className="max-h-40 overflow-auto rounded-md border">
               {filtered.length === 0 ? (
-                <p className="px-2.5 py-2 text-[11px] text-muted-foreground">
+                <p className="px-2.5 py-2 text-meta text-muted-foreground">
                   Không thấy — có thể tạo mới bên dưới.
                 </p>
               ) : (
@@ -569,7 +569,7 @@ function ModelPicker({
                   >
                     <b className="truncate">{m.ten}</b>
                     {m.extra && (
-                      <span className="shrink-0 text-[10px] text-muted-foreground">{m.extra}</span>
+                      <span className="shrink-0 text-mini text-muted-foreground">{m.extra}</span>
                     )}
                   </button>
                 ))

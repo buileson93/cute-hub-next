@@ -153,10 +153,10 @@ function VerifyPage() {
                 <CardTitle className="text-base">Nội dung canonical (chuỗi đã hash)</CardTitle>
               </CardHeader>
               <CardContent>
-                <pre className="max-h-72 overflow-auto whitespace-pre-wrap break-all rounded-md bg-slate-950/95 p-3 font-mono text-[10px] leading-relaxed text-emerald-200">
+                <pre className="max-h-72 overflow-auto whitespace-pre-wrap break-all rounded-md bg-slate-950/95 p-3 font-mono text-mini leading-relaxed text-emerald-200">
                   {q.data.canonical_preview}
                 </pre>
-                <p className="mt-2 text-[11px] text-muted-foreground">
+                <p className="mt-2 text-meta text-muted-foreground">
                   SHA-256 của chuỗi này chính là hash được ký bằng Ed25519.
                 </p>
               </CardContent>
@@ -183,17 +183,17 @@ function VerifyPage() {
                     <div className="mt-1 flex flex-wrap gap-2 text-xs">
                       <Badge
                         variant={s.signature_valid ? "default" : "destructive"}
-                        className="text-[10px]"
+                        className="text-mini"
                       >
                         Chữ ký {s.signature_valid ? "hợp lệ" : "SAI"}
                       </Badge>
                       <Badge
                         variant={s.matches_current ? "default" : "destructive"}
-                        className="text-[10px]"
+                        className="text-mini"
                       >
                         Nội dung {s.matches_current ? "khớp" : "đã đổi"}
                       </Badge>
-                      <code className="font-mono text-[10px] text-muted-foreground">
+                      <code className="font-mono text-mini text-muted-foreground">
                         hash: {shortHash(s.content_hash)}
                       </code>
                     </div>

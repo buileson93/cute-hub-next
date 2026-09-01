@@ -34,7 +34,7 @@ export function EntityKindBadge({ kind, className }: { kind: EntityKind; classNa
   const meta = ENTITY_META[kind];
   const Icon = meta.icon;
   return (
-    <Badge variant="outline" className={cn("gap-1 text-[11px] font-medium", meta.badge, className)}>
+    <Badge variant="outline" className={cn("gap-1 text-meta font-medium", meta.badge, className)}>
       <Icon className="h-3 w-3" aria-hidden />
       {meta.label}
     </Badge>
@@ -64,11 +64,11 @@ export function EntityFormHeader({
       <div className="flex flex-wrap items-center gap-1.5">
         <EntityKindBadge kind={kind} />
         {code ? (
-          <Badge variant="outline" className="font-mono text-[11px] font-semibold">
+          <Badge variant="outline" className="font-mono text-meta font-semibold">
             {code}
           </Badge>
         ) : null}
-        <Badge variant="secondary" className="text-[11px]">
+        <Badge variant="secondary" className="text-meta">
           {mode === "create" ? "Tạo mới" : mode === "edit" ? "Chỉnh sửa" : "Chỉ xem"}
         </Badge>
         {status}
@@ -106,7 +106,7 @@ export function FormSection({
             <span className="truncate">{title}</span>
           </div>
           {description ? (
-            <p className="text-[11px] leading-relaxed text-muted-foreground">{description}</p>
+            <p className="text-meta leading-relaxed text-muted-foreground">{description}</p>
           ) : null}
         </div>
         {actions ? <div className="shrink-0">{actions}</div> : null}
@@ -132,7 +132,7 @@ export function FormEmptyState({
     <div className="flex flex-col items-center gap-1.5 rounded-md border border-dashed px-3 py-5 text-center">
       {Icon ? <Icon className="h-5 w-5 text-muted-foreground" aria-hidden /> : null}
       <p className="text-sm font-medium">{title}</p>
-      {hint ? <p className="text-[11px] text-muted-foreground">{hint}</p> : null}
+      {hint ? <p className="text-meta text-muted-foreground">{hint}</p> : null}
       {action}
     </div>
   );
@@ -160,7 +160,7 @@ export function FormActionBar({
       )}
     >
       {dirty ? (
-        <p className="text-[11px] font-medium text-amber-600 dark:text-amber-400">
+        <p className="text-meta font-medium text-amber-600 dark:text-amber-400">
           Có thay đổi chưa lưu.
         </p>
       ) : null}

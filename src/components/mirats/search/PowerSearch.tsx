@@ -270,7 +270,7 @@ export function PowerSearch({
         >
           <Search className="h-4 w-4" aria-hidden="true" />
           <span className="hidden sm:inline-block">Tìm kiếm hoặc gõ lệnh…</span>
-          <kbd className="pointer-events-none ml-1 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium sm:flex">
+          <kbd className="pointer-events-none ml-1 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-mini font-medium sm:flex">
             <span className="text-xs">⌘</span>K
           </kbd>
         </Button>
@@ -283,7 +283,7 @@ export function PowerSearch({
             placeholder="Tìm tài sản, sự cố, nội dung tài liệu..."
             value={query}
             onValueChange={setQuery}
-            className="flex h-12 w-full bg-transparent py-3 text-[14px] outline-none border-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-12 w-full bg-transparent py-3 text-sm outline-none border-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
           />
           {ocrSyncing && <Loader2 className="h-4 w-4 animate-spin opacity-50 shrink-0" />}
         </div>
@@ -309,13 +309,13 @@ export function PowerSearch({
                   <div className="flex min-w-0 flex-col">
                     <span className="truncate">{cmd.title}</span>
                     {cmd.description ? (
-                      <span className="truncate text-[10px] text-muted-foreground">
+                      <span className="truncate text-mini text-muted-foreground">
                         {cmd.description}
                       </span>
                     ) : null}
                   </div>
                   {cmd.shortcut ? (
-                    <kbd className="ml-auto hidden rounded border bg-muted px-1.5 font-mono text-[10px] sm:inline-block">
+                    <kbd className="ml-auto hidden rounded border bg-muted px-1.5 font-mono text-mini sm:inline-block">
                       {cmd.shortcut}
                     </kbd>
                   ) : null}
@@ -356,7 +356,7 @@ export function PowerSearch({
                         <span className="font-medium truncate flex-1">{res.fileName}</span>
                         <Badge
                           variant="outline"
-                          className="text-[10px] shrink-0 border-blue-200 bg-blue-50 text-blue-700"
+                          className="text-mini shrink-0 border-blue-200 bg-blue-50 text-blue-700"
                         >
                           Trang {res.page}
                         </Badge>

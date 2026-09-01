@@ -940,14 +940,14 @@ export function StandardTable<T>({
           return (
             <div className="flex items-center gap-2">
               <UserAvatar name={v.ho_ten || v.ten} email={v.email} url={v.avatar_url || v.url} className="h-6 w-6" />
-              <span className="truncate text-[12px]">{v.ho_ten || v.ten || "—"}</span>
+              <span className="truncate text-xs">{v.ho_ten || v.ten || "—"}</span>
             </div>
           );
         }
         return (
           <div className="flex items-center gap-2">
             <UserAvatar name={String(val)} className="h-6 w-6" />
-            <span className="truncate text-[12px]">{String(val)}</span>
+            <span className="truncate text-xs">{String(val)}</span>
           </div>
         );
       case "number": return <span className="tabular-nums font-mono text-right w-full inline-block pr-1 truncate">{fmtSo(Number(val))}</span>;
@@ -982,7 +982,7 @@ export function StandardTable<T>({
                 onChange={(e) => setGlobalQuery(e.target.value)}
                 placeholder={`Tìm trong toàn bộ ${countUnit || "dữ liệu"}…`}
                 aria-label="Tìm kiếm toàn bộ dữ liệu trong bảng"
-                className="h-8 pl-7 pr-7 text-[12px]"
+                className="h-8 pl-7 pr-7 text-xs"
               />
               {globalQuery && (
                 <button
@@ -996,7 +996,7 @@ export function StandardTable<T>({
               )}
             </div>
             {isLoadingAllForSearch && (
-              <span className="flex items-center gap-1 whitespace-nowrap text-[11px] text-muted-foreground">
+              <span className="flex items-center gap-1 whitespace-nowrap text-meta text-muted-foreground">
                 <Loader2 className="h-3 w-3 animate-spin" />
                 Đang tải toàn bộ dữ liệu…
                 {infiniteScroll?.totalCount
@@ -1008,7 +1008,7 @@ export function StandardTable<T>({
               <Button
                 size="sm"
                 variant="ghost"
-                className="h-8 shrink-0 px-2 text-[11px]"
+                className="h-8 shrink-0 px-2 text-meta"
                 onClick={clearAllFilters}
               >
                 <XIcon className="mr-1 h-3 w-3" />
@@ -1039,7 +1039,7 @@ export function StandardTable<T>({
                   aria-pressed={colMode === mode}
                   onClick={() => changeColMode(mode)}
                   className={cn(
-                    "h-7 rounded-[5px] px-2 text-[11px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    "h-7 rounded-[5px] px-2 text-meta font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     colMode === mode
                       ? "bg-background text-foreground shadow-sm"
                       : "text-muted-foreground hover:text-foreground",
@@ -1319,7 +1319,7 @@ export function StandardTable<T>({
                           <OptimizedCell 
                             key={c.key} 
                             colKey={c.key}
-                            className={cn("px-3 text-[13px] truncate astryx-table-cell", c.cellClassName)} 
+                            className={cn("px-3 text-note truncate astryx-table-cell", c.cellClassName)} 
                             style={{ 
                               height: density === "compact" ? 36 : 44,
                               position: c.sticky ? 'sticky' : 'relative',
@@ -1350,7 +1350,7 @@ export function StandardTable<T>({
                 <Loader2 className="h-5 w-5 animate-spin text-primary" />
                 <div className="absolute inset-0 bg-primary/20 rounded-full blur-sm animate-pulse" />
               </div>
-              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary/80">Đang tải thêm...</span>
+              <span className="text-meta font-bold uppercase tracking-[0.2em] text-primary/80">Đang tải thêm...</span>
             </div>
           )}
           

@@ -132,7 +132,7 @@ export function UserMenu() {
               className="h-8 w-8"
             />
             <div className="hidden text-left leading-tight sm:block">
-              <div className="max-w-[120px] truncate text-[13px] font-semibold text-foreground">
+              <div className="max-w-[120px] truncate text-note font-semibold text-foreground">
                 {typeof profile.ho_ten === "string" ? profile.ho_ten : profile.email.split("@")[0]}
               </div>
               <div className="text-[10.5px] text-muted-foreground">
@@ -151,7 +151,7 @@ export function UserMenu() {
             <div className="mt-2 flex items-center gap-2">
               <Badge
                 variant="mirats-outline"
-                className="rounded-full font-mono text-[10px] tracking-wider"
+                className="rounded-full font-mono text-mini tracking-wider"
               >
                 {hasRole("admin") || hasRole("phong_kt")
                   ? "TOÀN HỆ THỐNG"

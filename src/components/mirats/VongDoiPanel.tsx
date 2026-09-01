@@ -139,7 +139,7 @@ export function VongDoiPanel({ bang, id, trangThaiHienTai }: Props) {
                   >
                     <Icon className="h-4 w-4" />
                   </div>
-                  <div className="text-[10px] text-center leading-tight px-1">
+                  <div className="text-mini text-center leading-tight px-1">
                     {SU_CO_TRANG_THAI_LABEL[s]}
                   </div>
                 </div>
@@ -253,7 +253,7 @@ export function VongDoiPanel({ bang, id, trangThaiHienTai }: Props) {
 function Stat({ label, value, tone }: { label: string; value: string; tone?: string }) {
   return (
     <div className="rounded-md border bg-card px-2 py-1">
-      <div className="text-[10px] uppercase text-muted-foreground">{label}</div>
+      <div className="text-mini uppercase text-muted-foreground">{label}</div>
       <div className={`font-semibold tabular-nums ${tone ?? ""}`}>{value}</div>
     </div>
   );

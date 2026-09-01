@@ -61,7 +61,7 @@ export function MobileRecordCard<T>({
                   className={
                     idx === 0
                       ? "font-semibold text-sm truncate"
-                      : "text-[12px] text-muted-foreground truncate"
+                      : "text-xs text-muted-foreground truncate"
                   }
                 >
                   {col.render
@@ -90,10 +90,10 @@ export function MobileRecordCard<T>({
           <div className="p-4 grid grid-cols-2 gap-x-4 gap-y-3">
             {secondaryCols.map((col, idx) => (
               <div key={`${rowId}-${col.key || idx}`} className="flex flex-col gap-0.5 min-w-0">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
+                <span className="text-mini font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
                   {col.header || col.label}
                 </span>
-                <div className={cn("text-[12px] truncate", col.cellClassName)}>
+                <div className={cn("text-xs truncate", col.cellClassName)}>
                   {renderCellContent(col, row)}
                 </div>
               </div>
@@ -105,10 +105,10 @@ export function MobileRecordCard<T>({
             <div className="px-4 py-3 bg-muted/10 border-t border-border/20 grid grid-cols-1 gap-3 animate-in fade-in slide-in-from-top-1">
               {detailCols.map((col, idx) => (
                 <div key={`${rowId}-${col.key || idx}`} className="flex flex-col gap-0.5 min-w-0">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
+                  <span className="text-mini font-bold uppercase tracking-wider text-muted-foreground/60 leading-none">
                     {col.header || col.label}
                   </span>
-                  <div className={cn("text-[12px] break-words", col.cellClassName)}>
+                  <div className={cn("text-xs break-words", col.cellClassName)}>
                     {renderCellContent(col, row)}
                   </div>
                 </div>
@@ -121,7 +121,7 @@ export function MobileRecordCard<T>({
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 px-2 text-[12px] gap-1.5 text-muted-foreground"
+              className="h-8 px-2 text-xs gap-1.5 text-muted-foreground"
               onClick={(e) => {
                 e.stopPropagation();
                 onExpand?.(rowId);
@@ -144,7 +144,7 @@ export function MobileRecordCard<T>({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 px-2 text-[12px] gap-1 text-primary"
+                className="h-8 px-2 text-xs gap-1 text-primary"
                 onClick={() => onRowClick?.(row)}
               >
                 <span>Chi tiết</span>

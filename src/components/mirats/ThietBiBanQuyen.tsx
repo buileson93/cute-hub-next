@@ -67,13 +67,13 @@ export function ThietBiBanQuyen({
 
                 <div className="mt-4 space-y-2">
                   <div className="flex items-center gap-2 text-xs font-mono bg-muted/50 p-1.5 rounded border border-dashed">
-                    <span className="text-muted-foreground shrink-0 uppercase tracking-tighter text-[10px]">
+                    <span className="text-muted-foreground shrink-0 uppercase tracking-tighter text-mini">
                       Key:
                     </span>
                     <span className="truncate">{item.licenseKey || "—"}</span>
                   </div>
 
-                  <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1">
+                  <div className="flex items-center justify-between text-meta text-muted-foreground pt-1">
                     <span className="flex items-center gap-1">
                       <Calendar className="h-3 w-3" />{" "}
                       {new Date(item.ngay_cai_dat).toLocaleDateString("vi-VN")}
@@ -107,7 +107,7 @@ export function ThietBiBanQuyen({
                     Thu hồi: {new Date(item.ngay_thu_hoi).toLocaleDateString("vi-VN")}
                   </span>
                 </div>
-                <Badge variant="secondary" className="text-[10px]">
+                <Badge variant="secondary" className="text-mini">
                   Đã thu hồi
                 </Badge>
               </div>

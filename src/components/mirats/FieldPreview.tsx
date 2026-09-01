@@ -52,7 +52,7 @@ function LabelRow({ f }: { f: PreviewField }) {
       </Label>
       {f.unit && <span className="text-xs text-muted-foreground">({f.unit})</span>}
       {f.tieu_chuan && (
-        <Badge variant="outline" className="text-[10px]">
+        <Badge variant="outline" className="text-mini">
           TC: {f.tieu_chuan}
         </Badge>
       )}
@@ -202,7 +202,7 @@ function renderInner(f: PreviewField, ph: string | undefined) {
             Đạt / Không đạt
           </div>
           {(f.min_value != null || f.max_value != null) && (
-            <p className="col-span-3 text-[11px] text-muted-foreground">
+            <p className="col-span-3 text-meta text-muted-foreground">
               Ngưỡng: {f.min_value ?? "—"} … {f.max_value ?? "—"} {f.unit ?? ""}
             </p>
           )}
@@ -212,11 +212,11 @@ function renderInner(f: PreviewField, ph: string | undefined) {
       return (
         <div className="grid grid-cols-2 gap-2">
           <div className="rounded-md border p-2">
-            <p className="mb-1 text-[11px] font-medium text-muted-foreground">TRƯỚC</p>
+            <p className="mb-1 text-meta font-medium text-muted-foreground">TRƯỚC</p>
             <Input disabled placeholder="Giá trị / mô tả" />
           </div>
           <div className="rounded-md border p-2">
-            <p className="mb-1 text-[11px] font-medium text-muted-foreground">SAU</p>
+            <p className="mb-1 text-meta font-medium text-muted-foreground">SAU</p>
             <Input disabled placeholder="Giá trị / mô tả" />
           </div>
         </div>
@@ -278,7 +278,7 @@ function renderInner(f: PreviewField, ph: string | undefined) {
               </tr>
             </tbody>
           </table>
-          <div className="border-t p-1 text-right text-[11px] text-muted-foreground">
+          <div className="border-t p-1 text-right text-meta text-muted-foreground">
             <TableIcon className="mr-1 inline h-3 w-3" /> Bảng lặp — người dùng thêm dòng khi nhập
           </div>
         </div>
@@ -286,7 +286,7 @@ function renderInner(f: PreviewField, ph: string | undefined) {
     case "section_repeat":
       return (
         <div className="rounded-md border bg-muted/10 p-2">
-          <div className="mb-1 text-[11px] font-medium text-muted-foreground">
+          <div className="mb-1 text-meta font-medium text-muted-foreground">
             Block lặp — người nhập có thể thêm nhiều "mục", mỗi mục gồm các trường con:
           </div>
           <div className="grid grid-cols-1 gap-1 md:grid-cols-2">
@@ -300,7 +300,7 @@ function renderInner(f: PreviewField, ph: string | undefined) {
               </div>
             ))}
             {(f.columns ?? []).length === 0 && (
-              <div className="text-[11px] text-amber-600">
+              <div className="text-meta text-amber-600">
                 Chưa cấu hình trường con — mở Inspector để thêm.
               </div>
             )}

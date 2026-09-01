@@ -205,7 +205,7 @@ function TaiLieuLibraryPage() {
             {row.tai_lieu_ocr?.[0]?.status === "completed" && (
               <Badge
                 variant="outline"
-                className="text-[9px] h-4 px-1 bg-green-50 text-green-700 border-green-200"
+                className="text-micro h-4 px-1 bg-green-50 text-green-700 border-green-200"
               >
                 OCR
               </Badge>
@@ -216,7 +216,7 @@ function TaiLieuLibraryPage() {
               {row.ocrResults.slice(0, 2).map((res: any, idx: number) => (
                 <div
                   key={idx}
-                  className="text-[10px] text-muted-foreground italic cursor-pointer hover:text-foreground line-clamp-1 bg-muted/30 px-1.5 py-0.5 rounded"
+                  className="text-mini text-muted-foreground italic cursor-pointer hover:text-foreground line-clamp-1 bg-muted/30 px-1.5 py-0.5 rounded"
                   onClick={() => {
                     setSelectedDocData({ id: row.id, page: res.page });
                     setViewerOpen(true);
@@ -228,7 +228,7 @@ function TaiLieuLibraryPage() {
             </div>
           )}
           {row.mo_ta && !row.ocrResults?.length && (
-            <div className="ml-6 text-[10px] text-muted-foreground truncate">{row.mo_ta}</div>
+            <div className="ml-6 text-mini text-muted-foreground truncate">{row.mo_ta}</div>
           )}
         </div>
       ),
@@ -248,7 +248,7 @@ function TaiLieuLibraryPage() {
             <span className="text-xs">{row.sourceName}</span>
           </div>
           {row.sourceCode && (
-            <span className="text-[10px] font-mono text-muted-foreground">{row.sourceCode}</span>
+            <span className="text-mini font-mono text-muted-foreground">{row.sourceCode}</span>
           )}
         </div>
       ),
@@ -259,7 +259,7 @@ function TaiLieuLibraryPage() {
       width: 100,
       align: "right",
       render: (row: TaiLieuRow) => (
-        <span className="text-[11px] text-muted-foreground">
+        <span className="text-meta text-muted-foreground">
           {row.kich_thuoc ? (row.kich_thuoc / 1024).toFixed(1) + " KB" : "-"}
         </span>
       ),
@@ -270,7 +270,7 @@ function TaiLieuLibraryPage() {
       width: 120,
       align: "center",
       render: (row: TaiLieuRow) => (
-        <span className="text-[11px] text-muted-foreground">
+        <span className="text-meta text-muted-foreground">
           {new Date(row.created_at).toLocaleDateString("vi-VN")}
         </span>
       ),
@@ -302,16 +302,16 @@ function TaiLieuLibraryPage() {
           <div className="flex items-center gap-3">
             <Tabs value={activeFilter} onValueChange={setActiveFilter} className="h-8">
               <TabsList className="h-8">
-                <TabsTrigger value="all" className="text-[10px] px-2 h-7">
+                <TabsTrigger value="all" className="text-mini px-2 h-7">
                   Tất cả
                 </TabsTrigger>
-                <TabsTrigger value="indexed" className="text-[10px] px-2 h-7">
+                <TabsTrigger value="indexed" className="text-mini px-2 h-7">
                   Đã OCR
                 </TabsTrigger>
-                <TabsTrigger value="ocr_pending" className="text-[10px] px-2 h-7">
+                <TabsTrigger value="ocr_pending" className="text-mini px-2 h-7">
                   Đang xử lý
                 </TabsTrigger>
-                <TabsTrigger value="ocr_error" className="text-[10px] px-2 h-7">
+                <TabsTrigger value="ocr_error" className="text-mini px-2 h-7">
                   Lỗi OCR
                 </TabsTrigger>
               </TabsList>

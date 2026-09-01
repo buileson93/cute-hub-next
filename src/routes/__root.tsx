@@ -63,7 +63,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             <p className="text-xs font-mono text-red-600 dark:text-red-400 font-bold mb-1">
               tôi vẫn không thấy thanh scroll ngang , giao diên như ở desktop như này tôi muốn cứng cuộn fix ở khung hiển thị này ko cuộn xuống làm ẩn các nút , ẩn cả row đầu hiển thị thông tin cột và làm hiệu năng hiển thị bảng chưa tối ưu lag giật tốn phần cứng thiết bị: {error.message}
             </p>
-            <pre className="text-[10px] font-mono text-muted-foreground whitespace-pre-wrap">
+            <pre className="text-mini font-mono text-muted-foreground whitespace-pre-wrap">
               {error.stack}
             </pre>
           </div>

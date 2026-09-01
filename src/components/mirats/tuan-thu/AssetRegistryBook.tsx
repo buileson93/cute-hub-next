@@ -29,7 +29,7 @@ export function AssetRegistryBook({ rows, canManage, onEdit, onView }: AssetRegi
           cell: (r) => (
             <div>
               <div className="font-mono text-xs font-semibold">{r.soGP || "—"}</div>
-              <div className="text-[10px] text-muted-foreground uppercase">
+              <div className="text-mini text-muted-foreground uppercase">
                 {r.maGiayPhep || "—"}
               </div>
             </div>
@@ -44,7 +44,7 @@ export function AssetRegistryBook({ rows, canManage, onEdit, onView }: AssetRegi
           cell: (r) => (
             <div>
               <div className="font-medium text-xs">{r.tenReal || "—"}</div>
-              <div className="text-[10px] text-muted-foreground">
+              <div className="text-mini text-muted-foreground">
                 {r.nguon === "gpkt" ? "Hệ thống" : "Tài sản"}
               </div>
             </div>
@@ -70,14 +70,14 @@ export function AssetRegistryBook({ rows, canManage, onEdit, onView }: AssetRegi
           value: (r) => r.ngayHetHan ?? "",
           cell: (r) => (
             <div className="space-y-1">
-              <div className="text-[11px] font-mono">
+              <div className="text-meta font-mono">
                 {r.ngayHetHan ? new Date(r.ngayHetHan).toLocaleDateString("vi-VN") : "—"}
               </div>
               <StatusBadge
                 domain="expiry"
                 code={getExpiryCode(r.soNgayConLai)}
                 label={getExpiryLabel(r.soNgayConLai, true)}
-                className="h-4 text-[9px] px-1"
+                className="h-4 text-micro px-1"
               />
             </div>
           ),

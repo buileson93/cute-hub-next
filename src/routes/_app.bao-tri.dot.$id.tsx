@@ -360,7 +360,7 @@ function DotDetailPage() {
                     <div className="font-medium">
                       {a.don_vi_ma} — {a.don_vi_ten}
                     </div>
-                    <Badge variant="outline" className="text-[10px]">
+                    <Badge variant="outline" className="text-mini">
                       {label}
                     </Badge>
                   </div>
@@ -369,7 +369,7 @@ function DotDetailPage() {
                     {a.da_duyet}
                   </div>
                   {(a.qua_han > 0 || a.sap_han > 0) && (
-                    <div className="mt-1 flex gap-2 text-[11px]">
+                    <div className="mt-1 flex gap-2 text-meta">
                       {a.qua_han > 0 && (
                         <span className="text-rose-600">● Quá hạn: {a.qua_han}</span>
                       )}

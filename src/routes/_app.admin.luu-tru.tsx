@@ -148,7 +148,7 @@ function Content() {
 
       <div className="flex flex-1 overflow-hidden">
         <StartPanel className="p-4 space-y-2">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-2 mb-2">
+          <div className="text-mini font-bold uppercase tracking-wider text-muted-foreground px-2 mb-2">
             Danh mục
           </div>
           <Button variant="ghost" size="sm" className="w-full justify-start gap-2 bg-accent/50">
@@ -259,7 +259,7 @@ function Content() {
                     <div className="space-y-1">
                       <Label
                         htmlFor="autoFallback"
-                        className="text-[13px] font-medium uppercase tracking-wider text-muted-foreground"
+                        className="text-note font-medium uppercase tracking-wider text-muted-foreground"
                       >
                         Bật dự phòng
                       </Label>
@@ -289,15 +289,15 @@ function Content() {
                     Lưu cấu hình
                   </Button>
                   {dirty && (
-                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-mono">
+                    <div className="flex items-center gap-1 text-mini text-muted-foreground font-mono">
                       <span>SẼ ĐỔI:</span>
                       {currentMode !== mode && (
-                        <Badge variant="outline" className="gap-1 text-[9px] py-0">
+                        <Badge variant="outline" className="gap-1 text-micro py-0">
                           {currentMode ? MODE_LABEL[currentMode] : "—"} → {MODE_LABEL[mode]}
                         </Badge>
                       )}
                       {data?.autoFallback !== autoFallback && (
-                        <Badge variant="outline" className="text-[9px] py-0">
+                        <Badge variant="outline" className="text-micro py-0">
                           DỰ PHÒNG: {autoFallback ? "BẬT" : "TẮT"}
                         </Badge>
                       )}
@@ -315,7 +315,7 @@ function Content() {
                       <CardTitle className="text-sm text-amber-800">Lưu ý vận hành</CardTitle>
                     </div>
                   </CardHeader>
-                  <CardContent className="text-[11px] text-amber-700/80 leading-relaxed">
+                  <CardContent className="text-meta text-amber-700/80 leading-relaxed">
                     <p>
                       Cấu hình này chỉ ảnh hưởng các luồng upload đã tích hợp{" "}
                       <code>dualUpload()</code>. Các luồng cũ vẫn ghi trực tiếp về Supabase Storage.
@@ -378,7 +378,7 @@ function BackendOption({
           <span className="text-muted-foreground">{icon}</span>
           <span className="text-sm font-medium">{title}</span>
           {active && (
-            <Badge variant="secondary" className="text-[10px]">
+            <Badge variant="secondary" className="text-mini">
               Đang dùng
             </Badge>
           )}
@@ -486,7 +486,7 @@ function R2ParamsCard() {
             </CardDescription>
           </div>
           {cfg && (
-            <Badge variant={cfg.source === "db" ? "secondary" : "outline"} className="text-[10px]">
+            <Badge variant={cfg.source === "db" ? "secondary" : "outline"} className="text-mini">
               Nguồn: {cfg.source === "db" ? "Cấu hình trong ứng dụng" : "Biến môi trường"}
             </Badge>
           )}
@@ -860,7 +860,7 @@ function HealthHistoryCard() {
                     <TableCell className="text-xs">
                       <div className="space-y-1">
                         {r.error_code && (
-                          <Badge variant="destructive" className="text-[10px]">
+                          <Badge variant="destructive" className="text-mini">
                             {r.error_code}
                           </Badge>
                         )}
@@ -871,7 +871,7 @@ function HealthHistoryCard() {
                           <>
                             <button
                               type="button"
-                              className="text-[11px] underline text-muted-foreground"
+                              className="text-meta underline text-muted-foreground"
                               onClick={() => setOpenDetail(openDetail === r.id ? null : r.id)}
                             >
                               {openDetail === r.id
@@ -879,7 +879,7 @@ function HealthHistoryCard() {
                                 : "Xem chi tiết kỹ thuật"}
                             </button>
                             {openDetail === r.id && (
-                              <pre className="max-w-[520px] overflow-x-auto rounded bg-muted p-2 text-[11px]">
+                              <pre className="max-w-[520px] overflow-x-auto rounded bg-muted p-2 text-meta">
                                 {JSON.stringify(r.detail, null, 2)}
                               </pre>
                             )}

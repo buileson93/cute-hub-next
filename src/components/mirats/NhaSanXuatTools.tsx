@@ -503,7 +503,7 @@ function MergeDialog({
                   onClick={() => applyGroup(g)}
                 >
                   {g[0].ten}{" "}
-                  <Badge variant="outline" className="ml-0.5 h-4 px-1 text-[10px]">
+                  <Badge variant="outline" className="ml-0.5 h-4 px-1 text-mini">
                     {g.length}
                   </Badge>
                 </Button>
@@ -566,7 +566,7 @@ function MergeDialog({
                       </td>
                       <td className="p-2">
                         <div className="font-medium">{r.ten}</div>
-                        <div className="font-mono text-[11px] text-muted-foreground">
+                        <div className="font-mono text-meta text-muted-foreground">
                           {r.ma ?? "—"}
                         </div>
                       </td>

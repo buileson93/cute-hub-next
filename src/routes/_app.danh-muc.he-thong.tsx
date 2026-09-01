@@ -277,7 +277,7 @@ function HeThongPage() {
               value: (r) => r.soTb,
               cell: (r) =>
                 r.soTb > 0 ? (
-                  <Badge variant="secondary" className="gap-1 text-[11px]">
+                  <Badge variant="secondary" className="gap-1 text-meta">
                     <Boxes className="h-3 w-3" /> {r.soTb.toLocaleString("vi-VN")}
                   </Badge>
                 ) : (

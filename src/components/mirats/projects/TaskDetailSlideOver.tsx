@@ -275,7 +275,7 @@ export function TaskDetailSlideOver({
                   <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div className="space-y-1.5">
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
+                        <span className="text-mini uppercase font-bold text-muted-foreground tracking-wider">
                           Người thực hiện
                         </span>
                         <div className="flex items-center gap-2">
@@ -287,7 +287,7 @@ export function TaskDetailSlideOver({
                               {task?.assignee?.ho_ten ?? task?.assignee?.email ?? "Chưa giao"}
                             </span>
                             {task?.assignee?.email && (
-                              <span className="text-[10px] text-muted-foreground truncate">
+                              <span className="text-mini text-muted-foreground truncate">
                                 {task.assignee.email}
                               </span>
                             )}
@@ -295,7 +295,7 @@ export function TaskDetailSlideOver({
                         </div>
                       </div>
                       <div className="space-y-1.5">
-                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
+                        <span className="text-mini uppercase font-bold text-muted-foreground tracking-wider">
                           Hạn hoàn thành
                         </span>
                         <div className="flex items-center gap-2">
@@ -306,7 +306,7 @@ export function TaskDetailSlideOver({
                             <span className="text-sm font-medium">
                               {task?.ngay_ket_thuc_du_kien ?? "—"}
                             </span>
-                            {due && <span className={`text-[10px] ${due.tone}`}>{due.text}</span>}
+                            {due && <span className={`text-mini ${due.tone}`}>{due.text}</span>}
                           </div>
                         </div>
                       </div>
@@ -404,7 +404,7 @@ export function TaskDetailSlideOver({
               Xoá công việc
             </Button>
           ) : (
-            <span className="text-[11px] text-muted-foreground">Bạn không có quyền xoá công việc này.</span>
+            <span className="text-meta text-muted-foreground">Bạn không có quyền xoá công việc này.</span>
           )}
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>

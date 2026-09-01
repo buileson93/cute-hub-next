@@ -98,8 +98,8 @@ function AuditLogPage() {
         <div className="flex items-center gap-2">
           <User className="h-3.5 w-3.5 text-muted-foreground" />
           <div className="flex flex-col">
-            <span className="font-medium text-[12px]">{r.profiles?.ho_ten || "Hệ thống"}</span>
-            <span className="text-[10px] text-muted-foreground">{r.profiles?.email || ""}</span>
+            <span className="font-medium text-xs">{r.profiles?.ho_ten || "Hệ thống"}</span>
+            <span className="text-mini text-muted-foreground">{r.profiles?.email || ""}</span>
           </div>
         </div>
       ),
@@ -114,7 +114,7 @@ function AuditLogPage() {
         if (r.hanh_dong === "export_csv") variant = "default";
         
         return (
-          <Badge variant={variant} className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0">
+          <Badge variant={variant} className="text-mini uppercase font-bold tracking-wider px-1.5 py-0">
             {r.hanh_dong}
           </Badge>
         );
@@ -125,7 +125,7 @@ function AuditLogPage() {
       header: "Đối tượng",
       width: 150,
       render: (r) => (
-        <span className="font-mono text-[11px] bg-muted px-1.5 py-0.5 rounded border">
+        <span className="font-mono text-meta bg-muted px-1.5 py-0.5 rounded border">
           {r.doi_tuong}
         </span>
       ),
@@ -137,7 +137,7 @@ function AuditLogPage() {
         const count = r.doi_tuong_ids?.length || 0;
         return (
           <div className="flex items-center gap-2">
-            <span className="text-[12px] truncate max-w-[300px]">
+            <span className="text-xs truncate max-w-[300px]">
               {count > 0 ? `${count} bản ghi` : JSON.stringify(r.chi_tiet)}
             </span>
           </div>
@@ -184,7 +184,7 @@ function AuditLogPage() {
         <div className="flex flex-col gap-4 p-4 flex-1 min-h-0 relative">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 shrink-0 bg-background/50 p-2 rounded-lg border border-border/50">
           <div className="space-y-1">
-            <label className="text-[10px] uppercase font-bold text-muted-foreground ml-1">Người dùng</label>
+            <label className="text-mini uppercase font-bold text-muted-foreground ml-1">Người dùng</label>
             <Input 
               placeholder="Tìm theo tên/email..." 
               value={filter.user}
@@ -193,7 +193,7 @@ function AuditLogPage() {
             />
           </div>
           <div className="space-y-1">
-            <label className="text-[10px] uppercase font-bold text-muted-foreground ml-1">Hành động</label>
+            <label className="text-mini uppercase font-bold text-muted-foreground ml-1">Hành động</label>
             <Input 
               placeholder="bulk_delete, export_csv..." 
               value={filter.action}
@@ -202,7 +202,7 @@ function AuditLogPage() {
             />
           </div>
           <div className="space-y-1">
-            <label className="text-[10px] uppercase font-bold text-muted-foreground ml-1">Miền (Domain)</label>
+            <label className="text-mini uppercase font-bold text-muted-foreground ml-1">Miền (Domain)</label>
             <Input 
               placeholder="thiet_bi, he_thong..." 
               value={filter.domain}
@@ -236,30 +236,30 @@ function AuditLogPage() {
             <div className="space-y-4 py-4">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="space-y-1">
-                  <div className="text-muted-foreground text-[11px] uppercase font-bold">Thời gian</div>
+                  <div className="text-muted-foreground text-meta uppercase font-bold">Thời gian</div>
                   <div>{fmtNgayGio(selectedLog.thoi_gian)}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground text-[11px] uppercase font-bold">ID</div>
-                  <code className="text-[10px] bg-muted px-1 rounded">{selectedLog.id}</code>
+                  <div className="text-muted-foreground text-meta uppercase font-bold">ID</div>
+                  <code className="text-mini bg-muted px-1 rounded">{selectedLog.id}</code>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground text-[11px] uppercase font-bold">Người thực hiện</div>
+                  <div className="text-muted-foreground text-meta uppercase font-bold">Người thực hiện</div>
                   <div>{selectedLog.profiles?.ho_ten || "Hệ thống"} ({selectedLog.profiles?.email || "system"})</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground text-[11px] uppercase font-bold">Miền (Domain)</div>
+                  <div className="text-muted-foreground text-meta uppercase font-bold">Miền (Domain)</div>
                   <Badge variant="outline">{selectedLog.doi_tuong}</Badge>
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <div className="text-muted-foreground text-[11px] uppercase font-bold">IDs đối tượng liên quan</div>
+                <div className="text-muted-foreground text-meta uppercase font-bold">IDs đối tượng liên quan</div>
                 <div className="max-h-32 overflow-y-auto border rounded-md p-2 bg-muted/30">
                   {selectedLog.doi_tuong_ids && selectedLog.doi_tuong_ids.length > 0 ? (
                     <div className="flex flex-wrap gap-1">
                       {selectedLog.doi_tuong_ids.map(id => (
-                        <code key={id} className="text-[9px] bg-background border px-1 rounded">{id}</code>
+                        <code key={id} className="text-micro bg-background border px-1 rounded">{id}</code>
                       ))}
                     </div>
                   ) : (
@@ -269,8 +269,8 @@ function AuditLogPage() {
               </div>
 
               <div className="space-y-1.5">
-                <div className="text-muted-foreground text-[11px] uppercase font-bold">Dữ liệu chi tiết (JSON)</div>
-                <pre className="p-3 rounded-lg bg-zinc-950 text-zinc-50 text-[11px] font-mono overflow-auto max-h-64 border shadow-inner">
+                <div className="text-muted-foreground text-meta uppercase font-bold">Dữ liệu chi tiết (JSON)</div>
+                <pre className="p-3 rounded-lg bg-zinc-950 text-zinc-50 text-meta font-mono overflow-auto max-h-64 border shadow-inner">
                   {JSON.stringify(selectedLog.chi_tiet, null, 2)}
                 </pre>
               </div>

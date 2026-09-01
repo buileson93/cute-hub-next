@@ -78,7 +78,7 @@ export function OcrSettings({
           </div>
 
           {quality === "auto" && deviceTier && (
-            <p className="text-[10px] text-muted-foreground italic">
+            <p className="text-mini text-muted-foreground italic">
               * Tự động chọn dựa trên thiết bị ({deviceTier}). {autoReason}
             </p>
           )}

@@ -83,7 +83,7 @@ export function ChungChiPanel({ thietBiId, cheDo, roles, compact }: Props) {
         <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Kiểm định / Hiệu chuẩn
           {cheDo && cheDo !== "KHONG" && (
-            <Badge variant="outline" className="ml-2 text-[10px]">
+            <Badge variant="outline" className="ml-2 text-mini">
               {cheDo === "KIEM_DINH" ? "KĐ" : "HC"}
             </Badge>
           )}
@@ -116,7 +116,7 @@ export function ChungChiPanel({ thietBiId, cheDo, roles, compact }: Props) {
                     <div className="flex items-center gap-2">
                       <ShieldCheck className="h-4 w-4 text-primary" />
                       <span className="font-mono font-medium">{c.so_giay_chung_nhan}</span>
-                      <Badge variant="outline" className="text-[10px]">
+                      <Badge variant="outline" className="text-mini">
                         {c.loai === "KIEM_DINH" ? "KĐ" : "HC"}
                       </Badge>
                     </div>

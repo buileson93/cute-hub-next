@@ -108,7 +108,7 @@ export function NodeSearch({
                 </span>
                 {(it.kind === "tb" || it.kind === "tp") && it.sysName && (
                   <span
-                    className="inline-flex max-w-[9rem] shrink-0 items-center gap-1 rounded border border-blue-500/30 bg-blue-500/10 px-1.5 py-0.5 text-[10px] text-blue-600"
+                    className="inline-flex max-w-[9rem] shrink-0 items-center gap-1 rounded border border-blue-500/30 bg-blue-500/10 px-1.5 py-0.5 text-mini text-blue-600"
                     title={`Hệ thống: ${it.sysName}`}
                   >
                     <Network className="h-2.5 w-2.5 shrink-0" />
@@ -116,7 +116,7 @@ export function NodeSearch({
                   </span>
                 )}
                 <span
-                  className={cn("shrink-0 rounded border px-1.5 py-0.5 text-[10px]", meta.badge)}
+                  className={cn("shrink-0 rounded border px-1.5 py-0.5 text-mini", meta.badge)}
                 >
                   {meta.label}
                 </span>

@@ -382,8 +382,8 @@ export function ImportPreviewDialog({
                                   role={x.level === "error" ? "alert" : undefined}
                                   className={
                                     x.level === "error"
-                                      ? "text-[11px] text-destructive"
-                                      : "text-[11px] text-amber-700 dark:text-amber-400"
+                                      ? "text-meta text-destructive"
+                                      : "text-meta text-amber-700 dark:text-amber-400"
                                   }
                                 >
                                   <span aria-hidden="true">
@@ -412,7 +412,7 @@ export function ImportPreviewDialog({
                                   <li
                                     key={`e-${k}`}
                                     role="alert"
-                                    className="text-[11px] text-destructive"
+                                    className="text-meta text-destructive"
                                   >
                                     <span aria-hidden="true">• </span>
                                     <span className="sr-only">Lỗi: </span>
@@ -423,7 +423,7 @@ export function ImportPreviewDialog({
                                 st?.warnings?.map((w, k) => (
                                   <li
                                     key={`w-${k}`}
-                                    className="text-[11px] text-amber-700 dark:text-amber-400"
+                                    className="text-meta text-amber-700 dark:text-amber-400"
                                   >
                                     <span aria-hidden="true">! </span>
                                     <span className="sr-only">Cảnh báo: </span>

@@ -316,7 +316,7 @@ function ThanhPhanSoLyLich() {
                         </span>
                         <div className="rounded-md border p-3 text-sm">
                           <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant="secondary" className="gap-1 font-mono text-[10px]">
+                            <Badge variant="secondary" className="gap-1 font-mono text-mini">
                               <Cpu className="h-3 w-3" />
                               {h.ma_thiet_bi}
                             </Badge>

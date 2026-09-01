@@ -22,7 +22,7 @@ export function UserAvatar({ name, email, url, className }: Props) {
   return (
     <Avatar className={cn("h-9 w-9", className)}>
       {url ? <AvatarImage src={url} alt={label} /> : null}
-      <AvatarFallback className="bg-[#0074e2]/10 text-[11px] font-semibold text-[#0074e2]">
+      <AvatarFallback className="bg-[#0074e2]/10 text-meta font-semibold text-[#0074e2]">
         {initials}
       </AvatarFallback>
     </Avatar>

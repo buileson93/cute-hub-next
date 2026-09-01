@@ -68,7 +68,7 @@ export function FileProcessBox({
           <p className="truncate text-xs font-semibold" title={item.fileName}>
             {item.fileName}
           </p>
-          <p className="mt-0.5 text-[11px] text-muted-foreground">
+          <p className="mt-0.5 text-meta text-muted-foreground">
             {formatBytes(item.fileSize)} · {item.fileType || "không rõ định dạng"}
           </p>
         </div>
@@ -114,7 +114,7 @@ export function FileProcessBox({
 
       <ol className="mt-2 space-y-1" aria-live="polite" aria-atomic="false">
         {steps.map((s) => (
-          <li key={s.key} className="flex items-center gap-2 text-[11px]">
+          <li key={s.key} className="flex items-center gap-2 text-meta">
             <StepIcon state={s.state} />
             <span
               className={cn(
@@ -141,13 +141,13 @@ export function FileProcessBox({
       ) : null}
 
       {item.phase === "completed" ? (
-        <p className="mt-2 text-[11px] text-muted-foreground">
+        <p className="mt-2 text-meta text-muted-foreground">
           {ocrSummary(item.ocr)} · {storageProviderLabel(item.storageProvider)}
         </p>
       ) : null}
 
       {item.errorMessage ? (
-        <p className="mt-2 text-[11px] font-medium text-destructive" role="alert">
+        <p className="mt-2 text-meta font-medium text-destructive" role="alert">
           {item.errorMessage}
         </p>
       ) : null}

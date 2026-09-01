@@ -28,13 +28,13 @@ export const ColumnVisibilityMenu = memo(function ColumnVisibilityMenu({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="h-7 gap-1.5 px-2 text-[11px] font-medium uppercase tracking-tight">
+        <Button variant="outline" size="sm" className="h-7 gap-1.5 px-2 text-meta font-medium uppercase tracking-tight">
           <SlidersHorizontal className="h-3.5 w-3.5" />
           <span>Cột hiển thị</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56 max-h-[70vh] overflow-y-auto">
-        <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground">Cấu hình cột</DropdownMenuLabel>
+        <DropdownMenuLabel className="text-mini uppercase tracking-widest text-muted-foreground">Cấu hình cột</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {columns.map(c => (
           <DropdownMenuCheckboxItem

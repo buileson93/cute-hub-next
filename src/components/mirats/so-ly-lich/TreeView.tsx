@@ -46,7 +46,7 @@ const KIND_META: Record<
 function CountMeta({ node }: { node: TreeNode }) {
   return (
     <>
-      <Badge variant="outline" className="h-4 px-1 text-[10px] font-normal">
+      <Badge variant="outline" className="h-4 px-1 text-mini font-normal">
         {KIND_META[node.kind]?.label ?? "Nhánh"}
       </Badge>
       <span className="tabular-nums">
@@ -117,7 +117,7 @@ export function TreeView({ tree, total }: { tree: TreeNode[]; total: number }) {
                 title={d.ten || d.ma_thiet_bi}
                 meta={
                   <>
-                    <Badge variant="outline" className="h-4 px-1 text-[10px] font-normal">
+                    <Badge variant="outline" className="h-4 px-1 text-mini font-normal">
                       Tài sản
                     </Badge>
                     <span className="font-mono">{d.ma_thiet_bi}</span>

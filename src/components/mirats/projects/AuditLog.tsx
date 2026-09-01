@@ -188,14 +188,14 @@ export function AuditLog({ entityType, entityId }: AuditLogProps) {
                     <span className="text-xs font-bold text-foreground">
                       {getActionLabel(log.action)}
                     </span>
-                    <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                    <span className="text-mini text-muted-foreground whitespace-nowrap">
                       {format(new Date(log.created_at), "HH:mm, dd/MM/yyyy", { locale: vi })}
                     </span>
                   </div>
-                  <div className="text-[11px] text-slate-600 leading-relaxed">
+                  <div className="text-meta text-slate-600 leading-relaxed">
                     {formatDetail(log)}
                   </div>
-                  <div className="flex items-center gap-1.5 mt-1 text-[10px] text-muted-foreground">
+                  <div className="flex items-center gap-1.5 mt-1 text-mini text-muted-foreground">
                     <User className="h-3 w-3" />
                     <span>{log.user_id || "Hệ thống"}</span>
                   </div>

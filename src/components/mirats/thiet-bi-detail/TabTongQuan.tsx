@@ -365,7 +365,7 @@ function InfoRow({
         <Icon className="h-3.5 w-3.5" />
       </div>
       <div className="min-w-0 flex-1">
-        <div className="text-[11px] uppercase tracking-wider text-muted-foreground/60 font-bold flex items-center gap-2 leading-none mb-1">
+        <div className="text-meta uppercase tracking-wider text-muted-foreground/60 font-bold flex items-center gap-2 leading-none mb-1">
           {label}
           {canEdit && field && !isEditing && (
             <button
@@ -376,7 +376,7 @@ function InfoRow({
             </button>
           )}
         </div>
-        <div className="break-words font-bold text-[13px] text-foreground/90">
+        <div className="break-words font-bold text-note text-foreground/90">
           {isEditing ? (
             <div className="flex items-center gap-2 mt-1">
               <Input
@@ -389,12 +389,12 @@ function InfoRow({
                 }}
                 className="h-8 text-xs py-1 rounded-lg"
               />
-              <button onClick={handleCommit} className="text-[10px] text-primary hover:underline">
+              <button onClick={handleCommit} className="text-mini text-primary hover:underline">
                 Lưu
               </button>
               <button
                 onClick={() => setIsEditing(false)}
-                className="text-[10px] text-muted-foreground hover:underline"
+                className="text-mini text-muted-foreground hover:underline"
               >
                 Huỷ
               </button>

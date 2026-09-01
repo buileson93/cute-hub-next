@@ -167,10 +167,10 @@ export const Route = createFileRoute("/_app/he-thong/cay")({
         </div>
         {import.meta.env.DEV && error && (
           <div className="mt-8 w-full">
-            <p className="text-[10px] text-muted-foreground mb-1 uppercase tracking-wider font-semibold">
+            <p className="text-mini text-muted-foreground mb-1 uppercase tracking-wider font-semibold">
               Chi tiết lỗi (Dev):
             </p>
-            <pre className="p-4 bg-muted rounded text-[10px] max-w-full overflow-auto text-red-500 border whitespace-pre-wrap break-all">
+            <pre className="p-4 bg-muted rounded text-mini max-w-full overflow-auto text-red-500 border whitespace-pre-wrap break-all">
               {error.message}
             </pre>
           </div>
@@ -635,7 +635,7 @@ function HeThongCayPage() {
             />
             {!canManageNodes && (
               <AppTooltip noiDung="Tài khoản của bạn chỉ được tra cứu sơ đồ hệ thống.">
-                <span className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md border border-dashed px-2.5 text-[11px] font-semibold uppercase tracking-tight text-muted-foreground">
+                <span className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md border border-dashed px-2.5 text-meta font-semibold uppercase tracking-tight text-muted-foreground">
                   <Eye className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                   Chế độ xem
                 </span>
@@ -697,28 +697,28 @@ function HeThongCayPage() {
             <TabsList className="h-8 bg-muted/50 p-0.5">
               <TabsTrigger
                 value="table"
-                className="h-7 gap-2 px-3 text-[11px] font-medium tracking-tight"
+                className="h-7 gap-2 px-3 text-meta font-medium tracking-tight"
               >
                 <LayoutGrid className="h-3 w-3" />
                 <span>DANH SÁCH</span>
               </TabsTrigger>
               <TabsTrigger
                 value="tree"
-                className="h-7 gap-2 px-3 text-[11px] font-medium tracking-tight"
+                className="h-7 gap-2 px-3 text-meta font-medium tracking-tight"
               >
                 <GitBranch className="h-3 w-3" />
                 <span>CÂY PHÂN CẤP</span>
               </TabsTrigger>
               <TabsTrigger
                 value="mindmap"
-                className="h-7 gap-2 px-3 text-[11px] font-medium tracking-tight"
+                className="h-7 gap-2 px-3 text-meta font-medium tracking-tight"
               >
                 <Share2 className="h-3 w-3" />
                 <span>SƠ ĐỒ TỔNG THỂ</span>
               </TabsTrigger>
               <TabsTrigger
                 value="health"
-                className="h-7 gap-2 px-3 text-[11px] font-medium tracking-tight"
+                className="h-7 gap-2 px-3 text-meta font-medium tracking-tight"
               >
                 <Activity className="h-3 w-3" />
                 <span>SỨC KHỎE</span>
@@ -726,7 +726,7 @@ function HeThongCayPage() {
             </TabsList>
           </Tabs>
 
-          <div className="flex items-center gap-4 text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
+          <div className="flex items-center gap-4 text-mini font-mono text-muted-foreground uppercase tracking-widest">
             <div className="flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
               <span>Phân loại</span>
@@ -917,7 +917,7 @@ function HeThongCayPage() {
           <div className="p-0">
             <ScrollArea className="max-h-[60vh] p-6 pt-2">
               <div className="space-y-4">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60 mb-2 px-1">
+                <div className="text-meta font-bold uppercase tracking-wider text-muted-foreground/60 mb-2 px-1">
                   Chọn đích đến (Nhóm hệ thống)
                 </div>
                 <div className="grid grid-cols-1 gap-2">
@@ -945,7 +945,7 @@ function HeThongCayPage() {
                         <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
                           {t.nhLabel}
                         </span>
-                        <span className="text-[10px] text-muted-foreground uppercase tracking-tight">
+                        <span className="text-mini text-muted-foreground uppercase tracking-tight">
                           {t.plLabel}
                         </span>
                       </div>
@@ -1000,7 +1000,7 @@ function HeThongCayPage() {
           <div className="p-0">
             <ScrollArea className="max-h-[60vh] p-6 pt-2">
               <div className="space-y-4">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60 mb-2 px-1">
+                <div className="text-meta font-bold uppercase tracking-wider text-muted-foreground/60 mb-2 px-1">
                   Chọn hệ thống đích
                 </div>
                 <div className="grid grid-cols-1 gap-2">
@@ -1026,7 +1026,7 @@ function HeThongCayPage() {
                         <span className="text-sm font-semibold text-foreground group-hover:text-blue-600 transition-colors">
                           {ht.ten}
                         </span>
-                        <span className="text-[10px] text-muted-foreground uppercase tracking-tight">
+                        <span className="text-mini text-muted-foreground uppercase tracking-tight">
                           {taxonomy.nhomNameMap.get(ht.nhomId) || "—"}
                         </span>
                       </div>

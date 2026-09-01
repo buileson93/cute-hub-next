@@ -95,7 +95,7 @@ export function CompatibilityManager({
           <CardContent className="p-3 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                <Label className="text-meta uppercase tracking-wider text-muted-foreground">
                   Hệ thống
                 </Label>
                 <Combobox
@@ -106,7 +106,7 @@ export function CompatibilityManager({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                <Label className="text-meta uppercase tracking-wider text-muted-foreground">
                   Phân loại
                 </Label>
                 <Select
@@ -127,7 +127,7 @@ export function CompatibilityManager({
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
+              <Label className="text-meta uppercase tracking-wider text-muted-foreground">
                 Đánh giá khả năng thay thế
               </Label>
               <Input
@@ -167,7 +167,7 @@ export function CompatibilityManager({
                   <span className="font-medium text-sm truncate">
                     {sys?.label ?? "Hệ thống không xác định"}
                   </span>
-                  <Badge variant="secondary" className="text-[10px] py-0 h-5">
+                  <Badge variant="secondary" className="text-mini py-0 h-5">
                     {item.phan_loai}
                   </Badge>
                 </div>

@@ -465,11 +465,11 @@ function ThietBiPage() {
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
                               <span className="truncate font-medium">{tbName(d)}</span>
-                              <span className="astryx-number text-[10px] opacity-60">
+                              <span className="astryx-number text-mini opacity-60">
                                 {d.ma_thiet_bi}
                               </span>
                             </div>
-                            <div className="astryx-text-muted text-[10px]">
+                            <div className="astryx-text-muted text-mini">
                               {htName(d._htId, d._htTen)}
                             </div>
                           </div>
@@ -520,7 +520,7 @@ function ThietBiPage() {
                   <CardContent className="p-4 space-y-2">
                     <div className="flex justify-between items-start">
                       <h3 className="font-bold text-sm">{n.label}</h3>
-                      <Badge variant="outline" className="text-[10px]">
+                      <Badge variant="outline" className="text-mini">
                         {n.count} TB
                       </Badge>
                     </div>
@@ -533,7 +533,7 @@ function ThietBiPage() {
                       </div>
                     </div>
                     <div className="pt-2 border-t mt-2 flex justify-between items-center">
-                      <span className="text-[10px] text-muted-foreground uppercase">{n.key}</span>
+                      <span className="text-mini text-muted-foreground uppercase">{n.key}</span>
                       <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" asChild>
                         <Link to="/thiet-bi" search={{ q: n.label }}>
                           Khám phá <ChevronRight className="w-3 h-3" />

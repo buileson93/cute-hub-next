@@ -243,7 +243,7 @@ export function RecentPinnedPanel({ onNavigate }: { onNavigate?: () => void }) {
           <Button
             size="sm"
             variant={selectMode ? "secondary" : "ghost"}
-            className="h-7 gap-1 px-2 text-[11px]"
+            className="h-7 gap-1 px-2 text-meta"
             onClick={() => {
               setSelectMode((v) => !v);
               setSelectedPinned(new Set());
@@ -257,7 +257,7 @@ export function RecentPinnedPanel({ onNavigate }: { onNavigate?: () => void }) {
             <Button
               size="sm"
               variant="destructive"
-              className="h-7 gap-1 px-2 text-[11px]"
+              className="h-7 gap-1 px-2 text-meta"
               disabled={selectedPinned.size + selectedRecent.size === 0}
               onClick={bulkDelete}
             >
@@ -441,7 +441,7 @@ export function RecentPinnedPanel({ onNavigate }: { onNavigate?: () => void }) {
         )}
       </div>
 
-      <div className="border-t border-border/50 px-1 pt-1.5 text-[10px] text-muted-foreground">
+      <div className="border-t border-border/50 px-1 pt-1.5 text-mini text-muted-foreground">
         ↑/↓ chọn · Enter mở · Del bỏ ghim/xoá
       </div>
     </div>

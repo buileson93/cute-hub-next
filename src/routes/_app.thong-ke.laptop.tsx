@@ -195,7 +195,7 @@ function MayTinhStatsPage() {
           </div>
           <div>
             <div className="font-bold text-sm">{row.ho_ten}</div>
-            <div className="text-[10px] text-muted-foreground uppercase font-mono">
+            <div className="text-mini text-muted-foreground uppercase font-mono">
               {row.ma_nhan_vien}
             </div>
           </div>
@@ -220,7 +220,7 @@ function MayTinhStatsPage() {
                     <span className="text-muted-foreground font-mono">({l.ma_thiet_bi})</span>
                   </div>
                   {l.ma_serial && (
-                    <Badge variant="outline" className="text-[9px] px-1 py-0 h-4">
+                    <Badge variant="outline" className="text-micro px-1 py-0 h-4">
                       SN: {l.ma_serial}
                     </Badge>
                   )}
@@ -228,7 +228,7 @@ function MayTinhStatsPage() {
 
                 <div className="flex flex-wrap gap-1.5">
                   {l.software.length === 0 ? (
-                    <Badge variant="destructive" className="gap-1 text-[9px] px-1.5 py-0 h-5">
+                    <Badge variant="destructive" className="gap-1 text-micro px-1.5 py-0 h-5">
                       <XCircle className="h-2.5 w-2.5" /> Chưa có bản quyền
                     </Badge>
                   ) : (
@@ -239,14 +239,14 @@ function MayTinhStatsPage() {
                         <Badge
                           key={sw.id}
                           variant="outline"
-                          className="gap-1 bg-background text-[9px] px-1.5 py-0 flex flex-col items-start h-auto py-1"
+                          className="gap-1 bg-background text-micro px-1.5 py-0 flex flex-col items-start h-auto py-1"
                         >
                           <div className="flex items-center gap-1">
                             <ShieldCheck className="h-2.5 w-2.5 text-emerald-500" />
                             <span className="font-medium">{sw.ten_phan_mem}</span>
                           </div>
                           <div
-                            className={`text-[8px] ${hetGhe ? "text-destructive font-bold" : "text-muted-foreground"}`}
+                            className={`text-nano ${hetGhe ? "text-destructive font-bold" : "text-muted-foreground"}`}
                           >
                             {sw.so_ghe === null ? "Ghế: ∞" : `Còn ${gheTrong}/${sw.so_ghe} ghế`}
                           </div>
@@ -295,7 +295,7 @@ function MayTinhStatsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-black text-primary">{kpis.employeesWithDevice}</div>
-            <div className="text-[10px] text-muted-foreground font-medium mt-1">
+            <div className="text-mini text-muted-foreground font-medium mt-1">
               Trong tổng số {filteredStats.length} nhân viên (theo bộ lọc)
             </div>
           </CardContent>
@@ -308,7 +308,7 @@ function MayTinhStatsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-black text-emerald-700">{kpis.assignedDevices}</div>
-            <div className="text-[10px] text-muted-foreground font-medium mt-1">
+            <div className="text-mini text-muted-foreground font-medium mt-1">
               Máy tính (Laptop/PC) đang được nhân viên phụ trách
             </div>
           </CardContent>
@@ -321,7 +321,7 @@ function MayTinhStatsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-black text-amber-700">{kpis.totalSoftware}</div>
-            <div className="text-[10px] text-muted-foreground font-medium mt-1">
+            <div className="text-mini text-muted-foreground font-medium mt-1">
               Giấy phép phần mềm đang hoạt động trên máy
             </div>
           </CardContent>
@@ -330,7 +330,7 @@ function MayTinhStatsPage() {
 
       <div className="flex flex-col md:flex-row gap-3 items-end">
         <div className="w-full md:max-w-sm space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
+          <label className="text-meta font-bold uppercase tracking-widest text-muted-foreground ml-1">
             Tìm kiếm nhân viên
           </label>
           <div className="relative">
@@ -344,7 +344,7 @@ function MayTinhStatsPage() {
           </div>
         </div>
         <div className="w-full md:w-64 space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
+          <label className="text-meta font-bold uppercase tracking-widest text-muted-foreground ml-1">
             Lọc đơn vị
           </label>
           <Select value={unitFilter} onValueChange={setUnitFilter}>

@@ -177,7 +177,7 @@ function ThungRacPage() {
           <div>
             <div className="font-medium">{r.ten}</div>
             {r.ma_thanh_phan && (
-              <div className="font-mono text-[11px] text-muted-foreground">{r.ma_thanh_phan}</div>
+              <div className="font-mono text-meta text-muted-foreground">{r.ma_thanh_phan}</div>
             )}
           </div>
         ),
@@ -202,27 +202,27 @@ function ThungRacPage() {
           return (
             <div className="flex flex-wrap gap-1">
               {r.refs.gan_active > 0 && (
-                <Badge variant="destructive" className="text-[10px]">
+                <Badge variant="destructive" className="text-mini">
                   {r.refs.gan_active} tài sản đang lắp
                 </Badge>
               )}
               {r.refs.bao_tri > 0 && (
-                <Badge variant="secondary" className="text-[10px]">
+                <Badge variant="secondary" className="text-mini">
                   {r.refs.bao_tri} bảo trì
                 </Badge>
               )}
               {r.refs.su_co > 0 && (
-                <Badge variant="secondary" className="text-[10px]">
+                <Badge variant="secondary" className="text-mini">
                   {r.refs.su_co} sự cố
                 </Badge>
               )}
               {r.refs.hong_hoc > 0 && (
-                <Badge variant="secondary" className="text-[10px]">
+                <Badge variant="secondary" className="text-mini">
                   {r.refs.hong_hoc} hỏng hóc
                 </Badge>
               )}
               {clean && (
-                <Badge variant="outline" className="text-[10px] text-emerald-600">
+                <Badge variant="outline" className="text-mini text-emerald-600">
                   Không ràng buộc
                 </Badge>
               )}
@@ -252,7 +252,7 @@ function ThungRacPage() {
               <Button
                 size="sm"
                 variant="outline"
-                className="h-7 text-[11px]"
+                className="h-7 text-meta"
                 onClick={() => restoreMut.mutate(r)}
                 disabled={restoreMut.isPending}
               >
@@ -261,7 +261,7 @@ function ThungRacPage() {
               <Button
                 size="sm"
                 variant="destructive"
-                className="h-7 text-[11px]"
+                className="h-7 text-meta"
                 disabled={!clean || hardDeleteMut.isPending}
                 onClick={() => setHardTarget(r)}
                 title={clean ? "Xoá vĩnh viễn" : "Còn ràng buộc — không thể xoá vĩnh viễn"}

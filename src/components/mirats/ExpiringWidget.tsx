@@ -91,7 +91,7 @@ export function ExpiringWidget({
                     <Badge variant="outline" className={cn("border-0 text-[10.5px]", meta.cls)}>
                       {meta.label}
                     </Badge>
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className="text-meta text-muted-foreground">
                       Hết hạn {r.ngay_het_han}
                     </span>
                   </div>
@@ -99,7 +99,7 @@ export function ExpiringWidget({
                 <Badge
                   variant="outline"
                   className={cn(
-                    "border-0 shrink-0 text-[11px] font-semibold",
+                    "border-0 shrink-0 text-meta font-semibold",
                     ngayBadge(r.so_ngay_con_lai),
                   )}
                 >

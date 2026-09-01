@@ -136,7 +136,7 @@ function ThietBiQuickViewRoute() {
                   to="/thiet-bi/$maThietBi"
                   params={{ maThietBi: asset.ma_thiet_bi }}
                   search={{ tab: "van-hanh", doc: undefined, q: undefined }}
-                  className="text-[10px] text-primary hover:underline flex items-center gap-0.5"
+                  className="text-mini text-primary hover:underline flex items-center gap-0.5"
                 >
                   Xem tất cả <ChevronRight className="h-3 w-3" />
                 </Link>
@@ -181,13 +181,13 @@ function ThietBiQuickViewRoute() {
                                     ? (item as any).hien_tuong
                                     : (item as any).mo_ta_cong_viec}
                                 </span>
-                                <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                                <span className="text-mini text-muted-foreground whitespace-nowrap">
                                   {isSuCo
                                     ? (item as any).ngay_phat_hien
                                     : (item as any).ngay_bat_dau}
                                 </span>
                               </div>
-                              <div className="text-[10px] text-muted-foreground mt-0.5">
+                              <div className="text-mini text-muted-foreground mt-0.5">
                                 {isSuCo ? "Sự cố" : "Bảo trì"} ·{" "}
                                 {isSuCo ? (item as any).muc_do : (item as any).loai_bao_tri}
                               </div>
@@ -212,25 +212,25 @@ function ThietBiQuickViewRoute() {
               <div className="p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-x-2 gap-y-3">
                   <div className="space-y-1">
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                    <span className="text-mini uppercase tracking-wider text-muted-foreground">
                       Model
                     </span>
                     <p className="text-xs font-medium truncate">{asset.model || "—"}</p>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                    <span className="text-mini uppercase tracking-wider text-muted-foreground">
                       Serial
                     </span>
                     <p className="text-xs font-medium truncate">{asset.serial || "—"}</p>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                    <span className="text-mini uppercase tracking-wider text-muted-foreground">
                       Hệ thống
                     </span>
                     <p className="text-xs font-medium truncate">{asset._htTen || "—"}</p>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                    <span className="text-mini uppercase tracking-wider text-muted-foreground">
                       Vị trí
                     </span>
                     <p className="text-xs font-medium truncate">{asset.vi_tri || "—"}</p>
@@ -242,7 +242,7 @@ function ThietBiQuickViewRoute() {
                     asChild
                     variant="outline"
                     size="sm"
-                    className="w-full justify-start text-[11px] h-8"
+                    className="w-full justify-start text-meta h-8"
                   >
                     <Link
                       to="/thiet-bi/$maThietBi"
@@ -256,7 +256,7 @@ function ThietBiQuickViewRoute() {
                     asChild
                     variant="outline"
                     size="sm"
-                    className="w-full justify-start text-[11px] h-8"
+                    className="w-full justify-start text-meta h-8"
                   >
                     <Link
                       to="/thiet-bi/$maThietBi"

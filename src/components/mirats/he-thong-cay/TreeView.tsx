@@ -182,7 +182,7 @@ export function TreeView({
             <Badge
               key={i}
               variant="outline"
-              className={cn("px-1 py-0 text-[9px]", c.className)}
+              className={cn("px-1 py-0 text-micro", c.className)}
               title={c.title}
             >
               {c.text}
@@ -254,7 +254,7 @@ export function TreeView({
           badges={
             <Badge
               variant="outline"
-              className="h-4 min-w-[1.25rem] justify-center px-1 py-0 text-[10px]"
+              className="h-4 min-w-[1.25rem] justify-center px-1 py-0 text-mini"
               title={`${ht.count} tài sản`}
             >
               {ht.count}
@@ -314,7 +314,7 @@ export function TreeView({
           badges={
             <Badge
               variant="secondary"
-              className="h-4 min-w-[1.25rem] justify-center px-1 py-0 text-[10px]"
+              className="h-4 min-w-[1.25rem] justify-center px-1 py-0 text-mini"
               title={`${nh.count} hệ thống`}
             >
               {nh.count}
@@ -361,7 +361,7 @@ export function TreeView({
               badges={
                 <Badge
                   variant="outline"
-                  className="h-4 min-w-[1.5rem] justify-center bg-muted/30 px-1 py-0 text-[10px]"
+                  className="h-4 min-w-[1.5rem] justify-center bg-muted/30 px-1 py-0 text-mini"
                   title={`${pl.count} hệ thống`}
                 >
                   {pl.count}

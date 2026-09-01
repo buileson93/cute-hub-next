@@ -116,7 +116,7 @@ export function DossierRegister({ project_id }: { project_id: string }) {
               <TableRow key={doc.id} className="hover:bg-muted/50 transition-colors">
                 <TableCell>
                   <div className="font-medium text-foreground">{doc.title}</div>
-                  <div className="text-[11px] text-muted-foreground line-clamp-1">{doc.abstract}</div>
+                  <div className="text-meta text-muted-foreground line-clamp-1">{doc.abstract}</div>
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground">
                   <div className="flex flex-col">
@@ -125,7 +125,7 @@ export function DossierRegister({ project_id }: { project_id: string }) {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant="secondary" className="text-[10px] uppercase font-semibold">
+                  <Badge variant="secondary" className="text-mini uppercase font-semibold">
                     {doc.format === "paper" ? "Bản giấy" : "Điện tử"}
                   </Badge>
                 </TableCell>
@@ -171,7 +171,7 @@ export function DossierRegister({ project_id }: { project_id: string }) {
       <Blockquote className="mt-4 border-border bg-muted/50 text-muted-foreground">
         <div className="flex gap-2">
           <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-          <div className="text-[11px] leading-relaxed italic">
+          <div className="text-meta leading-relaxed italic">
             <strong>Lưu ý:</strong> Sổ đăng ký văn bản/hồ sơ này phục vụ việc đối soát thực tế. Đảm
             bảo các bản quét (digital) khớp với bản lưu kho (paper) để duy trì tính nhất quán của
             Dossier dự án.

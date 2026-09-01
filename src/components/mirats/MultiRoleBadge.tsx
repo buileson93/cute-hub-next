@@ -43,10 +43,10 @@ export function MultiRoleBadge({
           {!compact && (
             <>
               <HardDrive className="h-3 w-3" />
-              <span className="font-mono text-[11px]">{info.ma_thiet_bi}</span>
+              <span className="font-mono text-meta">{info.ma_thiet_bi}</span>
             </>
           )}
-          <span className="ml-0.5 rounded px-1 text-[10px] font-bold bg-primary/20 text-primary">
+          <span className="ml-0.5 rounded px-1 text-mini font-bold bg-primary/20 text-primary">
             ×{info.count}
           </span>
         </Badge>
@@ -59,11 +59,11 @@ export function MultiRoleBadge({
           />
           Tài sản đa vai trò ({info.count} vai trò)
         </div>
-        <div className="mb-2 font-mono text-[11px] text-muted-foreground">
+        <div className="mb-2 font-mono text-meta text-muted-foreground">
           {info.ma_thiet_bi}
           {info.ma_serial ? ` · SN ${info.ma_serial}` : ""}
         </div>
-        <div className="mb-2 rounded border border-amber-400/50 bg-amber-50 px-2 py-1 text-[11px] leading-snug text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+        <div className="mb-2 rounded border border-amber-400/50 bg-amber-50 px-2 py-1 text-meta leading-snug text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
           Cùng một thiết bị vật lý đang giữ đồng thời {info.count} vai trò "thành phần hệ thống" ở
           các hệ thống khác nhau.
         </div>
@@ -74,9 +74,9 @@ export function MultiRoleBadge({
               <li key={r.thanh_phan_id} className={here ? "rounded bg-muted/60 px-1.5 py-1" : ""}>
                 <div className="flex items-baseline gap-1.5">
                   <span className="font-medium">{r.ten_thanh_phan}</span>
-                  {here && <span className="text-[10px] text-primary">(vai trò này)</span>}
+                  {here && <span className="text-mini text-primary">(vai trò này)</span>}
                 </div>
-                <div className="text-[11px] text-muted-foreground">
+                <div className="text-meta text-muted-foreground">
                   <span className="font-mono">{r.ma_thanh_phan}</span>
                   {r.ten_he_thong && (
                     <>

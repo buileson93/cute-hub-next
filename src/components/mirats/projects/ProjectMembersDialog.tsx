@@ -250,7 +250,7 @@ export function ProjectMembersDialog({
                     {m.ho_ten ?? m.email ?? m.user_id.slice(0, 8)}
                   </div>
                   {m.email && (
-                    <div className="text-[11px] text-muted-foreground truncate">{m.email}</div>
+                    <div className="text-meta text-muted-foreground truncate">{m.email}</div>
                   )}
                 </div>
                 {canManage ? (

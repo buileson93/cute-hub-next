@@ -130,7 +130,7 @@ function FormsPage() {
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <div className="font-mono text-[10px] text-muted-foreground">{t.code}</div>
+                        <div className="font-mono text-mini text-muted-foreground">{t.code}</div>
                         <CardTitle className="text-base leading-tight">{t.ten}</CardTitle>
                       </div>
                       <FileText className="h-5 w-5 shrink-0 text-primary/70" />
@@ -141,7 +141,7 @@ function FormsPage() {
                       {t.mo_ta ?? "—"}
                     </p>
                     <div className="flex items-center justify-between">
-                      <Badge variant="outline" className="text-[10px]">
+                      <Badge variant="outline" className="text-mini">
                         {t.thiet_bi_mode === "none"
                           ? "Không TB"
                           : t.thiet_bi_mode === "single"

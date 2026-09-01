@@ -54,7 +54,7 @@ export function CompletenessRing({
           className={cn("transition-all duration-500", getTone(value))}
         />
       </svg>
-      {showText && <span className="absolute text-[10px] font-bold">{Math.round(value)}%</span>}
+      {showText && <span className="absolute text-mini font-bold">{Math.round(value)}%</span>}
     </div>
   );
 }

@@ -273,7 +273,7 @@ function VanDePage() {
           { label: "Nghiêm trọng", value: stats.critical },
         ].map((s) => (
           <div key={s.label} className="rounded-xl border border-border bg-card p-4">
-            <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+            <div className="text-meta uppercase tracking-wide text-muted-foreground">
               {s.label}
             </div>
             <div className="mt-1 text-2xl font-bold">{s.value}</div>
@@ -327,13 +327,13 @@ function VanDePage() {
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-[11px] text-muted-foreground">
+                    <span className="font-mono text-meta text-muted-foreground">
                       {r.ma_van_de}
                     </span>
-                    <StatusBadge domain="van_de" code={r.trang_thai} className="text-[10px]" />
+                    <StatusBadge domain="van_de" code={r.trang_thai} className="text-mini" />
                     <span
                       className={cn(
-                        "rounded px-1.5 py-0.5 text-[10px] font-medium",
+                        "rounded px-1.5 py-0.5 text-mini font-medium",
                         MUC_DO_COLOR[r.muc_do],
                       )}
                     >
@@ -341,14 +341,14 @@ function VanDePage() {
                     </span>
                   </div>
                   <div className="mt-1 truncate text-sm font-medium">{r.tieu_de}</div>
-                  <div className="mt-0.5 flex flex-wrap gap-x-3 text-[11px] text-muted-foreground">
+                  <div className="mt-0.5 flex flex-wrap gap-x-3 text-meta text-muted-foreground">
                     {r.he_thong_ten && <span>Hệ thống: {r.he_thong_ten}</span>}
                     {r.thiet_bi_ten && <span>Tài sản: {r.thiet_bi_ten}</span>}
                     {r.don_vi_ten && <span>{r.don_vi_ten}</span>}
                     <span>{formatDT(r.created_at)}</span>
                   </div>
                 </div>
-                <div className="flex shrink-0 items-center gap-3 text-[11px] text-muted-foreground">
+                <div className="flex shrink-0 items-center gap-3 text-meta text-muted-foreground">
                   <span className="inline-flex items-center gap-1">
                     <AlertTriangle className="h-3 w-3 text-amber-500" /> {r.so_su_co} sự cố
                   </span>
@@ -386,7 +386,7 @@ function VanDePage() {
                 placeholder="Ví dụ: Nguồn tài sản UHF hỏng lặp lại"
               />
             </Field>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Field label="Mức độ">
                 <Select
                   value={form.muc_do}
@@ -430,7 +430,7 @@ function VanDePage() {
                 </div>
                 <ul className="space-y-1.5">
                   {actions.map((a) => (
-                    <li key={a.id} className="flex items-start gap-2 text-[11px]">
+                    <li key={a.id} className="flex items-start gap-2 text-meta">
                       <span
                         className={cn(
                           "mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full",
@@ -441,7 +441,7 @@ function VanDePage() {
                         {a.ma_cong_viec ?? a.mo_ta ?? "Công việc"}
                       </span>
                       {a.bat_buoc && (
-                        <span className="shrink-0 rounded bg-destructive/15 px-1 text-[10px] font-medium text-destructive">
+                        <span className="shrink-0 rounded bg-destructive/15 px-1 text-mini font-medium text-destructive">
                           Bắt buộc
                         </span>
                       )}
@@ -449,7 +449,7 @@ function VanDePage() {
                   ))}
                 </ul>
                 {blocking.length > 0 && (
-                  <p className="mt-2 text-[11px] text-destructive">
+                  <p className="mt-2 text-meta text-destructive">
                     Còn {blocking.length} hành động bắt buộc chưa hoàn thành — chưa thể đóng vấn đề.
                   </p>
                 )}
@@ -459,18 +459,18 @@ function VanDePage() {
               <div className="rounded-lg border border-border bg-secondary/20 p-3">
                 <div className="mb-2 flex items-center justify-between text-xs font-medium">
                   <span>Sự cố thuộc vấn đề ({linkedSuCo.length})</span>
-                  <span className="text-[10px] text-muted-foreground">
+                  <span className="text-mini text-muted-foreground">
                     Đối chiếu với chỉ số <span className="font-mono">so_su_co</span> trên bảng
                   </span>
                 </div>
                 {linkedSuCo.length === 0 ? (
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-meta text-muted-foreground">
                     Chưa có sự cố nào gắn vào vấn đề này. Mở phiếu sự cố và chọn vấn đề để liên kết.
                   </p>
                 ) : (
                   <ul className="space-y-1.5 max-h-48 overflow-y-auto">
                     {linkedSuCo.map((s) => (
-                      <li key={s.ma_su_co} className="flex items-center gap-2 text-[11px]">
+                      <li key={s.ma_su_co} className="flex items-center gap-2 text-meta">
                         <Link
                           to="/su-co/$maSuCo"
                           params={{ maSuCo: s.ma_su_co }}
@@ -481,7 +481,7 @@ function VanDePage() {
                         <span className="min-w-0 flex-1 truncate text-muted-foreground">
                           {s.hien_tuong}
                         </span>
-                        <span className="shrink-0 rounded bg-muted px-1 text-[10px]">
+                        <span className="shrink-0 rounded bg-muted px-1 text-mini">
                           {s.trang_thai}
                         </span>
                       </li>

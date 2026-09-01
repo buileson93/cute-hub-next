@@ -23,7 +23,7 @@ export function EditModeToggle({
       <AppTooltip noiDung="Tài khoản của bạn chỉ được tra cứu dữ liệu Hệ thống.">
         <span
           className={cn(
-            "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md border border-dashed px-2.5 text-[11px] font-semibold uppercase tracking-tight text-muted-foreground",
+            "inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md border border-dashed px-2.5 text-meta font-semibold uppercase tracking-tight text-muted-foreground",
             className,
           )}
         >
@@ -49,7 +49,7 @@ export function EditModeToggle({
         aria-label={mode.editMode ? "Hoàn tất chỉnh sửa" : "Bật chế độ chỉnh sửa"}
         onClick={mode.toggle}
         className={cn(
-          "inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap px-2.5 text-[11px] font-semibold uppercase tracking-tight",
+          "inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap px-2.5 text-meta font-semibold uppercase tracking-tight",
           className,
         )}
       >

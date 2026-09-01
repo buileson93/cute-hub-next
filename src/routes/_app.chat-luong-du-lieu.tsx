@@ -123,10 +123,10 @@ function ChatLuongDuLieu() {
                     <p className="text-sm font-medium leading-none mb-2">{task.tieu_de}</p>
                     <p className="text-xs text-muted-foreground line-clamp-2 mb-2">{task.mo_ta}</p>
                     <div className="flex items-center justify-between">
-                      <Badge variant="secondary" className="text-[10px]">
+                      <Badge variant="secondary" className="text-mini">
                         +{task.diem_thuong} điểm
                       </Badge>
-                      <span className="text-[10px] text-muted-foreground italic">
+                      <span className="text-mini text-muted-foreground italic">
                         Loại: {task.loai}
                       </span>
                     </div>

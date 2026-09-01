@@ -142,13 +142,13 @@ function TicketsPage() {
                           <div className="truncate text-sm font-semibold">{t.tieu_de}</div>
                           <Badge
                             variant="outline"
-                            className={cn("text-[10px]", TRANG_THAI_COLOR[t.trang_thai])}
+                            className={cn("text-mini", TRANG_THAI_COLOR[t.trang_thai])}
                           >
                             {TICKET_TRANG_THAI[t.trang_thai]}
                           </Badge>
                           <span
                             className={cn(
-                              "rounded px-1.5 py-0.5 text-[10px] font-medium",
+                              "rounded px-1.5 py-0.5 text-mini font-medium",
                               UU_TIEN_COLOR[t.uu_tien],
                             )}
                           >
@@ -160,7 +160,7 @@ function TicketsPage() {
                             {t.mo_ta}
                           </div>
                         )}
-                        <div className="mt-1.5 flex items-center gap-3 text-[11px] text-muted-foreground">
+                        <div className="mt-1.5 flex items-center gap-3 text-meta text-muted-foreground">
                           <span className="inline-flex items-center gap-1">
                             <UserIcon className="h-3 w-3" />
                             {TICKET_LOAI[t.loai]}
@@ -240,7 +240,7 @@ function NewTicketDialog({
           <DialogTitle>Tạo yêu cầu mới</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <label className="text-xs font-medium">Loại yêu cầu</label>
               <Select value={loai} onValueChange={(v) => setLoai(v as typeof loai)}>

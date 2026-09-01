@@ -205,7 +205,7 @@ export function ThanhPhanChiTietDialog({
               </div>
               {editFields ? (
                 <>
-                  <p className="mb-2 rounded-md bg-muted/50 px-2 py-1.5 text-[11px] text-muted-foreground">
+                  <p className="mb-2 rounded-md bg-muted/50 px-2 py-1.5 text-meta text-muted-foreground">
                     Đang sửa <b>thành phần hệ thống</b> (mã{" "}
                     <span className="font-mono">TPHT_…</span>). Để sửa trường của{" "}
                     <b>tài sản vật lý</b> đang lắp (bao gồm serial, model, ngày mua…), bấm nút{" "}
@@ -248,7 +248,7 @@ export function ThanhPhanChiTietDialog({
                 </Button>
               )}
               {canManage && !canAssign && (
-                <span className="text-[11px] text-muted-foreground">
+                <span className="text-meta text-muted-foreground">
                   Ngoài phạm vi quyền lắp/tháo
                 </span>
               )}
@@ -677,7 +677,7 @@ function ChangeDeviceForm({
             searchPlaceholder="Tìm vị trí…"
             emptyText="Không có vị trí phù hợp"
           />
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-meta text-muted-foreground">
             Bỏ trống → tài sản cũ giữ nguyên vị trí. Khuyến nghị chọn <b>kho sửa chữa</b> nếu gắn
             với hỏng hóc.
           </p>

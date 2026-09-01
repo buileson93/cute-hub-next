@@ -117,7 +117,7 @@ function BanQuyenDetailView() {
             <h1 className="text-2xl font-black tracking-tight truncate">{bq.ten_phan_mem}</h1>
             <Badge
               variant="secondary"
-              className={cn("text-[10px] font-bold uppercase", STATUS_CLASS[bq.status])}
+              className={cn("text-mini font-bold uppercase", STATUS_CLASS[bq.status])}
             >
               {STATUS_LABEL[bq.status]}
             </Badge>
@@ -202,7 +202,7 @@ function BanQuyenDetailView() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 text-[10px]"
+                        className="h-7 text-mini"
                         onClick={handleToggleKey}
                       >
                         {showKey ? (
@@ -261,7 +261,7 @@ function BanQuyenDetailView() {
                     className="h-2"
                     indicatorClassName={seatsPct >= 90 ? "bg-red-500" : "bg-emerald-500"}
                   />
-                  <p className="text-[10px] text-muted-foreground leading-relaxed italic">
+                  <p className="text-mini text-muted-foreground leading-relaxed italic">
                     {bq.so_ghe
                       ? `Hệ thống còn trống ${bq.so_ghe - bq.gheDaDung} ghế bản quyền cho thiết bị mới.`
                       : "Bản quyền này không giới hạn số lượng thiết bị cài đặt."}
@@ -274,7 +274,7 @@ function BanQuyenDetailView() {
                   <Info className="h-5 w-5 text-primary shrink-0" />
                   <div className="space-y-1">
                     <div className="text-xs font-bold text-primary">Hướng dẫn vận hành</div>
-                    <p className="text-[10px] leading-relaxed text-muted-foreground font-medium">
+                    <p className="text-mini leading-relaxed text-muted-foreground font-medium">
                       Để đảm bảo an toàn thông tin, không chia sẻ License Key trực tiếp. Hãy sử dụng
                       tính năng "Cấp phát" để gán bản quyền cho đúng mã tài sản.
                     </p>
@@ -299,7 +299,7 @@ function BanQuyenDetailView() {
                     cell: (r: any) => (
                       <div className="flex flex-col">
                         <span className="font-medium">{r.maThietBi || "—"}</span>
-                        <span className="text-[10px] text-muted-foreground truncate max-w-[200px]">
+                        <span className="text-mini text-muted-foreground truncate max-w-[200px]">
                           {r.tenThietBi}
                         </span>
                       </div>
@@ -313,7 +313,7 @@ function BanQuyenDetailView() {
                     cell: (r: any) => (
                       <Badge
                         variant={r.ngay_thu_hoi ? "secondary" : "default"}
-                        className="text-[9px] uppercase"
+                        className="text-micro uppercase"
                       >
                         {r.ngay_thu_hoi ? "Đã thu hồi" : "Đang sử dụng"}
                       </Badge>
@@ -334,7 +334,7 @@ function BanQuyenDetailView() {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-7 text-[10px] text-red-500 hover:text-red-600"
+                            className="h-7 text-mini text-red-500 hover:text-red-600"
                             onClick={async () => {
                               if (
                                 !confirm("Bạn có chắc chắn muốn thu hồi bản quyền này từ thiết bị?")
@@ -501,7 +501,7 @@ function BanQuyenDetailView() {
                     key: "action",
                     label: "Hành động",
                     cell: (r: any) => (
-                      <Badge variant="outline" className="text-[10px] font-bold uppercase">
+                      <Badge variant="outline" className="text-mini font-bold uppercase">
                         {r.action}
                       </Badge>
                     ),
@@ -557,12 +557,12 @@ function KpiCard({
           <Icon className="h-5 w-5" />
         </div>
         <div className="min-w-0">
-          <div className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest">
+          <div className="text-mini font-bold uppercase text-muted-foreground tracking-widest">
             {label}
           </div>
           <div className="text-lg font-black tracking-tight truncate">{value}</div>
           {subValue && (
-            <div className="text-[10px] font-medium text-muted-foreground truncate">{subValue}</div>
+            <div className="text-mini font-medium text-muted-foreground truncate">{subValue}</div>
           )}
         </div>
       </CardContent>
@@ -581,7 +581,7 @@ function InfoItem({
 }) {
   return (
     <div className="space-y-1">
-      <span className="text-[10px] font-bold uppercase text-muted-foreground flex items-center gap-1.5">
+      <span className="text-mini font-bold uppercase text-muted-foreground flex items-center gap-1.5">
         <Icon className="h-3 w-3" /> {label}
       </span>
       <div className="text-sm font-medium">{value || "—"}</div>

@@ -576,7 +576,7 @@ export function SuCoMoiForm({
                   </div>
                   <ul className="space-y-1">
                     {anomalies.map((a, i) => (
-                      <li key={i} className="flex gap-2 text-[12px] leading-relaxed">
+                      <li key={i} className="flex gap-2 text-xs leading-relaxed">
                         <span
                           className={cn(
                             "mt-1.5 h-1 w-1 shrink-0 rounded-full",
@@ -645,7 +645,7 @@ export function SuCoMoiForm({
                     <Layers className="h-3.5 w-3.5" />
                     <span>Tài sản liên quan ({selected.length})</span>
                   </div>
-                  <div className="text-[11px] text-muted-foreground line-clamp-2">
+                  <div className="text-meta text-muted-foreground line-clamp-2">
                     {selected.map((d) => d.ma_thiet_bi).join(", ")}
                   </div>
                 </div>

@@ -264,7 +264,7 @@ function OcrAdminPage() {
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label className="text-xs">Tự dừng khi ẩn tab</Label>
-                      <p className="text-[10px] text-muted-foreground">
+                      <p className="text-mini text-muted-foreground">
                         Khuyên dùng để tránh browser kill process
                       </p>
                     </div>
@@ -279,7 +279,7 @@ function OcrAdminPage() {
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label className="text-xs">Giám sát bộ nhớ</Label>
-                      <p className="text-[10px] text-muted-foreground">
+                      <p className="text-mini text-muted-foreground">
                         Tự dừng nếu thiết bị quá nóng/đầy RAM
                       </p>
                     </div>
@@ -426,13 +426,13 @@ function OcrAdminPage() {
                               {doc.file_name}
                             </div>
                             {doc.error_code && (
-                              <div className="text-[10px] text-red-500 mt-0.5">
+                              <div className="text-mini text-red-500 mt-0.5">
                                 Lỗi: {doc.error_code}
                               </div>
                             )}
                           </td>
                           <td className="p-3">
-                            <Badge variant="outline" className="text-[10px]">
+                            <Badge variant="outline" className="text-mini">
                               {doc.model_ma || doc.thiet_bi_ma || "Global"}
                             </Badge>
                           </td>
@@ -483,7 +483,7 @@ function OcrAdminPage() {
                         </span>
                       </div>
                       <Progress value={(batchStatus.processed / batchStatus.total) * 100} />
-                      <div className="flex gap-4 text-[11px]">
+                      <div className="flex gap-4 text-meta">
                         <span className="text-green-600">Thành công: {batchStatus.succeeded}</span>
                         <span className="text-red-500">Thất bại: {batchStatus.failed}</span>
                         <span className="text-blue-500">Trang: {batchStatus.pagesInSession}</span>
@@ -500,7 +500,7 @@ function OcrAdminPage() {
                             </span>
                           </div>
                           {batchStatus.currentPage && (
-                            <span className="text-[10px]">Trang {batchStatus.currentPage}</span>
+                            <span className="text-mini">Trang {batchStatus.currentPage}</span>
                           )}
                         </div>
                         <Progress value={0} className="h-1" />
@@ -531,7 +531,7 @@ function OcrAdminPage() {
 
                 <div className="space-y-2">
                   <h3 className="text-xs font-semibold px-1">Nhật ký phiên xử lý</h3>
-                  <div className="border rounded-md bg-card p-4 h-[200px] font-mono text-[10px] space-y-1 overflow-auto">
+                  <div className="border rounded-md bg-card p-4 h-[200px] font-mono text-mini space-y-1 overflow-auto">
                     <div className="text-muted-foreground">
                       [{new Date().toLocaleTimeString()}] Bắt đầu phiên làm việc...
                     </div>
@@ -578,12 +578,12 @@ function StatsCard({
   return (
     <Card className="shadow-none">
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle className="text-[11px] font-medium text-muted-foreground">{title}</CardTitle>
+        <CardTitle className="text-meta font-medium text-muted-foreground">{title}</CardTitle>
         {icon}
       </CardHeader>
       <CardContent>
         <div className="text-lg font-bold">{value}</div>
-        {description && <p className="text-[10px] text-muted-foreground">{description}</p>}
+        {description && <p className="text-mini text-muted-foreground">{description}</p>}
       </CardContent>
     </Card>
   );
@@ -690,13 +690,13 @@ function OcrBenchmarkTab() {
       <Card>
         <CardHeader>
           <CardTitle className="text-sm">Bộ Fixture & Kết quả gần đây</CardTitle>
-          <CardDescription className="text-[10px]">
+          <CardDescription className="text-mini">
             Kiểm thử độ chính xác trên các mẫu tài liệu chuẩn
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="border rounded-md">
-            <table className="w-full text-[11px] text-left mirats-data-table-legacy">
+            <table className="w-full text-meta text-left mirats-data-table-legacy">
               <thead className="bg-muted border-b">
                 <tr>
                   <th className="p-2 font-medium">Fixture</th>
@@ -716,7 +716,7 @@ function OcrBenchmarkTab() {
                     <td className="p-2 text-muted-foreground">--</td>
                     <td className="p-2 text-muted-foreground">--</td>
                     <td className="p-2">
-                      <Badge variant="outline" className="text-[9px]">
+                      <Badge variant="outline" className="text-micro">
                         READY
                       </Badge>
                     </td>

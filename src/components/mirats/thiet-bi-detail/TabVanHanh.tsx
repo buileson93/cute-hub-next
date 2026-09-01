@@ -175,7 +175,7 @@ function EventRow({ title, date, label, desc, tag, tone }: any) {
         <div className="flex items-center gap-2">
           <span className="font-medium truncate">{title}</span>
           {tag && (
-            <Badge variant="secondary" className={`text-[10px] h-4 ${tone}`}>
+            <Badge variant="secondary" className={`text-mini h-4 ${tone}`}>
               {tag}
             </Badge>
           )}

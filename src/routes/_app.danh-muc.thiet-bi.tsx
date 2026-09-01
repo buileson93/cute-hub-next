@@ -193,7 +193,7 @@ function ModelHoverContent({ d }: { d: DbDevice }) {
         {imgUrl ? (
           <img src={imgUrl} alt={d._modelTen} className="max-h-40 w-auto rounded object-contain" />
         ) : (
-          <div className="flex h-24 w-full items-center justify-center rounded bg-muted/40 text-[11px] text-muted-foreground">
+          <div className="flex h-24 w-full items-center justify-center rounded bg-muted/40 text-meta text-muted-foreground">
             Chưa có hình ảnh
           </div>
         )}
@@ -686,12 +686,12 @@ function DanhMucThietBiPage() {
             <div className="min-w-0">
               <div className="truncate font-medium">{tbName(d)}</div>
               <div className="flex items-center gap-2">
-                <code className="text-[10px] text-muted-foreground">{d.ma_thiet_bi}</code>
+                <code className="text-mini text-muted-foreground">{d.ma_thiet_bi}</code>
                 {d.serial && (
-                  <span className="text-[10px] text-muted-foreground/60">SN: {d.serial}</span>
+                  <span className="text-mini text-muted-foreground/60">SN: {d.serial}</span>
                 )}
                 {d._maBravo && (
-                  <span className="text-[10px] text-muted-foreground/60">B: {d._maBravo}</span>
+                  <span className="text-mini text-muted-foreground/60">B: {d._maBravo}</span>
                 )}
               </div>
             </div>
@@ -726,7 +726,7 @@ function DanhMucThietBiPage() {
                 closeDelay={100}
                 contentClassName="p-0"
                 trigger={
-                  <span className="block cursor-help truncate text-[13px] underline decoration-dotted underline-offset-2">
+                  <span className="block cursor-help truncate text-note underline decoration-dotted underline-offset-2">
                     {d._modelTen}
                   </span>
                 }
@@ -801,17 +801,17 @@ function DanhMucThietBiPage() {
           <div className="space-y-0.5">
             <div className="flex items-center gap-1">
               {d._htId ? (
-                <span className="truncate font-medium text-[13px]">
+                <span className="truncate font-medium text-note">
                   {htName(d._htId, d._htTen)}
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 px-1 py-0.5 text-[10px] font-medium text-amber-600">
+                <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 px-1 py-0.5 text-mini font-medium text-amber-600">
                   <PackageOpen className="h-3 w-3" /> Độc lập
                 </span>
               )}
             </div>
             {(d._viTriTen || d.vi_tri) && (
-              <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+              <div className="flex items-center gap-1 text-meta text-muted-foreground">
                 <MapPin className="h-3 w-3" />
                 <span className="truncate">{d._viTriTen || d.vi_tri}</span>
               </div>
@@ -1174,7 +1174,7 @@ function DanhMucThietBiPage() {
           >
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                <p className="text-meta font-semibold uppercase tracking-wider text-muted-foreground">
                   {kpi.label}
                 </p>
                 <h3 className="mt-1 text-2xl font-bold tracking-tight">
@@ -1312,7 +1312,7 @@ function DanhMucThietBiPage() {
                   <Tag className="h-3.5 w-3.5" />
                   Nhãn tài sản
                   {tagSelected.length > 0 && (
-                    <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px]">
+                    <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-mini">
                       {tagMode === "any" ? "bất kỳ" : tagMode === "all" ? "đủ" : "trừ"} ·{" "}
                       {tagSelected.length}
                     </Badge>
@@ -1352,7 +1352,7 @@ function DanhMucThietBiPage() {
                             }}
                           />
                           <span className="text-xs">{t.ten}</span>
-                          <span className="ml-auto font-mono text-[10px] text-muted-foreground">
+                          <span className="ml-auto font-mono text-mini text-muted-foreground">
                             {t.ma}
                           </span>
                         </label>
@@ -1367,7 +1367,7 @@ function DanhMucThietBiPage() {
                 </div>
                 {tagSelected.length > 0 && (
                   <div className="flex items-center justify-between border-t px-3 py-2">
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className="text-meta text-muted-foreground">
                       Đã chọn {tagSelected.length}
                     </span>
                     <AppTooltip noiDung="Bỏ chọn tất cả nhãn">
@@ -1399,7 +1399,7 @@ function DanhMucThietBiPage() {
               </AppTooltip>
             )}
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Hiển thị</span>
+              <span className="text-mini text-muted-foreground uppercase font-bold tracking-wider">Hiển thị</span>
               <div className="flex overflow-hidden rounded-md border bg-background shadow-sm">
                 <AppTooltip noiDung="Xem dạng bảng (Tab)">
                   <Button
@@ -1434,7 +1434,7 @@ function DanhMucThietBiPage() {
             </div>
           </div>
           {tagSelected.length > 0 && (
-            <div className="mb-2 flex items-start gap-1.5 rounded border border-dashed bg-muted/30 px-2 py-1.5 text-[11px] text-muted-foreground">
+            <div className="mb-2 flex items-start gap-1.5 rounded border border-dashed bg-muted/30 px-2 py-1.5 text-meta text-muted-foreground">
               <Info className="mt-0.5 h-3 w-3 shrink-0" />
               <span>
                 Nhãn tài sản là đa trị: khi <b>gom nhóm theo nhãn tài sản</b>, một tài sản có thể
@@ -1458,7 +1458,7 @@ function DanhMucThietBiPage() {
                       <StatusBadge domain="thiet_bi" code={d.trang_thai} />
                     </div>
                     <div className="text-muted-foreground mb-3 font-mono text-xs">{d.ma_thiet_bi}</div>
-                    <div className="grid grid-cols-2 gap-y-2 text-[11px]">
+                    <div className="grid grid-cols-2 gap-y-2 text-meta">
                       <div className="text-muted-foreground">Chủng loại:</div>
                       <div>{d.loai}</div>
                       <div className="text-muted-foreground">S/N:</div>
@@ -1511,7 +1511,7 @@ function DanhMucThietBiPage() {
                   </div>
                 </div>
                 <div className="flex items-center justify-between mt-2 pt-2 border-t border-dashed w-full">
-                  <div className="text-[11px] text-muted-foreground italic">
+                  <div className="text-meta text-muted-foreground italic">
                     Hiển thị {devices.length} / {totalCount} tài sản (Trang {page + 1})
                   </div>
                   <div className="flex items-center gap-2">
@@ -1519,7 +1519,7 @@ function DanhMucThietBiPage() {
                       variant="outline"
                       size="sm"
                       aria-label="Trang trước"
-                      className="h-7 text-[10px] px-2"
+                      className="h-7 text-mini px-2"
                       disabled={page === 0 || pagedLoading}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -1532,7 +1532,7 @@ function DanhMucThietBiPage() {
                       variant="outline"
                       size="sm"
                       aria-label="Trang sau"
-                      className="h-7 text-[10px] px-2"
+                      className="h-7 text-mini px-2"
                       disabled={(page + 1) * pageSize >= totalCount || pagedLoading}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -1783,7 +1783,7 @@ function DanhMucThietBiPage() {
                   <div className="flex items-center gap-1.5 font-medium text-destructive">
                     <Trash2 className="h-4 w-4" /> Xoá vĩnh viễn{" "}
                     {!isAdmin && (
-                      <span className="text-[10px] font-normal text-muted-foreground">
+                      <span className="text-mini font-normal text-muted-foreground">
                         (chỉ admin)
                       </span>
                     )}
@@ -1803,7 +1803,7 @@ function DanhMucThietBiPage() {
                     <Label htmlFor="thanh-ly-delete" className="text-xs font-medium cursor-pointer">
                       Thanh lý / loại biên
                     </Label>
-                    <p className="text-[10px] text-muted-foreground">
+                    <p className="text-mini text-muted-foreground">
                       Tài sản sẽ bị xóa khỏi danh sách đang dùng.
                     </p>
                   </div>

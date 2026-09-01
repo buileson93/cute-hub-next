@@ -84,7 +84,7 @@ export function MultiSignatureFlow({
           <div key={s.key} className="rounded border bg-background p-2">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="font-mono text-[10px]">
+                <Badge variant="outline" className="font-mono text-mini">
                   #{i + 1}
                 </Badge>
                 <span className="text-sm font-medium">{s.label}</span>
@@ -136,7 +136,7 @@ export function MultiSignatureFlow({
               />
             )}
             {signed && (
-              <p className="mt-1 text-[11px] text-muted-foreground">
+              <p className="mt-1 text-meta text-muted-foreground">
                 {s.signer_name || s.signer_id || "?"} ·{" "}
                 {s.signed_at ? new Date(s.signed_at).toLocaleString("vi-VN") : ""}
               </p>

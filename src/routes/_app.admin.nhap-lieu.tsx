@@ -700,7 +700,7 @@ function NhapLieuPage() {
                       >
                         {s.n}. {s.label}
                       </div>
-                      <div className="hidden truncate text-[11px] text-muted-foreground sm:block">
+                      <div className="hidden truncate text-meta text-muted-foreground sm:block">
                         {s.desc}
                       </div>
                     </div>
@@ -913,7 +913,7 @@ function NhapLieuPage() {
                           return (
                             <li
                               key={idx}
-                              className={`flex items-start gap-1.5 text-[11px] ${tone}`}
+                              className={`flex items-start gap-1.5 text-meta ${tone}`}
                             >
                               <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
                               <span>{iss.text}</span>
@@ -1018,7 +1018,7 @@ function NhapLieuPage() {
                             {f.label}
                             {f.required && <span className="ml-1 text-amber-600">*</span>}
                             {f.kind === "ref" && (
-                              <span className="ml-1 text-[10px] text-muted-foreground">
+                              <span className="ml-1 text-mini text-muted-foreground">
                                 (danh mục)
                               </span>
                             )}
@@ -1037,7 +1037,7 @@ function NhapLieuPage() {
                       ))}
                   </div>
                   {Object.keys(activeDefaults).length > 0 && (
-                    <p className="mt-3 flex items-start gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/5 p-2 text-[11px] text-emerald-700 dark:text-emerald-400">
+                    <p className="mt-3 flex items-start gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/5 p-2 text-meta text-emerald-700 dark:text-emerald-400">
                       <CheckCircle2 className="mt-0.5 h-3 w-3 shrink-0" />
                       <span>
                         Đang áp mặc định cho:{" "}

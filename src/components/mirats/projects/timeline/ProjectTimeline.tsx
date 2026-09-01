@@ -141,7 +141,7 @@ export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
                       <div className="w-[36px] flex justify-center" key={date + "-marker"}>
                         <div className="h-2 w-2 rounded-full bg-border" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                      <span className="text-meta font-bold uppercase tracking-wider text-muted-foreground">
                         {format(new Date(date), "EEEE, dd MMMM, yyyy", { locale: vi })}
                       </span>
                     </div>
@@ -213,7 +213,7 @@ function TimelineItem({
           >
             {event.title}
           </h4>
-          <span className="text-[10px] text-muted-foreground shrink-0 font-mono">
+          <span className="text-mini text-muted-foreground shrink-0 font-mono">
             {format(new Date(event.occurred_at || new Date()), "HH:mm")}
           </span>
         </div>
@@ -225,12 +225,12 @@ function TimelineItem({
         <div className="flex items-center gap-2 mt-2">
           <div className="flex items-center gap-1">
             <User className="h-3 w-3 text-muted-foreground/60" />
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-mini text-muted-foreground">
               {event.actor?.ho_ten || event.actor?.email || "System"}
             </span>
           </div>
           {event.source !== "web" && (
-            <Badge variant="outline" className="text-[9px] h-4 px-1 uppercase tracking-tighter">
+            <Badge variant="outline" className="text-micro h-4 px-1 uppercase tracking-tighter">
               {event.source}
             </Badge>
           )}
@@ -276,7 +276,7 @@ function TimelineInspector({ event, onClose }: { event: any; onClose: () => void
 
         {event.summary && (
           <div className="space-y-1.5">
-            <h5 className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">
+            <h5 className="text-mini font-bold uppercase text-muted-foreground tracking-wider">
               Mô tả
             </h5>
             <div className="text-sm p-3 rounded-lg bg-muted/30 border border-border/50 text-foreground leading-relaxed">
@@ -287,7 +287,7 @@ function TimelineInspector({ event, onClose }: { event: any; onClose: () => void
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <h5 className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">
+            <h5 className="text-mini font-bold uppercase text-muted-foreground tracking-wider">
               Người thực hiện
             </h5>
             <div className="flex items-center gap-2 text-xs font-medium">
@@ -300,13 +300,13 @@ function TimelineInspector({ event, onClose }: { event: any; onClose: () => void
             </div>
           </div>
           <div className="space-y-1.5">
-            <h5 className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">
+            <h5 className="text-mini font-bold uppercase text-muted-foreground tracking-wider">
               Nguồn
             </h5>
             <div className="flex items-center gap-2">
               <Badge
                 variant="outline"
-                className="h-5 px-1.5 uppercase text-[9px] tracking-widest font-bold"
+                className="h-5 px-1.5 uppercase text-micro tracking-widest font-bold"
               >
                 {event.source}
               </Badge>
@@ -317,7 +317,7 @@ function TimelineInspector({ event, onClose }: { event: any; onClose: () => void
         <Separator />
 
         <div className="space-y-3">
-          <h5 className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">
+          <h5 className="text-mini font-bold uppercase text-muted-foreground tracking-wider">
             Thực thể liên quan
           </h5>
           <div className="flex items-center justify-between p-2 rounded-md border border-border hover:bg-muted/50 transition-colors cursor-pointer group">
@@ -327,7 +327,7 @@ function TimelineInspector({ event, onClose }: { event: any; onClose: () => void
               </div>
               <div className="flex flex-col overflow-hidden">
                 <span className="text-xs font-medium truncate">{event.entity_type}</span>
-                <span className="text-[10px] text-muted-foreground font-mono truncate">
+                <span className="text-mini text-muted-foreground font-mono truncate">
                   {event.entity_id}
                 </span>
               </div>
@@ -338,10 +338,10 @@ function TimelineInspector({ event, onClose }: { event: any; onClose: () => void
 
         {event.metadata && Object.keys(event.metadata).length > 0 && (
           <div className="space-y-3">
-            <h5 className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">
+            <h5 className="text-mini font-bold uppercase text-muted-foreground tracking-wider">
               Dữ liệu chi tiết
             </h5>
-            <div className="p-3 rounded-md bg-muted/30 font-mono text-[11px] overflow-x-auto border border-border/40">
+            <div className="p-3 rounded-md bg-muted/30 font-mono text-meta overflow-x-auto border border-border/40">
               <pre>{JSON.stringify(event.metadata, null, 2)}</pre>
             </div>
           </div>

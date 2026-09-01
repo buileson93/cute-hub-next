@@ -103,7 +103,7 @@ function ForgotPasswordPage() {
           </div>
           <div>
             <div className="text-lg font-semibold tracking-tight">MIRATS</div>
-            <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+            <div className="text-meta uppercase tracking-[0.14em] text-muted-foreground">
               Khôi phục mật khẩu
             </div>
           </div>

@@ -70,7 +70,7 @@ export function StatusDonutChart({ title, data, icon, totalLabel }: StatusDonutC
         <div className="absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-[calc(50%+10px)] flex flex-col items-center">
           <span className="text-xl font-black tabular-nums">{total}</span>
           {totalLabel && (
-            <span className="text-[8px] font-bold text-muted-foreground uppercase">
+            <span className="text-nano font-bold text-muted-foreground uppercase">
               {totalLabel}
             </span>
           )}

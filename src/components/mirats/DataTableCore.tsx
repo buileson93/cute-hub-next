@@ -198,7 +198,7 @@ export function DataTableCore<T>({
 
   const tableClasses = cn(
     "relative w-full astryx-table",
-    density === "compact" ? "text-[12px]" : "text-[13px]",
+    density === "compact" ? "text-xs" : "text-note",
   );
 
   return (

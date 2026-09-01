@@ -60,23 +60,23 @@ export function TruncatedNodeLabel({
           <TooltipTrigger asChild>{text}</TooltipTrigger>
           <TooltipContent side="top" align="center" className="max-w-80 border-primary/20 bg-card p-2 shadow-md">
             <div className="flex flex-col gap-1">
-              <div className="font-semibold text-[11px] text-foreground">{identity.primaryLabel}</div>
+              <div className="font-semibold text-meta text-foreground">{identity.primaryLabel}</div>
               
               {identity.assetName && identity.assetName !== identity.primaryLabel && (
-                <div className="text-[10px] text-muted-foreground italic">
+                <div className="text-mini text-muted-foreground italic">
                   Tên tài sản: {identity.assetName}
                 </div>
               )}
 
               <div className="flex flex-col gap-0.5 border-t border-border/40 mt-1 pt-1">
                 {identity.componentCode && (
-                  <div className="flex items-center gap-1.5 font-mono text-[9px] text-muted-foreground uppercase tracking-wider">
+                  <div className="flex items-center gap-1.5 font-mono text-micro text-muted-foreground uppercase tracking-wider">
                     <span className="opacity-60">Mã TP:</span>
                     <span>{identity.componentCode}</span>
                   </div>
                 )}
                 {identity.assetCode && (
-                  <div className="flex items-center gap-1.5 font-mono text-[9px] text-muted-foreground uppercase tracking-wider">
+                  <div className="flex items-center gap-1.5 font-mono text-micro text-muted-foreground uppercase tracking-wider">
                     <span className="opacity-60">Mã TS:</span>
                     <span>{identity.assetCode}</span>
                   </div>
@@ -84,7 +84,7 @@ export function TruncatedNodeLabel({
               </div>
               
               {identity.source === "missing" && (
-                <div className="text-[10px] italic text-amber-500 mt-1">Chưa có tên</div>
+                <div className="text-mini italic text-amber-500 mt-1">Chưa có tên</div>
               )}
             </div>
           </TooltipContent>
@@ -102,15 +102,15 @@ export function TruncatedNodeLabel({
         <TooltipTrigger asChild>{text}</TooltipTrigger>
         <TooltipContent side="top" align="center" className="max-w-80 border-primary/20 bg-card p-2 shadow-md">
           <div className="flex flex-col gap-0.5">
-            <div className="font-semibold text-[11px] text-foreground">{label}</div>
+            <div className="font-semibold text-meta text-foreground">{label}</div>
             {code && (
-              <div className="flex items-center gap-1.5 border-t border-border/40 mt-1 pt-1 font-mono text-[9px] text-muted-foreground uppercase tracking-wider">
+              <div className="flex items-center gap-1.5 border-t border-border/40 mt-1 pt-1 font-mono text-micro text-muted-foreground uppercase tracking-wider">
                 <span className="opacity-60">Mã:</span>
                 <span>{code}</span>
               </div>
             )}
             {!label || label === code && !code && (
-               <div className="text-[10px] italic text-amber-500 mt-1">Chưa có tên</div>
+               <div className="text-mini italic text-amber-500 mt-1">Chưa có tên</div>
             )}
           </div>
         </TooltipContent>

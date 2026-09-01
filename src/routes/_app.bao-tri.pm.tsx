@@ -123,7 +123,7 @@ function PmPage() {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Tìm PM..."
-                className="h-7 pl-7 text-[11px]"
+                className="h-7 pl-7 text-meta"
               />
             </div>
             <AppTooltip noiDung="Sinh công việc PM">
@@ -141,7 +141,7 @@ function PmPage() {
         }
       />
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border bg-card px-2 py-1.5 text-[11px]">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border bg-card px-2 py-1.5 text-meta">
         <Stat icon={CalendarClock} label="Tổng" value={stats.total} />
         <Stat icon={AlertTriangle} label="Đến/sắp hạn" value={stats.due} tone="text-amber-600" />
         <Stat icon={AlertTriangle} label="Quá hạn" value={stats.overdue} tone="text-red-600" />
@@ -222,7 +222,7 @@ function PmPage() {
                               <Badge variant="outline" size="sm">
                                 {r.doi_tuong_type === "thiet_bi" ? "Tài sản" : "Hệ thống"}
                               </Badge>
-                              <div className="font-mono text-[10px] text-muted-foreground mt-1">
+                              <div className="font-mono text-mini text-muted-foreground mt-1">
                                 {r.doi_tuong_id.slice(0, 8)}…
                               </div>
                             </TableCell>
@@ -230,7 +230,7 @@ function PmPage() {
                               {r.chinh_sach?.chu_ky_loai === "metric" ? "Chỉ số" : "Ngày"} ·{" "}
                               {r.chinh_sach?.chu_ky_gia_tri ?? "—"}
                               {r.estimated && (
-                                <div className="text-[10px] text-amber-600 flex items-center gap-1 mt-1">
+                                <div className="text-mini text-amber-600 flex items-center gap-1 mt-1">
                                   <AlertTriangle className="h-3 w-3" />
                                   ước lượng
                                 </div>

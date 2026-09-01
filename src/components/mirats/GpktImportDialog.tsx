@@ -672,7 +672,7 @@ function Field({
             {meta.source === "regex" && (
               <Badge
                 variant="outline"
-                className="text-[10px] px-1 py-0 h-4 border-emerald-500 text-emerald-700"
+                className="text-mini px-1 py-0 h-4 border-emerald-500 text-emerald-700"
               >
                 regex
               </Badge>
@@ -680,7 +680,7 @@ function Field({
             {meta.source === "ai" && (
               <Badge
                 variant="outline"
-                className="text-[10px] px-1 py-0 h-4 border-primary text-primary"
+                className="text-mini px-1 py-0 h-4 border-primary text-primary"
               >
                 AI
               </Badge>
@@ -688,7 +688,7 @@ function Field({
             {meta.source === "manual" && (
               <Badge
                 variant="outline"
-                className="text-[10px] px-1 py-0 h-4 border-sky-400 text-sky-700"
+                className="text-mini px-1 py-0 h-4 border-sky-400 text-sky-700"
               >
                 sửa tay
               </Badge>
@@ -696,7 +696,7 @@ function Field({
             {meta.needsCheck && (
               <Badge
                 variant="outline"
-                className="text-[10px] px-1 py-0 h-4 border-amber-500 text-amber-700"
+                className="text-mini px-1 py-0 h-4 border-amber-500 text-amber-700"
                 title={meta.reason ?? "Cần kiểm tra"}
               >
                 cần KT
@@ -707,7 +707,7 @@ function Field({
       </div>
       {children}
       {meta?.needsCheck && meta.reason && (
-        <p className="text-[11px] text-amber-600">{meta.reason}</p>
+        <p className="text-meta text-amber-600">{meta.reason}</p>
       )}
     </div>
   );

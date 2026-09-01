@@ -107,7 +107,7 @@ function HongHocDetail() {
             <StatusBadge domain="hong_hoc" code={h.phuong_an} label={h.phuong_an} />
             <StatusBadge domain="thiet_bi" code={h.trang_thai} label={h.trang_thai} />
             {dvo && (
-              <Badge variant="outline" className="text-[10px]">
+              <Badge variant="outline" className="text-mini">
                 <Building2 className="mr-1 h-3 w-3" /> {dvo.ma}
               </Badge>
             )}
@@ -195,7 +195,7 @@ function HongHocDetail() {
                             key={nguoi}
                             className="flex items-center gap-2 rounded-md border p-2 text-sm bg-muted/20"
                           >
-                            <div className="h-6 w-6 rounded-full bg-secondary grid place-items-center text-[10px] font-bold uppercase">
+                            <div className="h-6 w-6 rounded-full bg-secondary grid place-items-center text-mini font-bold uppercase">
                               {nguoi.slice(0, 2)}
                             </div>
                             <span className="font-medium">{nguoi}</span>
@@ -233,7 +233,7 @@ function HongHocDetail() {
                         ) : (
                           <div className="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground flex flex-col items-center justify-center min-h-[80px]">
                             <span>Không thay nguyên tài sản</span>
-                            <span className="text-[10px] uppercase opacity-60">
+                            <span className="text-mini uppercase opacity-60">
                               Chỉ thay linh kiện/sửa chữa
                             </span>
                           </div>
@@ -274,7 +274,7 @@ function HongHocDetail() {
                               <Badge
                                 key={ma}
                                 variant="secondary"
-                                className="gap-1 font-mono text-[10px]"
+                                className="gap-1 font-mono text-mini"
                               >
                                 <Package className="h-3 w-3" />
                                 {ma}
@@ -388,7 +388,7 @@ function KpiCard({
           <Icon className="h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold truncate leading-tight mb-0.5">
+          <div className="text-mini uppercase tracking-wide text-muted-foreground font-semibold truncate leading-tight mb-0.5">
             {label}
           </div>
           <div className="text-sm font-bold truncate leading-none">{value}</div>
@@ -430,7 +430,7 @@ function TbCard({
                 {tb.p_n ? ` · ${tb.p_n}` : ""}
               </span>
             )}
-            <Badge variant="secondary" className="text-[10px]">
+            <Badge variant="secondary" className="text-mini">
               {tb.trang_thai}
             </Badge>
           </div>

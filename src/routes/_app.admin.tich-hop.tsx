@@ -21,14 +21,10 @@ import { vi } from "date-fns/locale";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { StandardTable, type StdColumn } from "@/components/mirats/StandardTable";
+import { RowActionBar, RowActionButton } from "@/components/mirats/table/RowActions";
+import { PageFrame } from "@/components/mirats/layout/PageFrame";
+import { PageBody } from "@/components/mirats/PageBody";
 import {
   Dialog,
   DialogContent,
@@ -41,7 +37,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { EmptyState } from "@/components/mirats/EmptyState";
 
 import { supabase } from "@/integrations/backend/client";
@@ -50,6 +45,17 @@ import { createApiKey, revokeApiKey } from "@/lib/mirats/auth/api-keys.functions
 export const Route = createFileRoute("/_app/admin/tich-hop")({
   component: ApiKeysManagement,
 });
+
+type ApiKeyRow = {
+  id: string;
+  name: string | null;
+  key_id: string | null;
+  scopes: string[] | null;
+  created_at: string | null;
+  last_used_at: string | null;
+  expires_at: string | null;
+  revoked_at: string | null;
+};
 
 const AVAILABLE_SCOPES = [
   { id: "projects:read", label: "Xem dự án", desc: "Cho phép đọc thông tin dự án" },
@@ -86,7 +92,7 @@ function ApiKeysManagement() {
   const [copied, setCopied] = useState(false);
 
   // Fetch keys
-  const { data: keys, isLoading } = useQuery({
+  const { data: keys, isLoading, error } = useQuery({
     queryKey: ["api_keys"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -144,120 +150,132 @@ function ApiKeysManagement() {
     setNewKeyName("");
   };
 
+  const columns: StdColumn<ApiKeyRow>[] = [
+    {
+      key: "name",
+      label: "Tên / Identifier",
+      sortable: true,
+      value: (r) => r.name ?? "",
+      cell: (r) => (
+        <div className="min-w-0">
+          <div className="truncate font-medium">{r.name}</div>
+          <div className="truncate font-mono text-xs text-muted-foreground">
+            mrt_ext_live_{r.key_id}_••••
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "scopes",
+      label: "Phạm vi (Scopes)",
+      value: (r) => (r.scopes ?? []).join(", "),
+      cell: (r) => (
+        <div className="flex flex-wrap gap-1">
+          {(r.scopes ?? []).map((s: string) => (
+            <Badge key={s} variant="secondary" className="text-mini px-1.5 py-0">
+              {s}
+            </Badge>
+          ))}
+        </div>
+      ),
+    },
+    {
+      key: "created_at",
+      label: "Ngày tạo",
+      sortable: true,
+      hideBelow: "md",
+      value: (r) => r.created_at ?? "",
+      cell: (r) =>
+        r.created_at ? format(new Date(r.created_at), "dd/MM/yyyy HH:mm", { locale: vi }) : "—",
+    },
+    {
+      key: "last_used_at",
+      label: "Sử dụng cuối",
+      hideBelow: "lg",
+      value: (r) => r.last_used_at ?? "",
+      cell: (r) =>
+        r.last_used_at ? (
+          format(new Date(r.last_used_at), "dd/MM/yyyy HH:mm", { locale: vi })
+        ) : (
+          <span className="italic text-muted-foreground">Chưa sử dụng</span>
+        ),
+    },
+    {
+      key: "trang_thai",
+      label: "Trạng thái",
+      value: (r) =>
+        r.revoked_at
+          ? "Đã thu hồi"
+          : r.expires_at && new Date(r.expires_at) < new Date()
+            ? "Hết hạn"
+            : "Đang hoạt động",
+      cell: (r) =>
+        r.revoked_at ? (
+          <Badge variant="destructive">Đã thu hồi</Badge>
+        ) : r.expires_at && new Date(r.expires_at) < new Date() ? (
+          <Badge variant="outline">Hết hạn</Badge>
+        ) : (
+          <Badge variant="success">Đang hoạt động</Badge>
+        ),
+    },
+    {
+      key: "thao_tac",
+      label: "Thao tác",
+      align: "right",
+      value: () => "",
+      cell: (r) =>
+        r.revoked_at ? null : (
+          <RowActionBar>
+            <RowActionButton
+              icon={Trash2}
+              label="Thu hồi Key"
+              tone="destructive"
+              onClick={() => {
+                if (
+                  confirm(
+                    "Bạn có chắc chắn muốn thu hồi key này? Mọi ứng dụng đang dùng key này sẽ bị ngắt kết nối.",
+                  )
+                ) {
+                  revokeMutation.mutate(r.id);
+                }
+              }}
+            />
+          </RowActionBar>
+        ),
+    },
+  ];
+
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <PageFrame>
       <PageHeader
+        icon={KeyRound}
         title="Tích hợp Browser Extension"
         description="Quản lý API Key để kết nối MIRATS với các công cụ ngoại vi một cách an toàn."
+        actions={
+          <Button onClick={() => setIsCreateOpen(true)} className="gap-2">
+            <Plus className="h-4 w-4" /> Tạo Key mới
+          </Button>
+        }
       />
 
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold flex items-center gap-2">
-          <KeyRound className="h-5 w-5 text-primary" />
-          Danh sách API Key
-        </h2>
-        <Button onClick={() => setIsCreateOpen(true)} className="gap-2">
-          <Plus className="h-4 w-4" /> Tạo Key mới
-        </Button>
-      </div>
-
-      <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-        <CardContent className="p-0">
-          {isLoading ? (
-            <div className="p-12 text-center text-muted-foreground">Đang tải dữ liệu...</div>
-          ) : !keys || keys.length === 0 ? (
+      <PageBody>
+        <StandardTable<ApiKeyRow>
+          ten="API Key"
+          tableKey="admin-api-keys"
+          rows={keys ?? []}
+          columns={columns}
+          getRowId={(r) => r.id}
+          trangThai={{ dangTai: isLoading, loi: error }}
+          rowClassName={(r) => (r.revoked_at ? "opacity-60" : "")}
+          emptyContent={
             <EmptyState
               title="Chưa có API Key nào"
               description="Tạo API Key để bắt đầu sử dụng MIRATS Browser Extension."
               icon={KeyRound}
             />
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Tên / Identifier</TableHead>
-                  <TableHead>Phạm vi (Scopes)</TableHead>
-                  <TableHead>Ngày tạo</TableHead>
-                  <TableHead>Sử dụng cuối</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead className="text-right">Thao tác</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {keys.map((key) => (
-                  <TableRow key={key.id} className={key.revoked_at ? "opacity-60 grayscale" : ""}>
-                    <TableCell>
-                      <div className="font-medium">{key.name}</div>
-                      <div className="text-xs text-muted-foreground font-mono">
-                        mrt_ext_live_{key.key_id}_••••
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {key.scopes?.map((s: string) => (
-                          <Badge key={s} variant="secondary" className="text-[10px] px-1.5 py-0">
-                            {s}
-                          </Badge>
-                        ))}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-xs">
-                      {format(new Date(key.created_at!), "dd/MM/yyyy HH:mm", { locale: vi })}
-                    </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
-                      {key.last_used_at
-                        ? format(new Date(key.last_used_at), "dd/MM/yyyy HH:mm", { locale: vi })
-                        : "Chưa sử dụng"}
-                    </TableCell>
-                    <TableCell>
-                      {key.revoked_at ? (
-                        <Badge variant="destructive">Đã thu hồi</Badge>
-                      ) : key.expires_at && new Date(key.expires_at) < new Date() ? (
-                        <Badge variant="outline">Hết hạn</Badge>
-                      ) : (
-                        <Badge
-                          variant="success"
-                          className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
-                        >
-                          Đang hoạt động
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {!key.revoked_at && (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                aria-label="Thu hồi key"
-                                className="text-destructive hover:bg-destructive/10"
-                                onClick={() => {
-                                  if (
-                                    confirm(
-                                      "Bạn có chắc chắn muốn thu hồi key này? Mọi ứng dụng đang dùng key này sẽ bị ngắt kết nối.",
-                                    )
-                                  ) {
-                                    revokeMutation.mutate(key.id);
-                                  }
-                                }}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Thu hồi Key</TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+          }
+        />
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
         <Card className="border-primary/20 bg-primary/5">
@@ -296,13 +314,14 @@ function ApiKeysManagement() {
             <Button variant="outline" size="sm" className="w-full gap-2" disabled>
               Chưa khả dụng <ExternalLink className="h-3 w-3" />
             </Button>
-            <p className="text-[10px] italic text-muted-foreground mt-1">
+            <p className="text-mini italic text-muted-foreground mt-1">
               * Extension đang trong quá trình kiểm duyệt của Google/Microsoft.
             </p>
 
           </CardContent>
         </Card>
       </div>
+      </PageBody>
 
       {/* Dialog tạo key */}
       <Dialog open={isCreateOpen} onOpenChange={(open) => !generatedToken && setIsCreateOpen(open)}>
@@ -381,7 +400,7 @@ function ApiKeysManagement() {
                         >
                           {scope.label}
                         </label>
-                        <p className="text-[11px] text-muted-foreground">{scope.desc}</p>
+                        <p className="text-meta text-muted-foreground">{scope.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -411,6 +430,6 @@ function ApiKeysManagement() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </PageFrame>
   );
 }

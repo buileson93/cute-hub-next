@@ -43,7 +43,7 @@ export function TzClock() {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
+          className="hidden items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-meta font-medium text-foreground transition-colors hover:bg-[#0074e2]/10 lg:flex"
           aria-label={"For the code present, I get the error below.\n\nPlease think step-by-step in order to resolve it.\n```\nTypeError: Cannot read properties of null (reading 'rpc')\n\n{\n  \"timestamp\": 1787483161643,\n  \"error_type\": \"RUNTIME_ERROR\",\n  \"filename\": \"http://localhost:8080/_serverFn/eyJmaWxlIjoiL3NyYy9saWIvbWlyYXRzL2RhdGEtcXVhbGl0eS5mdW5jdGlvbnMudHM_dHNzLXNlcnZlcmZuLXNwbGl0IiwiZXhwb3J0IjoiYW5hbHl6ZVJldmlld1F1ZXVlX2NyZWF0ZVNlcnZlckZuX2hhbmRsZXIifQ\",\n  \"lineno\": 0,\n  \"colno\": 0,\n  \"stack\": \"TypeError: Cannot read properties of null (reading 'rpc')\\n    at assertAdmin (/dev-server/src/lib/mirats/data-quality.functions.ts:25:42)\\n    at Object.missingRequired (/dev-server/src/lib/mirats/data-quality.functions.ts:102:11)\\n    at server (/dev-server/node_modules/@tanstack/start-client-core/src/createServerFn.ts:944:38)\\n    at callNextMiddleware (/dev-server/node_modules/@tanstack/start-client-core/src/createServerFn.ts:322:30)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\\n    at async userNext (/dev-server/node_modules/@tanstack/start-client-core/src/createServerFn.ts:312:26)\",\n  \"has_blank_screen\": true\n}\n```\n"}
         >
           <Clock className="h-3.5 w-3.5 text-[#0074e2]" strokeWidth={2} />
@@ -72,7 +72,7 @@ export function TzClock() {
             <div className="flex w-full items-center justify-between gap-3">
               <div>
                 <div className="font-medium">{TZ_LABEL[m]}</div>
-                <div className="font-mono text-[10px] text-muted-foreground">
+                <div className="font-mono text-mini text-muted-foreground">
                   {new Intl.DateTimeFormat("vi-VN", {
                     timeZone: m === "UTC" ? "UTC" : "Asia/Ho_Chi_Minh",
                     hour: "2-digit",
@@ -87,7 +87,7 @@ export function TzClock() {
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
-        <div className="px-2 py-1.5 text-[10px] leading-relaxed text-muted-foreground">
+        <div className="px-2 py-1.5 text-mini leading-relaxed text-muted-foreground">
           Thời gian đồng bộ từ máy chủ, không dùng giờ máy local.
         </div>
       </DropdownMenuContent>

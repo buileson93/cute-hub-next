@@ -464,7 +464,7 @@ export function AllInOneImport() {
               <div className="flex items-center justify-between gap-2 rounded-md border bg-muted/20 px-3 py-2">
                 <div className="space-y-0.5">
                   <p className="text-xs font-medium">Ghi đè dòng xung đột</p>
-                  <p className="text-[11px] text-muted-foreground">
+                  <p className="text-meta text-muted-foreground">
                     Mặc định TẮT: bỏ qua dòng đã bị người khác sửa trong CSDL để tránh mất thay đổi
                     mới.
                   </p>
@@ -628,7 +628,7 @@ export function AllInOneImport() {
                             {l.parsed.layer.sheet}
                             {l.parsed.unmapped.length > 0 && (
                               <span
-                                className="ml-1 text-[10px] text-amber-600"
+                                className="ml-1 text-mini text-amber-600"
                                 title={l.parsed.unmapped.join(", ")}
                               >
                                 (bỏ {l.parsed.unmapped.length} cột)
@@ -640,7 +640,7 @@ export function AllInOneImport() {
                           </TableCell>
                           <TableCell>
                             {empty ? (
-                              <span className="text-[11px] text-muted-foreground">trống</span>
+                              <span className="text-meta text-muted-foreground">trống</span>
                             ) : l.status === "checking" || l.status === "writing" ? (
                               <Loader2 className="h-4 w-4 animate-spin text-primary" />
                             ) : l.status === "done" ? (
@@ -650,7 +650,7 @@ export function AllInOneImport() {
                             ) : l.status === "error" ? (
                               <Badge variant="destructive">Lỗi</Badge>
                             ) : (
-                              <span className="text-[11px] text-muted-foreground">chờ</span>
+                              <span className="text-meta text-muted-foreground">chờ</span>
                             )}
                           </TableCell>
                           <TableCell className="text-xs text-muted-foreground">

@@ -91,7 +91,7 @@ export function WidgetContainer({
             className="flex h-6 items-center gap-1 rounded-full border border-border bg-card px-2 text-muted-foreground shadow-sm cursor-grab active:cursor-grabbing touch-none hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <Icon name="action.drag" size="tiny" />
-            <span className="text-[10px] font-bold uppercase tracking-wide">Kéo</span>
+            <span className="text-mini font-bold uppercase tracking-wide">Kéo</span>
           </button>
           <Button
             variant="destructive"
