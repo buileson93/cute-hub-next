@@ -202,3 +202,13 @@ export const fullDumpFileUrls = createServerFn({ method: "POST" })
     }
     return { urls };
   });
+
+/** Bước 0b — xuất DDL: schema, RLS/policies, grants (chỉ đọc, chỉ Admin) */
+export const fullDumpDdl = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { data, error } = await context.supabase.rpc("admin_export_ddl" as any);
+    if (error) throw new Error("Không xuất được lược đồ: " + error.message);
+    return data as Record<string, any>;
+  });
