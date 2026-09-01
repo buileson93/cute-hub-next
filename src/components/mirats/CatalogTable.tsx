@@ -21,7 +21,6 @@ import {
   List,
   Network,
   ChevronRight,
-  ChevronDown,
   ImageUp,
   X,
   Factory,
