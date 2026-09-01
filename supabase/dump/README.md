@@ -1,14 +1,38 @@
-# Dump snapshot
+# Dump snapshot — 2026-09-01 (UTC)
 
-Tạo bằng `scripts/export-schema.sh` + `scripts/export-data.sh`.
+Bản sao lưu logic của schema `public` + dữ liệu, lưu trực tiếp trong repo (GitHub).
 
-- `schema.sql` — schema-only, chỉ schema `public` (auth/storage/realtime/... bị exclude vì role hiện tại không có quyền LOCK trên `auth`; các schema đó do Supabase tự sinh ở project mới).
-- `data/*.csv` — 113 bảng public, CSV có header, xuất bằng `\copy` từng bảng.
+## Nội dung
 
-## User test
+| File | Mô tả |
+| --- | --- |
+| `schema.sql` | Schema-only (`pg_dump --schema-only --schema=public --no-owner --no-privileges`), gồm bảng, enum, view, function, trigger, index, policy. |
+| `data/*.csv` | 156 bảng public, CSV có header, xuất bằng `\copy`. |
+| `data/_manifest.tsv` | Danh sách bảng + số dòng + dung lượng tại thời điểm dump. |
+| `data/audit_log.csv.gz.asset.json` | Bảng `audit_log` (~32 MB) được nén gzip và lưu ngoài repo (asset), vì vượt giới hạn 10 MB/file của GitHub. Tải theo `url` trong file JSON rồi `gunzip`. |
+| `rls-policies.tsv` | Toàn bộ RLS policy của schema `public` (bảng, tên policy, lệnh, roles, USING, WITH CHECK). |
+| `grants.tsv` | Ma trận GRANT theo bảng × role. |
+| `storage-buckets.csv`, `storage-objects.csv` | Danh mục bucket/đối tượng storage (không gồm file nhị phân). |
+| `part1..5.sql` | Dump SQL cũ, giữ lại để tham chiếu lịch sử. |
 
-Vì không dump được `auth.users`, tài khoản test `buileson93@gmail.com / 12345` cần export riêng qua **Lovable Cloud → Advanced settings → Export data** (`auth_users.csv`) rồi `\copy auth.users FROM ...` khi khôi phục.
+## Giới hạn
+
+- Không dump được `auth.users` (không đủ quyền). Tài khoản cần export riêng qua Lovable Cloud → Advanced settings → Export data (`auth_users.csv`) rồi `\copy auth.users FROM ...`.
+- File nhị phân trong storage không nằm trong dump; tải bằng `node scripts/download-storage.mjs`.
+- Không chứa bất kỳ secret/API key/mật khẩu nào.
 
 ## Khôi phục
 
-Theo `docs/superpowers/specs/backend-migration-checklist.md` mục C.
+```bash
+psql "$DB_URL" -f supabase/dump/schema.sql
+bash scripts/import-data.sh          # nạp data/*.csv theo thứ tự khoá ngoại
+```
+
+Chi tiết: `docs/backup-supabase.md` và `docs/superpowers/specs/backend-migration-checklist.md` mục C.
+
+## Tạo lại snapshot
+
+```bash
+pg_dump --schema-only --schema=public --no-owner --no-privileges > supabase/dump/schema.sql
+bash scripts/export-data.sh
+```

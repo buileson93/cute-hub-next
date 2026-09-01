@@ -1,0 +1,7 @@
+id,ma,ten,mo_ta,thu_tu,active,created_at,updated_at
+20624a20-801b-4a46-b6bf-5aa4cb20c545,vinh_vien,Vĩnh viễn,"Mua đứt, không hết hạn",1,t,2026-08-07 02:27:36.290919+00,2026-08-07 02:27:36.290919+00
+2345d149-b55c-4ccc-8ee6-859bc1635f86,thue_bao,Thuê bao,"Trả phí định kỳ, có ngày hết hạn",2,t,2026-08-07 02:27:36.290919+00,2026-08-07 02:27:36.290919+00
+f3c872b9-0c02-4044-9016-b33060bbd23b,oem,OEM,"Đi kèm thiết bị, gắn với máy",3,t,2026-08-07 02:27:36.290919+00,2026-08-07 02:27:36.290919+00
+9bdb4665-940d-4c1d-9435-f33388743d75,volume,Volume/Khối lượng,Hợp đồng nhiều ghế,4,t,2026-08-07 02:27:36.290919+00,2026-08-07 02:27:36.290919+00
+be8cb9a0-da83-4d68-a52b-0d37cf1f97c5,open_source,Nguồn mở,Miễn phí theo giấy phép mở,5,t,2026-08-07 02:27:36.290919+00,2026-08-07 02:27:36.290919+00
+eb82af84-cc41-42c8-96f6-c64f2bc7b6c5,dung_thu,Dùng thử,Bản dùng thử có thời hạn,6,t,2026-08-07 02:27:36.290919+00,2026-08-07 02:27:36.290919+00
