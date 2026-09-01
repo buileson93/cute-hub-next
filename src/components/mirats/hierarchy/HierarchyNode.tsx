@@ -260,3 +260,45 @@ export function HierarchySkeleton({ rows = 5 }: { rows?: number }) {
     </div>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Timeline phân cấp theo thời gian — dùng cho Sổ lý lịch. Chia sẻ NodeIcon,
+// spacing và typography với HierarchyRow để hai màn hình cùng ngôn ngữ.
+// ---------------------------------------------------------------------------
+export function HierarchyTimeline({ children }: { children: ReactNode }) {
+  return (
+    <ol className="relative ml-3 space-y-2.5 border-l border-border/70 pl-6 sm:pl-8">{children}</ol>
+  );
+}
+
+export function HierarchyEvent({
+  icon,
+  tone = "muted",
+  header,
+  title,
+  description,
+}: {
+  icon: ComponentType<{ className?: string }>;
+  tone?: NodeTone;
+  /** Hàng chip: ngày, loại sự kiện, mã tài sản, hành động. */
+  header?: ReactNode;
+  title: ReactNode;
+  description?: ReactNode;
+}) {
+  return (
+    <li className="relative">
+      <span className="absolute -left-[38px] rounded-full bg-background p-0.5 shadow-sm">
+        <NodeIcon icon={icon} tone={tone} size="md" />
+      </span>
+      <div className="rounded-lg border border-border/60 bg-card/60 p-3 text-sm shadow-[0_1px_0_0_hsl(var(--border)/0.4)] transition-colors hover:border-border hover:bg-muted/40">
+        {header ? <div className="flex flex-wrap items-center gap-2">{header}</div> : null}
+        <div className="mt-1 text-sm font-medium leading-snug break-words [overflow-wrap:anywhere]">
+          {title}
+        </div>
+        {description ? (
+          <div className="mt-0.5 text-[13px] text-muted-foreground">{description}</div>
+        ) : null}
+      </div>
+    </li>
+  );
+}
