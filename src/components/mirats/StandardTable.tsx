@@ -1295,6 +1295,8 @@ export function StandardTable<T>({
               )}
             </TableBody>
           </Table>
+          </div>
+          
           
           {infiniteScroll?.isFetchingNextPage && (
             <div className="flex items-center justify-center py-6 gap-3 text-muted-foreground bg-background/50 border-t backdrop-blur-sm sticky bottom-0 z-20">
