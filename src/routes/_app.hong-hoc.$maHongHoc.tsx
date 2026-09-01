@@ -60,10 +60,12 @@ function HongHocDetail() {
         : null,
     [thietBi, h],
   );
-  const sc = useMemo(
-    () => (h?.su_co ? (suCo.find((x) => x.ma_su_co === h.su_co) ?? null) : null),
-    [suCo, h],
-  );
+  // Ưu tiên FK su_co_id (chuẩn), chỉ fallback mã text cho dữ liệu legacy.
+  const sc = useMemo(() => {
+    if (!h) return null;
+    if (h.su_co_id) return suCo.find((x) => x.id === h.su_co_id) ?? null;
+    return h.su_co ? (suCo.find((x) => x.ma_su_co === h.su_co) ?? null) : null;
+  }, [suCo, h]);
   const dvo = useMemo(
     () => (tb ? (donVi.find((d) => d.ma === tb.don_vi) ?? null) : null),
     [donVi, tb],

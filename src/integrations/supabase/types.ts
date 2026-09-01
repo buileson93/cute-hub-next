@@ -5127,6 +5127,7 @@ export type Database = {
           snapshot_ten_thiet_bi: string | null
           snapshot_vi_tri: string | null
           su_co: string | null
+          su_co_id: string | null
           thanh_phan_id: string | null
           thiet_bi_hong: string
           thiet_bi_hong_id: string | null
@@ -5169,6 +5170,7 @@ export type Database = {
           snapshot_ten_thiet_bi?: string | null
           snapshot_vi_tri?: string | null
           su_co?: string | null
+          su_co_id?: string | null
           thanh_phan_id?: string | null
           thiet_bi_hong: string
           thiet_bi_hong_id?: string | null
@@ -5211,6 +5213,7 @@ export type Database = {
           snapshot_ten_thiet_bi?: string | null
           snapshot_vi_tri?: string | null
           su_co?: string | null
+          su_co_id?: string | null
           thanh_phan_id?: string | null
           thiet_bi_hong?: string
           thiet_bi_hong_id?: string | null
@@ -5222,7 +5225,15 @@ export type Database = {
           updated_at?: string
           vat_tu_su_dung?: string[] | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "hong_hoc_su_co_id_fkey"
+            columns: ["su_co_id"]
+            isOneToOne: false
+            referencedRelation: "su_co"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       import_alias: {
         Row: {

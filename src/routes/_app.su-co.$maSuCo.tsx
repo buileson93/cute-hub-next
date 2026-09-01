@@ -63,7 +63,7 @@ import { StatusBadge } from "@/components/mirats/StatusBadge";
 
 function SuCoDetail() {
   const { maSuCo } = Route.useParams();
-  const { suCo, thietBi, heThong, donVi, inScope, loading } = useScope();
+  const { suCo, hongHoc, thietBi, heThong, donVi, inScope, loading } = useScope();
   const { roles } = useSession();
 
   const sc = useMemo(() => suCo.find((x) => x.ma_su_co === maSuCo), [suCo, maSuCo]);
@@ -74,6 +74,14 @@ function SuCoDetail() {
     () => (sc ? suCo.filter((x) => x.thiet_bi === sc.thiet_bi) : []),
     [suCo, sc],
   );
+  // Hỏng hóc truy ngược từ sự cố này: ưu tiên FK su_co_id, fallback mã text legacy.
+  const hongHocLienQuan = useMemo(() => {
+    if (!sc) return [];
+    return hongHoc.filter((x) =>
+      x.su_co_id ? x.su_co_id === sc.id : !!sc.ma_su_co && x.su_co === sc.ma_su_co,
+    );
+  }, [hongHoc, sc]);
+
   const mttr = useMemo(() => computeMttr(tbHistory), [tbHistory]);
   const mtbf = useMemo(() => computeMtbf(tbHistory), [tbHistory]);
 
@@ -388,6 +396,38 @@ function SuCoDetail() {
                       <Button asChild variant="outline" size="sm">
                         <Link to="/van-de">Mở trang RCA</Link>
                       </Button>
+                    </div>
+                    <div className="space-y-2 rounded-md border p-3">
+                      <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                        Hỏng hóc liên quan ({hongHocLienQuan.length})
+                      </div>
+                      {hongHocLienQuan.length === 0 ? (
+                        <p className="text-xs text-muted-foreground">
+                          Chưa có phiếu hỏng hóc nào gắn với sự cố này.
+                        </p>
+                      ) : (
+                        <ul className="space-y-1.5">
+                          {hongHocLienQuan.map((x) => (
+                            <li key={x.ma_hong_hoc}>
+                              <Link
+                                to="/hong-hoc/$maHongHoc"
+                                params={{ maHongHoc: x.ma_hong_hoc }}
+                                className="flex flex-wrap items-center gap-2 rounded-md border p-2 text-xs hover:bg-muted/50"
+                              >
+                                <span className="font-mono text-primary">{x.ma_hong_hoc}</span>
+                                <span className="min-w-0 flex-1 truncate text-muted-foreground">
+                                  {x.mo_ta_hong_hoc || x.bo_phan_hong}
+                                </span>
+                                <StatusBadge
+                                  domain="hong_hoc"
+                                  code={x.trang_thai}
+                                  label={x.trang_thai}
+                                />
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
                     <div className="flex flex-wrap items-end gap-2">
                       <div className="min-w-[280px] flex-1">
