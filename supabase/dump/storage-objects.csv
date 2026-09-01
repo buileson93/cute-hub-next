@@ -1,1 +1,1 @@
-bucket_id,name,size,mime,created_at
+id,bucket_id,name,owner,created_at,updated_at,last_accessed_at,metadata
