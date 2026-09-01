@@ -69,6 +69,8 @@ import type { KeysetCursor } from "@/lib/mirats/db/keyset";
 import { ComponentTablePanel } from "./inventory/ComponentTablePanel";
 import { AssetTablePanel } from "./inventory/AssetTablePanel";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useHeThongEditMode } from "@/lib/mirats/he-thong/edit-mode";
+import { EditModeToggle } from "@/components/mirats/he-thong/EditModeToggle";
 
 
 
@@ -366,20 +368,13 @@ export function ThanhPhanTable({
     "thanh-phan:view-mode",
     "component",
   );
-  // Chế độ chỉnh sửa nhanh: mặc định do bảng tự quản lý (và ghi nhớ theo user).
-  // Trang cha có thể ghi đè bằng externalEditMode khi nhúng ở ngữ cảnh khác.
-  const [internalEditMode, setInternalEditMode] = useUserPref<boolean>(
-    "he-thong:edit-mode",
-    false,
-  );
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
+  // Chuẩn hoá View mode / Edit mode dùng chung cho khu vực Hệ thống.
+  const mode = useHeThongEditMode(externalEditMode);
+  const { allowEdit, editMode } = mode;
   const isExternalEdit = externalEditMode !== undefined;
-  const editMode = isExternalEdit ? externalEditMode : internalEditMode;
-  const setEditMode = isExternalEdit ? () => {} : setInternalEditMode;
-
-  const { roles } = useSession();
-  const allowEdit = canWrite("he_thong", roles);
+  const setEditMode = useCallback((v: boolean) => mode.setEditMode(v), [mode]);
 
   /**
    * Cột thao tác (~200px) — nhóm theo ngữ cảnh: "Chế độ xem" (Thành phần /
@@ -414,26 +409,12 @@ export function ThanhPhanTable({
         </Tabs>
       </div>
 
-      {allowEdit && !isExternalEdit && (
+      {!isExternalEdit && (
         <div className="shrink-0 xl:w-full">
           <p className="mb-1 hidden text-[10px] font-bold uppercase tracking-widest text-muted-foreground xl:block">
-            Thao tác
+            Chế độ
           </p>
-          <Button
-            size="sm"
-            variant={editMode ? "default" : "outline"}
-            aria-pressed={editMode}
-            aria-label={editMode ? "Hoàn tất chỉnh sửa nhanh" : "Bật chỉnh sửa nhanh"}
-            onClick={() => setEditMode(!editMode)}
-            className="inline-flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap px-2.5 text-[11px] font-semibold uppercase tracking-tight xl:w-full xl:justify-start"
-          >
-            {editMode ? (
-              <Check className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-            ) : (
-              <Pencil className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-            )}
-            <span className="truncate">{editMode ? "Hoàn tất" : "Chỉnh sửa nhanh"}</span>
-          </Button>
+          <EditModeToggle mode={mode} className="w-full justify-start" />
         </div>
       )}
     </aside>

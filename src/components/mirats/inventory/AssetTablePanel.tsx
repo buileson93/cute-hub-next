@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
+import { InheritedValue, TextCell } from "./InheritedValue";
 import { BulkActionButton } from "@/components/mirats/BulkActionButton";
 import { TableExportDialog } from "@/components/mirats/TableExportDialog";
 import { AnomalyBadge } from "@/components/mirats/AnomalyBadge";
@@ -34,7 +35,7 @@ export function AssetTablePanel({
   tableKey: string;
   hideHeader: boolean;
   editMode: boolean;
-  setEditMode: (v: boolean | ((prev: boolean) => boolean)) => void;
+  setEditMode: (v: boolean) => void;
   allowEdit: boolean;
   ModeToggle: React.ReactNode;
 }) {
@@ -130,7 +131,7 @@ export function AssetTablePanel({
       exportable
       ten="tai-san"
       domain="thiet_bi"
-      allowBulkDelete={allowEdit}
+      allowBulkDelete={allowEdit && editMode}
       onBulkDelete={async (ids) => deleteTaiSan(Array.from(ids))}
       bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear }) => (
         <>
@@ -263,12 +264,29 @@ export function AssetTablePanel({
         },
         {
           key: "danhSachHeThong",
-          label: "Hệ thống đang lắp",
-          minW: "min-w-[140px]",
-          cellClassName: "max-w-[180px]",
+          label: "Đang lắp trong hệ thống",
+          minW: "min-w-[220px]",
+          cellClassName: "max-w-[300px]",
           filter: "text",
-          value: (r) => r.danhSachHeThong,
-          cell: (r) => <CellPreview title={`Hệ thống đang lắp — ${r.ma}`} content={r.danhSachHeThong} className="line-clamp-3 break-words text-[12px] leading-snug" />,
+          value: (r) => `${r.danhSachHeThong} ${r.danhSachThanhPhan}`,
+          priority: "primary",
+          cell: (r) =>
+            r.danhSachHeThong || r.danhSachThanhPhan ? (
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <InheritedValue
+                  value={r.danhSachHeThong || "—"}
+                  nguon="Kế thừa từ quan hệ lắp đặt hiện hành"
+                />
+                <CellPreview
+                  title={`Thành phần đang lắp — ${r.ma}`}
+                  content={r.danhSachThanhPhan}
+                  preformatted
+                  className="line-clamp-2 whitespace-pre-line break-words text-[11px] leading-snug text-muted-foreground"
+                />
+              </div>
+            ) : (
+              <span className="text-xs text-muted-foreground">—</span>
+            ),
         },
         {
           key: "danhSachThanhPhan",
@@ -276,30 +294,40 @@ export function AssetTablePanel({
           minW: "min-w-[160px]",
           cellClassName: "max-w-[200px]",
           filter: "text",
+          defaultHidden: true,
           value: (r) => r.danhSachThanhPhan,
           cell: (r) => <CellPreview title={`Thành phần đang lắp — ${r.ma}`} content={r.danhSachThanhPhan} preformatted className="whitespace-pre-line break-words text-xs leading-relaxed line-clamp-4" />,
+        },
+        {
+          key: "model",
+          label: "Model & Serial",
+          minW: "min-w-[180px]",
+          cellClassName: "max-w-[240px]",
+          filter: "cat",
+          hideBelow: "lg",
+          value: (r) => `${r.model} ${r.serial}`,
+          priority: "secondary",
+          cell: (r) => (
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <ModelCell model={r.model} modelId={r.modelId || undefined} registry={modelRegistry} />
+              {r.serial ? (
+                <AppTooltip noiDung={`Serial: ${r.serial}`}>
+                  <span tabIndex={0} className="block truncate font-mono text-[11px] text-muted-foreground">
+                    {r.serial}
+                  </span>
+                </AppTooltip>
+              ) : null}
+            </div>
+          ),
         },
         {
           key: "serial",
           label: "Serial",
           minW: "min-w-[130px]",
-          cellClassName: "max-w-[180px]",
           filter: "text",
-          hideBelow: "lg",
+          defaultHidden: true,
           value: (r) => r.serial,
-          priority: "secondary",
-          cell: (r) => r.serial ? <span className="break-all font-mono text-xs text-muted-foreground">{r.serial}</span> : <span className="text-xs text-muted-foreground">—</span>,
-        },
-        {
-          key: "model",
-          label: "Model",
-          minW: "min-w-[150px]",
-          cellClassName: "max-w-[200px]",
-          filter: "cat",
-          hideBelow: "lg",
-          value: (r) => r.model,
-          priority: "secondary",
-          cell: (r) => <ModelCell model={r.model} modelId={r.modelId || undefined} registry={modelRegistry} />,
+          cell: (r) => <span className="break-all font-mono text-xs text-muted-foreground">{r.serial || "—"}</span>,
         },
         {
           key: "chungLoai",
@@ -310,7 +338,7 @@ export function AssetTablePanel({
           hideBelow: "xl",
           value: (r) => r.chungLoai,
           priority: "detail",
-          cell: (r) => r.chungLoai ? <span title={r.chungLoai} className="line-clamp-2 break-words text-sm leading-snug">{r.chungLoai}</span> : <span className="text-xs text-muted-foreground">—</span>,
+          cell: (r) => <TextCell value={r.chungLoai} />,
         },
         {
           key: "nhaSanXuat",
@@ -325,26 +353,33 @@ export function AssetTablePanel({
           cell: (r) => r.nhaSanXuat ? <span title={r.nhaSanXuat} className="line-clamp-2 break-words text-sm leading-snug">{r.nhaSanXuat}</span> : <span className="text-xs text-muted-foreground">—</span>,
         },
         {
+          key: "viTri",
+          label: "Vị trí & Đơn vị quản lý",
+          minW: "min-w-[180px]",
+          cellClassName: "max-w-[240px]",
+          filter: "cat",
+          hideBelow: "lg",
+          value: (r) => `${r.viTri} ${r.donViQuanLy}`,
+          priority: "secondary",
+          cell: (r) => (
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <TextCell value={r.viTri} dong={1} />
+              <InheritedValue
+                value={r.donViQuanLy}
+                nguon="Kế thừa từ đơn vị quản lý tài sản"
+                className="text-[11px]"
+              />
+            </div>
+          ),
+        },
+        {
           key: "donViQuanLy",
           label: "Đơn vị quản lý",
           minW: "min-w-[160px]",
-          cellClassName: "max-w-[200px]",
           filter: "cat",
-          hideBelow: "xl",
+          defaultHidden: true,
           value: (r) => r.donViQuanLy,
-          priority: "secondary",
-          cell: (r) => r.donViQuanLy ? <span title={r.donViQuanLy} className="line-clamp-2 break-words text-[12px] leading-snug">{r.donViQuanLy}</span> : <span className="text-xs text-muted-foreground">—</span>,
-        },
-        {
-          key: "viTri",
-          label: "Vị trí",
-          minW: "min-w-[160px]",
-          cellClassName: "max-w-[200px]",
-          filter: "cat",
-          hideBelow: "lg",
-          value: (r) => r.viTri,
-          priority: "secondary",
-          cell: (r) => r.viTri ? <span title={r.viTri} className="line-clamp-2 break-words text-[12px]">{r.viTri}</span> : <span className="text-xs text-muted-foreground">—</span>,
+          cell: (r) => <TextCell value={r.donViQuanLy} dong={1} />,
         },
         {
           key: "trangThai",
@@ -358,17 +393,24 @@ export function AssetTablePanel({
         },
         {
           key: "actions",
-          label: "Hành động",
-          minW: "min-w-[150px]",
+          label: "",
+          minW: "min-w-[56px]",
           align: "center",
           hideBelow: "md",
           value: () => "",
           cell: (r) => (
-            <Button asChild size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" title="Mở sổ lý lịch tài sản">
-              <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: (r as any).thietBiMa || (r as any).ma }} search={{ tab: "tong-quan", doc: undefined, q: undefined }}>
-                <ExternalLink className="h-3.5 w-3.5" /> Sổ lý lịch
-              </Link>
-            </Button>
+            <AppTooltip noiDung="Mở sổ lý lịch tài sản">
+              <Button asChild size="sm" variant="ghost" className="h-7 w-7 p-0">
+                <Link
+                  to="/thiet-bi/$maThietBi"
+                  params={{ maThietBi: r.ma }}
+                  search={{ tab: "tong-quan", doc: undefined, q: undefined }}
+                  aria-label={`Mở sổ lý lịch ${r.ma}`}
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </Link>
+              </Button>
+            </AppTooltip>
           ),
         },
       ]}
