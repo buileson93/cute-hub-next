@@ -335,7 +335,7 @@ export function buildTree(
         const isCustom = customSystems.some((cs) => cs.ma === ma);
         systems.push({
           ma,
-          ten: htLabel(ma),
+          ten: displayLabel(htLabel(ma), parseHtSysMa(ma).sysName, "Hệ thống chưa đặt tên"),
           devices: devs,
           count: totalOf(devs),
           donViMa,
