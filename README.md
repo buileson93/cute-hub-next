@@ -8,6 +8,8 @@
 ![Styling](https://img.shields.io/badge/TailwindCSS-v4-06B6D4)
 
 > 📋 Lịch sử thay đổi theo từng commit: xem [CHANGELOG.md](./CHANGELOG.md).
+>
+> 🎨 **Bắt buộc với mọi thay đổi giao diện**: đọc và tuân thủ [docs/UI_GUIDELINES.md](./docs/UI_GUIDELINES.md).
 
 ---
 
