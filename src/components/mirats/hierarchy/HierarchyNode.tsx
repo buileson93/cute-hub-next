@@ -131,6 +131,12 @@ export function HierarchyRow({
   disabled?: boolean;
   toggleLabel?: string;
   leafIcon?: ComponentType<{ className?: string }>;
+  /**
+   * Bề mặt node. "card" học theo phong cách thẻ của Sổ lý lịch (viền mảnh,
+   * nền card, hover nâng nhẹ) — đây là mặc định để hai màn hình đồng nhất.
+   * "plain" dành cho hàng tiêu đề nhóm lớn (không cần viền lồng viền).
+   */
+  surface?: "card" | "plain";
   className?: string;
 }) {
   const interactive = !!onActivate && !disabled;
