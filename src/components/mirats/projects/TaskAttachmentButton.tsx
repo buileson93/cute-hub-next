@@ -112,9 +112,11 @@ export function TaskAttachmentButton({
     staleTime: 30_000,
   });
 
-  const upload = useMutation({
-    mutationFn: async (file: File) => {
-      if (file.size > MAX_BYTES) throw new Error("Tệp vượt quá 50MB");
+  // Luồng xử lý tệp dùng chung: kiểm tra → nhận diện PDF scan → OCR trên
+  // thiết bị (nếu cần) → tải lên → xác nhận nhà cung cấp lưu trữ.
+  const process = useFileProcess({
+    rules: { maxBytes: MAX_BYTES },
+    upload: async (file) => {
       const path = buildAttachmentPath(taskId, file.name);
       const up = await supabase.storage.from(BUCKET).upload(path, file, { upsert: false });
       if (up.error) throw up.error;
@@ -131,13 +133,11 @@ export function TaskAttachmentButton({
         throw error;
       }
     },
-    onSuccess: () => {
+    onCompleted: () => {
       toast.success("Đã đính kèm tệp vào công việc");
       qc.invalidateQueries({ queryKey: ["du-an-cong-viec-tep", taskId] });
       qc.invalidateQueries({ queryKey: ["du-an-cong-viec-tep-counts"] });
     },
-    onError: (e: Error) => toast.error("Không tải được tệp: " + e.message),
-    onSettled: () => setBusy(false),
   });
 
   const remove = useMutation({
