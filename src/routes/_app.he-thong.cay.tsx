@@ -25,6 +25,7 @@ import {
   X,
   ChevronRight,
   HardDrive,
+  Eye,
 } from "lucide-react";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
