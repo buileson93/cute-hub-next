@@ -239,24 +239,6 @@ export function PowerSearch({
     [executeCommand, setIsOpen],
   );
 
-  const handleAction = (action: string) => {
-    setIsOpen(false);
-    switch (action) {
-      case "qr-scan":
-        window.dispatchEvent(new CustomEvent("mirats:open-qr-scanner"));
-        break;
-      case "logout":
-        supabase.auth.signOut().then(() => {
-          navigate({ to: "/auth" as any });
-        });
-        break;
-      case "profile":
-        navigate({ to: "/cai-dat/tai-khoan" as any });
-        break;
-      default:
-        toast.info("Tính năng đang được phát triển");
-    }
-  };
 
   return (
     <>
