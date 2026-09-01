@@ -423,6 +423,52 @@ export function ComponentTablePanel({
               ),
           },
           {
+            key: "lienHe",
+            label: "Liên hệ",
+            minW: "min-w-[180px]",
+            cellClassName: "max-w-[240px]",
+            hideBelow: "xl",
+            priority: "secondary",
+            value: (r) =>
+              formatContactsForExport(
+                buildContacts({
+                  donViQuanLy: r.taiSanDonViQuanLy,
+                  nhaCungCap: r.nhaCungCap,
+                  nhaSanXuat: r.nhaSanXuat,
+                }),
+              ),
+            cell: (r) => (
+              <ContactCell
+                contacts={buildContacts({
+                  donViQuanLy: r.taiSanDonViQuanLy,
+                  nhaCungCap: r.nhaCungCap,
+                  nhaSanXuat: r.nhaSanXuat,
+                })}
+              />
+            ),
+          },
+          // ---- Metadata tài sản đang lắp (hiện ở chế độ "Tất cả cột") ----
+          ...([
+            ["model", "Model", (r: ThanhPhanRow) => r.model],
+            ["thietBiSerial", "Serial", (r: ThanhPhanRow) => r.thietBiSerial],
+            ["chungLoai", "Chủng loại", (r: ThanhPhanRow) => r.chungLoai],
+            ["nhaSanXuat", "Hãng sản xuất", (r: ThanhPhanRow) => r.nhaSanXuat],
+            ["nhaCungCap", "Nhà cung cấp", (r: ThanhPhanRow) => r.nhaCungCap],
+            ["taiSanDonViQuanLy", "Đơn vị quản lý tài sản", (r: ThanhPhanRow) => r.taiSanDonViQuanLy],
+            ["pN", "P/N", (r: ThanhPhanRow) => r.pN],
+            ["maTaiSanBravo", "Mã tài sản Bravo", (r: ThanhPhanRow) => r.maTaiSanBravo],
+            ["namSanXuat", "Năm sản xuất", (r: ThanhPhanRow) => r.namSanXuat],
+            ["hanBaoHanh", "Hạn bảo hành", (r: ThanhPhanRow) => r.hanBaoHanh],
+            ["tinhTrangKyThuat", "Tình trạng kỹ thuật", (r: ThanhPhanRow) => r.tinhTrangKyThuat],
+          ] as const).map(([key, label, get]) => ({
+            key,
+            label,
+            minW: "min-w-[140px]",
+            defaultHidden: true,
+            value: (r: ThanhPhanRow) => toDisplayString(get(r)),
+            cell: (r: ThanhPhanRow) => <TextCell value={toDisplayString(get(r))} dong={1} />,
+          })),
+          {
             key: "actions",
             label: "",
             minW: "min-w-[56px]",
