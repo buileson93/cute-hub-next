@@ -76,6 +76,12 @@ export function HongHocMoiForm({
   const [moTa, setMoTa] = useState<string>("");
   const [previewOpen, setPreviewOpen] = useState(false);
 
+  // Sự cố nguồn được chọn (nếu có) — dùng để ghi FK su_co_id thay vì chỉ mã text.
+  const suCoChon = useMemo(
+    () => suCo.find((x) => x.ma_su_co === suCoMa) ?? null,
+    [suCo, suCoMa],
+  );
+
   const previewInput = useMemo<KhaiNghiepVuInput | null>(() => {
     if (!thietBiHongId) return null;
     return {
@@ -175,6 +181,7 @@ export function HongHocMoiForm({
         thanh_phan_id: thanhPhanId || null,
         bo_phan_hong: boPhan || null,
         su_co: suCoMa || null,
+        su_co_id: suCoChon?.id ?? null,
         nguoi_thuc_hien: profile?.ho_ten ? [profile.ho_ten] : [],
       });
       await ghiHongHocFull(payload);
@@ -216,10 +223,18 @@ export function HongHocMoiForm({
             <CardContent className="space-y-4">
               <Label>Sự cố nguồn (tùy chọn)</Label>
               <Combobox
-                options={suCo.map((s) => ({ value: s.ma_su_co, label: s.ma_su_co }))}
+                options={suCo.map((s) => ({
+                  value: s.ma_su_co,
+                  label: s.hien_tuong ? `${s.ma_su_co} — ${s.hien_tuong}` : s.ma_su_co,
+                }))}
                 value={suCoMa}
                 onChange={setSuCoMa}
               />
+              {suCoMa && !suCoChon?.id && (
+                <p className="text-xs text-amber-600">
+                  Không tìm thấy sự cố tương ứng — phiếu sẽ chỉ lưu mã dạng văn bản.
+                </p>
+              )}
               <Label>Hệ thống</Label>
               <Combobox
                 options={(htList ?? []).map((h) => ({ value: h.id, label: h.ten }))}
