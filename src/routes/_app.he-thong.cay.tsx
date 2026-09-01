@@ -527,7 +527,10 @@ function HeThongCayPage() {
       }
     }
     return list;
-  }, [viewTree]);
+    // `overrides` tham gia vào nhãn hiển thị của kết quả tìm kiếm → phải nằm
+    // trong dependency, nếu không lần tải đầu sẽ giữ nhãn cũ (stale closure).
+  }, [viewTree, overrides]);
+
 
   const moveTargets = useMemo<MoveTarget[]>(() => {
     const out: MoveTarget[] = [];
