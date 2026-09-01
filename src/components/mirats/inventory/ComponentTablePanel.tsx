@@ -32,6 +32,12 @@ import { EntityHoverCard } from "@/components/mirats/EntityHoverCard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useInfiniteThanhPhanRows, type ThanhPhanRow, TT_LABEL, LY_DO_KHOA } from "../ThanhPhanTable";
 import { InheritedValue, TextCell } from "./InheritedValue";
+import { ContactCell } from "./ContactCell";
+import {
+  buildContacts,
+  formatContactsForExport,
+  toDisplayString,
+} from "@/lib/mirats/inventory/contact-format";
 import { guardMutation } from "@/lib/mirats/he-thong/edit-mode";
 
 export function ComponentTablePanel({
