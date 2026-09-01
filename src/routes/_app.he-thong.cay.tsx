@@ -757,6 +757,16 @@ function HeThongCayPage() {
           description="Hãy thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm."
         >
           <div className="absolute inset-0 flex flex-col">
+            {hasDataAnomaly(dataReport) && (
+              <div
+                role="status"
+                className="mx-4 mt-3 rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning-foreground"
+              >
+                Đã bỏ qua {dataReport.invalid + dataReport.duplicate} bản ghi tài sản không hợp lệ
+                hoặc trùng lặp để cây hiển thị ổn định.
+              </div>
+            )}
+
             {display === "tree" && (
               <ScrollArea className="flex-1 h-full p-4 mirats-scroll">
                 <TreeView
