@@ -86,7 +86,9 @@ export function AssetTablePanel({
         [
           r.ma, r.ten, r.serial, r.model, r.chungLoai, r.nhaSanXuat, r.nhaCungCap,
           r.donViQuanLy, r.viTri, r.danhSachHeThong, r.danhSachThanhPhan, r.pN,
-          r.maTaiSanBravo, r.namSanXuat, r.namKhaiThac, r.tinhTrangKyThuat, r.cheDoKdHc
+          r.maTaiSanBravo, r.namSanXuat, r.namKhaiThac, r.tinhTrangKyThuat, r.cheDoKdHc,
+          r.trangThai, r.hanBaoHanh, trangThaiBaoHanh(r.hanBaoHanh),
+          formatContactsForExport(buildContacts(r)),
         ].join(" ")
       ).includes(t);
     });
