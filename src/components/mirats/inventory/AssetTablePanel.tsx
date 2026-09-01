@@ -432,6 +432,27 @@ export function AssetTablePanel({
           priority: "secondary",
           cell: (r) => r.trangThai ? <Badge variant="secondary" className="text-[10px]">{r.trangThai}</Badge> : <span className="text-xs text-muted-foreground">—</span>,
         },
+        // ---- Metadata (chỉ hiện ở chế độ "Tất cả cột" / khi bật thủ công) ----
+        ...([
+          ["pN", "P/N", (r: TaiSanRow) => r.pN],
+          ["maTaiSanBravo", "Mã tài sản Bravo", (r: TaiSanRow) => r.maTaiSanBravo],
+          ["namSanXuat", "Năm sản xuất", (r: TaiSanRow) => r.namSanXuat],
+          ["namKhaiThac", "Năm khai thác", (r: TaiSanRow) => r.namKhaiThac],
+          ["ngayMua", "Ngày mua", (r: TaiSanRow) => r.ngayMua],
+          ["hanBaoHanh", "Hạn bảo hành", (r: TaiSanRow) => r.hanBaoHanh],
+          ["tyLeTuoiTho", "Tỷ lệ tuổi thọ", (r: TaiSanRow) => r.tyLeTuoiTho],
+          ["tinhTrangKyThuat", "Tình trạng kỹ thuật", (r: TaiSanRow) => r.tinhTrangKyThuat],
+          ["cheDoKdHc", "Chế độ KĐ/HC", (r: TaiSanRow) => r.cheDoKdHc],
+          ["ngayBaoTriGanNhat", "Bảo trì gần nhất", (r: TaiSanRow) => r.ngayBaoTriGanNhat],
+          ["ngayBaoTriKeTiep", "Bảo trì kế tiếp", (r: TaiSanRow) => r.ngayBaoTriKeTiep],
+        ] as const).map(([key, label, get]) => ({
+          key,
+          label,
+          minW: "min-w-[140px]",
+          defaultHidden: true,
+          value: (r: TaiSanRow) => toDisplayString(get(r)),
+          cell: (r: TaiSanRow) => <TextCell value={toDisplayString(get(r))} dong={1} />,
+        })),
         {
           key: "actions",
           label: "",
