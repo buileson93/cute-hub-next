@@ -440,8 +440,10 @@ export function NodeEditorSheet({
           )}
         </fieldset>
 
-        <div className="space-y-2 border-t pt-3">
-          {canManage && (
+        <FormActionBar
+          dirty={coThayDoi}
+          primary={
+            canManage ? (
             <Button
               className="w-full"
               onClick={() => {
@@ -485,9 +487,23 @@ export function NodeEditorSheet({
               )}
               Lưu thay đổi
             </Button>
-          )}
-
-          {target && canManage && (
+            ) : null
+          }
+          secondary={
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                if (coThayDoi) setTen(tenGoc);
+                else setReorgOpen(true);
+              }}
+            >
+              <RefreshCcw className="mr-1.5 h-4 w-4" />
+              {coThayDoi ? "Hoàn tác thay đổi" : "Lịch sử thay đổi"}
+            </Button>
+          }
+          destructive={
+            target && canManage ? (
             <Button
               variant="outline"
               className="w-full text-destructive"
@@ -513,12 +529,9 @@ export function NodeEditorSheet({
               )}
               Xoá {title}
             </Button>
-          )}
-
-          <Button variant="outline" className="w-full" onClick={() => setReorgOpen(true)}>
-            <RefreshCcw className="mr-1.5 h-4 w-4" /> Lịch sử thay đổi
-          </Button>
-        </div>
+            ) : null
+          }
+        />
       </SheetContent>
     </Sheet>
   );
