@@ -176,6 +176,32 @@ export function isRealSystemId(id: string | null | undefined): id is string {
   return !!id && id !== NONE_HT && UUID_RE.test(id);
 }
 
+/**
+ * Nhãn hiển thị "có nghĩa" cho các cấp cây.
+ * KHÔNG BAO GIỜ hiển thị UUID / khoá kỹ thuật (__nopl__, __none__, KHAC…) ra giao diện.
+ */
+const TECHNICAL_KEY_RE = /^(__.*__|KHAC|NONE|N\/A|-|_)$/i;
+
+export function isTechnicalKey(v: string | null | undefined): boolean {
+  const s = (v ?? "").trim();
+  if (!s) return true;
+  if (UUID_RE.test(s)) return true;
+  return TECHNICAL_KEY_RE.test(s);
+}
+
+export function displayLabel(
+  raw: string | null | undefined,
+  key: string | null | undefined,
+  fallback: string,
+): string {
+  const s = (raw ?? "").trim();
+  if (s && s !== (key ?? "").trim() && !isTechnicalKey(s)) return s;
+  const k = (key ?? "").trim();
+  if (k && !isTechnicalKey(k)) return k;
+  return fallback;
+}
+
+
 export function cmpDeviceByLoai(a: DevNode, b: DevNode): number {
   const oa = a.tb._loaiTbOrder ?? 9999;
   const ob = b.tb._loaiTbOrder ?? 9999;
@@ -309,7 +335,7 @@ export function buildTree(
         const isCustom = customSystems.some((cs) => cs.ma === ma);
         systems.push({
           ma,
-          ten: htLabel(ma),
+          ten: displayLabel(htLabel(ma), parseHtSysMa(ma).sysName, "Hệ thống chưa đặt tên"),
           devices: devs,
           count: totalOf(devs),
           donViMa,
@@ -330,7 +356,12 @@ export function buildTree(
       });
 
       const isCustomNh = customGroups.some((cg) => cg.ma === nhMa);
-      const nhTen = nhLabel(nhMa) || realSystems.find((rs) => rs.nhMa === nhMa)?.nhTen || nhMa;
+      const nhTen = displayLabel(
+        nhLabel(nhMa) || realSystems.find((rs) => rs.nhMa === nhMa)?.nhTen,
+        nhMa,
+        "Chưa gán nhóm hệ thống",
+      );
+
 
       groups.push({
         ma: nhMa,
@@ -360,7 +391,7 @@ export function buildTree(
     const count = fields.reduce((n, lv) => n + lv.count, 0);
     tree.push({
       id: plId,
-      ten: plTenMap.get(plId) || plId,
+      ten: displayLabel(plTenMap.get(plId), plId, "Chưa phân loại"),
       tone: plToneMap.get(plId) || "",
       fields,
       count,

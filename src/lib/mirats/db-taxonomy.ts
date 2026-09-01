@@ -15,7 +15,7 @@ import { useQuery, type QueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchAllRows } from "@/lib/mirats/paginate";
 import type { ThietBi } from "@/lib/mirats/types";
-import { parseHtSysMa, NONE_HT } from "@/components/mirats/he-thong-cay/utils";
+import { parseHtSysMa, NONE_HT, displayLabel } from "@/components/mirats/he-thong-cay/utils";
 
 
 /** Tài sản lấy từ CSDL, kèm mã phân lớp taxonomy để dựng cây. */
@@ -288,16 +288,21 @@ export interface TaxonomyResolved {
 
 export function resolvePhanLoai(ref: string | null | undefined, taxonomy: DbTaxonomy | undefined): TaxonomyResolved {
   const id = ref || "KHAC";
-  const label = taxonomy?.plNameMap.get(id) || id;
+  const label = displayLabel(taxonomy?.plNameMap.get(id), id, "Chưa phân loại");
   return { id, ma: id, label };
 }
 
 export function resolveNhom(ref: string | null | undefined, taxonomy: DbTaxonomy | undefined): TaxonomyResolved {
   const id = ref || "KHAC";
-  const label = taxonomy?.nhomNameMap.get(id) || taxonomy?.nhomMaMap.get(id) || id;
   const ma = taxonomy?.nhomList.find(n => n.id === id)?.ma || id;
+  const label = displayLabel(
+    taxonomy?.nhomNameMap.get(id) || taxonomy?.nhomMaMap.get(id),
+    ma,
+    "Chưa gán nhóm hệ thống",
+  );
   return { id, ma, label };
 }
+
 
 export function resolveHeThong(ref: string | null | undefined, taxonomy: DbTaxonomy | undefined): TaxonomyResolved {
   const ma = ref || NONE_HT;
@@ -305,10 +310,14 @@ export function resolveHeThong(ref: string | null | undefined, taxonomy: DbTaxon
   const sysId = parsed.sysName;
   
   if (!sysId || sysId === NONE_HT) {
-    return { id: NONE_HT, ma: NONE_HT, label: "Hệ thống khác" };
+    return { id: NONE_HT, ma: NONE_HT, label: "Chưa gán hệ thống" };
   }
 
-  const label = taxonomy?.htNameMap.get(sysId) || taxonomy?.htMaMap.get(sysId) || sysId;
+  const label = displayLabel(
+    taxonomy?.htNameMap.get(sysId) || taxonomy?.htMaMap.get(sysId),
+    sysId,
+    "Hệ thống chưa đặt tên",
+  );
   const canonicalMa = taxonomy?.htList.find(h => h.id === sysId || h.ma === sysId)?.ma || sysId;
   
   return { id: sysId, ma: canonicalMa, label };
