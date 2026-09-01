@@ -22,6 +22,40 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { TruncatedNodeLabel } from "./TruncatedNodeLabel";
+import { HierarchyRow, HierarchyChildren } from "@/components/mirats/hierarchy/HierarchyNode";
+
+/** Nút thao tác trên node — vùng bấm ≥32px, nhãn cho screen reader. */
+function NodeAction({
+  icon: Icon,
+  label,
+  onClick,
+  className,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  onClick: () => void;
+  className?: string;
+}) {
+  return (
+    <button
+      type="button"
+      title={label}
+      aria-label={label}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      className={cn(
+        "inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground",
+        "transition-colors hover:bg-muted hover:text-foreground sm:h-7 sm:w-7",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        className,
+      )}
+    >
+      <Icon className="h-3.5 w-3.5" />
+    </button>
+  );
+}
 
 import { CodeBadge } from "@/components/mirats/CodeBadge";
 import {
