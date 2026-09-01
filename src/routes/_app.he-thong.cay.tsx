@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback, useEffect, useRef } from "react";
+import React, { useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Icon } from "@/components/mirats/ui/Icon";
@@ -55,6 +55,12 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { parseHtSysMa } from "@/lib/mirats/phan-loai";
 
 import { CayProvider, useCayContext } from "@/components/mirats/he-thong-cay/CayContext";
+import {
+  normalizeDeviceRows,
+  resetCayLocalState,
+  hasDataAnomaly,
+} from "@/components/mirats/he-thong-cay/normalize";
+import { captureError } from "@/lib/observability/capture";
 import { TreeView } from "@/components/mirats/he-thong-cay/TreeView";
 import { CayMindMap } from "@/components/mirats/he-thong-cay/CayMindMap";
 import { NodeEditorSheet } from "@/components/mirats/he-thong-cay/NodeEditorSheet";
