@@ -295,6 +295,20 @@ export function ComponentTablePanel({
             </div>
           </div>
         }
+        toolbarRight={({ filteredRows }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 gap-1.5 px-2 text-[11px] font-semibold"
+            disabled={isLoading || filteredRows.length === 0}
+            aria-label="Xuất CSV danh sách thành phần đang lọc"
+            title="Xuất CSV: Model, Serial, Người liên hệ, Trạng thái bảo hành"
+            onClick={() => xuatCsvThanhPhan(filteredRows)}
+          >
+            <Download className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Xuất CSV</span>
+          </Button>
+        )}
         columns={[
           {
             key: "ten",
