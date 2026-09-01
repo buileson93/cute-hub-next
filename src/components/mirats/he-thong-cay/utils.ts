@@ -356,7 +356,12 @@ export function buildTree(
       });
 
       const isCustomNh = customGroups.some((cg) => cg.ma === nhMa);
-      const nhTen = nhLabel(nhMa) || realSystems.find((rs) => rs.nhMa === nhMa)?.nhTen || nhMa;
+      const nhTen = displayLabel(
+        nhLabel(nhMa) || realSystems.find((rs) => rs.nhMa === nhMa)?.nhTen,
+        nhMa,
+        "Chưa gán nhóm hệ thống",
+      );
+
 
       groups.push({
         ma: nhMa,
