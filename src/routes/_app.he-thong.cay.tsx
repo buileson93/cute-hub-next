@@ -259,6 +259,14 @@ function HeThongCayPage() {
     toggleNode,
   } = useCayContext();
 
+  // Quyền bị thu hồi khi đang chỉnh sửa → tự động trở về chế độ xem an toàn.
+  React.useEffect(() => {
+    if (!canManageNodes && editMode) {
+      setEditMode(false);
+      toast.info("Đã chuyển về chế độ xem do tài khoản không có quyền chỉnh sửa sơ đồ.");
+    }
+  }, [canManageNodes, editMode, setEditMode]);
+
   const { renameEntity, moveSystem, moveDevice } = useCayMutations();
 
   useEffect(() => {
@@ -583,6 +591,14 @@ function HeThongCayPage() {
                 setFocus({ ...it, nonce: Math.random() });
               }}
             />
+            {!canManageNodes && (
+              <AppTooltip noiDung="Tài khoản của bạn chỉ được tra cứu sơ đồ hệ thống.">
+                <span className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md border border-dashed px-2.5 text-[11px] font-semibold uppercase tracking-tight text-muted-foreground">
+                  <Eye className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                  Chế độ xem
+                </span>
+              </AppTooltip>
+            )}
             {canManageNodes && (
               <AppTooltip noiDung={editMode ? "Hoàn tất chỉnh sửa" : "Bật chế độ chỉnh sửa cây"}>
                 <Button

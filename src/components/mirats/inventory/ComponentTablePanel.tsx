@@ -31,6 +31,8 @@ import { Combobox } from "@/components/mirats/Combobox";
 import { EntityHoverCard } from "@/components/mirats/EntityHoverCard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useInfiniteThanhPhanRows, type ThanhPhanRow, TT_LABEL, LY_DO_KHOA } from "../ThanhPhanTable";
+import { InheritedValue, TextCell } from "./InheritedValue";
+import { guardMutation } from "@/lib/mirats/he-thong/edit-mode";
 
 export function ComponentTablePanel({
   tableKey,
@@ -43,7 +45,7 @@ export function ComponentTablePanel({
   tableKey: string;
   hideHeader: boolean;
   editMode: boolean;
-  setEditMode: (v: boolean | ((prev: boolean) => boolean)) => void;
+  setEditMode: (v: boolean) => void;
   allowEdit: boolean;
   ModeToggle: React.ReactNode;
 }) {
@@ -72,8 +74,18 @@ export function ComponentTablePanel({
   const rows = useMemo(() => rowsData?.pages.flatMap((p) => p.rows) ?? [], [rowsData]);
   const totalTp = rowsData?.pages[0]?.totalCount ?? 0;
 
+  /** Chốt kiểm tra quyền tại thời điểm thực thi (không chỉ ẩn nút trên UI). */
+  function chanKhiKhongDuQuyen(): boolean {
+    const kq = guardMutation(allowEdit, editMode);
+    if (!kq.ok) {
+      toast.error(kq.lyDo);
+      return true;
+    }
+    return false;
+  }
+
   async function bulkTrangThai(ids: string[], trangThai: "hoat_dong" | "ngung", clear: () => void) {
-    if (ids.length === 0) return;
+    if (ids.length === 0 || chanKhiKhongDuQuyen()) return;
     setBulkBusy(true);
     const { error: e } = await supabase
       .from("he_thong_thanh_phan")
@@ -90,7 +102,7 @@ export function ComponentTablePanel({
   }
 
   async function deleteThanhPhan(ids: string[]) {
-    if (ids.length === 0) return;
+    if (ids.length === 0 || chanKhiKhongDuQuyen()) return;
     const { error: e } = await supabase
       .from("he_thong_thanh_phan")
       .delete()
@@ -104,6 +116,11 @@ export function ComponentTablePanel({
   }
 
   async function saveField(id: string, field: "ten" | "trang_thai", value: string) {
+    const kq = guardMutation(allowEdit, editMode);
+    if (!kq.ok) {
+      toast.error(kq.lyDo);
+      throw new Error(kq.lyDo);
+    }
     try {
       if (field === "ten") {
         const { saveEntityFieldSecurely } = await import("@/lib/mirats/ui/save-entity-securely");
@@ -157,14 +174,14 @@ export function ComponentTablePanel({
         exportable
         ten="thanh-phan"
         domain="he_thong"
-        allowBulkDelete={allowEdit}
+        allowBulkDelete={allowEdit && editMode}
         onBulkDelete={async (ids) => deleteThanhPhan(Array.from(ids))}
         bulkActions={({ selectedRows, visibleColumns, allColumns, filteredRows, pageRows, clear }) => (
           <>
             <BulkActionButton
               label="Đặt Hoạt động"
               icon={<Check className="h-3.5 w-3.5" />}
-              duocPhep={allowEdit}
+              duocPhep={allowEdit && editMode}
               lyDoKhoa={LY_DO_KHOA}
               busy={bulkBusy}
               variant="outline"
@@ -182,7 +199,7 @@ export function ComponentTablePanel({
             <BulkActionButton
               label="Đặt Đã ngừng"
               icon={<XCircle className="h-3.5 w-3.5" />}
-              duocPhep={allowEdit}
+              duocPhep={allowEdit && editMode}
               lyDoKhoa={LY_DO_KHOA}
               busy={bulkBusy}
               variant="outline"
@@ -276,87 +293,154 @@ export function ComponentTablePanel({
           {
             key: "ten",
             label: "Thành phần & Mã",
-            minW: "min-w-[280px]",
-            cellClassName: "max-w-[400px]",
+            minW: "min-w-[240px]",
+            cellClassName: "max-w-[300px]",
             sticky: true,
             priority: "primary",
             cell: (r) => (
-              <div className="group flex flex-col gap-0.5 cursor-pointer p-1" onClick={() => setSelectedTp({ row: r, heThongId: r.heThongId })}>
+              <div
+                className="group flex min-w-0 flex-col gap-0.5 py-0.5"
+                role="button"
+                tabIndex={0}
+                onClick={() => setSelectedTp({ row: r, heThongId: r.heThongId })}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setSelectedTp({ row: r, heThongId: r.heThongId });
+                  }
+                }}
+              >
                 {editMode && allowEdit ? (
                   <InlineTextEdit initial={r.ten} onSave={(v) => saveField(r.id, "ten", v)} />
                 ) : (
-                  <span className="line-clamp-2 text-[12px] font-bold">{r.ten || "—"}</span>
+                  <AppTooltip noiDung={r.ten || "Chưa có tên"}>
+                    <span className="block truncate text-[12px] font-bold group-hover:text-primary">
+                      {r.ten || "—"}
+                    </span>
+                  </AppTooltip>
                 )}
-                {r.ma && <CodeBadge code={r.ma} className="bg-transparent border-transparent text-muted-foreground" />}
+                {r.ma && (
+                  <CodeBadge
+                    code={r.ma}
+                    className="bg-transparent border-transparent px-0 text-muted-foreground"
+                  />
+                )}
               </div>
             ),
           },
-          { key: "heThong", label: "Hệ thống", minW: "min-w-[140px]", cellClassName: "max-w-[180px]", cell: (r) => <span className="text-[12px]">{r.heThong}</span> },
-          { key: "nhomHeThong", label: "Nhóm hệ thống", minW: "min-w-[140px]", cellClassName: "max-w-[180px]", hideBelow: "md" },
-          { key: "phanLoai", label: "Phân loại", minW: "min-w-[140px]", cellClassName: "max-w-[180px]", hideBelow: "md" },
+          {
+            key: "heThong",
+            label: "Hệ thống & phân cấp",
+            minW: "min-w-[220px]",
+            cellClassName: "max-w-[280px]",
+            priority: "primary",
+            cell: (r) => (
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <TextCell value={r.heThong} dong={1} className="font-medium" />
+                <div className="flex min-w-0 flex-wrap items-center gap-1">
+                  <InheritedValue
+                    value={r.nhomHeThong}
+                    nguon={r.heThong ? `Kế thừa từ hệ thống: ${r.heThong}` : null}
+                    className="text-[11px]"
+                  />
+                  <InheritedValue
+                    value={r.phanLoai}
+                    nguon={r.nhomHeThong ? `Kế thừa từ nhóm: ${r.nhomHeThong}` : null}
+                    className="text-[11px]"
+                  />
+                </div>
+              </div>
+            ),
+          },
+          { key: "nhomHeThong", label: "Nhóm hệ thống", minW: "min-w-[140px]", defaultHidden: true },
+          { key: "phanLoai", label: "Phân loại", minW: "min-w-[140px]", defaultHidden: true },
           { key: "ma", label: "Mã TP", minW: "min-w-[140px]", defaultHidden: true, cell: (r) => <CodeBadge code={r.ma} /> },
           {
             key: "viTri",
             label: "Vị trí",
-            minW: "min-w-[180px]",
-            cell: (r) => (
+            minW: "min-w-[150px]",
+            cellClassName: "max-w-[200px]",
+            hideBelow: "md",
+            priority: "secondary",
+            cell: (r) =>
               editMode && allowEdit ? (
                 <InlineViTriEdit row={r} onChanged={() => qc.invalidateQueries({ queryKey: ["thanh-phan-infinite"] })} />
-              ) : <span className="text-[12px]">{r.viTri || "—"}</span>
-            )
+              ) : (
+                <TextCell value={r.viTri} dong={1} />
+              ),
           },
           {
             key: "trangThai",
             label: "Trạng thái",
-            minW: "min-w-[120px]",
+            minW: "min-w-[110px]",
             align: "center",
-            cell: (r) => (
+            priority: "secondary",
+            cell: (r) =>
               editMode && allowEdit ? (
                 <Select
                   value={r.trangThai === "Hoạt động" ? "hoat_dong" : r.trangThai === "Đã ngừng" ? "ngung" : ""}
                   onValueChange={(v) => void saveField(r.id, "trang_thai", v)}
                 >
-                  <SelectTrigger className="h-7 w-[130px] text-xs"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="h-7 w-[120px] text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="hoat_dong">Hoạt động</SelectItem>
                     <SelectItem value="ngung">Đã ngừng</SelectItem>
                   </SelectContent>
                 </Select>
-              ) : <Badge variant={r.trangThai === "Hoạt động" ? "secondary" : "outline"}>{r.trangThai}</Badge>
-            )
+              ) : (
+                <Badge variant={r.trangThai === "Hoạt động" ? "secondary" : "outline"} className="text-[10px]">
+                  {r.trangThai}
+                </Badge>
+              ),
           },
           {
             key: "thietBi",
             label: "Tài sản lắp",
-            minW: "min-w-[180px]",
-            cellClassName: "max-w-[240px]",
-            cell: (r) => (
+            minW: "min-w-[200px]",
+            cellClassName: "max-w-[260px]",
+            cell: (r) =>
               editMode && allowEdit ? (
                 <InlineTaiSanEdit row={r} onChanged={() => qc.invalidateQueries({ queryKey: ["thanh-phan-infinite"] })} />
               ) : r.daLap ? (
-                <div className="flex items-start gap-1.5">
-                  <Link to="/thiet-bi/$maThietBi" params={{ maThietBi: r.thietBiMa }} search={{ tab: "tong-quan", doc: undefined, q: undefined }} className="flex-1 hover:text-primary">
-                    <span className="line-clamp-2 text-[12px] font-bold">{r.thietBiTen || "—"}</span>
-                    <div className="flex items-center gap-1.5">
-                      <CodeBadge code={r.thietBiMa} />
-                      <MultiRoleBadge info={multiRoleMap?.byMa.get(r.thietBiMa)} compact currentThanhPhanId={r.id} />
-                    </div>
-                  </Link>
-                </div>
-              ) : <Badge variant="outline" className="h-8 w-full border-dashed opacity-50"><Unplug className="h-3 w-3 mr-1" /> Trống</Badge>
-            )
+                <Link
+                  to="/thiet-bi/$maThietBi"
+                  params={{ maThietBi: r.thietBiMa }}
+                  search={{ tab: "tong-quan", doc: undefined, q: undefined }}
+                  className="flex min-w-0 flex-col gap-0.5 hover:text-primary"
+                >
+                  <AppTooltip noiDung={`${r.thietBiTen || "—"}${r.thietBiSerial ? ` · S/N ${r.thietBiSerial}` : ""}`}>
+                    <span className="block truncate text-[12px] font-bold">{r.thietBiTen || "—"}</span>
+                  </AppTooltip>
+                  <div className="flex min-w-0 items-center gap-1.5">
+                    <CodeBadge code={r.thietBiMa} />
+                    <MultiRoleBadge info={multiRoleMap?.byMa.get(r.thietBiMa)} compact currentThanhPhanId={r.id} />
+                  </div>
+                </Link>
+              ) : (
+                <Badge variant="outline" className="border-dashed text-[10px] opacity-60">
+                  <Unplug className="mr-1 h-3 w-3" /> Trống
+                </Badge>
+              ),
           },
           {
             key: "actions",
-            label: "Hành động",
-            minW: "min-w-[150px]",
+            label: "",
+            minW: "min-w-[56px]",
             align: "center",
             cell: (r) => (
-              <Button size="sm" variant="ghost" className="h-7 px-2" onClick={() => setSelectedTp({ row: r, heThongId: r.heThongId })}>
-                <ExternalLink className="h-3.5 w-3.5 mr-1" /> Chi tiết
-              </Button>
-            )
-          }
+              <AppTooltip noiDung="Xem chi tiết thành phần">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 w-7 p-0"
+                  aria-label={`Xem chi tiết ${r.ten || r.ma}`}
+                  onClick={() => setSelectedTp({ row: r, heThongId: r.heThongId })}
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </Button>
+              </AppTooltip>
+            ),
+          },
         ]}
       />
 
@@ -378,7 +462,7 @@ export function ComponentTablePanel({
             } : null,
           } as any}
           heThongId={selectedTp.heThongId}
-          canManage={allowEdit}
+          canManage={allowEdit && editMode}
           onClose={() => setSelectedTp(null)}
           onOpenDevice={(ma) => navigate({ to: "/thiet-bi/$maThietBi", params: { maThietBi: ma }, search: { tab: "tong-quan", doc: undefined, q: undefined } })}
         />
