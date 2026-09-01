@@ -33,51 +33,46 @@ import {
 } from "@/lib/mirats/he-thong-thanh-phan";
 import { useLicensesData } from "@/lib/mirats/db-licenses";
 import { ChangeLogPanel } from "@/components/mirats/ChangeLogPanel";
+import { NodeIcon, HierarchySkeleton, type NodeTone } from "@/components/mirats/hierarchy/HierarchyNode";
 
 const META: Record<
   string,
   {
     icon: React.ComponentType<{ className?: string }>;
     name: string;
-    dot: string;
+    tone: NodeTone;
     chip: string;
-    iconColor?: string;
   }
 > = {
   lap: {
     icon: PackagePlus,
     name: "Lắp tài sản",
-    dot: "bg-success",
+    tone: "success",
     chip: "bg-success/10 text-success border-success/20",
-    iconColor: "text-success-foreground",
   },
   thao: {
     icon: PackageMinus,
     name: "Tháo tài sản",
-    dot: "bg-muted",
+    tone: "muted",
     chip: "bg-muted text-muted-foreground border-border",
-    iconColor: "text-muted-foreground",
   },
   hong_hoc: {
     icon: RefreshCw,
     name: "Hỏng / thay thế",
-    dot: "bg-warning",
+    tone: "warning",
     chip: "bg-warning/10 text-warning border-warning/20",
-    iconColor: "text-warning-foreground",
   },
   bao_tri: {
     icon: Wrench,
     name: "Bảo dưỡng",
-    dot: "bg-primary",
+    tone: "primary",
     chip: "bg-primary/10 text-primary border-primary/20",
-    iconColor: "text-primary-foreground",
   },
   su_co: {
     icon: AlertTriangle,
     name: "Sự cố",
-    dot: "bg-destructive",
+    tone: "danger",
     chip: "bg-destructive/10 text-destructive border-destructive/20",
-    iconColor: "text-destructive-foreground",
   },
 };
 
@@ -175,28 +170,31 @@ function Timeline({
   empty: string;
   canEdit?: boolean;
 }) {
-  if (isLoading) return <p className="text-sm text-muted-foreground">Đang tải sổ lý lịch…</p>;
-  if (data.length === 0) return <p className="text-sm text-muted-foreground">{empty}</p>;
+  if (isLoading) return <HierarchySkeleton rows={4} />;
+  if (data.length === 0)
+    return (
+      <p className="rounded-lg border border-dashed px-3 py-6 text-center text-sm text-muted-foreground">
+        {empty}
+      </p>
+    );
 
   return (
-    <ol className="relative ml-2 border-l border-border pl-6">
+    <ol className="relative ml-3 border-l border-border pl-6 sm:pl-8">
       {data.map((it, i) => {
         const m = META[it.loai_su_kien] ?? {
           icon: Clock,
           name: it.loai_su_kien,
-          dot: "bg-muted",
+          tone: "muted" as NodeTone,
           chip: "bg-muted text-muted-foreground border-border",
         };
         const Icon = m.icon;
         const editableLap = canEdit && it.loai_su_kien === "lap" && it.nguon === "gan_chuc_nang";
         return (
           <li key={`${it.nguon}-${it.nguon_id}-${i}`} className="relative mb-5 last:mb-0">
-            <span
-              className={`absolute -left-[31px] flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background shadow-sm ${m.dot}`}
-            >
-              <Icon className={`h-3.5 w-3.5 ${m.iconColor || "text-primary-foreground"}`} />
+            <span className="absolute -left-[38px] rounded-full bg-background p-0.5 shadow-sm">
+              <NodeIcon icon={Icon} tone={m.tone} size="md" />
             </span>
-            <div className="rounded-md border p-3 text-sm">
+            <div className="rounded-lg border p-3 text-sm transition-colors hover:bg-muted/40">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-medium text-muted-foreground">
                   {it.thoi_diem
