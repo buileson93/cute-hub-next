@@ -176,6 +176,32 @@ export function isRealSystemId(id: string | null | undefined): id is string {
   return !!id && id !== NONE_HT && UUID_RE.test(id);
 }
 
+/**
+ * Nhãn hiển thị "có nghĩa" cho các cấp cây.
+ * KHÔNG BAO GIỜ hiển thị UUID / khoá kỹ thuật (__nopl__, __none__, KHAC…) ra giao diện.
+ */
+const TECHNICAL_KEY_RE = /^(__.*__|KHAC|NONE|N\/A|-|_)$/i;
+
+export function isTechnicalKey(v: string | null | undefined): boolean {
+  const s = (v ?? "").trim();
+  if (!s) return true;
+  if (UUID_RE.test(s)) return true;
+  return TECHNICAL_KEY_RE.test(s);
+}
+
+export function displayLabel(
+  raw: string | null | undefined,
+  key: string | null | undefined,
+  fallback: string,
+): string {
+  const s = (raw ?? "").trim();
+  if (s && s !== (key ?? "").trim() && !isTechnicalKey(s)) return s;
+  const k = (key ?? "").trim();
+  if (k && !isTechnicalKey(k)) return k;
+  return fallback;
+}
+
+
 export function cmpDeviceByLoai(a: DevNode, b: DevNode): number {
   const oa = a.tb._loaiTbOrder ?? 9999;
   const ob = b.tb._loaiTbOrder ?? 9999;
