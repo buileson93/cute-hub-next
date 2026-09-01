@@ -364,14 +364,15 @@ export function NodeEditorSheet({
               description="Thành phần có thể chưa được gắn tài sản. Gỡ liên kết không xoá tài sản."
             >
               <ThanhPhanManager heThongId={physKeyValue("ht", target.ma)} canManage={canManage} />
-            </div>
+            </FormSection>
           )}
 
           {target?.kind === "ht" && canManage && (
-            <div className="space-y-2 rounded-md border p-3">
-              <div className="flex items-center gap-1.5 text-sm font-medium">
-                <Plus className="h-4 w-4 text-emerald-600" /> Thêm tài sản vào hệ thống
-              </div>
+            <FormSection
+              title="Thêm tài sản vào hệ thống"
+              icon={Plus}
+              description="Tài sản là đối tượng vật lý; một tài sản có thể dùng chung cho nhiều thành phần."
+            >
               <Input
                 value={newDeviceTen}
                 onChange={(e) => setNewDeviceTen(e.target.value)}
