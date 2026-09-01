@@ -112,6 +112,7 @@ export function HierarchyRow({
   disabled = false,
   toggleLabel,
   leafIcon,
+  surface = "card",
   className,
 }: {
   icon: ComponentType<{ className?: string }>;
@@ -131,6 +132,12 @@ export function HierarchyRow({
   disabled?: boolean;
   toggleLabel?: string;
   leafIcon?: ComponentType<{ className?: string }>;
+  /**
+   * Bề mặt node. "card" học theo phong cách thẻ của Sổ lý lịch (viền mảnh,
+   * nền card, hover nâng nhẹ) — đây là mặc định để hai màn hình đồng nhất.
+   * "plain" dành cho hàng tiêu đề nhóm lớn (không cần viền lồng viền).
+   */
+  surface?: "card" | "plain";
   className?: string;
 }) {
   const interactive = !!onActivate && !disabled;
@@ -147,9 +154,12 @@ export function HierarchyRow({
       data-selected={selected || undefined}
       className={cn(
         "group flex items-start gap-1.5 rounded-lg px-1.5 py-1 transition-colors sm:items-center sm:gap-2",
-        "hover:bg-muted/60 data-[selected]:bg-primary/5",
+        "data-[selected]:bg-primary/5",
+        surface === "card"
+          ? "border border-border/60 bg-card/60 px-2 py-1.5 shadow-[0_1px_0_0_hsl(var(--border)/0.4)] hover:border-border hover:bg-muted/40"
+          : "hover:bg-muted/60",
         // Trạng thái chọn không chỉ dựa vào màu: có viền trái đậm.
-        selected && "shadow-[inset_2px_0_0_0_hsl(var(--primary))]",
+        selected && "border-primary/40 shadow-[inset_2px_0_0_0_hsl(var(--primary))]",
         disabled && "opacity-60",
         className,
       )}
@@ -223,7 +233,7 @@ export function HierarchyChildren({
   return (
     <div
       className={cn(
-        "ml-3 space-y-0.5 border-l border-border/70 pl-1.5 sm:ml-5 sm:pl-2.5",
+        "ml-3 space-y-1 border-l border-border/70 pl-1.5 sm:ml-5 sm:pl-2.5",
         className,
       )}
     >
@@ -248,5 +258,47 @@ export function HierarchySkeleton({ rows = 5 }: { rows?: number }) {
         </div>
       ))}
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Timeline phân cấp theo thời gian — dùng cho Sổ lý lịch. Chia sẻ NodeIcon,
+// spacing và typography với HierarchyRow để hai màn hình cùng ngôn ngữ.
+// ---------------------------------------------------------------------------
+export function HierarchyTimeline({ children }: { children: ReactNode }) {
+  return (
+    <ol className="relative ml-3 space-y-2.5 border-l border-border/70 pl-6 sm:pl-8">{children}</ol>
+  );
+}
+
+export function HierarchyEvent({
+  icon,
+  tone = "muted",
+  header,
+  title,
+  description,
+}: {
+  icon: ComponentType<{ className?: string }>;
+  tone?: NodeTone;
+  /** Hàng chip: ngày, loại sự kiện, mã tài sản, hành động. */
+  header?: ReactNode;
+  title: ReactNode;
+  description?: ReactNode;
+}) {
+  return (
+    <li className="relative">
+      <span className="absolute -left-[38px] rounded-full bg-background p-0.5 shadow-sm">
+        <NodeIcon icon={icon} tone={tone} size="md" />
+      </span>
+      <div className="rounded-lg border border-border/60 bg-card/60 p-3 text-sm shadow-[0_1px_0_0_hsl(var(--border)/0.4)] transition-colors hover:border-border hover:bg-muted/40">
+        {header ? <div className="flex flex-wrap items-center gap-2">{header}</div> : null}
+        <div className="mt-1 text-sm font-medium leading-snug break-words [overflow-wrap:anywhere]">
+          {title}
+        </div>
+        {description ? (
+          <div className="mt-0.5 text-[13px] text-muted-foreground">{description}</div>
+        ) : null}
+      </div>
+    </li>
   );
 }

@@ -160,7 +160,7 @@ export function TreeView({
     const identity = resolveDeviceDisplayIdentity(d.tb);
 
     return (
-      <div key={d.tb.ma_thiet_bi} className="space-y-0.5">
+      <div key={d.tb.ma_thiet_bi} className="space-y-1">
         <HierarchyRow
           icon={Cpu}
           tone="muted"
@@ -240,7 +240,7 @@ export function TreeView({
     const htTen = htMind(ht.ma);
 
     return (
-      <div key={ht.ma} className="space-y-0.5">
+      <div key={ht.ma} className="space-y-1">
         <HierarchyRow
           icon={Network}
           tone="primary"
@@ -300,7 +300,7 @@ export function TreeView({
     const nhTen = nhLabel(nh.ma);
 
     return (
-      <div key={nh.ma} className="space-y-0.5">
+      <div key={nh.ma} className="space-y-1">
         <HierarchyRow
           icon={FolderTree}
           tone="accent"
@@ -367,6 +367,7 @@ export function TreeView({
                   {pl.count}
                 </Badge>
               }
+              surface="plain"
               className="hover:bg-transparent"
             />
 
