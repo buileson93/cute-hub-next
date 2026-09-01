@@ -318,7 +318,36 @@ export function StandardTable<T>({
     }
   }, [rows, tableKeyEffective, performActualDeletion]);
 
-  const prefs = useColumnPrefs(tableKeyEffective, columns.map(c => c.key));
+  const prefs = useColumnPrefs(
+    tableKeyEffective,
+    columns.map(c => c.key),
+    columns.filter(c => c.defaultHidden).map(c => c.key),
+  );
+
+  // Chế độ cột: "gọn" (mặc định, theo tuỳ chỉnh người dùng) hoặc "tất cả cột"
+  // (bỏ qua ẩn/hiện để đối soát & chuẩn bị xuất CSV). Ghi nhớ theo bảng.
+  const colModeKey = `mirats:colmode:${tableKeyEffective}`;
+  const [colMode, setColMode] = useState<"compact" | "all">("compact");
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(colModeKey);
+      setColMode(saved === "all" ? "all" : "compact");
+    } catch {
+      setColMode("compact");
+    }
+  }, [colModeKey]);
+  const changeColMode = useCallback(
+    (mode: "compact" | "all") => {
+      setColMode(mode);
+      try {
+        window.localStorage.setItem(colModeKey, mode);
+      } catch {
+        /* bỏ qua khi localStorage bị chặn */
+      }
+    },
+    [colModeKey],
+  );
+
   const scrollOffsetKey = `scroll-offset:${tableKeyEffective}`;
 
   const getRowIdInternal = useCallback(
