@@ -369,6 +369,7 @@ function DuAnDetailPage() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["du-an-cv", id] });
+                  qc.invalidateQueries({ queryKey: ["project-events", id] });
       qc.invalidateQueries({ queryKey: ["du-an-moc", id] });
       qc.invalidateQueries({ queryKey: ["du-an", id] });
     },
@@ -711,6 +712,7 @@ function DuAnDetailPage() {
 
                   qc.invalidateQueries({ queryKey: ["du-an-moc", id] });
                   qc.invalidateQueries({ queryKey: ["du-an-cv", id] });
+                  qc.invalidateQueries({ queryKey: ["project-events", id] });
                 }
               }}
             />
@@ -745,6 +747,7 @@ function DuAnDetailPage() {
         isManager={isManager}
         onDone={() => {
           qc.invalidateQueries({ queryKey: ["du-an-cv", id] });
+                  qc.invalidateQueries({ queryKey: ["project-events", id] });
           qc.invalidateQueries({ queryKey: ["du-an-moc", id] });
           qc.invalidateQueries({ queryKey: ["du-an", id] });
         }}
@@ -757,6 +760,7 @@ function DuAnDetailPage() {
         canDelete={isManager}
         onDeleted={() => {
           qc.invalidateQueries({ queryKey: ["du-an-cv", id] });
+                  qc.invalidateQueries({ queryKey: ["project-events", id] });
           qc.invalidateQueries({ queryKey: ["du-an-moc", id] });
           qc.invalidateQueries({ queryKey: ["du-an", id] });
         }}
