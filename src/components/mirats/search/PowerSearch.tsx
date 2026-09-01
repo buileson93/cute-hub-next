@@ -251,7 +251,6 @@ export function PowerSearch({
     [executeCommand, setIsOpen],
   );
 
-
   return (
     <>
       {!isControlled && (

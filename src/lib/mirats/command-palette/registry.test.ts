@@ -25,9 +25,9 @@ describe("buildCommands", () => {
   it("loại lệnh trỏ tới route không tồn tại khi có knownRoutes", () => {
     const limited = buildCommands({ knownRoutes: new Set(["/kiem-ke"]) });
     const navTargets = limited.filter((c) => c.target.kind === "navigate");
-    expect(navTargets.every((c) => c.target.kind === "navigate" && c.target.to === "/kiem-ke")).toBe(
-      true,
-    );
+    expect(
+      navTargets.every((c) => c.target.kind === "navigate" && c.target.to === "/kiem-ke"),
+    ).toBe(true);
     // Lệnh hành động (QR, đăng xuất) không phụ thuộc route nên vẫn còn.
     expect(limited.some((c) => c.id === "action:qr-scan")).toBe(true);
   });
