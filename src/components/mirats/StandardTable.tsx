@@ -24,6 +24,9 @@ import { Icon } from "@/components/mirats/ui/Icon";
 import { useDensity } from "@/components/mirats/DensityToggle";
 import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2, XCircle, Trash2, Download, RotateCcw } from "lucide-react";
 import { ColumnVisibilityMenu } from "./ColumnVisibilityMenu";
+import { ColumnFilterMenu } from "./table/ColumnFilterMenu";
+import { Search } from "lucide-react";
+
 import { HorizontalScrollRail } from "./HorizontalScrollRail";
 import { BulkActionButton } from "./BulkActionButton";
 import { TableExportDialog } from "./TableExportDialog";
@@ -222,6 +225,8 @@ export function StandardTable<T>({
 }: StandardTableProps<T>) {
   const [textFilters, setTextFilters] = useState<Record<string, string>>({});
   const [catFilters, setCatFilters] = useState<Record<string, Set<string>>>({});
+  const [globalQuery, setGlobalQuery] = useState("");
+
   const [adaptiveOverscan, setAdaptiveOverscan] = useState(8);
   const frameCount = useRef(0);
   const lastTime = useRef(performance.now());
@@ -394,6 +399,7 @@ export function StandardTable<T>({
   const clearAllFilters = useCallback(() => {
     setTextFilters({});
     setCatFilters({});
+    setGlobalQuery("");
   }, []);
 
   const toggleCat = useCallback((key: string, val: string) => {
@@ -402,7 +408,34 @@ export function StandardTable<T>({
       const set = new Set(next[key] || []);
       if (set.has(val)) set.delete(val);
       else set.add(val);
-      next[key] = set;
+      if (set.size === 0) delete next[key];
+      else next[key] = set;
+      return next;
+    });
+  }, []);
+
+  const selectOnlyCat = useCallback((key: string, val: string) => {
+    setCatFilters((prev) => ({ ...prev, [key]: new Set([val]) }));
+  }, []);
+
+  const setTextFilter = useCallback((key: string, val: string) => {
+    setTextFilters((prev) => {
+      const next = { ...prev };
+      if (!val) delete next[key];
+      else next[key] = val;
+      return next;
+    });
+  }, []);
+
+  const clearColumnFilter = useCallback((key: string) => {
+    setTextFilters((prev) => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+    setCatFilters((prev) => {
+      const next = { ...prev };
+      delete next[key];
       return next;
     });
   }, []);
@@ -414,6 +447,7 @@ export function StandardTable<T>({
       return next;
     });
   }, []);
+
 
   const renderToolbar = (
     toolbar: React.ReactNode | ((ctx: {
@@ -449,26 +483,18 @@ export function StandardTable<T>({
     return v == null ? "" : String(v);
   }, []);
 
-  const matchesFilters = useCallback(
-    (r: T, exceptKey?: string) => {
+  const globalNeedle = useMemo(() => normalize(globalQuery).trim(), [globalQuery]);
+
+  const matchesGlobal = useCallback(
+    (r: T) => {
+      if (!globalNeedle) return true;
       for (const c of columns) {
-        if (c.key === exceptKey) continue;
-        if (c.filter === "cat") {
-          const sel = catFilters[c.key];
-          const text = colText(c, r);
-          if (sel && sel.size > 0 && !sel.has(text)) return false;
-        } else if (c.filter === "text") {
-          const val = textFilters[c.key];
-          if (val) {
-            const t = normalize(val).trim();
-            const text = colText(c, r);
-            if (t && !normalize(text).includes(t)) return false;
-          }
-        }
+        const text = colText(c, r);
+        if (text && normalize(text).includes(globalNeedle)) return true;
       }
-      return true;
+      return false;
     },
-    [columns, catFilters, textFilters, colText],
+    [columns, colText, globalNeedle],
   );
 
   const dedupedRows = useMemo(() => {
@@ -481,15 +507,100 @@ export function StandardTable<T>({
     });
   }, [localRows, getRowIdInternal]);
 
+  /**
+   * Kiểu lọc hiệu lực của từng cột. Nếu cột không khai báo `filter`, hệ thống
+   * tự suy luận: ít giá trị khác nhau → droplist ("cat"), ngược lại → ô tìm kiếm.
+   */
+  const filterKinds = useMemo(() => {
+    const sample = dedupedRows.slice(0, 500);
+    const out: Record<string, "text" | "cat"> = {};
+    for (const c of columns) {
+      if (c.filter) {
+        out[c.key] = c.filter;
+        continue;
+      }
+      if (!c.value || c.type === "actions") continue;
+      const distinct = new Set<string>();
+      for (const r of sample) {
+        distinct.add(colText(c, r));
+        if (distinct.size > 25) break;
+      }
+      out[c.key] = distinct.size > 25 ? "text" : "cat";
+    }
+    return out;
+  }, [columns, dedupedRows, colText]);
+
+  const matchesFilters = useCallback(
+    (r: T, exceptKey?: string) => {
+      if (!matchesGlobal(r)) return false;
+      for (const c of columns) {
+        if (c.key === exceptKey) continue;
+        const kind = filterKinds[c.key];
+        if (kind === "cat") {
+          const sel = catFilters[c.key];
+          const text = colText(c, r);
+          if (sel && sel.size > 0 && !sel.has(text)) return false;
+        } else if (kind === "text") {
+          const val = textFilters[c.key];
+          if (val) {
+            const t = normalize(val).trim();
+            const text = colText(c, r);
+            if (t && !normalize(text).includes(t)) return false;
+          }
+        }
+      }
+      return true;
+    },
+    [columns, catFilters, textFilters, colText, matchesGlobal, filterKinds],
+  );
+
   const filtered = useMemo(() => dedupedRows.filter((r) => matchesFilters(r)), [dedupedRows, matchesFilters]);
 
+  /**
+   * Danh sách giá trị duy nhất cho các cột lọc dạng droplist.
+   * Tính trên toàn bộ dữ liệu đã tải, loại trừ chính bộ lọc của cột đó
+   * để người dùng vẫn thấy được các lựa chọn khác.
+   */
+  const catOptions = useMemo(() => {
+    const out: Record<string, { value: string; count: number }[]> = {};
+    for (const c of columns) {
+      if (filterKinds[c.key] !== "cat") continue;
+      const counter = new Map<string, number>();
+      for (const r of dedupedRows) {
+        if (!matchesFilters(r, c.key)) continue;
+        const v = colText(c, r);
+        counter.set(v, (counter.get(v) ?? 0) + 1);
+      }
+      out[c.key] = Array.from(counter.entries())
+        .map(([value, count]) => ({ value, count }))
+        .sort((a, b) => a.value.localeCompare(b.value, "vi", { numeric: true }));
+    }
+    return out;
+  }, [columns, dedupedRows, matchesFilters, colText, filterKinds]);
+
   const hasFilter = useMemo(() => {
+    if (globalNeedle.length > 0) return true;
     return columns.some((c) =>
-      c.filter === "cat"
-        ? (catFilters[c.key]?.size ?? 0) > 0
-        : (textFilters[c.key] ?? "").trim().length > 0,
+      (catFilters[c.key]?.size ?? 0) > 0 ||
+      (textFilters[c.key] ?? "").trim().length > 0,
     );
-  }, [columns, catFilters, textFilters]);
+  }, [columns, catFilters, textFilters, globalNeedle]);
+
+
+  /**
+   * Tìm kiếm trên TOÀN BỘ dữ liệu: khi có từ khóa/bộ lọc mà nguồn dữ liệu
+   * vẫn còn trang chưa tải, tự động tải tiếp cho đến hết rồi mới lọc.
+   */
+  const isLoadingAllForSearch = Boolean(
+    hasFilter && infiniteScroll?.hasNextPage && !trangThai.loi,
+  );
+  useEffect(() => {
+    if (!hasFilter) return;
+    if (!infiniteScroll?.hasNextPage) return;
+    if (infiniteScroll.isFetchingNextPage || trangThai.dangTai || trangThai.loi) return;
+    infiniteScroll.fetchNextPage();
+  }, [hasFilter, infiniteScroll, trangThai.dangTai, trangThai.loi, localRows.length]);
+
 
   const sorted = useMemo(() => {
     if (!sort) return filtered;
@@ -812,10 +923,51 @@ export function StandardTable<T>({
 
   return (
     <div className={cn("flex flex-col gap-3 min-h-0 h-full w-full overflow-hidden", className)}>
-      {(toolbar || toolbarRight || toolbarLeft) && (
+      {(
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-1 shrink-0">
           <div className="flex items-center gap-2 flex-1 w-full sm:w-auto">
             {toolbarLeft}
+            {/* Ô tìm kiếm toàn bộ dữ liệu (không chỉ các dòng đang hiển thị) */}
+            <div className="relative w-full sm:w-64">
+              <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={globalQuery}
+                onChange={(e) => setGlobalQuery(e.target.value)}
+                placeholder={`Tìm trong toàn bộ ${countUnit || "dữ liệu"}…`}
+                aria-label="Tìm kiếm toàn bộ dữ liệu trong bảng"
+                className="h-8 pl-7 pr-7 text-[12px]"
+              />
+              {globalQuery && (
+                <button
+                  type="button"
+                  aria-label="Xóa từ khóa tìm kiếm"
+                  onClick={() => setGlobalQuery("")}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:text-foreground"
+                >
+                  <XIcon className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+            {isLoadingAllForSearch && (
+              <span className="flex items-center gap-1 whitespace-nowrap text-[11px] text-muted-foreground">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                Đang tải toàn bộ dữ liệu…
+                {infiniteScroll?.totalCount
+                  ? ` (${dedupedRows.length}/${infiniteScroll.totalCount})`
+                  : ""}
+              </span>
+            )}
+            {hasFilter && !isLoadingAllForSearch && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-8 shrink-0 px-2 text-[11px]"
+                onClick={clearAllFilters}
+              >
+                <XIcon className="mr-1 h-3 w-3" />
+                Xóa lọc ({fullDisplay.length})
+              </Button>
+            )}
             {toolbar && renderToolbar(toolbar, {
               filteredRows: fullDisplay,
               visibleColumns: shownCols,
@@ -825,6 +977,7 @@ export function StandardTable<T>({
               clear: clearSelection,
             })}
           </div>
+
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
             {/* Chế độ cột: Gọn (mặc định) ↔ Tất cả cột */}
             <div
@@ -988,9 +1141,49 @@ export function StandardTable<T>({
                       c.sticky && "border-r border-border/20"
                     )}
                   >
-                    <div className="flex items-center justify-between gap-2 overflow-hidden">
-                      <span className="truncate">{c.header || c.label}</span>
+                    <div className="flex items-center justify-between gap-1 overflow-hidden">
+                      <button
+                        type="button"
+                        className={cn(
+                          "flex min-w-0 flex-1 items-center gap-1 text-left uppercase tracking-wider",
+                          "rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                          "hover:text-foreground",
+                        )}
+                        onClick={() =>
+                          setSort((prev) =>
+                            prev?.key !== c.key
+                              ? { key: c.key, dir: "asc" }
+                              : prev.dir === "asc"
+                                ? { key: c.key, dir: "desc" }
+                                : null,
+                          )
+                        }
+                        aria-label={`Sắp xếp theo ${c.header || c.label || c.key}`}
+                      >
+                        <span className="truncate">{c.header || c.label}</span>
+                        {sort?.key === c.key && (
+                          <span aria-hidden className="shrink-0 text-primary">
+                            {sort.dir === "asc" ? "▲" : "▼"}
+                          </span>
+                        )}
+                      </button>
+                      {filterKinds[c.key] && (
+                        <ColumnFilterMenu
+                          label={c.header || c.label || c.key}
+                          kind={filterKinds[c.key]}
+                          textValue={textFilters[c.key] ?? ""}
+                          onTextChange={(v) => setTextFilter(c.key, v)}
+                          options={catOptions[c.key]}
+                          selected={catFilters[c.key]}
+                          onToggleValue={(v) => toggleCat(c.key, v)}
+                          onSelectOnly={(v) => selectOnlyCat(c.key, v)}
+                          onClear={() => clearColumnFilter(c.key)}
+                          sortDir={sort?.key === c.key ? sort.dir : null}
+                          onSort={(dir) => setSort(dir ? { key: c.key, dir } : null)}
+                        />
+                      )}
                     </div>
+
                     <div
                       onMouseDown={(e) => onHandleMouseDown(e, c.key, prefs.widths[c.key] || 150)}
                       className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-primary/30 z-10"
