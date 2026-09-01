@@ -112,6 +112,7 @@ export function HierarchyRow({
   disabled = false,
   toggleLabel,
   leafIcon,
+  surface = "card",
   className,
 }: {
   icon: ComponentType<{ className?: string }>;
