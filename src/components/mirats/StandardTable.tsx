@@ -739,6 +739,27 @@ export function StandardTable<T>({
     })(),
     paddingStart: 0,
     paddingEnd: 0,
+    // Khi vùng cuộn chưa đo được chiều cao (tab ẩn, môi trường test, lần render
+    // đầu trước khi layout ổn định) thì rect = 0 khiến virtualizer không render
+    // dòng nào → bảng trông như rỗng. Dùng kích thước dự phòng an toàn.
+    initialRect: { width: 1024, height: 800 },
+    observeElementRect: (instance, cb) => {
+      const el = instance.scrollElement as HTMLElement | null;
+      if (!el) return;
+      const report = () => {
+        const r = el.getBoundingClientRect();
+        cb({
+          width: r.width || el.clientWidth || 1024,
+          height: r.height || el.clientHeight || 800,
+        });
+      };
+      report();
+      if (typeof ResizeObserver === "undefined") return;
+      const ro = new ResizeObserver(report);
+      ro.observe(el);
+      return () => ro.disconnect();
+    },
+
     onChange: (instance) => {
       const offset = instance.scrollOffset;
       if (offset && offset > 0) {
