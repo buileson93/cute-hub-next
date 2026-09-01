@@ -30,6 +30,30 @@ import { AnomalyBadge } from "@/components/mirats/AnomalyBadge";
 import { MultiRoleBadge } from "@/components/mirats/MultiRoleBadge";
 import { CellPreview, ModelCell, type TaiSanRow, useInfiniteTaiSanRows, useModelRegistry, useMultiRoleMap } from "../ThanhPhanTable";
 import { normalize } from "@/lib/mirats/global-search";
+import { csvFileName, downloadCsv, toCsv, trangThaiBaoHanh } from "@/lib/mirats/inventory/csv";
+
+/**
+ * Xuất CSV đúng 4 cột nghiệp vụ bắt buộc cho tập kết quả đang lọc.
+ * ponytail: cố định 4 cột theo yêu cầu nghiệp vụ; cần xuất tuỳ biến thì dùng
+ * hộp thoại "Xuất dữ liệu" sẵn có trên thanh công cụ bảng.
+ */
+function xuatCsvTaiSan(rows: readonly TaiSanRow[]) {
+  if (rows.length === 0) {
+    toast.error("Không có dữ liệu để xuất.");
+    return;
+  }
+  const csv = toCsv([
+    ["MODEL", "SERIAL", "Người liên hệ", "Trạng thái bảo hành"],
+    ...rows.map((r) => [
+      r.model ?? "",
+      r.serial ?? "",
+      formatContactsForExport(buildContacts(r)),
+      trangThaiBaoHanh(r.hanBaoHanh),
+    ]),
+  ]);
+  downloadCsv(csvFileName("thanh-phan-tai-san"), csv);
+  toast.success(`Đã xuất ${rows.length} dòng ra CSV.`);
+}
 
 export function AssetTablePanel({
   tableKey,
