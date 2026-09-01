@@ -119,6 +119,7 @@ import { HongHocMoiForm } from "@/components/mirats/quick/HongHocMoiForm";
 import { ThanhPhanChiTietDialog } from "@/components/mirats/ThanhPhanChiTietDialog";
 import { PageFrame } from "@/components/mirats/layout/PageFrame";
 import { PageHeader } from "@/components/mirats/PageHeader";
+import { laMaKyThuat, DON_VI_FALLBACK } from "@/lib/mirats/display/don-vi";
 import { PageBody } from "@/components/mirats/PageBody";
 import { PageSection } from "@/components/mirats/layout/PageSection";
 import { ContentGrid } from "@/components/mirats/layout/PageLayouts";
@@ -621,8 +622,7 @@ function HeThongInner({
                 search={{ q: donVi } as never}
                 className="inline-flex items-center gap-1 hover:text-primary hover:underline"
               >
-                <Building2 className="h-3 w-3" /> {donVi}
-                {donViTenR ? ` — ${donViTenR}` : ""}
+                <Building2 className="h-3 w-3" /> {donViHienThi}
               </Link>
             ) : (
               <Link
@@ -709,8 +709,7 @@ function HeThongInner({
                           search={{ q: donVi } as never}
                           className="hover:text-primary hover:underline inline-flex items-center gap-1"
                         >
-                          {donVi}
-                          {donViTenR ? ` — ${donViTenR}` : ""}
+                          {donViHienThi}
                           <ExternalLink className="h-3 w-3 opacity-60" />
                         </Link>
                       ),
