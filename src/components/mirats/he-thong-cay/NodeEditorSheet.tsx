@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { EditKind, OverrideMap, HtGroup } from "./types";
 import { HT_KHAC } from "@/lib/mirats/phan-loai";
 import { physKeyValue } from "@/lib/mirats/editable-columns";
@@ -136,6 +136,19 @@ export function NodeEditorSheet({
           : "Tài sản"
     : "";
   const coThayDoi = canManage && ten.trim() !== tenGoc.trim();
+
+  // Danh sách đơn vị dạng combobox có tìm kiếm — tránh dropdown quá lớn.
+  const donViOptions: ComboOption[] = useMemo(
+    () =>
+      (Array.isArray(donViList) ? donViList : [])
+        .filter((dv) => dv?.id)
+        .map((dv) => ({
+          value: String(dv.id),
+          label: String(dv.ten ?? dv.ma ?? dv.id),
+          hint: dv.ma ? String(dv.ma) : undefined,
+        })),
+    [donViList],
+  );
 
   const yeuCauDong = () => {
     if (
