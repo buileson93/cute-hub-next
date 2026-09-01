@@ -53,6 +53,7 @@ import {
   restoreFromUpload,
   getCloudStatus,
 } from "@/lib/backup.functions";
+import { FullBackupPanel } from "@/components/mirats/backup/FullBackupPanel";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/backup")({
@@ -328,6 +329,8 @@ function BackupPage() {
   return (
     <AppShell>
       <div className="mx-auto max-w-5xl space-y-6">
+        <FullBackupPanel />
+
         {/* Tạo backup */}
         <Card>
           <CardHeader>

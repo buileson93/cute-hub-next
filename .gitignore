@@ -30,3 +30,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Gói sao lưu CSDL (không commit dữ liệu thật)
+supbase/dump/*
+!supbase/dump/README.md
