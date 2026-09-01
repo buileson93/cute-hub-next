@@ -233,7 +233,7 @@ export function HierarchyChildren({
   return (
     <div
       className={cn(
-        "ml-3 space-y-0.5 border-l border-border/70 pl-1.5 sm:ml-5 sm:pl-2.5",
+        "ml-3 space-y-1 border-l border-border/70 pl-1.5 sm:ml-5 sm:pl-2.5",
         className,
       )}
     >
