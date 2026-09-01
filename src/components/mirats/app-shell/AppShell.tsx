@@ -245,7 +245,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
 
           {/* Main content area */}
-          <div className="flex min-w-0 flex-1 flex-col h-full">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
             <header
               role="banner"
               className={cn(
@@ -292,7 +292,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </header>
             <main
               className={cn(
-                "flex-1 min-w-0 flex flex-col h-full overflow-hidden relative",
+                "relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden",
                 UI_DENSITY.MAIN_PB_MOBILE,
               )}
             >
