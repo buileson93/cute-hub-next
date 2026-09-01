@@ -319,15 +319,17 @@ function HeThongCayPage() {
     },
   });
 
+  // Chỉ tải DỮ LIỆU THÔ ở đây. Không nhúng taxonomy vào kết quả cache:
+  // trước đây taxonomy được "nướng" vào dữ liệu đã cache trong khi queryKey
+  // không phản ánh phiên bản taxonomy → lần tải đầu (taxonomy về sau/đổi)
+  // vẫn giữ kết quả cũ nên hiển thị "Chưa phân loại" cho tới khi reload.
   const {
-    data: devices = EMPTY_ROWS,
+    data: rawDevices = EMPTY_ROWS,
     isLoading: loadingDevices,
     refetch: refetchDevices,
   } = useQuery({
-    queryKey: ["thiet_bi_cay", taxonomy ? "taxo" : "no-taxo"],
-    enabled: !!taxonomy,
+    queryKey: ["thiet_bi_cay"],
     staleTime: 5 * 60_000,
-    placeholderData: (prev: any) => prev,
     queryFn: async () => {
       const pageSize = 1000;
       let from = 0;
@@ -361,28 +363,32 @@ function HeThongCayPage() {
           break;
         }
       }
-
-      return allData.map((d: any) => {
-        const pl = resolvePhanLoai(d.phan_loai_id, taxonomy);
-        const nh = resolveNhom(d.nhom_he_thong_id, taxonomy);
-        const ht = resolveHeThong(d.he_thong_id, taxonomy);
-        
-        return {
-          ...d,
-          _pl: pl.id,
-          _nhKey: nh.ma, // Canonical business code for grouping
-          _htId: ht.ma,  // Canonical composite code for grouping
-          _thanhPhanId: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.id,
-          _thanhPhanMa: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ma_thanh_phan,
-          _thanhPhanTen: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ten,
-          _loaiTbTen: d._loaiTbTen?.ten,
-          _loaiTbOrder: d._loaiTbOrder?.thu_tu,
-          _modelTen: d._modelRel?.ten ?? d.model ?? null,
-        };
-      });
-
+      return allData;
     },
   });
+
+  // Giải mã taxonomy ở tầng dẫn xuất → luôn đồng bộ với taxonomy mới nhất.
+  const devices = useMemo(() => {
+    if (!taxonomy || rawDevices.length === 0) return EMPTY_ROWS as any[];
+    return rawDevices.map((d: any) => {
+      const pl = resolvePhanLoai(d.phan_loai_id, taxonomy);
+      const nh = resolveNhom(d.nhom_he_thong_id, taxonomy);
+      const ht = resolveHeThong(d.he_thong_id, taxonomy);
+      return {
+        ...d,
+        _pl: pl.id,
+        _nhKey: nh.ma, // Canonical business code for grouping
+        _htId: ht.ma, // Canonical composite code for grouping
+        _thanhPhanId: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.id,
+        _thanhPhanMa: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ma_thanh_phan,
+        _thanhPhanTen: d.gan_chuc_nang?.[0]?.he_thong_thanh_phan?.ten,
+        _loaiTbTen: d._loaiTbTen?.ten,
+        _loaiTbOrder: d._loaiTbOrder?.thu_tu,
+        _modelTen: d._modelRel?.ten ?? d.model ?? null,
+      };
+    });
+  }, [rawDevices, taxonomy]);
+
 
   const { tree } = useMemo(() => {
     if (!taxonomy || !devices) return { tree: EMPTY_ROWS, total: 0 };
