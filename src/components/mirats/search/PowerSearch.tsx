@@ -269,68 +269,51 @@ export function PowerSearch({
         <CommandList className="max-h-[42rem] overflow-y-auto overflow-x-hidden">
           <CommandEmpty>Không tìm thấy kết quả nào.</CommandEmpty>
 
-          {query.trim() === "" ? (
+          {commandGroups.map((group) => (
+            <CommandGroup key={group.group} heading={group.label}>
+              {group.items.map((cmd) => (
+                <CommandItem
+                  key={`${group.group}-${cmd.id}`}
+                  value={`${cmd.title} ${cmd.description ?? ""} ${(cmd.keywords ?? []).join(" ")}`}
+                  onSelect={() => runCommand(cmd)}
+                >
+                  <cmd.icon className="mr-2 h-4 w-4 shrink-0 opacity-70" aria-hidden="true" />
+                  <div className="flex min-w-0 flex-col">
+                    <span className="truncate">{cmd.title}</span>
+                    {cmd.description ? (
+                      <span className="truncate text-[10px] text-muted-foreground">
+                        {cmd.description}
+                      </span>
+                    ) : null}
+                  </div>
+                  {cmd.shortcut ? (
+                    <kbd className="ml-auto hidden rounded border bg-muted px-1.5 font-mono text-[10px] sm:inline-block">
+                      {cmd.shortcut}
+                    </kbd>
+                  ) : null}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          ))}
+
+          {query.trim() !== "" && (
             <>
-              <CommandGroup heading="Hành động nhanh">
-                <CommandItem onSelect={() => handleSelect("/su-co/moi")}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  <span>Báo cáo sự cố mới</span>
-                </CommandItem>
-                <CommandItem onSelect={() => handleAction("qr-scan")}>
-                  <QrCode className="mr-2 h-4 w-4" />
-                  <span>Quét mã QR thiết bị</span>
-                </CommandItem>
-                <CommandItem onSelect={() => handleSelect("/kiem-ke")}>
-                  <ClipboardCheck className="mr-2 h-4 w-4" />
-                  <span>Kiểm kê tài sản</span>
-                </CommandItem>
-              </CommandGroup>
-
-              <CommandSeparator />
-
-              <CommandGroup heading="Gợi ý điều hướng">
-                <CommandItem onSelect={() => handleSelect("/thiet-bi")}>
-                  <Database className="mr-2 h-4 w-4" />
-                  <span>Sổ lý lịch thiết bị</span>
-                </CommandItem>
-                <CommandItem onSelect={() => handleSelect("/he-thong/cay")}>
-                  <LayoutGrid className="mr-2 h-4 w-4" />
-                  <span>Cấu trúc hệ thống</span>
-                </CommandItem>
-                <CommandItem onSelect={() => handleSelect("/du-an")}>
-                  <FolderKanban className="mr-2 h-4 w-4" />
-                  <span>Danh sách dự án</span>
-                </CommandItem>
-              </CommandGroup>
-
-              <CommandSeparator />
-
-              <CommandGroup heading="Hệ thống">
-                <CommandItem onSelect={() => handleAction("profile")}>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Cài đặt tài khoản</span>
-                </CommandItem>
-                <CommandItem onSelect={() => handleAction("logout")}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Đăng xuất</span>
-                </CommandItem>
-              </CommandGroup>
-            </>
-          ) : (
-            <>
-              {filteredNavItems.length > 0 && (
-                <CommandGroup heading="Điều hướng">
-                  {filteredNavItems.map((item, idx) => (
-                    <CommandItem key={`nav-${idx}`} onSelect={() => handleSelect(item.to)}>
-                      <item.icon className="mr-2 h-4 w-4 opacity-70" />
-                      <div className="flex flex-col">
-                        <span>{item.label}</span>
-                        <span className="text-[10px] text-muted-foreground">{item.workspace}</span>
-                      </div>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
+              {(globalLoading || ocrSyncing) && (
+                <div className="flex items-center gap-2 px-4 py-3 text-xs text-muted-foreground">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                  Đang tìm trong dữ liệu hệ thống…
+                </div>
               )}
+
+              {globalError ? (
+                <div
+                  role="alert"
+                  className="flex items-start gap-2 px-4 py-3 text-xs text-destructive"
+                >
+                  <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                  Không tải được kết quả dữ liệu. Lệnh điều hướng phía trên vẫn dùng được.
+                </div>
+              ) : null}
 
               {ocrResults.length > 0 && (
                 <CommandGroup heading="Nội dung tài liệu (OCR)">
