@@ -71,6 +71,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { InfoHint } from "@/components/mirats/InfoHint";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
+import { RowActionBar, RowActionButton, RowActionMenu } from "@/components/mirats/table/RowActions";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { PageFrame } from "@/components/mirats/layout/PageFrame";
 import { PageBody } from "@/components/mirats/PageBody";
@@ -924,71 +925,57 @@ function DanhMucThietBiPage() {
               header: "",
               group: "Thao tác",
               type: "actions" as const,
-              width: 140,
+              width: 112,
               align: "right" as const,
               render: (d: DbDevice) => (
-                <div
-                  className="flex items-center justify-end gap-0.5"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Button
-                    size="icon"
-                    variant={ACTION_PATTERNS.ROW_ACTION}
-                    aria-label="Xem chi tiết thiết bị"
-                    className="h-7 w-7"
+                <RowActionBar>
+                  <RowActionButton
+                    icon={Info}
+                    label="Xem chi tiết thiết bị"
+                    tooltip="Chi tiết"
                     onClick={() => openDetail(d)}
-                    title="Chi tiết"
-                  >
-                    <Info className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant={ACTION_PATTERNS.ROW_ACTION}
-                    aria-label="Chỉnh sửa thiết bị"
-                    className="h-7 w-7"
+                  />
+                  <RowActionButton
+                    icon={Pencil}
+                    label="Chỉnh sửa thiết bị"
+                    tooltip="Sửa"
                     onClick={() => openEdit(d)}
-                    title="Sửa"
-                  >
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant={ACTION_PATTERNS.ROW_ACTION}
-                    aria-label="Gán thiết bị"
-                    className="h-7 w-7"
-                    onClick={() => setAssignTargets([d])}
-                    title="Gán"
-                  >
-                    <PackagePlus className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant={ACTION_PATTERNS.ROW_ACTION}
-                    aria-label="Gỡ thiết bị"
-                    className="h-7 w-7 text-amber-600"
-                    disabled={!d._htId}
-                    onClick={() => setRemoveTargets([d])}
-                    title="Gỡ"
-                  >
-                    <PackageMinus className="h-3.5 w-3.5" />
-                  </Button>
-                  {editOn && (
-                    <Button
-                      size="icon"
-                      variant={ACTION_PATTERNS.ROW_ACTION}
-                      aria-label="Xoá thiết bị"
-                      className="h-7 w-7 text-destructive"
-                      onClick={() => {
-                        setDeleteTargets([d]);
-                        setDeleteKind("retire");
-                      }}
-                      title="Xoá"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  )}
-                </div>
+                  />
+                  <RowActionMenu
+                    items={[
+                      {
+                        key: "assign",
+                        icon: PackagePlus,
+                        label: "Gán vào hệ thống",
+                        onSelect: () => setAssignTargets([d]),
+                      },
+                      {
+                        key: "remove",
+                        icon: PackageMinus,
+                        label: "Gỡ khỏi hệ thống",
+                        tone: "warning" as const,
+                        disabled: !d._htId,
+                        onSelect: () => setRemoveTargets([d]),
+                      },
+                      ...(editOn
+                        ? [
+                            {
+                              key: "delete",
+                              icon: Trash2,
+                              label: "Xoá thiết bị",
+                              tone: "destructive" as const,
+                              onSelect: () => {
+                                setDeleteTargets([d]);
+                                setDeleteKind("retire");
+                              },
+                            },
+                          ]
+                        : []),
+                    ]}
+                  />
+                </RowActionBar>
               ),
+
             },
           ]
         : []),

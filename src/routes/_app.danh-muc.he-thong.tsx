@@ -9,6 +9,7 @@ import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
 import { Badge } from "@/components/ui/badge";
 
 import { Button } from "@/components/ui/button";
+import { RowActionBar, RowActionButton } from "@/components/mirats/table/RowActions";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -290,37 +291,28 @@ function HeThongPage() {
                     label: "",
                     align: "right" as const,
                     cell: (r: Row) => (
-                      <div
-                        className="flex items-center justify-end gap-0.5 whitespace-nowrap"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          aria-label="Chỉnh sửa hệ thống"
-                          className="h-7 w-7"
+                      <RowActionBar>
+                        <RowActionButton
+                          icon={Pencil}
+                          label="Chỉnh sửa hệ thống"
+                          tooltip="Sửa thông tin"
                           onClick={() => setEditing(r)}
-                          title="Sửa thông tin"
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
+                        />
                         {editOn && (
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            aria-label="Xoá hệ thống"
-                            className="h-7 w-7 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                            onClick={() => setDelTargets([r])}
-                            title={
+                          <RowActionButton
+                            icon={Trash2}
+                            label="Xoá hệ thống"
+                            tone="destructive"
+                            disabled={r.soTb > 0}
+                            tooltip={
                               r.soTb > 0 ? `Còn ${r.soTb} tài sản — không thể xoá` : "Xoá hệ thống"
                             }
-                            disabled={r.soTb > 0}
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
+                            onClick={() => setDelTargets([r])}
+                          />
                         )}
-                      </div>
+                      </RowActionBar>
                     ),
+
                   },
                 ]
               : []),

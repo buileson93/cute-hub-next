@@ -32,6 +32,10 @@ import {
   Download,
 } from "lucide-react";
 import { AppTooltip } from "@/components/mirats/AppTooltip";
+import {
+  RowActionBar,
+  RowActionButton,
+} from "@/components/mirats/table/RowActions";
 import { toCsv } from "@/lib/mirats/import-config";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -881,47 +885,34 @@ export function CatalogTable({
                 label: "",
                 align: "right" as const,
                 cell: (r: Row) => (
-                  <div className="flex items-center justify-end gap-0.5 whitespace-nowrap">
-                    <AppTooltip noiDung={`Xem ${r.soThietBi} tài sản đang ở "${r.ten}"`}>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-7 w-7 text-muted-foreground hover:text-primary"
-                        onClick={() => setUsageRow(r)}
-                      >
-                        <Info className="h-3.5 w-3.5" />
-                        <span className="sr-only">Chi tiết tài sản</span>
-                      </Button>
-                    </AppTooltip>
+                  <RowActionBar>
+                    <RowActionButton
+                      icon={Info}
+                      label="Xem tài sản liên quan"
+                      tooltip={`Xem ${r.soThietBi} tài sản đang ở "${r.ten}"`}
+                      onClick={() => setUsageRow(r)}
+                    />
                     {extraRowActions?.(r)}
                     {canManage && (
                       <>
-                        <AppTooltip noiDung="Chỉnh sửa thông tin">
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-7 w-7"
-                            onClick={() => setEditing(r)}
-                          >
-                            <Pencil className="h-3.5 w-3.5" />
-                            <span className="sr-only">Sửa</span>
-                          </Button>
-                        </AppTooltip>
-                        <AppTooltip noiDung="Xoá mục này">
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-7 w-7 text-destructive"
-                            onClick={() => delMut.mutate(r)}
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                            <span className="sr-only">Xoá</span>
-                          </Button>
-                        </AppTooltip>
+                        <RowActionButton
+                          icon={Pencil}
+                          label="Chỉnh sửa"
+                          tooltip="Chỉnh sửa thông tin"
+                          onClick={() => setEditing(r)}
+                        />
+                        <RowActionButton
+                          icon={Trash2}
+                          label="Xoá"
+                          tooltip="Xoá mục này"
+                          tone="destructive"
+                          onClick={() => delMut.mutate(r)}
+                        />
                       </>
                     )}
-                  </div>
+                  </RowActionBar>
                 ),
+
               },
             ] as StdColumn<Row>[]
           ).filter((c) => !hiddenCols.includes(c.key))}
@@ -1295,40 +1286,32 @@ function DonViNode({
         }
         actions={
           <>
-            <AppTooltip noiDung={`Xem ${row.soThietBi} tài sản đang ở "${row.ten}"`}>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-7 w-7 text-muted-foreground hover:text-primary"
-                onClick={() => onInfo(row)}
-              >
-                <Info className="h-3.5 w-3.5" />
-                <span className="sr-only">Chi tiết tài sản</span>
-              </Button>
-            </AppTooltip>
+            <RowActionButton
+              icon={Info}
+              label="Xem tài sản liên quan"
+              tooltip={`Xem ${row.soThietBi} tài sản đang ở "${row.ten}"`}
+              onClick={() => onInfo(row)}
+            />
             {extraRowActions?.(row)}
             {canManage && (
               <>
-                <AppTooltip noiDung="Chỉnh sửa thông tin">
-                  <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => onEdit(row)}>
-                    <Pencil className="h-3.5 w-3.5" />
-                    <span className="sr-only">Sửa</span>
-                  </Button>
-                </AppTooltip>
-                <AppTooltip noiDung="Xoá mục này">
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-7 w-7 text-destructive"
-                    onClick={() => onDelete(row)}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                    <span className="sr-only">Xoá</span>
-                  </Button>
-                </AppTooltip>
+                <RowActionButton
+                  icon={Pencil}
+                  label="Chỉnh sửa"
+                  tooltip="Chỉnh sửa thông tin"
+                  onClick={() => onEdit(row)}
+                />
+                <RowActionButton
+                  icon={Trash2}
+                  label="Xoá"
+                  tooltip="Xoá mục này"
+                  tone="destructive"
+                  onClick={() => onDelete(row)}
+                />
               </>
             )}
           </>
+
         }
       />
       {hasKids && open && (
