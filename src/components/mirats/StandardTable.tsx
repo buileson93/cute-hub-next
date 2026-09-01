@@ -449,8 +449,23 @@ export function StandardTable<T>({
     return v == null ? "" : String(v);
   }, []);
 
+  const globalNeedle = useMemo(() => normalize(globalQuery).trim(), [globalQuery]);
+
+  const matchesGlobal = useCallback(
+    (r: T) => {
+      if (!globalNeedle) return true;
+      for (const c of columns) {
+        const text = colText(c, r);
+        if (text && normalize(text).includes(globalNeedle)) return true;
+      }
+      return false;
+    },
+    [columns, colText, globalNeedle],
+  );
+
   const matchesFilters = useCallback(
     (r: T, exceptKey?: string) => {
+      if (!matchesGlobal(r)) return false;
       for (const c of columns) {
         if (c.key === exceptKey) continue;
         if (c.filter === "cat") {
@@ -468,7 +483,7 @@ export function StandardTable<T>({
       }
       return true;
     },
-    [columns, catFilters, textFilters, colText],
+    [columns, catFilters, textFilters, colText, matchesGlobal],
   );
 
   const dedupedRows = useMemo(() => {
@@ -483,13 +498,51 @@ export function StandardTable<T>({
 
   const filtered = useMemo(() => dedupedRows.filter((r) => matchesFilters(r)), [dedupedRows, matchesFilters]);
 
+  /**
+   * Danh sách giá trị duy nhất cho các cột lọc dạng droplist.
+   * Tính trên toàn bộ dữ liệu đã tải, loại trừ chính bộ lọc của cột đó
+   * để người dùng vẫn thấy được các lựa chọn khác.
+   */
+  const catOptions = useMemo(() => {
+    const out: Record<string, { value: string; count: number }[]> = {};
+    for (const c of columns) {
+      if (c.filter !== "cat") continue;
+      const counter = new Map<string, number>();
+      for (const r of dedupedRows) {
+        if (!matchesFilters(r, c.key)) continue;
+        const v = colText(c, r);
+        counter.set(v, (counter.get(v) ?? 0) + 1);
+      }
+      out[c.key] = Array.from(counter.entries())
+        .map(([value, count]) => ({ value, count }))
+        .sort((a, b) => a.value.localeCompare(b.value, "vi", { numeric: true }));
+    }
+    return out;
+  }, [columns, dedupedRows, matchesFilters, colText]);
+
   const hasFilter = useMemo(() => {
+    if (globalNeedle.length > 0) return true;
     return columns.some((c) =>
       c.filter === "cat"
         ? (catFilters[c.key]?.size ?? 0) > 0
         : (textFilters[c.key] ?? "").trim().length > 0,
     );
-  }, [columns, catFilters, textFilters]);
+  }, [columns, catFilters, textFilters, globalNeedle]);
+
+  /**
+   * Tìm kiếm trên TOÀN BỘ dữ liệu: khi có từ khóa/bộ lọc mà nguồn dữ liệu
+   * vẫn còn trang chưa tải, tự động tải tiếp cho đến hết rồi mới lọc.
+   */
+  const isLoadingAllForSearch = Boolean(
+    hasFilter && infiniteScroll?.hasNextPage && !trangThai.loi,
+  );
+  useEffect(() => {
+    if (!hasFilter) return;
+    if (!infiniteScroll?.hasNextPage) return;
+    if (infiniteScroll.isFetchingNextPage || trangThai.dangTai || trangThai.loi) return;
+    infiniteScroll.fetchNextPage();
+  }, [hasFilter, infiniteScroll, trangThai.dangTai, trangThai.loi, localRows.length]);
+
 
   const sorted = useMemo(() => {
     if (!sort) return filtered;
