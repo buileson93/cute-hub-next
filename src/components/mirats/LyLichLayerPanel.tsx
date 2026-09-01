@@ -33,7 +33,12 @@ import {
 } from "@/lib/mirats/he-thong-thanh-phan";
 import { useLicensesData } from "@/lib/mirats/db-licenses";
 import { ChangeLogPanel } from "@/components/mirats/ChangeLogPanel";
-import { NodeIcon, HierarchySkeleton, type NodeTone } from "@/components/mirats/hierarchy/HierarchyNode";
+import {
+  HierarchySkeleton,
+  HierarchyTimeline,
+  HierarchyEvent,
+  type NodeTone,
+} from "@/components/mirats/hierarchy/HierarchyNode";
 
 const META: Record<
   string,
