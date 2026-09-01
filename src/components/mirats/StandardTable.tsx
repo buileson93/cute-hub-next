@@ -24,6 +24,9 @@ import { Icon } from "@/components/mirats/ui/Icon";
 import { useDensity } from "@/components/mirats/DensityToggle";
 import { GripVertical, ChevronRight, ChevronDown, MoreVertical, Loader2, XCircle, Trash2, Download, RotateCcw } from "lucide-react";
 import { ColumnVisibilityMenu } from "./ColumnVisibilityMenu";
+import { ColumnFilterMenu } from "./table/ColumnFilterMenu";
+import { Search } from "lucide-react";
+
 import { HorizontalScrollRail } from "./HorizontalScrollRail";
 import { BulkActionButton } from "./BulkActionButton";
 import { TableExportDialog } from "./TableExportDialog";
