@@ -1096,18 +1096,21 @@ export function StandardTable<T>({
           )}
         </div>
       ) : (
+        {/* Chỉ MỘT chủ sở hữu cuộn dọc (outer) và MỘT chủ sở hữu cuộn ngang
+            (inner, cao bằng nội dung) → khi bảng ngắn hơn màn hình, thanh cuộn
+            ngang nằm ngay dưới hàng cuối, không sinh thêm thanh thứ hai. */}
         <div 
-          className="relative min-h-0 border rounded-md shadow-none bg-background astryx-table-container flex flex-col flex-1 overflow-auto mirats-scroll mirats-table-scroll-container will-change-transform" 
+          className="relative min-h-0 border rounded-md shadow-none bg-background astryx-table-container flex flex-col flex-1 mirats-scroll will-change-transform" 
           ref={scrollContainerRef}
           style={{
-            overflowX: 'auto',
+            overflowX: 'hidden',
             overflowY: 'auto',
             contain: 'content',
             WebkitOverflowScrolling: 'touch',
             transform: 'translate3d(0,0,0)'
           }}
         >
-
+          <div className="w-full max-w-full shrink-0 overflow-x-auto overflow-y-visible mirats-scroll mirats-table-scroll-container">
           <Table 
             className="border-collapse border-separate border-spacing-0 w-full mirats-standard-table-element"
             style={{
