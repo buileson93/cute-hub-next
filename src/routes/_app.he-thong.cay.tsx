@@ -260,7 +260,7 @@ function HeThongCayPage() {
   } = useCayContext();
 
   // Quyền bị thu hồi khi đang chỉnh sửa → tự động trở về chế độ xem an toàn.
-  React.useEffect(() => {
+  useEffect(() => {
     if (!canManageNodes && editMode) {
       setEditMode(false);
       toast.info("Đã chuyển về chế độ xem do tài khoản không có quyền chỉnh sửa sơ đồ.");
