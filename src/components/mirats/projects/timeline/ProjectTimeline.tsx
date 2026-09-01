@@ -44,13 +44,7 @@ interface ProjectTimelineProps {
 export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
   const [selectedEventId, setSelectedEventId] = React.useState<string | null>(null);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const {
-    data: events,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useProjectEvents(projectId);
+  const { data: events, isLoading, isError, error, refetch } = useProjectEvents(projectId);
 
   const filteredEvents = React.useMemo(() => {
     if (!events) return [];
@@ -116,7 +110,6 @@ export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
           aria-label="Danh sách sự kiện dòng thời gian"
         >
           <div className="p-3 sm:p-4">
-
             {isLoading ? (
               <TimelineLoading />
             ) : isError ? (
@@ -138,7 +131,6 @@ export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
                 <p className="text-sm">Không tìm thấy sự kiện nào</p>
               </div>
             ) : (
-
               <div className="space-y-8 relative">
                 {/* Vertical axis line */}
                 <div className="absolute left-[17px] top-2 bottom-0 w-[2px] bg-border z-0" />
@@ -178,7 +170,6 @@ export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
           <TimelineInspector event={selectedEvent} onClose={() => setSelectedEventId(null)} />
         </div>
       )}
-
     </div>
   );
 }

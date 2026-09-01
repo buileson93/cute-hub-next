@@ -83,16 +83,12 @@ import {
   useProjectMembers,
 } from "@/components/mirats/projects/ProjectMembersDialog";
 import { computeTaskMetrics } from "@/lib/mirats/projects/task-metrics";
-import {
-  ProjectGantt,
-  type GanttAssignee,
-} from "@/components/mirats/projects/gantt/ProjectGantt";
+import { ProjectGantt, type GanttAssignee } from "@/components/mirats/projects/gantt/ProjectGantt";
 import {
   TaskAttachmentButton,
   useTaskAttachmentCounts,
 } from "@/components/mirats/projects/TaskAttachmentButton";
 import { ProjectReports } from "@/components/mirats/projects/ProjectReports";
-
 
 const SUPPORTED_VIEWS = [
   "kanban",
@@ -300,7 +296,10 @@ function DuAnDetailPage() {
     queryKey: ["profiles-for", userIds.sort().join(",")],
     queryFn: async () => {
       if (userIds.length === 0) return [] as Profile[];
-      const { data } = await supabase.from("profiles").select("id,ho_ten,email,avatar_url").in("id", userIds);
+      const { data } = await supabase
+        .from("profiles")
+        .select("id,ho_ten,email,avatar_url")
+        .in("id", userIds);
       return (data ?? []) as Profile[];
     },
     enabled: userIds.length > 0,
@@ -344,13 +343,8 @@ function DuAnDetailPage() {
 
   const { data: members } = useProjectMembers(id, openMembers || membersLoadedOnce);
   const taskIds = useMemo(() => (congViecs ?? []).map((t) => t.id), [congViecs]);
-  const { data: attachmentCounts } = useTaskAttachmentCounts(
-    taskIds,
-    needsTasks && workVisible,
-  );
+  const { data: attachmentCounts } = useTaskAttachmentCounts(taskIds, needsTasks && workVisible);
   const metrics = useMemo(() => computeTaskMetrics(congViecs ?? []), [congViecs]);
-
-
 
   // Kéo–thả / đổi nhanh trạng thái trên Kanban (ghi thẳng CSDL, RLS kiểm soát quyền).
   const changeStatus = useMutation({
@@ -369,13 +363,12 @@ function DuAnDetailPage() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["du-an-cv", id] });
-                  qc.invalidateQueries({ queryKey: ["project-events", id] });
+      qc.invalidateQueries({ queryKey: ["project-events", id] });
       qc.invalidateQueries({ queryKey: ["du-an-moc", id] });
       qc.invalidateQueries({ queryKey: ["du-an", id] });
     },
     onError: (e: Error) => toast.error("Không đổi được trạng thái: " + e.message),
   });
-
 
   if (loadingDA) {
     return (
@@ -408,7 +401,9 @@ function DuAnDetailPage() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-col">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">{duAn.ten}</h1>
-            {duAn.ma && <span className="text-xs font-mono text-muted-foreground mt-0.5">{duAn.ma}</span>}
+            {duAn.ma && (
+              <span className="text-xs font-mono text-muted-foreground mt-0.5">{duAn.ma}</span>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -480,7 +475,6 @@ function DuAnDetailPage() {
           <Progress value={duAn.tien_do} className="h-1.5 bg-muted" />
         </div>
       </div>
-
 
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-3 min-w-0">
@@ -725,7 +719,6 @@ function DuAnDetailPage() {
           <TabsContent value="timeline" className="mt-3">
             <ProjectTimeline projectId={id} />
           </TabsContent>
-
         </Tabs>
       </div>
 
@@ -747,7 +740,7 @@ function DuAnDetailPage() {
         isManager={isManager}
         onDone={() => {
           qc.invalidateQueries({ queryKey: ["du-an-cv", id] });
-                  qc.invalidateQueries({ queryKey: ["project-events", id] });
+          qc.invalidateQueries({ queryKey: ["project-events", id] });
           qc.invalidateQueries({ queryKey: ["du-an-moc", id] });
           qc.invalidateQueries({ queryKey: ["du-an", id] });
         }}
@@ -760,7 +753,7 @@ function DuAnDetailPage() {
         canDelete={isManager}
         onDeleted={() => {
           qc.invalidateQueries({ queryKey: ["du-an-cv", id] });
-                  qc.invalidateQueries({ queryKey: ["project-events", id] });
+          qc.invalidateQueries({ queryKey: ["project-events", id] });
           qc.invalidateQueries({ queryKey: ["du-an-moc", id] });
           qc.invalidateQueries({ queryKey: ["du-an", id] });
         }}
@@ -790,7 +783,6 @@ function DuAnDetailPage() {
         duAnId={id}
         canManage={isManager}
       />
-
     </div>
   );
 }
@@ -892,7 +884,8 @@ function KanbanView({
               {canAdd && (
                 <Button
                   variant="ghost"
-                  size="icon" aria-label={`Thêm công việc vào cột ${col.label}`}
+                  size="icon"
+                  aria-label={`Thêm công việc vào cột ${col.label}`}
                   className="size-9 md:size-7 text-muted-foreground"
                   onClick={() => onAddIn(mocs[0].id)}
                 >
@@ -1058,7 +1051,6 @@ function GanttView({
   );
 }
 
-
 // =====================================================
 // LIST
 // =====================================================
@@ -1125,7 +1117,8 @@ function ListView({
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button
-                          size="icon" aria-label={`Xoá mốc ${m.ten}`}
+                          size="icon"
+                          aria-label={`Xoá mốc ${m.ten}`}
                           variant="ghost"
                           className="size-9 text-rose-500"
                         >
@@ -1180,13 +1173,14 @@ function ListView({
                         <div className="sm:col-span-4 min-w-0">
                           <div className="font-medium text-sm truncate">{t.ten}</div>
                           {t.mo_ta && (
-                            <div className="text-[11px] text-muted-foreground truncate">{t.mo_ta}</div>
+                            <div className="text-[11px] text-muted-foreground truncate">
+                              {t.mo_ta}
+                            </div>
                           )}
                         </div>
                         <div className="sm:col-span-2 min-w-0 text-xs text-muted-foreground flex items-center gap-1">
                           <UserIcon className="h-3 w-3 shrink-0" />
-                          <span className="truncate">
-                          {nameOf(t.nguoi_xu_ly_chinh)}</span>
+                          <span className="truncate">{nameOf(t.nguoi_xu_ly_chinh)}</span>
                         </div>
                         <div className="sm:col-span-2 min-w-0 text-xs text-muted-foreground flex items-center gap-1">
                           <CalendarIcon className="h-3 w-3 shrink-0" />
@@ -1265,7 +1259,6 @@ function CreateMocDialog({
       onDone();
     },
     onError: (e: Error) => toast.error("Thêm mốc thất bại: " + e.message),
-
   });
 
   return (
@@ -1470,8 +1463,8 @@ function EditCongViecDialog({
       onOpenChange(false);
       onDone();
     },
-    onError: (e: Error) => toast.error((isEdit ? "Cập nhật" : "Thêm") + " công việc thất bại: " + e.message),
-
+    onError: (e: Error) =>
+      toast.error((isEdit ? "Cập nhật" : "Thêm") + " công việc thất bại: " + e.message),
   });
 
   const del = useMutation({
@@ -1486,7 +1479,6 @@ function EditCongViecDialog({
       onDone();
     },
     onError: (e: Error) => toast.error("Xoá công việc thất bại: " + e.message),
-
   });
 
   const toggleCollab = useMutation({
@@ -1513,6 +1505,7 @@ function EditCongViecDialog({
       if (editing) {
         qc.invalidateQueries({ queryKey: ["cv-phoi-hop", editing.id] });
         qc.invalidateQueries({ queryKey: ["du-an-cv", duAnId] });
+        qc.invalidateQueries({ queryKey: ["project-events", duAnId] });
       }
     },
     onError: (e: Error) => toast.error(e.message),
@@ -1676,7 +1669,11 @@ function EditCongViecDialog({
           {isEdit && canDeleteTask && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="outline" className="text-rose-600 mr-auto" disabled={del.isPending}>
+                <Button
+                  variant="outline"
+                  className="text-rose-600 mr-auto"
+                  disabled={del.isPending}
+                >
                   <Trash2 className="h-4 w-4 mr-1.5" aria-hidden="true" /> Xoá
                 </Button>
               </AlertDialogTrigger>
@@ -1695,7 +1692,9 @@ function EditCongViecDialog({
                     disabled={del.isPending}
                     className="bg-rose-600 hover:bg-rose-700"
                   >
-                    {del.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />}
+                    {del.isPending && (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
+                    )}
                     Xoá
                   </AlertDialogAction>
                 </AlertDialogFooter>
@@ -1705,7 +1704,10 @@ function EditCongViecDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Huỷ
           </Button>
-          <Button onClick={() => save.mutate()} disabled={save.isPending || (isEdit && !canEditTask)}>
+          <Button
+            onClick={() => save.mutate()}
+            disabled={save.isPending || (isEdit && !canEditTask)}
+          >
             {save.isPending ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
             ) : (
@@ -1781,7 +1783,12 @@ function ProjectSettingsDialog({
           mo_ta: form.mo_ta.trim() || null,
           ngay_bat_dau: form.ngay_bat_dau || null,
           ngay_ket_thuc_du_kien: form.ngay_ket_thuc_du_kien || null,
-          trang_thai: form.trang_thai as "moi" | "dang_thuc_hien" | "tam_dung" | "hoan_thanh" | "huy",
+          trang_thai: form.trang_thai as
+            | "moi"
+            | "dang_thuc_hien"
+            | "tam_dung"
+            | "hoan_thanh"
+            | "huy",
           quan_ly_id: form.quan_ly_id,
         })
         .eq("id", duAn.id);
@@ -1813,7 +1820,9 @@ function ProjectSettingsDialog({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Thiết lập dự án</DialogTitle>
-          <DialogDescription>Cập nhật thông tin chung, trạng thái và người quản lý.</DialogDescription>
+          <DialogDescription>
+            Cập nhật thông tin chung, trạng thái và người quản lý.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-3">
@@ -1898,7 +1907,11 @@ function ProjectSettingsDialog({
           {canDelete && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="outline" className="text-rose-600 mr-auto" disabled={del.isPending}>
+                <Button
+                  variant="outline"
+                  className="text-rose-600 mr-auto"
+                  disabled={del.isPending}
+                >
                   <Trash2 className="h-4 w-4 mr-1.5" aria-hidden="true" /> Xoá dự án
                 </Button>
               </AlertDialogTrigger>
@@ -1906,7 +1919,8 @@ function ProjectSettingsDialog({
                 <AlertDialogHeader>
                   <AlertDialogTitle>Xoá dự án "{duAn.ten}"?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Toàn bộ mốc, công việc và liên kết hồ sơ của dự án sẽ bị xoá. Không thể hoàn tác.
+                    Toàn bộ mốc, công việc và liên kết hồ sơ của dự án sẽ bị xoá. Không thể hoàn
+                    tác.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -1919,7 +1933,9 @@ function ProjectSettingsDialog({
                     disabled={del.isPending}
                     className="bg-rose-600 hover:bg-rose-700"
                   >
-                    {del.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />}
+                    {del.isPending && (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
+                    )}
                     Xoá
                   </AlertDialogAction>
                 </AlertDialogFooter>
@@ -1942,5 +1958,3 @@ function ProjectSettingsDialog({
     </Dialog>
   );
 }
-
-
