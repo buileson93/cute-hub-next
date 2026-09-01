@@ -233,7 +233,7 @@ export function BanQuyenCapPhatDialog({
                         <>
                           <Badge
                             variant={tb.nhanVien ? "outline" : "destructive"}
-                            className="gap-1 px-1.5 py-0.5 text-[10px]"
+                            className="gap-1 px-1.5 py-0.5 text-mini"
                           >
                             {tb.nhanVien ? (
                               <CheckCircle2 className="h-3 w-3 text-emerald-500" />
@@ -244,7 +244,7 @@ export function BanQuyenCapPhatDialog({
                           </Badge>
                           <Badge
                             variant={tb.hasModel ? "outline" : "destructive"}
-                            className="gap-1 px-1.5 py-0.5 text-[10px]"
+                            className="gap-1 px-1.5 py-0.5 text-mini"
                           >
                             {tb.hasModel ? (
                               <CheckCircle2 className="h-3 w-3 text-emerald-500" />
@@ -255,7 +255,7 @@ export function BanQuyenCapPhatDialog({
                           </Badge>
                           <Badge
                             variant={tb.hasSerial ? "outline" : "destructive"}
-                            className="gap-1 px-1.5 py-0.5 text-[10px]"
+                            className="gap-1 px-1.5 py-0.5 text-mini"
                           >
                             {tb.hasSerial ? (
                               <CheckCircle2 className="h-3 w-3 text-emerald-500" />
@@ -326,7 +326,7 @@ export function BanQuyenCapPhatDialog({
                         {c.nguoi_cai ? ` · ${c.nguoi_cai}` : ""}
                       </div>
                       {c.nhanVien && (
-                        <div className="text-[10px] text-primary/70 font-medium">
+                        <div className="text-mini text-primary/70 font-medium">
                           👤 {c.nhanVien.hoTen} ({c.nhanVien.donVi || "KĐĐ"})
                         </div>
                       )}

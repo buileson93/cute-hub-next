@@ -283,7 +283,7 @@ export function NodeNoteDrawer(props: Props) {
             <FileText className="h-4 w-4 text-primary" />
             Ghi chú node
             {nodeType && (
-              <Badge variant="outline" className="text-[10px] font-mono">
+              <Badge variant="outline" className="text-mini font-mono">
                 {nodeType === "he_thong" ? "Hệ thống" : "Thành phần"}
               </Badge>
             )}
@@ -326,7 +326,7 @@ export function NodeNoteDrawer(props: Props) {
                 />
                 {mentionQuery != null && filteredOptions.length > 0 && (
                   <div className="absolute left-3 bottom-3 z-20 w-[320px] max-h-[240px] overflow-auto rounded-md border bg-popover shadow-lg text-sm">
-                    <div className="px-2 py-1 text-[10px] uppercase tracking-wide text-muted-foreground border-b flex items-center gap-1">
+                    <div className="px-2 py-1 text-mini uppercase tracking-wide text-muted-foreground border-b flex items-center gap-1">
                       <AtSign className="h-3 w-3" /> Liên kết nhanh · ↑↓ · Enter
                     </div>
                     {filteredOptions.map((opt, i) => (
@@ -340,7 +340,7 @@ export function NodeNoteDrawer(props: Props) {
                         onMouseEnter={() => setMentionIdx(i)}
                         className={`w-full text-left px-2 py-1.5 flex items-center gap-2 ${i === mentionIdx ? "bg-accent" : ""}`}
                       >
-                        <span className="font-mono text-[10px] text-muted-foreground w-14 truncate">
+                        <span className="font-mono text-mini text-muted-foreground w-14 truncate">
                           {opt.ma}
                         </span>
                         <span className="truncate">{opt.ten}</span>
@@ -438,7 +438,7 @@ export function NodeNoteDrawer(props: Props) {
                         }}
                       >
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-[10px] font-mono">
+                          <Badge variant="outline" className="text-mini font-mono">
                             {r.node_type === "he_thong" ? "Hệ thống" : "Thành phần"}
                           </Badge>
                           <span className="text-sm font-medium truncate">{r.ten}</span>
@@ -455,10 +455,10 @@ export function NodeNoteDrawer(props: Props) {
 
         {mentions.length > 0 && (
           <div className="mt-2 rounded-md border bg-muted/20 p-2 space-y-1">
-            <div className="text-[10px] uppercase tracking-wide text-muted-foreground flex items-center gap-1">
+            <div className="text-mini uppercase tracking-wide text-muted-foreground flex items-center gap-1">
               <Link2 className="h-3 w-3" /> Liên kết được đề cập ({mentions.length})
               {isHeThong && missingMentions.length > 0 && (
-                <Badge variant="secondary" className="ml-auto text-[10px]">
+                <Badge variant="secondary" className="ml-auto text-mini">
                   {missingMentions.length} sẽ tạo mới khi lưu
                 </Badge>
               )}
@@ -470,7 +470,7 @@ export function NodeNoteDrawer(props: Props) {
                   <Badge
                     key={m.id}
                     variant={isNew ? "default" : "outline"}
-                    className="text-[11px] font-normal"
+                    className="text-meta font-normal"
                     title={isNew ? "Chưa có liên kết — sẽ tạo khi lưu" : "Đã có liên kết"}
                   >
                     @{m.ten}
@@ -479,7 +479,7 @@ export function NodeNoteDrawer(props: Props) {
               })}
             </div>
             {!isHeThong && (
-              <p className="text-[10px] text-muted-foreground italic">
+              <p className="text-mini text-muted-foreground italic">
                 Node hiện tại là Thành phần — @mention chỉ tạo tham chiếu trong ghi chú, không tự
                 tạo liên kết.
               </p>
@@ -507,7 +507,7 @@ export function NodeNoteDrawer(props: Props) {
               )}
               Lưu ghi chú
               {isHeThong && missingMentions.length > 0 && (
-                <span className="ml-1 text-[10px] opacity-80">
+                <span className="ml-1 text-mini opacity-80">
                   +{missingMentions.length} liên kết
                 </span>
               )}

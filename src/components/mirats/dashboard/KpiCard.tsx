@@ -87,14 +87,14 @@ export function KpiCard({
           </div>
 
           {unit && !isLoading && (
-            <div className="text-[11px] font-bold uppercase tracking-wider opacity-60">{unit}</div>
+            <div className="text-meta font-bold uppercase tracking-wider opacity-60">{unit}</div>
           )}
         </div>
 
         {trend && !isLoading && (
           <div
             className={cn(
-              "text-[11px] font-bold mt-1 flex items-center gap-1",
+              "text-meta font-bold mt-1 flex items-center gap-1",
               trend.isUp
                 ? "text-emerald-600 dark:text-emerald-400"
                 : "text-red-600 dark:text-red-400",

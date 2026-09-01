@@ -105,7 +105,7 @@ export function TaskComments({
               <div className="flex items-center justify-between gap-2">
                 <span className="text-xs font-medium">{nameOf(c.user_id)}</span>
                 <div className="flex items-center gap-1">
-                  <span className="text-[11px] text-muted-foreground tabular-nums">
+                  <span className="text-meta text-muted-foreground tabular-nums">
                     {new Date(c.created_at).toLocaleString("vi-VN")}
                   </span>
                   {currentUserId && c.user_id === currentUserId && (

@@ -251,7 +251,7 @@ export function ChecklistDesigner({
                     className="flex-1 truncate text-left text-xs font-semibold"
                   >
                     {s.ten}
-                    <span className="ml-1 font-mono text-[10px] text-muted-foreground">
+                    <span className="ml-1 font-mono text-mini text-muted-foreground">
                       {s.ma_section}
                     </span>
                   </button>
@@ -293,12 +293,12 @@ export function ChecklistDesigner({
                           }`}
                         >
                           <span className="flex-1 truncate">
-                            <span className="font-mono text-[10px] text-muted-foreground">
+                            <span className="font-mono text-mini text-muted-foreground">
                               {it.item_code}
                             </span>
                             <span className="ml-1">{it.ten}</span>
                           </span>
-                          <Badge variant="outline" className="h-4 shrink-0 px-1 text-[9px]">
+                          <Badge variant="outline" className="h-4 shrink-0 px-1 text-micro">
                             {it.result_kind}
                           </Badge>
                           <span className="flex opacity-0 transition group-hover:opacity-100">
@@ -356,7 +356,7 @@ export function ChecklistDesigner({
                     <button
                       type="button"
                       onClick={() => addItem(si)}
-                      className="mt-0.5 flex w-full items-center justify-center gap-1 rounded border border-dashed px-2 py-1 text-[11px] text-muted-foreground hover:bg-background"
+                      className="mt-0.5 flex w-full items-center justify-center gap-1 rounded border border-dashed px-2 py-1 text-meta text-muted-foreground hover:bg-background"
                     >
                       <Plus className="h-3 w-3" /> Thêm hạng mục
                     </button>
@@ -378,7 +378,7 @@ export function ChecklistDesigner({
         <div className="mx-auto max-w-3xl">
           <div className="mb-4 text-center">
             <h1 className="text-lg font-bold uppercase">{tplName || "Mẫu bảng kiểm"}</h1>
-            <p className="mt-1 text-[11px] text-muted-foreground">
+            <p className="mt-1 text-meta text-muted-foreground">
               Xem trước theo giao diện lập phiếu — có thể điền thử.
             </p>
           </div>
@@ -437,7 +437,7 @@ export function ChecklistDesigner({
           >
             <Undo2 className="mr-1 h-3.5 w-3.5" /> Hoàn tác
             {history.length > 0 && (
-              <span className="ml-1 text-[10px] text-muted-foreground">{history.length}</span>
+              <span className="ml-1 text-mini text-muted-foreground">{history.length}</span>
             )}
           </Button>
           <div className="h-4 w-px bg-border" />
@@ -452,7 +452,7 @@ export function ChecklistDesigner({
           >
             <Redo2 className="mr-1 h-3.5 w-3.5" /> Làm lại
             {future.length > 0 && (
-              <span className="ml-1 text-[10px] text-muted-foreground">{future.length}</span>
+              <span className="ml-1 text-mini text-muted-foreground">{future.length}</span>
             )}
           </Button>
         </div>
@@ -567,7 +567,7 @@ function ItemInspector({
 
       {item.result_kind === "so" && (
         <div className="rounded-md border p-2">
-          <p className="mb-2 text-[11px] font-semibold uppercase text-muted-foreground">
+          <p className="mb-2 text-meta font-semibold uppercase text-muted-foreground">
             Ngưỡng đo
           </p>
           <div className="grid grid-cols-2 gap-2">
@@ -606,7 +606,7 @@ function ItemInspector({
               />
             </div>
           </div>
-          <p className="mt-1 text-[10px] text-muted-foreground">
+          <p className="mt-1 text-mini text-muted-foreground">
             Giá trị đo ngoài ngưỡng sẽ tự chấm Không đạt.
           </p>
         </div>
@@ -614,7 +614,7 @@ function ItemInspector({
 
       {item.result_kind === "chon" && (
         <div className="rounded-md border p-2">
-          <p className="mb-2 text-[11px] font-semibold uppercase text-muted-foreground">
+          <p className="mb-2 text-meta font-semibold uppercase text-muted-foreground">
             Lựa chọn (mỗi dòng 1 giá trị)
           </p>
           <Textarea
@@ -642,7 +642,7 @@ function ItemInspector({
       </div>
 
       <div className="rounded-md border border-primary/30 bg-primary/5 p-2">
-        <p className="mb-2 text-[11px] font-semibold uppercase text-primary">
+        <p className="mb-2 text-meta font-semibold uppercase text-primary">
           Chỉ số đánh giá (CSDL lâu dài)
         </p>
         <div className="space-y-2">
@@ -654,7 +654,7 @@ function ItemInspector({
               onChange={(e) => onPatchItem({ metric_key: e.target.value.trim() || null })}
               placeholder="vd: awos.visibility_range, radar.vswr"
             />
-            <p className="mt-1 text-[10px] text-muted-foreground">
+            <p className="mt-1 text-mini text-muted-foreground">
               Chuẩn hoá xuyên mẫu để cùng 1 chỉ số ở nhiều phiếu gộp được thống kê chung.
             </p>
           </div>

@@ -420,7 +420,7 @@ function SuCoListContent() {
 
   return (
     <div className="flex flex-col h-full gap-4 p-4 overflow-hidden">
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border bg-card px-2 py-1.5 text-[11px]">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg border bg-card px-2 py-1.5 text-meta">
         <Stat icon={AlertTriangle} label="SC" value={stats.total} />
         <Stat icon={Activity} label="Mở" value={stats.open} tone="text-amber-600" />
         <Stat
@@ -472,7 +472,7 @@ function SuCoListContent() {
                 >
                   <div className="min-w-0 flex-1 mr-4">
                     <div className="font-medium text-xs truncate">{g.hien_tuong}</div>
-                    <div className="text-[10px] text-muted-foreground truncate">
+                    <div className="text-mini text-muted-foreground truncate">
                       {g.ht} · {g.ngay_phat_hien.replace("T", " ")}
                     </div>
                   </div>

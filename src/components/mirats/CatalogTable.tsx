@@ -467,7 +467,7 @@ export function CatalogTable({
                   size="sm"
                   variant="outline"
                   onClick={() => setPickMerge(true)}
-                  className="h-8 w-8 p-0"
+                  className="size-8 p-0"
                 >
                   <GitMerge className="h-4 w-4" />
                   <span className="sr-only">Gộp trùng</span>
@@ -476,7 +476,7 @@ export function CatalogTable({
             )}
             {canManage && (
               <AppTooltip noiDung={`Thêm ${singular.toLowerCase()} mới`}>
-                <Button size="sm" onClick={() => setEditing("new")} className="h-8 w-8 p-0">
+                <Button size="sm" onClick={() => setEditing("new")} className="size-8 p-0">
                   <Plus className="h-4 w-4" />
                   <span className="sr-only">Thêm {singular.toLowerCase()}</span>
                 </Button>
@@ -503,7 +503,7 @@ export function CatalogTable({
               <Button
                 size="sm"
                 variant={view === "tree" ? "default" : "ghost"}
-                className="h-8 w-8 p-0"
+                className="size-8 p-0"
                 onClick={() => setView("tree")}
               >
                 <Network className="h-3.5 w-3.5" />
@@ -514,7 +514,7 @@ export function CatalogTable({
               <Button
                 size="sm"
                 variant={view === "list" ? "default" : "ghost"}
-                className="h-8 w-8 p-0"
+                className="size-8 p-0"
                 onClick={() => setView("list")}
               >
                 <List className="h-3.5 w-3.5" />
@@ -587,7 +587,7 @@ export function CatalogTable({
               <Button
                 size="sm"
                 variant="outline"
-                className="h-8 w-8 p-0"
+                className="size-8 p-0"
                 disabled={ctx.filteredRows.length === 0}
                 onClick={() => {
                   const cols = ctx.visibleColumns.filter((c) => c.key !== "logo");
@@ -622,7 +622,7 @@ export function CatalogTable({
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-8 w-8 p-0"
+                  className="size-8 p-0"
                   disabled={selectedRows.length < 2}
                   onClick={() => setMergeList(selectedRows)}
                 >
@@ -634,7 +634,7 @@ export function CatalogTable({
                 <Button
                   size="sm"
                   variant="destructive"
-                  className="h-8 w-8 p-0"
+                  className="size-8 p-0"
                   disabled={bulkDelMut.isPending}
                   onClick={() => {
                     const removable = selectedRows.filter((r) => r.soThietBi === 0).length;
@@ -677,7 +677,7 @@ export function CatalogTable({
                       cell: (r: Row) => {
                         const url = r.logo ? logoUrlMap?.get(r.logo) : undefined;
                         return (
-                          <div className="mx-auto h-8 w-8 overflow-hidden rounded border bg-card shadow-sm">
+                          <div className="mx-auto size-8 overflow-hidden rounded border bg-card shadow-sm">
                             <AspectRatio ratio={1 / 1}>
                               {url ? (
                                 <img
@@ -787,7 +787,7 @@ export function CatalogTable({
                       priority: "detail" as const,
                       cell: (r: Row) =>
                         r.xuat_xu ? (
-                          <Badge variant="outline" className="text-[11px]">
+                          <Badge variant="outline" className="text-meta">
                             {r.xuat_xu}
                           </Badge>
                         ) : (
@@ -828,7 +828,7 @@ export function CatalogTable({
                       priority: "detail" as const,
                       cell: (r: Row) =>
                         r.parent_id ? (
-                          <Badge variant="outline" className="text-[11px]">
+                          <Badge variant="outline" className="text-meta">
                             {parentNameMap.get(r.parent_id) ?? "—"}
                           </Badge>
                         ) : (
@@ -853,7 +853,7 @@ export function CatalogTable({
                     >
                       <Badge
                         variant="secondary"
-                        className="gap-1 text-[11px] transition-colors hover:bg-primary/15"
+                        className="gap-1 text-meta transition-colors hover:bg-primary/15"
                       >
                         <Boxes className="h-3 w-3" /> {r.soThietBi.toLocaleString("vi-VN")}
                       </Badge>
@@ -871,11 +871,11 @@ export function CatalogTable({
                 priority: "secondary" as const,
                 cell: (r) =>
                   r.active ? (
-                    <Badge variant="outline" className="text-[11px]">
+                    <Badge variant="outline" className="text-meta">
                       Đang dùng
                     </Badge>
                   ) : (
-                    <Badge variant="outline" className="text-[11px] text-muted-foreground">
+                    <Badge variant="outline" className="text-meta text-muted-foreground">
                       Ẩn
                     </Badge>
                   ),
@@ -1081,7 +1081,7 @@ function CatalogUsageDialog({
                 <div key={unit}>
                   <div className="mb-1.5 flex items-center gap-1.5 text-sm font-medium">
                     <Building2 className="h-4 w-4 text-muted-foreground" /> {unit}
-                    <Badge variant="secondary" className="ml-1 text-[10px]">
+                    <Badge variant="secondary" className="ml-1 text-mini">
                       {list.length}
                     </Badge>
                   </div>
@@ -1092,7 +1092,7 @@ function CatalogUsageDialog({
                           <span className="font-medium">{r.ten || "(Không tên)"}</span>
 
                           {r.serial && (
-                            <span className="font-mono text-[11px] text-muted-foreground">
+                            <span className="font-mono text-meta text-muted-foreground">
                               S/N: {r.serial}
                             </span>
                           )}
@@ -1279,7 +1279,7 @@ function DonViNode({
         }
         badges={
           row.soThietBi > 0 ? (
-            <Badge variant="secondary" className="gap-1 text-[10px]">
+            <Badge variant="secondary" className="gap-1 text-mini">
               <Boxes className="h-3 w-3" /> {row.soThietBi.toLocaleString("vi-VN")}
             </Badge>
           ) : null
@@ -1569,7 +1569,7 @@ function CatalogDialog({
                   {dupHits.map((h) => (
                     <li key={h.id} className="flex items-center gap-2">
                       <span className="truncate">{h.ten}</span>
-                      <Badge variant="outline" className="h-4 px-1 text-[10px]">
+                      <Badge variant="outline" className="h-4 px-1 text-mini">
                         {h.reason === "exact-normalized"
                           ? "trùng"
                           : h.reason === "contains"
@@ -1793,7 +1793,7 @@ function MergeCatalogDialog({
               />
               <span className="truncate font-medium">{r.ten}</span>
               {r.soThietBi > 0 && (
-                <Badge variant="secondary" className="ml-auto gap-1 text-[10px]">
+                <Badge variant="secondary" className="ml-auto gap-1 text-mini">
                   <Boxes className="h-3 w-3" /> {r.soThietBi.toLocaleString("vi-VN")}
                 </Badge>
               )}
@@ -1886,7 +1886,7 @@ function MergePickDialog({
               <span className="truncate font-medium">{r.ten}</span>
               {r.ma && <CodeBadge code={r.ma} />}
               {r.soThietBi > 0 && (
-                <Badge variant="secondary" className="ml-auto gap-1 text-[10px]">
+                <Badge variant="secondary" className="ml-auto gap-1 text-mini">
                   <Boxes className="h-3 w-3" /> {r.soThietBi.toLocaleString("vi-VN")}
                 </Badge>
               )}

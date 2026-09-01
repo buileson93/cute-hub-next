@@ -148,9 +148,9 @@ function TrendCard({
             onChanged={() => annotationsQ.refetch()}
           />
           <TabsList className="h-8">
-            <TabsTrigger value="day" className="text-[10px] px-2 h-7">Ngày</TabsTrigger>
-            <TabsTrigger value="week" className="text-[10px] px-2 h-7">Tuần</TabsTrigger>
-            <TabsTrigger value="month" className="text-[10px] px-2 h-7">Tháng</TabsTrigger>
+            <TabsTrigger value="day" className="text-mini px-2 h-7">Ngày</TabsTrigger>
+            <TabsTrigger value="week" className="text-mini px-2 h-7">Tuần</TabsTrigger>
+            <TabsTrigger value="month" className="text-mini px-2 h-7">Tháng</TabsTrigger>
           </TabsList>
         </div>
       }
@@ -617,7 +617,7 @@ function DoTinCayPage() {
           ) : (
             <div className="overflow-x-auto">
               <div className="inline-block min-w-full">
-                <div className="flex text-[10px] text-muted-foreground">
+                <div className="flex text-mini text-muted-foreground">
                   <div className="w-10 shrink-0" />
                   {Array.from({ length: 24 }).map((_, h) => (
                     <div key={h} className="w-6 text-center tabular-nums">
@@ -636,7 +636,7 @@ function DoTinCayPage() {
                           key={h}
                           title={`${label} ${h}:00 — ${v} sự cố`}
                           onClick={() => v > 0 && setHeatDrill({ dow, hour: h })}
-                          className={`m-[1px] h-5 w-[22px] rounded-sm border border-border/40 tabular-nums text-[9px] text-center leading-5 ${v > 0 ? "cursor-pointer hover:ring-1 hover:ring-primary" : ""}`}
+                          className={`m-[1px] h-5 w-[22px] rounded-sm border border-border/40 tabular-nums text-micro text-center leading-5 ${v > 0 ? "cursor-pointer hover:ring-1 hover:ring-primary" : ""}`}
                           style={{
                             backgroundColor:
                               v === 0
@@ -654,7 +654,7 @@ function DoTinCayPage() {
                     })}
                   </div>
                 ))}
-                <div className="mt-2 flex items-center gap-2 text-[10px] text-muted-foreground">
+                <div className="mt-2 flex items-center gap-2 text-mini text-muted-foreground">
                   <span>Ít</span>
                   {[0.15, 0.35, 0.55, 0.75, 0.9].map((a) => (
                     <div

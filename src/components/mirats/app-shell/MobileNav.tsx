@@ -35,7 +35,7 @@ export function MobileNav({ activeWsId, wsLastRoute }: MobileNavProps) {
             key={ws.id}
             onClick={() => gotoWorkspace(ws)}
             className={cn(
-              "relative flex flex-1 flex-col items-center justify-center gap-1 rounded-lg py-1 text-[10px] font-medium transition-colors",
+              "relative flex flex-1 flex-col items-center justify-center gap-1 rounded-lg py-1 text-mini font-medium transition-colors",
               isActive
                 ? "text-[#0074e2]"
                 : "text-muted-foreground hover:bg-[#0074e2]/5 hover:text-foreground",

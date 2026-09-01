@@ -181,15 +181,15 @@ function LienKetPage() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <Tabs value={view} onValueChange={(v) => setView(v as any)} className="w-auto">
             <TabsList className="h-8 p-0.5 bg-muted/50 border">
-              <TabsTrigger value="bang" className="h-7 px-3 text-[11px] gap-1.5">
+              <TabsTrigger value="bang" className="h-7 px-3 text-meta gap-1.5">
                 <List className="h-3.5 w-3.5" />
                 <span>DẠNG BẢNG</span>
               </TabsTrigger>
-              <TabsTrigger value="so-do" className="h-7 px-3 text-[11px] gap-1.5">
+              <TabsTrigger value="so-do" className="h-7 px-3 text-meta gap-1.5">
                 <Network className="h-3.5 w-3.5" />
                 <span>SƠ ĐỒ</span>
               </TabsTrigger>
-              <TabsTrigger value="toan-canh" className="h-7 px-3 text-[11px] gap-1.5">
+              <TabsTrigger value="toan-canh" className="h-7 px-3 text-meta gap-1.5">
                 <Share className="h-3.5 w-3.5" />
                 <span>TOÀN CẢNH</span>
               </TabsTrigger>
@@ -204,14 +204,14 @@ function LienKetPage() {
                 value={fHeThong}
                 onChange={setFHeThong}
                 placeholder="Lọc hệ thống..."
-                className="h-8 text-[11px]"
+                className="h-8 text-meta"
               />
             </div>
             <Select
               value={fLoai || "__all"}
               onValueChange={(v) => setFLoai(v === "__all" ? "" : v)}
             >
-              <SelectTrigger className="h-8 w-36 text-[11px]">
+              <SelectTrigger className="h-8 w-36 text-meta">
                 <SelectValue placeholder="Loại liên kết" />
               </SelectTrigger>
               <SelectContent>
@@ -225,7 +225,7 @@ function LienKetPage() {
             </Select>
             <Badge
               variant="outline"
-              className="h-8 px-3 font-mono text-[10px] uppercase tracking-wider"
+              className="h-8 px-3 font-mono text-mini uppercase tracking-wider"
             >
               {filtered.length} Kết nối
             </Badge>
@@ -265,7 +265,7 @@ function loaiBadge(ma: string, mau?: string | null) {
       <Badge
         variant="outline"
         style={{ borderColor: mau, color: mau }}
-        className="gap-1 text-[10px] h-5"
+        className="gap-1 text-mini h-5"
       >
         <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ backgroundColor: mau }} />
         {label}
@@ -273,7 +273,7 @@ function loaiBadge(ma: string, mau?: string | null) {
     );
   }
   return (
-    <Badge variant="outline" className="text-[10px] h-5">
+    <Badge variant="outline" className="text-mini h-5">
       {label}
     </Badge>
   );
@@ -302,7 +302,7 @@ function LienKetTable({
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b bg-muted/30 text-left text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            <tr className="border-b bg-muted/30 text-left text-mini font-bold uppercase tracking-wider text-muted-foreground">
               <th className="p-3 pl-4">Nguồn</th>
               <th className="p-3 w-8"></th>
               <th className="p-3">Đích</th>
@@ -318,7 +318,7 @@ function LienKetTable({
               const active = r.trang_thai === "hoat_dong";
               return (
                 <tr key={r.id} className="hover:bg-muted/10 transition-colors">
-                  <td className="p-3 pl-4 font-medium text-[12px]">{r.nguon_ten}</td>
+                  <td className="p-3 pl-4 font-medium text-xs">{r.nguon_ten}</td>
                   <td className="p-3 text-muted-foreground">
                     {r.huong === "hai_chieu" ? (
                       <ArrowLeftRight className="h-3.5 w-3.5" />
@@ -326,16 +326,16 @@ function LienKetTable({
                       <ArrowRight className="h-3.5 w-3.5" />
                     )}
                   </td>
-                  <td className="p-3 font-medium text-[12px]">{r.dich_ten}</td>
+                  <td className="p-3 font-medium text-xs">{r.dich_ten}</td>
                   <td className="p-3">{loaiBadge(r.loai_ma, r.mau_sac)}</td>
-                  <td className="p-3 text-[11px] font-mono text-muted-foreground uppercase">
+                  <td className="p-3 text-meta font-mono text-muted-foreground uppercase">
                     {LOP_LABEL[r.lop]}
                   </td>
-                  <td className="p-3 text-[11px] text-muted-foreground">{r.giao_thuc || "—"}</td>
+                  <td className="p-3 text-meta text-muted-foreground">{r.giao_thuc || "—"}</td>
                   <td className="p-3">
                     <Badge
                       variant={active ? "default" : "secondary"}
-                      className="h-5 text-[10px] px-2"
+                      className="h-5 text-mini px-2"
                     >
                       {active ? "Hoạt động" : "Tạm ngừng"}
                     </Badge>
@@ -456,7 +456,7 @@ function GraphView({ rows, allRows: _allRows }: { rows: DoThiRow[]; allRows: DoT
         <div className="flex items-center gap-1.5">
           <Filter className="h-3 w-3 text-muted-foreground" />
           <Select value={lopFilter} onValueChange={(v) => setLopFilter(v as any)}>
-            <SelectTrigger className="h-7 w-24 text-[10px]">
+            <SelectTrigger className="h-7 w-24 text-mini">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -468,7 +468,7 @@ function GraphView({ rows, allRows: _allRows }: { rows: DoThiRow[]; allRows: DoT
         </div>
         <div className="flex items-center gap-1.5">
           <Select value={loaiFilter} onValueChange={setLoaiFilter}>
-            <SelectTrigger className="h-7 w-32 text-[10px]">
+            <SelectTrigger className="h-7 w-32 text-mini">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -482,7 +482,7 @@ function GraphView({ rows, allRows: _allRows }: { rows: DoThiRow[]; allRows: DoT
           </Select>
         </div>
         <div className="flex items-center gap-1.5 ml-auto">
-          <Badge variant="secondary" className="h-6 text-[9px] uppercase tracking-tighter">
+          <Badge variant="secondary" className="h-6 text-micro uppercase tracking-tighter">
             Zoom/Pan để điều hướng sơ đồ
           </Badge>
         </div>
@@ -496,7 +496,7 @@ function GraphView({ rows, allRows: _allRows }: { rows: DoThiRow[]; allRows: DoT
           legendItems={legendItems}
         />
         {impactLoading && (
-          <div className="absolute top-4 right-4 bg-background/80 backdrop-blur border p-2 rounded-lg text-[10px] flex items-center gap-2">
+          <div className="absolute top-4 right-4 bg-background/80 backdrop-blur border p-2 rounded-lg text-mini flex items-center gap-2">
             <Loader2 className="h-3 w-3 animate-spin" /> Đang tính toán tác động...
           </div>
         )}

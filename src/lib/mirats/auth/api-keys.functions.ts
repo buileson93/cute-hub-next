@@ -1,13 +1,26 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { createHmac, timingSafeEqual, getRandomValues } from "crypto";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 /**
  * Hash a secret using HMAC-SHA256 with a pepper.
  */
 async function hashSecret(secret: string, pepper: string): Promise<string> {
+  const { createHmac } = await import("crypto");
   return createHmac("sha256", pepper).update(secret).digest("hex");
+}
+
+function hexBytes(len: number): string {
+  const arr = new Uint8Array(len);
+  globalThis.crypto.getRandomValues(arr);
+  return Array.from(arr, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function timingSafeEqualHex(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
 }
 
 export const API_KEY_SCOPES = [
@@ -43,14 +56,10 @@ export const createApiKey = createServerFn({ method: "POST" })
     );
 
     // Generate public keyId (12 chars)
-    const keyIdArray = new Uint8Array(6);
-    getRandomValues(keyIdArray);
-    const keyId = Buffer.from(keyIdArray).toString("hex");
+    const keyId = hexBytes(6);
 
     // Generate secret (32 bytes)
-    const secretArray = new Uint8Array(32);
-    getRandomValues(secretArray);
-    const secret = Buffer.from(secretArray).toString("hex");
+    const secret = hexBytes(32);
 
     const pepper = process.env["MIRATS_API_PEPPER"] || "default-pepper-change-me";
     const secretHash = await hashSecret(secret, pepper);
@@ -149,7 +158,7 @@ export async function verifyApiKey(
   const secret = parts[4];
 
   // IP Hashing for privacy
-  const ipHash = ip ? createHmac("sha256", pepper).update(ip).digest("hex") : null;
+  const ipHash = ip ? await hashSecret(ip, pepper) : null;
 
   const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
 
@@ -190,7 +199,7 @@ export async function verifyApiKey(
 
   const incomingHash = await hashSecret(secret, pepper);
 
-  const isValid = timingSafeEqual(Buffer.from(typedKey.secret_hash), Buffer.from(incomingHash));
+  const isValid = timingSafeEqualHex(typedKey.secret_hash, incomingHash);
 
   if (isValid) {
     // Update last used info

@@ -78,7 +78,7 @@ export function ScopeSummaryStrip() {
           >
             <div className="flex items-center gap-2 text-muted-foreground">
               <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
-              <span className="truncate text-[11px] font-bold uppercase tracking-wider">{nhan}</span>
+              <span className="truncate text-meta font-bold uppercase tracking-wider">{nhan}</span>
             </div>
             {isLoading ? (
               <div className="mt-2 h-7 w-16 animate-pulse rounded bg-muted" />

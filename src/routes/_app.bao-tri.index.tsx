@@ -116,7 +116,7 @@ function BaoTriPage() {
               className="text-primary hover:underline"
             >
               <div className="font-medium text-sm">{tb.ten}</div>
-              <div className="text-[10px] font-mono text-muted-foreground">
+              <div className="text-mini font-mono text-muted-foreground">
                 {tb.ma_thiet_bi} · {dvo?.ma}
               </div>
             </Link>
@@ -169,7 +169,7 @@ function BaoTriPage() {
       <PageBody noPadding className="relative flex flex-col bg-muted/5 overflow-hidden flex-1 min-h-0">
         <div className="flex flex-col h-full gap-4 p-4 overflow-hidden">
           {/* Stats Bar */}
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-1 rounded-lg border bg-card px-3 py-2 text-[11px]">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-1 rounded-lg border bg-card px-3 py-2 text-meta">
             <Stat icon={Wrench} label="Phiếu bảo dưỡng" value={stats.total} />
             <Stat
               icon={CheckCircle2}

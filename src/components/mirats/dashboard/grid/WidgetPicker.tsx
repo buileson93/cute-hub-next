@@ -71,7 +71,7 @@ export function WidgetPicker({ currentLayout, onAdd, trigger }: WidgetPickerProp
                   </div>
                   <div className="flex-1 overflow-hidden">
                     <p className="text-sm font-bold truncate">{widget.title}</p>
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">
+                    <p className="text-mini text-muted-foreground uppercase tracking-wider font-bold">
                       {widget.defaultWidth} Cột
                     </p>
                   </div>
@@ -80,13 +80,13 @@ export function WidgetPicker({ currentLayout, onAdd, trigger }: WidgetPickerProp
                   <Button
                     size="sm"
                     variant="secondary"
-                    className="w-full h-8 text-[11px] font-bold bg-primary text-primary-foreground hover:bg-primary/90"
+                    className="w-full h-8 text-meta font-bold bg-primary text-primary-foreground hover:bg-primary/90"
                   >
                     Thêm ngay
                   </Button>
                 )}
                 {widget.isAdded && (
-                  <span className="text-[10px] font-bold text-muted-foreground flex items-center gap-1">
+                  <span className="text-mini font-bold text-muted-foreground flex items-center gap-1">
                     <Icon name="status.success" size="tiny" /> Đã có
                   </span>
                 )}

@@ -206,7 +206,7 @@ function AuthPage() {
                   key={m}
                   type="button"
                   onClick={() => setMode(m)}
-                  className={`relative z-10 flex items-center justify-center rounded-xl py-3 text-[15px] font-semibold transition-colors ${
+                  className={`relative z-10 flex items-center justify-center rounded-xl py-3 text-lead font-semibold transition-colors ${
                     mode === m ? "text-[#0074e2]" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -360,7 +360,7 @@ function AuthPage() {
                       )}
                       Đăng ký
                     </button>
-                    <p className="text-center text-[12px] leading-relaxed text-muted-foreground">
+                    <p className="text-center text-xs leading-relaxed text-muted-foreground">
                       Tài khoản mới sẽ ở trạng thái <b className="text-foreground">chờ duyệt</b>.
                       Quản trị viên sẽ kích hoạt và gán vai trò.
                     </p>
@@ -373,7 +373,7 @@ function AuthPage() {
               <>
                 <div className="my-6 flex items-center gap-3">
                   <div className="h-px flex-1 bg-border" />
-                  <span className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+                  <span className="text-meta uppercase tracking-[0.14em] text-muted-foreground">
                     HOẶC
                   </span>
                   <div className="h-px flex-1 bg-border" />
@@ -430,7 +430,7 @@ function Field({
   return (
     <div className="space-y-2.5">
       <div className="flex items-center justify-between px-0.5">
-        <Label htmlFor={id} className="text-[15px] font-bold text-foreground/90">
+        <Label htmlFor={id} className="text-lead font-bold text-foreground/90">
           {label}
         </Label>
         {rightSlot}
@@ -444,7 +444,7 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="!h-14 w-full !rounded-2xl border border-border bg-muted/30 px-5 font-medium !text-[16px] text-foreground placeholder:text-muted-foreground/60 transition-all outline-none focus:!ring-4 focus:!ring-[#0074e2]/10 focus:!border-[#0074e2]/40 focus:!bg-card"
+        className="!h-14 w-full !rounded-2xl border border-border bg-muted/30 px-5 font-medium !text-base text-foreground placeholder:text-muted-foreground/60 transition-all outline-none focus:!ring-4 focus:!ring-[#0074e2]/10 focus:!border-[#0074e2]/40 focus:!bg-card"
       />
     </div>
   );

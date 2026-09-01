@@ -27,7 +27,7 @@ export function CodeBadge({
       title={title ?? `Mã: ${c}`}
       className={cn(
         TYPO.MONO,
-        "text-[10px] gap-0.5 border-border bg-muted/30 font-medium inline-flex shrink-0",
+        "text-mini gap-0.5 border-border bg-muted/30 font-medium inline-flex shrink-0",
         className,
       )}
     >

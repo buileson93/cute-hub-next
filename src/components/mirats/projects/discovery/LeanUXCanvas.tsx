@@ -86,7 +86,7 @@ export function LeanUXCanvas({ project_id }: { project_id: string }) {
         <div>
           <h2 className="text-lg font-semibold text-foreground">Lean UX Canvas</h2>
           <Blockquote className="mt-2 text-indigo-700 bg-indigo-50/50 border-indigo-200">
-            <div className="flex items-center gap-2 text-[11px] italic">
+            <div className="flex items-center gap-2 text-meta italic">
               <Info className="h-3.5 w-3.5 shrink-0" />
               <span>Discovery đúng vấn đề bằng Lean UX Canvas và hypothesis/experiment.</span>
             </div>

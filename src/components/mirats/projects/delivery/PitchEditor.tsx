@@ -101,7 +101,7 @@ export function PitchEditor({
               <div className="space-y-2">
                 <Label className="text-sm font-bold flex items-center gap-2">
                   1. Problem
-                  <Badge variant="secondary" className="font-normal text-[10px]">
+                  <Badge variant="secondary" className="font-normal text-mini">
                     Evidence-based
                   </Badge>
                 </Label>
@@ -116,7 +116,7 @@ export function PitchEditor({
               <div className="space-y-2">
                 <Label className="text-sm font-bold flex items-center gap-2">
                   2. Solution
-                  <Badge variant="secondary" className="font-normal text-[10px]">
+                  <Badge variant="secondary" className="font-normal text-mini">
                     Fat-marker flow
                   </Badge>
                 </Label>
@@ -173,7 +173,7 @@ export function PitchEditor({
           <Blockquote className="mt-6 border-indigo-200 bg-indigo-50/50 text-indigo-700">
             <div className="flex gap-2">
               <Info className="h-4 w-4 mt-0.5 shrink-0" />
-              <div className="text-[11px] leading-relaxed">
+              <div className="text-meta leading-relaxed">
                 <strong>Ghi chú:</strong> Shaping là để định hướng team, không phải PRD chi tiết.
                 Hãy để lại không gian cho team tự chủ giải quyết vấn đề trong cycle.
               </div>

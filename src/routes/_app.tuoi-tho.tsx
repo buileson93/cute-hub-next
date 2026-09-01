@@ -177,7 +177,7 @@ function TuoiThoPage() {
         title="Đánh giá Tuổi thọ & Vòng đời"
         help="Đánh giá sức khỏe tài sản dựa trên tuổi, lịch sử sự cố, thời gian dừng hoạt động, chi phí, bảo hành và tình trạng hiện tại; xếp loại và đề xuất thay thế khi cần."
         actions={
-          <Badge variant="outline" className="gap-1.5 font-mono text-[11px]">
+          <Badge variant="outline" className="gap-1.5 font-mono text-meta">
             <HeartPulse className="h-3 w-3" /> {stats.total} tài sản đánh giá
           </Badge>
         }
@@ -398,7 +398,7 @@ function TuoiThoPage() {
               {stats.d > 0 && (
                 <Badge
                   variant="outline"
-                  className="ml-2 h-4 border-red-500/40 px-1 text-[10px] text-red-600"
+                  className="ml-2 h-4 border-red-500/40 px-1 text-mini text-red-600"
                 >
                   {stats.d}
                 </Badge>
@@ -467,7 +467,7 @@ function TuoiThoPage() {
                       {r.t.ten}
                       <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100" />
                     </Link>
-                    <div className="text-[11px] font-mono text-muted-foreground">
+                    <div className="text-meta font-mono text-muted-foreground">
                       {r.t.ma_thiet_bi}
                     </div>
                   </div>
@@ -629,7 +629,7 @@ function TuoiThoPage() {
                     >
                       {r.t.ten}
                     </Link>
-                    <div className="text-[11px] font-mono text-muted-foreground">
+                    <div className="text-meta font-mono text-muted-foreground">
                       {r.t.ma_thiet_bi}
                     </div>
                   </div>

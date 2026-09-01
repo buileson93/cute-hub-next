@@ -127,7 +127,7 @@ export function VatTuTieuHaoInline({ lienKet, onXong, hideTitle }: Props) {
           return (
             <div key={r.key} className="grid grid-cols-[1fr_1fr_90px_36px] items-end gap-2">
               <div>
-                <Label className="text-[11px] text-muted-foreground">Vật tư</Label>
+                <Label className="text-meta text-muted-foreground">Vật tư</Label>
                 <Select
                   value={r.vat_tu_id}
                   onValueChange={(v) =>
@@ -155,7 +155,7 @@ export function VatTuTieuHaoInline({ lienKet, onXong, hideTitle }: Props) {
                 </Select>
               </div>
               <div>
-                <Label className="text-[11px] text-muted-foreground">Kho xuất</Label>
+                <Label className="text-meta text-muted-foreground">Kho xuất</Label>
                 <Select value={r.kho_id} onValueChange={(v) => update(r.key, { kho_id: v })}>
                   <SelectTrigger className="h-9">
                     <SelectValue placeholder="Chọn kho" />
@@ -170,7 +170,7 @@ export function VatTuTieuHaoInline({ lienKet, onXong, hideTitle }: Props) {
                 </Select>
               </div>
               <div>
-                <Label className="text-[11px] text-muted-foreground">
+                <Label className="text-meta text-muted-foreground">
                   SL{vt?.don_vi_tinh ? ` (${vt.don_vi_tinh})` : ""}
                 </Label>
                 <Input

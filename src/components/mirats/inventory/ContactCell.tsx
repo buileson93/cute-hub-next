@@ -34,7 +34,7 @@ function RoleIcon({ role }: { role: ContactRole }) {
 /** Danh sách label/value gọn dùng chung cho popover. */
 export function MetaList({ items }: { items: MetaItem[] }) {
   return (
-    <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[11px]">
+    <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-meta">
       {items.map((it) => (
         <div key={`${it.label}-${it.value}`} className="contents">
           <dt className="whitespace-nowrap text-muted-foreground">{it.label}</dt>
@@ -77,7 +77,7 @@ export function MetaPopover({
         </button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-64 p-3" onClick={(e) => e.stopPropagation()}>
-        <div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <div className="mb-2 text-mini font-semibold uppercase tracking-wider text-muted-foreground">
           {title}
         </div>
         <MetaList items={items} />
@@ -98,7 +98,7 @@ export function ContactCell({ contacts }: { contacts: ContactEntry[] }) {
     <div className="flex min-w-0 items-center gap-1.5">
       <span className="flex min-w-0 items-center gap-1">
         <RoleIcon role={main.role} />
-        <span title={`${main.role}: ${main.name}`} className="truncate text-[12px] font-medium">
+        <span title={`${main.role}: ${main.name}`} className="truncate text-xs font-medium">
           {main.name}
         </span>
       </span>
@@ -111,13 +111,13 @@ export function ContactCell({ contacts }: { contacts: ContactEntry[] }) {
               onClick={(e) => e.stopPropagation()}
               className="rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <Badge variant="outline" className="h-4 shrink-0 px-1 text-[10px] tabular-nums">
+              <Badge variant="outline" className="h-4 shrink-0 px-1 text-mini tabular-nums">
                 +{rest.length}
               </Badge>
             </button>
           </PopoverTrigger>
           <PopoverContent align="start" className="w-64 p-3" onClick={(e) => e.stopPropagation()}>
-            <div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="mb-2 text-mini font-semibold uppercase tracking-wider text-muted-foreground">
               Đầu mối liên hệ
             </div>
             <MetaList items={contacts.map((c) => ({ label: c.role, value: c.name }))} />

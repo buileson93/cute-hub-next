@@ -53,7 +53,7 @@ export default function TabCauHinh({
                 className="flex items-center justify-between rounded-2xl border p-4 bg-card shadow-sm ring-1 ring-border/50"
               >
                 <div>
-                  <div className="font-bold text-[13px] text-foreground">{r.ten_thanh_phan}</div>
+                  <div className="font-bold text-note text-foreground">{r.ten_thanh_phan}</div>
                   <div className="text-xs text-muted-foreground mt-1 font-mono">
                     {r.ma_thanh_phan} {r.ten_he_thong ? `· ${r.ten_he_thong}` : ""}
                   </div>
@@ -68,7 +68,7 @@ export default function TabCauHinh({
             ))
           )}
           {vaiTroList.length >= 2 && (
-            <div className="rounded-2xl border border-amber-200/50 bg-amber-500/5 p-4 text-[13px] text-amber-700 dark:text-amber-400 flex items-start gap-3 ring-1 ring-amber-500/20">
+            <div className="rounded-2xl border border-amber-200/50 bg-amber-500/5 p-4 text-note text-amber-700 dark:text-amber-400 flex items-start gap-3 ring-1 ring-amber-500/20">
               <span className="shrink-0 text-base">⚠</span>
               <span>
                 <strong>Đa vai trò:</strong> Tài sản này đang phục vụ song song cho{" "}

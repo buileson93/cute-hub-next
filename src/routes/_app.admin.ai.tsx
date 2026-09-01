@@ -137,7 +137,7 @@ function AdminAiPage() {
               placeholder="Beta"
               maxLength={20}
             />
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-meta text-muted-foreground">
               Hiện trên nút và tiêu đề panel chat.
             </p>
           </div>
@@ -229,7 +229,7 @@ function AdminAiPage() {
             rows={8}
             className="font-mono text-xs"
           />
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-meta text-muted-foreground">
             Xác định giọng điệu, ngôn ngữ và giới hạn của trợ lý. Nên yêu cầu trả lời tiếng Việt và
             chỉ dùng dữ liệu từ tool.
           </p>
@@ -257,7 +257,7 @@ function AdminAiPage() {
             <code>count_thiet_bi_by_trang_thai</code> — thống kê
           </li>
         </ul>
-        <p className="text-[11px] text-muted-foreground">
+        <p className="text-meta text-muted-foreground">
           Mọi tool <b>chỉ đọc</b> và tuân RLS đơn vị của người đang chat. Cùng bộ tool này được MCP
           server phát ra tại <code>/mcp</code> để dùng với ChatGPT/Claude bên ngoài.
         </p>

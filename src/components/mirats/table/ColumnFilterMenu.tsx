@@ -83,14 +83,14 @@ export function ColumnFilterMenu({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-2 flex items-center justify-between gap-2">
-          <span className="truncate text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <span className="truncate text-meta font-semibold uppercase tracking-wider text-muted-foreground">
             {label}
           </span>
           {active && (
             <Button
               size="sm"
               variant="ghost"
-              className="h-6 px-1.5 text-[11px]"
+              className="h-6 px-1.5 text-meta"
               onClick={onClear}
             >
               <X className="mr-1 h-3 w-3" />
@@ -106,7 +106,7 @@ export function ColumnFilterMenu({
                 key={dir}
                 size="sm"
                 variant={sortDir === dir ? "secondary" : "ghost"}
-                className="h-7 flex-1 px-2 text-[11px]"
+                className="h-7 flex-1 px-2 text-meta"
                 onClick={() => onSort(sortDir === dir ? null : dir)}
               >
                 {dir === "asc" ? (
@@ -128,7 +128,7 @@ export function ColumnFilterMenu({
               value={textValue}
               onChange={(e) => onTextChange(e.target.value)}
               placeholder={`Tìm trong ${label.toLowerCase()}…`}
-              className="h-8 pl-7 text-[12px]"
+              className="h-8 pl-7 text-xs"
             />
           </div>
         ) : (
@@ -140,12 +140,12 @@ export function ColumnFilterMenu({
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Tìm giá trị…"
-                className="h-8 pl-7 text-[12px]"
+                className="h-8 pl-7 text-xs"
               />
             </div>
             <div className="max-h-56 space-y-0.5 overflow-y-auto mirats-scroll pr-1">
               {visibleOptions.length === 0 ? (
-                <p className="px-1 py-4 text-center text-[11px] text-muted-foreground">
+                <p className="px-1 py-4 text-center text-meta text-muted-foreground">
                   Không có giá trị phù hợp
                 </p>
               ) : (
@@ -163,18 +163,18 @@ export function ColumnFilterMenu({
                       />
                       <label
                         htmlFor={`f-${label}-${o.value}`}
-                        className="flex-1 cursor-pointer truncate text-[12px]"
+                        className="flex-1 cursor-pointer truncate text-xs"
                         title={o.value || "(trống)"}
                       >
                         {o.value || "(trống)"}
                       </label>
-                      <span className="text-[10px] tabular-nums text-muted-foreground">
+                      <span className="text-mini tabular-nums text-muted-foreground">
                         {o.count}
                       </span>
                       {onSelectOnly && (
                         <button
                           type="button"
-                          className="hidden text-[10px] text-primary group-hover:inline"
+                          className="hidden text-mini text-primary group-hover:inline"
                           onClick={() => onSelectOnly(o.value)}
                         >
                           chỉ

@@ -220,7 +220,7 @@ function DocRow({
         <FileText className="h-5 w-5 shrink-0 text-red-600" />
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="gap-1 text-[10px]">
+            <Badge variant="secondary" className="gap-1 text-mini">
               <Tag className="h-3 w-3" /> {row.loai_tai_lieu}
             </Badge>
             {row.tai_lieu_ocr && (
@@ -472,7 +472,7 @@ function UploadDialog({ modelId, onDone }: { modelId: string; onDone: () => void
           <div className="space-y-1.5">
             <Label>Chọn tệp (tối đa {MAX_MB}MB)</Label>
             <Input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-meta text-muted-foreground">
               Hỗ trợ PDF, ảnh, tài liệu văn phòng, firmware…
             </p>
           </div>

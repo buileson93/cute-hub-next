@@ -330,7 +330,7 @@ export function TableExportDialog<T>({
         <DialogFooter className="flex-col sm:flex-row gap-2">
           {isExporting && (
             <div className="flex-1 w-full space-y-1.5 py-2">
-              <div className="flex justify-between text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+              <div className="flex justify-between text-mini font-medium text-muted-foreground uppercase tracking-wider">
                 <span>Đang tạo file...</span>
                 <span>{progress}%</span>
               </div>

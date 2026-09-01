@@ -208,7 +208,7 @@ function ChatPane() {
                     {showHeader && (
                       <div
                         className={cn(
-                          "flex h-8 w-8 items-center justify-center rounded-full text-[10px] font-semibold",
+                          "flex h-8 w-8 items-center justify-center rounded-full text-mini font-semibold",
                           mine ? "bg-primary text-primary-foreground" : "bg-secondary",
                         )}
                       >
@@ -313,7 +313,7 @@ function ChatPane() {
             <Send className="h-4 w-4" />
           </Button>
         </div>
-        <div className="mx-auto mt-1 max-w-3xl text-center text-[10px] text-muted-foreground">
+        <div className="mx-auto mt-1 max-w-3xl text-center text-mini text-muted-foreground">
           Enter để gửi · Shift+Enter xuống dòng · File tối đa 20MB (ảnh, PDF, Office)
         </div>
       </div>

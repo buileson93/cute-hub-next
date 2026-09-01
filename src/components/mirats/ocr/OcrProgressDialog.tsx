@@ -49,7 +49,7 @@ export function OcrProgressDialog({
               Tệp: {fileName}
             </p>
             <Progress value={progress} className="h-2" />
-            <div className="flex justify-between text-[11px] text-muted-foreground">
+            <div className="flex justify-between text-meta text-muted-foreground">
               <span>
                 Trang {currentPage} / {totalPages}
               </span>

@@ -369,7 +369,7 @@ function SubmissionDetail() {
               )}
               <Badge
                 variant="outline"
-                className="gap-1 text-[10px] text-muted-foreground"
+                className="gap-1 text-mini text-muted-foreground"
                 title={`Realtime · ${rtBeat} cập nhật`}
               >
                 <Radio className="h-3 w-3 text-emerald-500" />
@@ -585,7 +585,7 @@ function SubmissionDetail() {
                   <div>
                     <div className="font-medium">
                       {sg.signer_name || "(không rõ)"}{" "}
-                      <Badge variant="outline" className="ml-1 text-[10px]">
+                      <Badge variant="outline" className="ml-1 text-mini">
                         {sg.signer_role}
                       </Badge>
                     </div>

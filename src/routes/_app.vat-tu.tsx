@@ -162,7 +162,7 @@ function VatTuPage() {
           <TabsTrigger value="canhbao">
             Cảnh báo{" "}
             {canhBaoCount > 0 && (
-              <span className="ml-1 rounded bg-red-100 px-1.5 text-[11px] text-red-700">
+              <span className="ml-1 rounded bg-red-100 px-1.5 text-meta text-red-700">
                 {canhBaoCount}
               </span>
             )}
@@ -213,7 +213,7 @@ function VatTuPage() {
                       <div>
                         <div className="font-medium">{r.ten_vat_tu}</div>
                         {r.ma_vat_tu && (
-                          <div className="font-mono text-[11px] text-muted-foreground">
+                          <div className="font-mono text-meta text-muted-foreground">
                             {r.ma_vat_tu}
                           </div>
                         )}
@@ -301,7 +301,7 @@ function VatTuPage() {
                       <div>
                         <div className="font-medium">{v.ten}</div>
                         {v.ma_vat_tu && (
-                          <div className="font-mono text-[11px] text-muted-foreground">
+                          <div className="font-mono text-meta text-muted-foreground">
                             {v.ma_vat_tu}
                           </div>
                         )}
@@ -386,7 +386,7 @@ function VatTuPage() {
                     hideBelow: "sm",
                     value: (k) => k.ma_kho ?? "",
                     cell: (k) => (
-                      <span className="font-mono text-[11px] text-muted-foreground">
+                      <span className="font-mono text-meta text-muted-foreground">
                         {k.ma_kho ?? "—"}
                       </span>
                     ),

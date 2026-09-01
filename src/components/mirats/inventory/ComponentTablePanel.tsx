@@ -308,7 +308,7 @@ export function ComponentTablePanel({
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground bg-muted/20 px-2 py-0.5 rounded-md border">
+            <div className="flex items-center gap-1.5 text-meta font-medium text-muted-foreground bg-muted/20 px-2 py-0.5 rounded-md border">
               <span className="tabular-nums">
                 {rows.length} / {totalTp > 0 ? totalTp.toLocaleString("vi-VN") : "—"} thành phần
               </span>
@@ -319,7 +319,7 @@ export function ComponentTablePanel({
           <Button
             size="sm"
             variant="outline"
-            className="h-8 gap-1.5 px-2 text-[11px] font-semibold"
+            className="h-8 gap-1.5 px-2 text-meta font-semibold"
             disabled={isLoading || filteredRows.length === 0}
             aria-label="Xuất CSV danh sách thành phần đang lọc"
             title="Xuất CSV: Model, Serial, Người liên hệ, Trạng thái bảo hành"
@@ -354,7 +354,7 @@ export function ComponentTablePanel({
                   <InlineTextEdit initial={r.ten} onSave={(v) => saveField(r.id, "ten", v)} />
                 ) : (
                   <AppTooltip noiDung={r.ten || "Chưa có tên"}>
-                    <span className="block truncate text-[12px] font-bold group-hover:text-primary">
+                    <span className="block truncate text-xs font-bold group-hover:text-primary">
                       {r.ten || "—"}
                     </span>
                   </AppTooltip>
@@ -381,12 +381,12 @@ export function ComponentTablePanel({
                   <InheritedValue
                     value={r.nhomHeThong}
                     nguon={r.heThong ? `Kế thừa từ hệ thống: ${r.heThong}` : null}
-                    className="text-[11px]"
+                    className="text-meta"
                   />
                   <InheritedValue
                     value={r.phanLoai}
                     nguon={r.nhomHeThong ? `Kế thừa từ nhóm: ${r.nhomHeThong}` : null}
-                    className="text-[11px]"
+                    className="text-meta"
                   />
                 </div>
               </div>
@@ -428,7 +428,7 @@ export function ComponentTablePanel({
                   </SelectContent>
                 </Select>
               ) : (
-                <Badge variant={r.trangThai === "Hoạt động" ? "secondary" : "outline"} className="text-[10px]">
+                <Badge variant={r.trangThai === "Hoạt động" ? "secondary" : "outline"} className="text-mini">
                   {r.trangThai}
                 </Badge>
               ),
@@ -449,7 +449,7 @@ export function ComponentTablePanel({
                   className="flex min-w-0 flex-col gap-0.5 hover:text-primary"
                 >
                   <AppTooltip noiDung={`${r.thietBiTen || "—"}${r.thietBiSerial ? ` · S/N ${r.thietBiSerial}` : ""}`}>
-                    <span className="block truncate text-[12px] font-bold">{r.thietBiTen || "—"}</span>
+                    <span className="block truncate text-xs font-bold">{r.thietBiTen || "—"}</span>
                   </AppTooltip>
                   <div className="flex min-w-0 items-center gap-1.5">
                     <CodeBadge code={r.thietBiMa} />
@@ -457,7 +457,7 @@ export function ComponentTablePanel({
                   </div>
                 </Link>
               ) : (
-                <Badge variant="outline" className="border-dashed text-[10px] opacity-60">
+                <Badge variant="outline" className="border-dashed text-mini opacity-60">
                   <Unplug className="mr-1 h-3 w-3" /> Trống
                 </Badge>
               ),
@@ -584,7 +584,7 @@ function InlineTextEdit({ initial, onSave }: { initial: string; onSave: (v: stri
         value={value}
         onChange={(e) => { setValue(e.target.value); setDirty(e.target.value !== initialRef.current); }}
         onKeyDown={(e) => e.key === "Enter" && void commit()}
-        className="h-7 border-none bg-transparent p-0 text-[12px] font-bold focus-visible:ring-0"
+        className="h-7 border-none bg-transparent p-0 text-xs font-bold focus-visible:ring-0"
         disabled={saving}
       />
       {dirty && !saving && <button type="button" onClick={commit} className="text-emerald-600"><Check className="h-3.5 w-3.5" /></button>}
@@ -616,7 +616,7 @@ function InlineViTriEdit({ row, onChanged }: { row: ThanhPhanRow; onChanged: () 
   }
 
   return (
-    <Combobox options={options} value={row.viTriId ?? ""} onChange={save} loading={isLoading} className="h-7 w-[200px] text-[11px]" />
+    <Combobox options={options} value={row.viTriId ?? ""} onChange={save} loading={isLoading} className="h-7 w-[200px] text-meta" />
   );
 }
 
@@ -632,7 +632,7 @@ function InlineTaiSanEdit({ row, onChanged }: { row: ThanhPhanRow; onChanged: ()
           <Button size="sm" variant="ghost" className="h-7 text-destructive" onClick={() => setOp({ mode: "thao", target })}>Tháo</Button>
         </div>
       )}
-      <Button size="sm" variant="outline" className="h-7 text-[11px]" onClick={() => setOp({ mode: row.daLap ? "thay" : "lap", target })}>
+      <Button size="sm" variant="outline" className="h-7 text-meta" onClick={() => setOp({ mode: row.daLap ? "thay" : "lap", target })}>
         {row.daLap ? "Thay thế…" : "Lắp tài sản…"}
       </Button>
       {op && <OperationDialog mode={op.mode as any} target={op.target} onClose={() => setOp(null)} onSuccess={onChanged} />}

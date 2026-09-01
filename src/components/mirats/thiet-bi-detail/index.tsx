@@ -81,7 +81,7 @@ export function ThietBiDetail({
                   strokeWidth={3}
                   showText
                 />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
+                <span className="text-mini font-bold uppercase tracking-wider text-muted-foreground/60">
                   Độ hoàn thiện dữ liệu
                 </span>
               </div>
@@ -96,7 +96,7 @@ export function ThietBiDetail({
             </AppTooltip>
             <Badge
               variant="outline"
-              className="font-mono text-[10px] tracking-tight py-0 px-2 rounded-lg bg-muted/30"
+              className="font-mono text-mini tracking-tight py-0 px-2 rounded-lg bg-muted/30"
             >
               {asset.ma_thiet_bi}
             </Badge>

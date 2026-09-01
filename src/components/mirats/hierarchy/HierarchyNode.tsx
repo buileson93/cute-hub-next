@@ -200,7 +200,7 @@ export function HierarchyRow({
           {title}
         </div>
         {meta ? (
-          <div className="flex min-w-0 flex-wrap items-center gap-1 text-[11px] text-muted-foreground">
+          <div className="flex min-w-0 flex-wrap items-center gap-1 text-meta text-muted-foreground">
             {meta}
           </div>
         ) : null}
@@ -296,7 +296,7 @@ export function HierarchyEvent({
           {title}
         </div>
         {description ? (
-          <div className="mt-0.5 text-[13px] text-muted-foreground">{description}</div>
+          <div className="mt-0.5 text-note text-muted-foreground">{description}</div>
         ) : null}
       </div>
     </li>

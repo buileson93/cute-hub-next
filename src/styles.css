@@ -74,6 +74,22 @@
     sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
+  /* Thang cỡ chữ phụ trợ (thay cho hard-code text-[Npx]) — xem docs/UI_GUIDELINES.md */
+  --text-nano: 0.5rem; /* 8px */
+  --text-nano--line-height: 0.75rem;
+  --text-micro: 0.5625rem; /* 9px */
+  --text-micro--line-height: 0.875rem;
+  --text-mini: 0.625rem; /* 10px */
+  --text-mini--line-height: 0.875rem;
+  --text-meta: 0.6875rem; /* 11px */
+  --text-meta--line-height: 1rem;
+  --text-note: 0.8125rem; /* 13px */
+  --text-note--line-height: 1.125rem;
+  --text-lead: 0.9375rem; /* 15px */
+  --text-lead--line-height: 1.375rem;
+
+
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

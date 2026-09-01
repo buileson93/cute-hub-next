@@ -110,7 +110,7 @@ function HistoryPage() {
         <History className="h-4 w-4 text-muted-foreground" />
         <span className="text-sm font-medium">Lịch sử phiên bản</span>
         {q.data?.tpl && (
-          <Badge variant="outline" className="font-mono text-[10px]">
+          <Badge variant="outline" className="font-mono text-mini">
             {q.data.tpl.code}
           </Badge>
         )}
@@ -136,11 +136,11 @@ function HistoryPage() {
                 <li key={r.id} className={`p-3 ${isPreview ? "bg-primary/5" : ""}`}>
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-sm font-semibold">v{r.version}</span>
-                    <Badge variant={isPublished ? "outline" : "secondary"} className="text-[10px]">
+                    <Badge variant={isPublished ? "outline" : "secondary"} className="text-mini">
                       {isPublished && <Lock className="mr-1 h-2.5 w-2.5" />}
                       {r.status}
                     </Badge>
-                    <span className="ml-auto text-[11px] text-muted-foreground">
+                    <span className="ml-auto text-meta text-muted-foreground">
                       {new Date(r.created_at).toLocaleString("vi-VN")}
                     </span>
                   </div>
@@ -207,7 +207,7 @@ function HistoryPage() {
                 <CardTitle className="text-base">Snapshot v{preview.version}</CardTitle>
               </CardHeader>
               <CardContent>
-                <pre className="max-h-[70vh] overflow-auto rounded-md bg-slate-950/95 p-3 font-mono text-[11px] leading-relaxed text-emerald-200">
+                <pre className="max-h-[70vh] overflow-auto rounded-md bg-slate-950/95 p-3 font-mono text-meta leading-relaxed text-emerald-200">
                   {JSON.stringify(preview.compiled_schema, null, 2)}
                 </pre>
               </CardContent>

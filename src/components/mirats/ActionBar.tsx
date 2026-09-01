@@ -56,7 +56,7 @@ export function ActionBar({
     <div className={cn("flex items-center gap-1.5", className)}>
       {onTao && (
         <AppTooltip noiDung={NHAN.tao}>
-          <Button size="sm" className="h-8 w-8 p-0" onClick={onTao}>
+          <Button size="sm" className="size-8 p-0" onClick={onTao}>
             <Plus className="h-4 w-4" aria-hidden />
             <span className="sr-only">{NHAN.tao}</span>
           </Button>
@@ -64,7 +64,7 @@ export function ActionBar({
       )}
       {onSua && (
         <AppTooltip noiDung={NHAN.sua}>
-          <Button size="sm" variant="secondary" className="h-8 w-8 p-0" onClick={onSua}>
+          <Button size="sm" variant="secondary" className="size-8 p-0" onClick={onSua}>
             <Pencil className="h-4 w-4" aria-hidden />
             <span className="sr-only">{NHAN.sua}</span>
           </Button>
@@ -72,7 +72,7 @@ export function ActionBar({
       )}
       {onHoanThanh && (
         <AppTooltip noiDung={NHAN.hoanThanh}>
-          <Button size="sm" variant="default" className="h-8 w-8 p-0" onClick={onHoanThanh}>
+          <Button size="sm" variant="default" className="size-8 p-0" onClick={onHoanThanh}>
             <CheckCircle2 className="h-4 w-4" aria-hidden />
             <span className="sr-only">{NHAN.hoanThanh}</span>
           </Button>
@@ -80,7 +80,7 @@ export function ActionBar({
       )}
       {onDong && (
         <AppTooltip noiDung={NHAN.dong}>
-          <Button size="sm" variant="outline" className="h-8 w-8 p-0" onClick={onDong}>
+          <Button size="sm" variant="outline" className="size-8 p-0" onClick={onDong}>
             <XCircle className="h-4 w-4" aria-hidden />
             <span className="sr-only">{NHAN.dong}</span>
           </Button>
@@ -88,7 +88,7 @@ export function ActionBar({
       )}
       {onXoa && (
         <AppTooltip noiDung={NHAN.xoa}>
-          <Button size="sm" variant="destructive" className="h-8 w-8 p-0" onClick={onXoa}>
+          <Button size="sm" variant="destructive" className="size-8 p-0" onClick={onXoa}>
             <Trash2 className="h-4 w-4" aria-hidden />
             <span className="sr-only">{NHAN.xoa}</span>
           </Button>

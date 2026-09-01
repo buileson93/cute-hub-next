@@ -182,10 +182,10 @@ export function HillChart({ project_id }: { project_id: string }) {
               <span className="font-medium text-slate-700">{m.name}</span>
             </div>
             <div className="flex items-center gap-3">
-              <Badge variant="secondary" className="text-[10px] font-mono">
+              <Badge variant="secondary" className="text-mini font-mono">
                 {m.position}%
               </Badge>
-              <span className="text-[11px] text-muted-foreground uppercase tracking-tight">
+              <span className="text-meta text-muted-foreground uppercase tracking-tight">
                 {m.position < 50 ? "Climbing" : "Executing"}
               </span>
             </div>

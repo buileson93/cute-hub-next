@@ -28,7 +28,7 @@ export function StockMovementLog({ rows, isLoading }: StockMovementLogProps) {
           filter: "text",
           priority: "primary" as const,
           value: (g) => g.so_ct ?? "",
-          cell: (g) => <span className="font-mono text-[11px]">{g.so_ct ?? "—"}</span>,
+          cell: (g) => <span className="font-mono text-meta">{g.so_ct ?? "—"}</span>,
         },
         {
           key: "ngay",

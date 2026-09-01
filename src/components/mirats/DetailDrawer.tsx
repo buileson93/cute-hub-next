@@ -141,7 +141,7 @@ export function DetailDrawer({
           {/* Task 31 — Inline edit ghi chú (chỉ hiện nếu row có id + loại hỗ trợ) */}
           {Boolean(row?.id) && (loai === "thiet_bi" || loai === "vat_tu") && row && (
             <div className="border-t px-6 py-4">
-              <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <div className="mb-1 text-mini font-semibold uppercase tracking-wider text-muted-foreground">
                 Ghi chú
               </div>
               <InlineField

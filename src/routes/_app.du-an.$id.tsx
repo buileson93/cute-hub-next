@@ -468,7 +468,7 @@ function DuAnDetailPage() {
           icon={CalendarIcon}
         />
         <div className="min-w-[140px] flex-1 max-w-[200px]">
-          <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5 flex items-center justify-between">
+          <div className="text-mini uppercase font-bold tracking-wider text-slate-400 mb-1.5 flex items-center justify-between">
             <span>Tiến độ</span>
             <span className="text-foreground">{duAn.tien_do}%</span>
           </div>
@@ -646,7 +646,7 @@ function DuAnDetailPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="font-bold text-foreground">Cycle 08: Foundations</div>
-                    <div className="text-[11px] text-muted-foreground mt-1">17/08/2026 → 28/09/2026</div>
+                    <div className="text-meta text-muted-foreground mt-1">17/08/2026 → 28/09/2026</div>
                     <Badge className="mt-3 bg-indigo-600">Big Batch (6w)</Badge>
                   </CardContent>
                 </Card>
@@ -794,7 +794,7 @@ function Stat({ label, value, icon: Icon }: { label: string; value: string; icon
         <Icon className="h-4 w-4 text-muted-foreground" />
       </div>
       <div className="flex flex-col min-w-0">
-        <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground leading-none mb-1">
+        <span className="text-mini uppercase font-bold tracking-wider text-muted-foreground leading-none mb-1">
           {label}
         </span>
         <span className="text-xs font-semibold text-foreground truncate">{value}</span>
@@ -876,7 +876,7 @@ function KanbanView({
                 </span>
                 <Badge
                   variant="secondary"
-                  className="text-[10px] px-1.5 py-0 bg-muted text-muted-foreground border-none rounded-full"
+                  className="text-mini px-1.5 py-0 bg-muted text-muted-foreground border-none rounded-full"
                 >
                   {list.length}
                 </Badge>
@@ -927,13 +927,13 @@ function KanbanView({
                 >
                   <CardContent className="p-3 space-y-3">
                     <div className="flex items-start justify-between gap-2">
-                      <div className="text-[10px] font-mono text-muted-foreground tracking-tight">
+                      <div className="text-mini font-mono text-muted-foreground tracking-tight">
                         #{t.id.slice(0, 6).toUpperCase()}
                       </div>
                       {t.tien_do > 0 && (
                         <Badge
                           variant="secondary"
-                          className="text-[9px] px-1 py-0 h-4 bg-indigo-50 text-indigo-600 border-none"
+                          className="text-micro px-1 py-0 h-4 bg-indigo-50 text-indigo-600 border-none"
                         >
                           {t.tien_do}%
                         </Badge>
@@ -945,20 +945,20 @@ function KanbanView({
                     </div>
 
                     {t.mo_ta && (
-                      <div className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed italic">
+                      <div className="text-meta text-muted-foreground line-clamp-2 leading-relaxed italic">
                         {t.mo_ta}
                       </div>
                     )}
 
                     <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-border mt-2">
-                      <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                      <div className="flex items-center gap-1.5 text-mini text-muted-foreground">
                         <UserIcon className="h-3 w-3" aria-hidden="true" />
                         <span className="max-w-[80px] truncate">{nameOf(t.nguoi_xu_ly_chinh)}</span>
                       </div>
                       {t.ngay_ket_thuc_du_kien && (
                         <div
                           className={cn(
-                            "flex items-center gap-1.5 text-[10px]",
+                            "flex items-center gap-1.5 text-mini",
                             t.trang_thai === "qua_han"
                               ? "text-rose-600 font-medium"
                               : "text-muted-foreground",
@@ -981,7 +981,7 @@ function KanbanView({
                       // Lối bàn phím thay cho kéo–thả (a11y + thiết bị cảm ứng).
                       <select
                         aria-label={`Đổi trạng thái công việc ${t.ten}`}
-                        className="w-full h-9 rounded-md border border-border bg-background text-[11px] px-2"
+                        className="w-full h-9 rounded-md border border-border bg-background text-meta px-2"
                         value={t.trang_thai}
                         disabled={pendingTaskId === t.id}
                         onClick={(e) => e.stopPropagation()}
@@ -1002,7 +1002,7 @@ function KanbanView({
               ))}
               {list.length === 0 && (
                 <div className="h-24 flex items-center justify-center border-2 border-dashed border-border rounded-lg">
-                  <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">
+                  <span className="text-mini text-muted-foreground font-medium uppercase tracking-widest">
                     Chưa có công việc
                   </span>
                 </div>
@@ -1098,7 +1098,7 @@ function ListView({
                 <div className="min-w-0">
                   <CardTitle className="text-base">{m.ten}</CardTitle>
                   {m.mo_ta && <CardDescription>{m.mo_ta}</CardDescription>}
-                  <div className="text-[11px] text-muted-foreground mt-1">
+                  <div className="text-meta text-muted-foreground mt-1">
                     {m.ngay_bat_dau ?? "—"} → {m.ngay_ket_thuc_du_kien ?? "—"} · {list.length} công
                     việc
                   </div>
@@ -1173,7 +1173,7 @@ function ListView({
                         <div className="sm:col-span-4 min-w-0">
                           <div className="font-medium text-sm truncate">{t.ten}</div>
                           {t.mo_ta && (
-                            <div className="text-[11px] text-muted-foreground truncate">
+                            <div className="text-meta text-muted-foreground truncate">
                               {t.mo_ta}
                             </div>
                           )}
@@ -1188,7 +1188,7 @@ function ListView({
                         </div>
                         <div className="sm:col-span-2 min-w-0 flex items-center gap-2">
                           <Progress value={t.tien_do} className="h-1.5 min-w-0 flex-1" />
-                          <span className="text-[11px] text-muted-foreground tabular-nums">
+                          <span className="text-meta text-muted-foreground tabular-nums">
                             {t.tien_do}%
                           </span>
                         </div>
@@ -1199,7 +1199,7 @@ function ListView({
                             canEdit={canAdd}
                             count={attachmentCounts?.[t.id] ?? 0}
                           />
-                          <Badge variant="outline" className={cn(c.tone, "shrink-0 text-[10px]")}>
+                          <Badge variant="outline" className={cn(c.tone, "shrink-0 text-mini")}>
                             {c.label}
                           </Badge>
                         </div>
@@ -1660,7 +1660,7 @@ function EditCongViecDialog({
         </div>
 
         {isEdit && !canEditTask && (
-          <div className="text-[11px] text-muted-foreground">
+          <div className="text-meta text-muted-foreground">
             Bạn chỉ có quyền xem công việc này.
           </div>
         )}

@@ -401,7 +401,7 @@ function NewSubmission() {
                       {tb.ten_thiet_bi}
                     </span>
                     {on && (
-                      <Badge variant="outline" className="text-[10px]">
+                      <Badge variant="outline" className="text-mini">
                         Đã chọn
                       </Badge>
                     )}

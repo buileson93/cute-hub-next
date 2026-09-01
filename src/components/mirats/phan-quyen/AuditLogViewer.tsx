@@ -93,7 +93,7 @@ export function AuditLogViewer({ auditLogs, loading, profileMap, q, setQ }: Audi
                 priority: "secondary" as const,
                 value: (r) => r.created_at,
                 cell: (r) => (
-                  <span className="font-mono text-[11px] text-muted-foreground">
+                  <span className="font-mono text-meta text-muted-foreground">
                     {fmtTs(r.created_at)}
                   </span>
                 ),
@@ -146,7 +146,7 @@ export function AuditLogViewer({ auditLogs, loading, profileMap, q, setQ }: Audi
                 priority: "detail" as const,
                 value: (r) => r.entity_id ?? "",
                 cell: (r) => (
-                  <span className="font-mono text-[11px] text-muted-foreground">
+                  <span className="font-mono text-meta text-muted-foreground">
                     {r.entity_id ?? "—"}
                   </span>
                 ),

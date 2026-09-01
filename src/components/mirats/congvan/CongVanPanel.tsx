@@ -116,15 +116,15 @@ export function CongVanPanel({ duAnId, canEdit }: { duAnId: string; canEdit: boo
         </div>
       }
       footer={
-        <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
+        <div className="flex items-center gap-4 text-meta text-muted-foreground">
           <div className="flex items-center gap-1">
-            <Badge variant="secondary" className="h-4 px-1 text-[10px]">
+            <Badge variant="secondary" className="h-4 px-1 text-mini">
               {filtered.length}
             </Badge>
             <span>văn bản</span>
           </div>
           <div className="flex items-center gap-1">
-            <Badge variant="secondary" className="h-4 px-1 text-[10px]">
+            <Badge variant="secondary" className="h-4 px-1 text-mini">
               {soLuong}
             </Badge>
             <span>luồng liên kết</span>

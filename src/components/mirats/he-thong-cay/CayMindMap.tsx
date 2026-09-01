@@ -251,7 +251,7 @@ function MindNode({ data }: { data: MindData }) {
         startInline();
       }}
       className={cn(
-        "group relative flex cursor-pointer items-center text-[11px] leading-none transition-mirats-fast animate-fade-in",
+        "group relative flex cursor-pointer items-center text-meta leading-none transition-mirats-fast animate-fade-in",
         UI_DENSITY.CONTROL_H,
         KIND_WIDTH[data.kind],
       )}
@@ -274,7 +274,7 @@ function MindNode({ data }: { data: MindData }) {
         {data.collapsible ? (
           <span
             className={cn(
-              "flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-sm border text-[9px] transition-colors",
+              "flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-sm border text-micro transition-colors",
               data.expanded
                 ? "border-primary/50 bg-primary/15 text-primary"
                 : "border-muted-foreground/30 bg-background text-muted-foreground",
@@ -297,7 +297,7 @@ function MindNode({ data }: { data: MindData }) {
         </div>
 
         {data.count !== undefined && (
-          <Badge variant="secondary" className="text-[9px] opacity-70 shrink-0">
+          <Badge variant="secondary" className="text-micro opacity-70 shrink-0">
             {data.count}
           </Badge>
         )}
@@ -379,7 +379,7 @@ function MindNode({ data }: { data: MindData }) {
 function LayerNode({ data }: NodeProps) {
   const d = data as { label: string };
   return (
-    <div className="pointer-events-none select-none rounded-md border border-dashed border-primary/40 bg-primary/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary">
+    <div className="pointer-events-none select-none rounded-md border border-dashed border-primary/40 bg-primary/5 px-3 py-1 text-meta font-semibold uppercase tracking-wide text-primary">
       {d.label}
     </div>
   );
@@ -941,7 +941,7 @@ export function CayMindMap({
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm transition-opacity duration-300">
           <Loader2 className="h-8 w-8 text-primary animate-spin mb-3" />
           <p className="text-sm font-medium text-muted-foreground">Đang tính toán sơ đồ...</p>
-          <p className="text-[10px] text-muted-foreground/60 mt-1 uppercase tracking-widest">
+          <p className="text-mini text-muted-foreground/60 mt-1 uppercase tracking-widest">
             {nodes.length} nodes
           </p>
         </div>
@@ -1047,7 +1047,7 @@ export function CayMindMap({
             onClick={recenter}
           >
             <Search className="h-3.5 w-3.5" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">Khớp khung hình</span>
+            <span className="text-mini font-bold uppercase tracking-wider">Khớp khung hình</span>
           </Button>
         </Panel>
       </ReactFlow>

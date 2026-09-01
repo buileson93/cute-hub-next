@@ -262,7 +262,7 @@ function DiagramThumb({ data, className }: { data: DiagramLite["du_lieu"]; class
     return (
       <div
         className={cn(
-          "grid place-items-center rounded-md border bg-muted/30 text-[10px] text-muted-foreground",
+          "grid place-items-center rounded-md border bg-muted/30 text-mini text-muted-foreground",
           className,
         )}
       >
@@ -457,7 +457,7 @@ function ElementNode({ id, data, selected }: NodeProps<ElementNodeType>) {
       )}
     >
       <NodeHandles />
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+      <div className="flex items-center gap-1.5 text-mini font-semibold uppercase tracking-wide text-muted-foreground">
         <Icon className="h-3 w-3" /> {meta.label}
       </div>
       {data.img && (
@@ -570,14 +570,14 @@ function LinkPreview({
             </div>
             {diagrams.length > 0 && (
               <div className="pt-1">
-                <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                <p className="mb-1 text-meta font-semibold uppercase tracking-wide text-muted-foreground">
                   Sơ đồ liên kết
                 </p>
                 <div className="space-y-2">
                   {diagrams.slice(0, 2).map((d) => (
                     <Link key={d.id} to="/so-do/$id" params={{ id: d.id }} className="block">
                       <DiagramThumb data={d.du_lieu} className="h-24 w-full" />
-                      <span className="mt-0.5 block truncate text-[11px] text-muted-foreground hover:text-primary">
+                      <span className="mt-0.5 block truncate text-meta text-muted-foreground hover:text-primary">
                         {d.ten}
                       </span>
                     </Link>
@@ -1778,7 +1778,7 @@ function LibraryButton({ onPick }: { onPick: (url: string | null) => void }) {
                   loading="lazy"
                   className="h-14 w-14 object-contain"
                 />
-                <span className="line-clamp-1 text-center text-[11px] text-muted-foreground">
+                <span className="line-clamp-1 text-center text-meta text-muted-foreground">
                   {it.ten}
                 </span>
               </button>
@@ -1810,7 +1810,7 @@ function LibraryButton({ onPick }: { onPick: (url: string | null) => void }) {
                       loading="lazy"
                       className="h-14 w-14 object-contain"
                     />
-                    <span className="line-clamp-1 text-center text-[11px] text-muted-foreground">
+                    <span className="line-clamp-1 text-center text-meta text-muted-foreground">
                       {r.ten}
                     </span>
                   </button>
@@ -1846,7 +1846,7 @@ function EdgeKindPicker({ value, onPick }: { value: EdgeKind; onPick: (k: EdgeKi
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[240px] p-1.5" align="start">
-        <p className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <p className="px-2 py-1 text-meta font-semibold uppercase tracking-wide text-muted-foreground">
           Loại đường nối
         </p>
         {EDGE_KINDS.map((k) => {
@@ -2023,7 +2023,7 @@ function ColorPicker({ onPick }: { onPick: (c: string) => void }) {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-2" side="top" align="center">
-        <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <p className="mb-1.5 text-meta font-semibold uppercase tracking-wide text-muted-foreground">
           Màu nền
         </p>
         <div className="grid grid-cols-4 gap-1.5">
@@ -2073,7 +2073,7 @@ function MultiLinkButton({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-64 p-2" side="top" align="center">
-        <p className="mb-1 px-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <p className="mb-1 px-1 text-meta font-semibold uppercase tracking-wide text-muted-foreground">
           Nối {selectedNodes.length} khối đã chọn
         </p>
         <button
@@ -2087,7 +2087,7 @@ function MultiLinkButton({
           <Waypoints className="h-4 w-4 opacity-70" />
           <span>Nối chuỗi theo vị trí</span>
         </button>
-        <p className="mb-1 mt-2 px-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <p className="mb-1 mt-2 px-1 text-meta font-semibold uppercase tracking-wide text-muted-foreground">
           Nối chùm tới đích
         </p>
         <div className="max-h-52 space-y-0.5 overflow-y-auto">

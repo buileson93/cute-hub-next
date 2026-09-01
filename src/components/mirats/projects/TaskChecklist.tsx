@@ -135,7 +135,7 @@ export function TaskChecklist({
     <div className="space-y-3">
       <div className="flex items-center gap-3">
         <Progress value={percent} className="h-1.5 flex-1" />
-        <span className="text-[11px] tabular-nums text-muted-foreground">
+        <span className="text-meta tabular-nums text-muted-foreground">
           {items.filter((i) => i.hoan_thanh).length}/{items.length} · {percent}%
         </span>
       </div>

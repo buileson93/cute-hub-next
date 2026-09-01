@@ -123,7 +123,7 @@ function BaoTriDetail() {
             <StatusBadge domain="bao_tri" code={bt.loai_bao_tri} label={bt.loai_bao_tri} />
             <StatusBadge domain="thiet_bi" code={bt.trang_thai} label={bt.trang_thai} />
             {dvo && (
-              <Badge variant="outline" className="text-[10px]">
+              <Badge variant="outline" className="text-mini">
                 <Building2 className="mr-1 h-3 w-3" /> {dvo.ma}
               </Badge>
             )}
@@ -236,7 +236,7 @@ function BaoTriDetail() {
                                 <div
                                   key={n}
                                   title={n}
-                                  className="h-7 w-7 rounded-full border-2 border-background bg-secondary grid place-items-center text-[10px] font-bold uppercase ring-1 ring-border"
+                                  className="h-7 w-7 rounded-full border-2 border-background bg-secondary grid place-items-center text-mini font-bold uppercase ring-1 ring-border"
                                 >
                                   {n.slice(0, 2)}
                                 </div>
@@ -277,7 +277,7 @@ function BaoTriDetail() {
                         <Badge
                           key={k}
                           variant="secondary"
-                          className={cn("text-[10px] py-0", kqColor[k])}
+                          className={cn("text-mini py-0", kqColor[k])}
                         >
                           {k}: {v}
                         </Badge>
@@ -327,7 +327,7 @@ function BaoTriDetail() {
                                   <TableCell>
                                     <Badge
                                       variant="secondary"
-                                      className={cn("text-[10px]", kqColor[h.ket_qua])}
+                                      className={cn("text-mini", kqColor[h.ket_qua])}
                                     >
                                       {h.ket_qua}
                                     </Badge>
@@ -438,7 +438,7 @@ function KpiCard({
           <Icon className="h-5 w-5 text-muted-foreground" />
         </div>
         <div className="min-w-0">
-          <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold truncate">
+          <div className="text-mini uppercase tracking-wide text-muted-foreground font-semibold truncate">
             {label}
           </div>
           <div className="text-sm font-bold truncate">{value}</div>

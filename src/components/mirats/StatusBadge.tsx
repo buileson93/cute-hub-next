@@ -58,7 +58,7 @@ export function StatusBadge({ domain, code, className, label, dotOnly }: Props) 
           aria-hidden="true"
         />
         {label && (
-          <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+          <span className="text-meta font-medium text-muted-foreground uppercase tracking-wider">
             {label}
           </span>
         )}

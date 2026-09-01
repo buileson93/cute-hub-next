@@ -305,7 +305,7 @@ export function SystemInternalGraph({
           <span>· thành phần &amp; liên kết nội bộ</span>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <Badge variant="secondary" className="gap-1 text-[11px]">
+          <Badge variant="secondary" className="gap-1 text-meta">
             <Link2 className="h-3 w-3" />
             {doThi.links.length} liên kết
           </Badge>
@@ -588,7 +588,7 @@ function EmptyStateWithSuggestions({
               <li key={s.id} className="flex items-center justify-between gap-2">
                 <span className="truncate text-foreground">{s.ten}</span>
                 <span className="flex shrink-0 items-center gap-2">
-                  <Badge variant="secondary" className="text-[10px]">
+                  <Badge variant="secondary" className="text-mini">
                     {s.count} TP
                   </Badge>
                   {onJumpSystem ? (

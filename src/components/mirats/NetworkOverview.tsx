@@ -1865,7 +1865,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
                           )}
                           <span className="truncate font-medium">{h.label}</span>
                         </span>
-                        <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
+                        <span className="shrink-0 font-mono text-mini text-muted-foreground">
                           {h.sub}
                         </span>
                       </button>
@@ -1887,7 +1887,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
               <Button
                 size="icon"
                 variant={clusterOn ? "default" : "outline"}
-                className="h-8 w-8"
+                className="size-8"
                 onClick={() => setClusterOn((v) => !v)}
                 aria-label={
                   clusterOn
@@ -1901,7 +1901,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
               <Button
                 size="icon"
                 variant={connectMode ? "default" : "outline"}
-                className="h-8 w-8"
+                className="size-8"
                 onClick={() => {
                   setConnectMode((v) => !v);
                   setConnectSourceId(null);
@@ -1917,7 +1917,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
                   <Button
                     size="icon"
                     variant="outline"
-                    className="h-8 w-8"
+                    className="size-8"
                     onClick={undoConnect}
                     disabled={!canUndo || xoaKheMut.isPending}
                     aria-label="Hoàn tác liên kết vừa tạo"
@@ -1928,7 +1928,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
                   <Button
                     size="icon"
                     variant="outline"
-                    className="h-8 w-8"
+                    className="size-8"
                     onClick={redoConnect}
                     disabled={!canRedo || themKheMut.isPending}
                     aria-label="Làm lại liên kết đã hoàn tác"
@@ -1942,7 +1942,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
               <Button
                 size="icon"
                 variant="outline"
-                className="h-8 w-8"
+                className="size-8"
                 onClick={() => zoomBy(1.3)}
                 aria-label="Phóng to"
               >
@@ -1951,7 +1951,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
               <Button
                 size="icon"
                 variant="outline"
-                className="h-8 w-8"
+                className="size-8"
                 onClick={() => zoomBy(0.77)}
                 aria-label="Thu nhỏ"
               >
@@ -1960,7 +1960,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
               <Button
                 size="icon"
                 variant="outline"
-                className="h-8 w-8"
+                className="size-8"
                 onClick={fit}
                 aria-label="Vừa khung (0)"
               >
@@ -1969,7 +1969,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
               <Button
                 size="icon"
                 variant="outline"
-                className="h-8 w-8"
+                className="size-8"
                 onClick={resetView}
                 aria-label="Reset khung nhìn & xoá bookmark tầng này (R)"
               >
@@ -1978,7 +1978,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
               <Button
                 size="icon"
                 variant="outline"
-                className="h-8 w-8"
+                className="size-8"
                 onClick={saveView}
                 aria-label="Lưu khung nhìn (S)"
               >
@@ -1987,7 +1987,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
               <Button
                 size="icon"
                 variant={hasSavedView ? "default" : "outline"}
-                className="h-8 w-8"
+                className="size-8"
                 onClick={restoreView}
                 disabled={!hasSavedView}
                 aria-label="Khôi phục khung nhìn (B)"
@@ -1997,7 +1997,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
               <Button
                 size="icon"
                 variant="outline"
-                className="h-8 w-8"
+                className="size-8"
                 onClick={() => setShortcutsOpen(true)}
                 aria-label="Phím tắt (?)"
               >
@@ -2006,7 +2006,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
               <Button
                 size="icon"
                 variant="outline"
-                className="h-8 w-8"
+                className="size-8"
                 onClick={exportPNG}
                 aria-label="Xuất PNG"
               >
@@ -2015,7 +2015,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
               <Button
                 size="icon"
                 variant="outline"
-                className="h-8 w-8"
+                className="size-8"
                 onClick={exportSVG}
                 aria-label="Xuất SVG"
               >
@@ -2024,7 +2024,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
               <Button
                 size="icon"
                 variant={laser ? "default" : "outline"}
-                className="h-8 w-8"
+                className="size-8"
                 onClick={() => setLaser((v) => !v)}
                 aria-label="Con trỏ laser"
               >
@@ -2033,7 +2033,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
               <Button
                 size="icon"
                 variant="outline"
-                className="h-8 w-8"
+                className="size-8"
                 onClick={toggleFull}
                 aria-label="Toàn màn hình"
               >
@@ -2046,7 +2046,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
               <Button
                 size="icon"
                 variant={panelOpen ? "default" : "outline"}
-                className="h-8 w-8"
+                className="size-8"
                 onClick={() => setPanelOpen((v) => !v)}
                 aria-label="Bảng điều khiển"
               >
@@ -2055,7 +2055,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
               <Button
                 size="icon"
                 variant={sideOpen ? "default" : "outline"}
-                className="h-8 w-8"
+                className="size-8"
                 onClick={() => setSideOpen((v) => !v)}
                 aria-label="Cột thông tin"
               >
@@ -2183,7 +2183,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
                       </div>
                     )}
                     {!hoverNode.la_cum && !hoverNode.la_thanh_phan && (
-                      <div className="pt-1 text-[11px] text-muted-foreground">
+                      <div className="pt-1 text-meta text-muted-foreground">
                         Nhấn đúp để bung/thu thành phần
                       </div>
                     )}
@@ -2425,7 +2425,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
             )}
 
             {/* Legend — chú giải màu sắc / lớp / trọng số cạnh (thu gọn được) */}
-            <div className="absolute bottom-2 left-2 max-w-[260px] rounded-md border bg-background/95 text-[10px] shadow-sm backdrop-blur">
+            <div className="absolute bottom-2 left-2 max-w-[260px] rounded-md border bg-background/95 text-mini shadow-sm backdrop-blur">
               <button
                 type="button"
                 onClick={() => setLegendOpen((v) => !v)}
@@ -2442,7 +2442,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
                 <div className="space-y-2 border-t px-2 py-1.5">
                   {/* Loại liên kết (màu) */}
                   <div>
-                    <div className="mb-0.5 text-[9px] uppercase tracking-wide text-muted-foreground">
+                    <div className="mb-0.5 text-micro uppercase tracking-wide text-muted-foreground">
                       Loại liên kết
                     </div>
                     {LEGEND.map((l) => (
@@ -2458,7 +2458,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
 
                   {/* Điểm: cụm / nội bộ / bên ngoài */}
                   <div>
-                    <div className="mb-0.5 text-[9px] uppercase tracking-wide text-muted-foreground">
+                    <div className="mb-0.5 text-micro uppercase tracking-wide text-muted-foreground">
                       Điểm
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -2477,7 +2477,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
 
                   {/* Lớp vật lý / logic */}
                   <div>
-                    <div className="mb-0.5 text-[9px] uppercase tracking-wide text-muted-foreground">
+                    <div className="mb-0.5 text-micro uppercase tracking-wide text-muted-foreground">
                       Lớp
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -2491,7 +2491,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
 
                   {/* Trọng số & hover */}
                   <div>
-                    <div className="mb-0.5 text-[9px] uppercase tracking-wide text-muted-foreground">
+                    <div className="mb-0.5 text-micro uppercase tracking-wide text-muted-foreground">
                       Trọng số cạnh
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -2543,7 +2543,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
                 >
                   <StickyNote className="mr-2 h-4 w-4" />
                   {has ? "Xem / sửa ghi chú" : "Ghi chú Markdown"}{" "}
-                  <span className="ml-auto text-[10px] text-muted-foreground">N</span>
+                  <span className="ml-auto text-mini text-muted-foreground">N</span>
                 </Button>
               );
             })()}
@@ -2694,7 +2694,7 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
                         {connectDialog.srcTen}
                       </span>
                       {srcLay?.family && (
-                        <Badge variant="outline" className="h-4 px-1 text-[9px]">
+                        <Badge variant="outline" className="h-4 px-1 text-micro">
                           {srcLay.family}
                         </Badge>
                       )}
@@ -2712,13 +2712,13 @@ export function NetworkOverview({ canManage }: { canManage: boolean }) {
                         {connectDialog.dstTen}
                       </span>
                       {dstLay?.family && (
-                        <Badge variant="outline" className="h-4 px-1 text-[9px]">
+                        <Badge variant="outline" className="h-4 px-1 text-micro">
                           {dstLay.family}
                         </Badge>
                       )}
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-meta text-muted-foreground">
                     <div>
                       Hệ thống nguồn: <span className="text-foreground">{heThongTen}</span>
                     </div>
@@ -2905,7 +2905,7 @@ function PanelSlider({
 }) {
   return (
     <div className="space-y-1">
-      <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+      <div className="flex items-center justify-between text-meta text-muted-foreground">
         <span>{label}</span>
         <span className="tabular-nums">{Number.isInteger(step) ? value : value.toFixed(2)}</span>
       </div>
@@ -2930,7 +2930,7 @@ function PanelToggle({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <label className="flex items-center justify-between text-[11px]">
+    <label className="flex items-center justify-between text-meta">
       <span className="text-muted-foreground">{label}</span>
       <Switch checked={checked} onCheckedChange={onChange} />
     </label>
@@ -2951,7 +2951,7 @@ function PanelSelect({
   const SENTINEL = "__all";
   return (
     <div className="space-y-1">
-      <div className="text-[11px] text-muted-foreground">{label}</div>
+      <div className="text-meta text-muted-foreground">{label}</div>
       <Select value={value || SENTINEL} onValueChange={(v) => onChange(v === SENTINEL ? "" : v)}>
         <SelectTrigger className="h-7 text-xs">
           <SelectValue />
@@ -3226,11 +3226,11 @@ function LinkList({
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-[13px] font-bold leading-tight group-hover:text-primary">
+                    <div className="truncate text-note font-bold leading-tight group-hover:text-primary">
                       {other}
                     </div>
                     <div className="mt-1 flex flex-wrap items-center gap-2">
-                      <div className="flex items-center gap-1.5 rounded-full bg-background/80 px-2 py-0.5 text-[10px] font-medium shadow-sm border border-border/40">
+                      <div className="flex items-center gap-1.5 rounded-full bg-background/80 px-2 py-0.5 text-mini font-medium shadow-sm border border-border/40">
                         <span
                           className="h-2 w-2 rounded-full shadow-inner"
                           style={{
@@ -3243,7 +3243,7 @@ function LinkList({
                       {r.vai_tro_du_phong === "du_phong" && (
                         <Badge
                           variant="outline"
-                          className="h-4 border-amber-500/30 bg-amber-500/5 px-1.5 text-[9px] font-bold text-amber-600 dark:text-amber-400"
+                          className="h-4 border-amber-500/30 bg-amber-500/5 px-1.5 text-micro font-bold text-amber-600 dark:text-amber-400"
                         >
                           DỰ PHÒNG
                         </Badge>
@@ -3258,7 +3258,7 @@ function LinkList({
                 </div>
 
                 {(r.giao_dien_nguon || r.giao_dien_dich) && (
-                  <div className="flex items-center gap-1.5 rounded-lg bg-background/40 p-2 text-[11px] text-muted-foreground/80 border border-border/20">
+                  <div className="flex items-center gap-1.5 rounded-lg bg-background/40 p-2 text-meta text-muted-foreground/80 border border-border/20">
                     <div className="flex-1 truncate">
                       <span className="font-semibold text-foreground/70">Cổng:</span>{" "}
                       {[r.giao_dien_nguon, r.giao_dien_dich].filter(Boolean).join(" → ")}
@@ -3278,7 +3278,7 @@ function LinkList({
 function Kbd({ k, v }: { k: string; v: string }) {
   return (
     <>
-      <kbd className="justify-self-start rounded border bg-muted px-1.5 py-0.5 font-mono text-[11px]">
+      <kbd className="justify-self-start rounded border bg-muted px-1.5 py-0.5 font-mono text-meta">
         {k}
       </kbd>
       <span className="text-muted-foreground">{v}</span>

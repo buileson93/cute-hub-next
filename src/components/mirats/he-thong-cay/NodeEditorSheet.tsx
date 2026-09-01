@@ -229,7 +229,7 @@ export function NodeEditorSheet({
               </div>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div className="space-y-1">
-                  <Label className="text-[10px] uppercase text-muted-foreground">Số serial</Label>
+                  <Label className="text-mini uppercase text-muted-foreground">Số serial</Label>
                   <Input
                     value={serial}
                     onChange={(e) => setSerial(e.target.value)}
@@ -238,7 +238,7 @@ export function NodeEditorSheet({
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-[10px] uppercase text-muted-foreground">Vị trí</Label>
+                  <Label className="text-mini uppercase text-muted-foreground">Vị trí</Label>
                   <Input
                     value={viTri}
                     onChange={(e) => setViTri(e.target.value)}
@@ -247,7 +247,7 @@ export function NodeEditorSheet({
                   />
                 </div>
               </div>
-              <p className="text-[10px] italic text-muted-foreground">
+              <p className="text-mini italic text-muted-foreground">
                 Thay đổi được lưu khi rời khỏi ô nhập.
               </p>
             </div>
@@ -434,7 +434,7 @@ export function NodeEditorSheet({
             <HeThongTruongEditor heThongId={target.ma} canManage={canManage} scope="thiet_bi" />
           )}
           {target?.kind === "tb" && (
-            <div className="pt-4 border-t text-[10px] text-muted-foreground italic">
+            <div className="pt-4 border-t text-mini text-muted-foreground italic">
               * Nếu bạn không có quyền ghi trực tiếp, thay đổi sẽ được tạo thành đề xuất phê duyệt.
             </div>
           )}

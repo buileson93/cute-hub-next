@@ -44,15 +44,15 @@ type Props = {
 function LabelRow({ f }: { f: CompiledField }) {
   return (
     <div className="mb-1.5 flex items-baseline gap-2">
-      <Label className="astryx-text-label text-[10px] text-muted-foreground font-bold tracking-wider">
+      <Label className="astryx-text-label text-mini text-muted-foreground font-bold tracking-wider">
         {f.label}
         {f.required && <span className="ml-1 text-rose-500">*</span>}
       </Label>
       {f.unit && (
-        <span className="astryx-number text-[10px] text-muted-foreground/70">[{f.unit}]</span>
+        <span className="astryx-number text-mini text-muted-foreground/70">[{f.unit}]</span>
       )}
       {f.tieu_chuan && (
-        <Badge variant="outline" className="astryx-badge border-border text-[9px] py-0 px-1.5 h-4">
+        <Badge variant="outline" className="astryx-badge border-border text-micro py-0 px-1.5 h-4">
           TC: {f.tieu_chuan}
         </Badge>
       )}
@@ -62,7 +62,7 @@ function LabelRow({ f }: { f: CompiledField }) {
 
 function Help({ f }: { f: CompiledField }) {
   if (!f.help_text) return null;
-  return <p className="astryx-text-muted mt-1 text-[10px] italic leading-tight">{f.help_text}</p>;
+  return <p className="astryx-text-muted mt-1 text-mini italic leading-tight">{f.help_text}</p>;
 }
 
 export function FormFieldRuntime({
@@ -83,7 +83,7 @@ export function FormFieldRuntime({
   if (f.kind === "divider") return <hr className="my-4 border-dashed border-border/30" />;
   if (f.kind === "note") {
     return (
-      <div className="astryx-surface border-amber-200/50 bg-amber-50/30 p-3 text-[11px] text-amber-900 dark:border-amber-900/30 dark:bg-amber-950/20 dark:text-amber-200">
+      <div className="astryx-surface border-amber-200/50 bg-amber-50/30 p-3 text-meta text-amber-900 dark:border-amber-900/30 dark:bg-amber-950/20 dark:text-amber-200">
         {f.help_text || f.label}
       </div>
     );
@@ -232,7 +232,7 @@ function Inner({ field: f, value, values, onChange, templateCode, draftId, disab
                 type="button"
                 disabled={disabled}
                 onClick={() => set(on ? arr.filter((x) => x !== o) : [...arr, o])}
-                className={`astryx-control rounded-full px-3 py-0.5 text-[11px] transition-mirats-fast ${on ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-secondary"}`}
+                className={`astryx-control rounded-full px-3 py-0.5 text-meta transition-mirats-fast ${on ? "bg-primary text-primary-foreground border-primary" : "border-border hover:bg-secondary"}`}
               >
                 {o}
               </button>
@@ -258,7 +258,7 @@ function Inner({ field: f, value, values, onChange, templateCode, draftId, disab
                 type="button"
                 disabled={disabled}
                 onClick={() => set(r.value)}
-                className={`astryx-control rounded-md px-2.5 py-1 text-[11px] transition-mirats-fast ${on ? "bg-primary text-primary-foreground border-primary" : "hover:bg-secondary"}`}
+                className={`astryx-control rounded-md px-2.5 py-1 text-meta transition-mirats-fast ${on ? "bg-primary text-primary-foreground border-primary" : "hover:bg-secondary"}`}
                 style={r.color && !on ? { borderColor: r.color, color: r.color } : undefined}
               >
                 {r.label}
@@ -280,11 +280,11 @@ function Inner({ field: f, value, values, onChange, templateCode, draftId, disab
             placeholder={ph ?? "Giá trị đo"}
             disabled={disabled}
           />
-          <div className="astryx-number flex items-center rounded-md border border-border bg-muted/50 px-2 text-[10px] text-muted-foreground font-medium uppercase tracking-tight">
+          <div className="astryx-number flex items-center rounded-md border border-border bg-muted/50 px-2 text-mini text-muted-foreground font-medium uppercase tracking-tight">
             {f.unit || "—"}
           </div>
           <div
-            className={`astryx-text-label flex items-center justify-center rounded-md border text-[9px] font-bold tracking-wider px-2 ${
+            className={`astryx-text-label flex items-center justify-center rounded-md border text-micro font-bold tracking-wider px-2 ${
               status === "pass"
                 ? "bg-emerald-50/50 border-emerald-200/50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-300"
                 : status === "fail"
@@ -295,7 +295,7 @@ function Inner({ field: f, value, values, onChange, templateCode, draftId, disab
             {status === "pass" ? "ĐẠT" : status === "fail" ? "KHÔNG ĐẠT" : "—"}
           </div>
           {(f.min_value != null || f.max_value != null) && (
-            <p className="astryx-number col-span-3 text-[10px] text-muted-foreground/70 mt-1 pl-1 border-l-2 border-border/30">
+            <p className="astryx-number col-span-3 text-mini text-muted-foreground/70 mt-1 pl-1 border-l-2 border-border/30">
               NGƯỠNG: {f.min_value ?? "—"} … {f.max_value ?? "—"} {f.unit ?? ""}
             </p>
           )}
@@ -308,7 +308,7 @@ function Inner({ field: f, value, values, onChange, templateCode, draftId, disab
       return (
         <div className="grid grid-cols-2 gap-2">
           <div className="astryx-surface border-border/50 p-2.5 bg-card/50">
-            <p className="astryx-text-label mb-1.5 text-[9px] font-bold text-muted-foreground/70">
+            <p className="astryx-text-label mb-1.5 text-micro font-bold text-muted-foreground/70">
               TRƯỚC
             </p>
             <Input
@@ -318,7 +318,7 @@ function Inner({ field: f, value, values, onChange, templateCode, draftId, disab
             />
           </div>
           <div className="astryx-surface border-border/50 p-2.5 bg-card/50">
-            <p className="astryx-text-label mb-1.5 text-[9px] font-bold text-muted-foreground/70">
+            <p className="astryx-text-label mb-1.5 text-micro font-bold text-muted-foreground/70">
               SAU
             </p>
             <Input
@@ -379,7 +379,7 @@ function Inner({ field: f, value, values, onChange, templateCode, draftId, disab
             type="button"
             variant="outline"
             size="sm"
-            className="astryx-control h-7 text-[11px] px-2.5"
+            className="astryx-control h-7 text-meta px-2.5"
             onClick={capture}
             disabled={disabled}
           >
@@ -395,7 +395,7 @@ function Inner({ field: f, value, values, onChange, templateCode, draftId, disab
       if (computed !== value) queueMicrotask(() => set(computed));
       return (
         <div className="astryx-surface border-border/50 bg-muted/20 px-3 py-2 text-sm flex items-center justify-between">
-          <span className="astryx-number text-[10px] text-muted-foreground/60 font-mono tracking-tighter">
+          <span className="astryx-number text-mini text-muted-foreground/60 font-mono tracking-tighter">
             = {f.formula || "(chưa có công thức)"}
           </span>
           <span className="astryx-number font-semibold text-primary">
@@ -416,9 +416,9 @@ function Inner({ field: f, value, values, onChange, templateCode, draftId, disab
       };
       return (
         <div className="astryx-surface overflow-hidden border-border/50">
-          <table className="w-full text-[11px]">
+          <table className="w-full text-meta">
             <thead className="bg-muted/40 border-b border-border/50">
-              <tr className="astryx-text-label text-[9px] text-muted-foreground/80">
+              <tr className="astryx-text-label text-micro text-muted-foreground/80">
                 {cols.map((c) => (
                   <th key={c.key} className="px-3 py-2 text-left font-bold tracking-wider">
                     {c.label}
@@ -470,7 +470,7 @@ function Inner({ field: f, value, values, onChange, templateCode, draftId, disab
               type="button"
               variant="ghost"
               size="sm"
-              className="astryx-control h-8 text-[11px] w-full rounded-none hover:bg-muted/30"
+              className="astryx-control h-8 text-meta w-full rounded-none hover:bg-muted/30"
               disabled={disabled || cols.length === 0}
               onClick={() => set([...rows, {}])}
             >
@@ -495,14 +495,14 @@ function Inner({ field: f, value, values, onChange, templateCode, draftId, disab
       return (
         <div className="space-y-3 astryx-surface border-border/30 bg-muted/5 p-3">
           {rows.length === 0 && (
-            <p className="astryx-text-muted text-[11px] text-center py-4 border border-dashed border-border/50 rounded-md">
+            <p className="astryx-text-muted text-meta text-center py-4 border border-dashed border-border/50 rounded-md">
               Chưa có mục. Nhấn "Thêm mục" bên dưới.
             </p>
           )}
           {rows.map((r, i) => (
             <div key={i} className="astryx-card border-border/50 p-3 bg-card shadow-none">
               <div className="mb-2 flex items-center justify-between">
-                <span className="astryx-text-label text-[9px] font-bold text-primary tracking-widest">
+                <span className="astryx-text-label text-micro font-bold text-primary tracking-widest">
                   MỤC #{i + 1}
                 </span>
                 <button
@@ -578,14 +578,14 @@ function Inner({ field: f, value, values, onChange, templateCode, draftId, disab
             type="button"
             variant="outline"
             size="sm"
-            className="astryx-control w-full h-8 text-[11px]"
+            className="astryx-control w-full h-8 text-meta"
             onClick={addRow}
             disabled={disabled || cols.length === 0}
           >
             <Plus className="mr-1.5 h-3.5 w-3.5" /> Thêm mục mới
           </Button>
           {cols.length === 0 && (
-            <p className="text-[11px] text-amber-600">
+            <p className="text-meta text-amber-600">
               Chưa cấu hình trường con — mở Inspector để thêm cột (key/label/kind).
             </p>
           )}

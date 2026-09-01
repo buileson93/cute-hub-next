@@ -462,7 +462,7 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
                               </p>
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
                                 <div>
-                                  <label className="text-[11px] text-muted-foreground">
+                                  <label className="text-meta text-muted-foreground">
                                     Hệ thống trong DB
                                   </label>
                                   <Select
@@ -497,7 +497,7 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
                                   </Select>
                                 </div>
                                 <div className="md:col-span-2">
-                                  <label className="text-[11px] text-muted-foreground">
+                                  <label className="text-meta text-muted-foreground">
                                     Hiện tượng (tiêu đề)
                                   </label>
                                   <Input
@@ -513,7 +513,7 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
                                   />
                                 </div>
                               </div>
-                              <div className="text-[11px] text-muted-foreground mt-1 flex gap-3">
+                              <div className="text-meta text-muted-foreground mt-1 flex gap-3">
                                 <span>
                                   ⏱ {r.thoi_diem_raw || "—"}{" "}
                                   {r.thoi_gian_bat_dau && `→ ${r.thoi_gian_bat_dau}`}
@@ -554,13 +554,13 @@ export function WeeklyReportImportDialog({ trigger, onImported }: Props) {
                               <Badge variant="outline">{r.don_vi_ql || "?"}</Badge>
                               <Badge variant="secondary">{r.tinh_trang || "—"}</Badge>
                             </div>
-                            <div className="text-[11px] text-muted-foreground mt-1">
+                            <div className="text-meta text-muted-foreground mt-1">
                               Ngày hỏng: {r.ngay_hong_raw || "—"}{" "}
                               {r.ngay_hong_iso && `→ ${r.ngay_hong_iso.slice(0, 10)}`} · SC:{" "}
                               {r.don_vi_sc || "—"} · Ghi chú: {r.ghi_chu || "—"}
                             </div>
                             <div className="mt-2">
-                              <label className="text-[11px] text-muted-foreground">
+                              <label className="text-meta text-muted-foreground">
                                 Hệ thống trong DB
                               </label>
                               <Select

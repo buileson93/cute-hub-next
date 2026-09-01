@@ -315,7 +315,7 @@ export function BaoTriMoiForm({
                         >
                           <div className="flex flex-col gap-0.5">
                             <span className="text-sm font-medium">{t.ten}</span>
-                            <span className="text-[10px] opacity-70">{t.code}</span>
+                            <span className="text-mini opacity-70">{t.code}</span>
                           </div>
                         </Button>
                       ))}

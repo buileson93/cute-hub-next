@@ -135,10 +135,10 @@ export function DocViewerDialog({
             <div className="flex flex-col h-full">
               {initialPage && (
                 <div className="bg-blue-50 border-b border-blue-100 px-4 py-1.5 flex items-center justify-between">
-                  <span className="text-[11px] font-medium text-blue-700">
+                  <span className="text-meta font-medium text-blue-700">
                     Kết quả tìm thấy tại Trang {initialPage}
                   </span>
-                  <span className="text-[10px] text-blue-500 italic">
+                  <span className="text-mini text-blue-500 italic">
                     (Cuộn xuống nếu trình duyệt không tự nhảy trang)
                   </span>
                 </div>

@@ -88,7 +88,7 @@ export function VisualKpiChart({
               {value}
             </span>
             {unit && (
-              <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground/60">
+              <span className="text-mini font-extrabold uppercase tracking-widest text-muted-foreground/60">
                 {unit}
               </span>
             )}

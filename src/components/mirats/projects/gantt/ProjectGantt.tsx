@@ -410,7 +410,7 @@ export function ProjectGantt({
                         <span
                           aria-hidden="true"
                           className={cn(
-                            "pointer-events-none absolute top-1 flex h-8 items-center whitespace-nowrap text-[11px] tabular-nums text-muted-foreground",
+                            "pointer-events-none absolute top-1 flex h-8 items-center whitespace-nowrap text-meta tabular-nums text-muted-foreground",
                             labelAfterBar ? "pl-1.5" : "-translate-x-full pr-1.5",
                           )}
                           style={{ left: labelAfterBar ? barLeft + barWidth : barLeft }}

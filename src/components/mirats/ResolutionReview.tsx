@@ -93,7 +93,7 @@ export function ResolutionReview({
                 <TableCell className="text-xs text-muted-foreground">
                   {candidateLabel(cand)}
                   {r.candidates.length > 1 && (
-                    <span className="ml-1 text-[10px] text-amber-600">
+                    <span className="ml-1 text-mini text-amber-600">
                       +{r.candidates.length - 1} ứng viên
                     </span>
                   )}
@@ -103,7 +103,7 @@ export function ResolutionReview({
                     <Badge variant={DECISION_VARIANT[r.decision]} className="w-fit">
                       {KIND_LABEL[r.kind]}
                     </Badge>
-                    <span className="text-[10px] text-muted-foreground">
+                    <span className="text-mini text-muted-foreground">
                       {r.confidence > 0 ? `${Math.round(r.confidence * 100)}% · ` : ""}
                       {r.reason}
                     </span>

@@ -240,7 +240,7 @@ export function AssetTablePanel({
               <SelectItem value=">3">&gt; 3</SelectItem>
             </SelectContent>
           </Select>
-          <div className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground bg-muted/20 px-2 py-0.5 rounded-md border border-border/50">
+          <div className="flex items-center gap-1.5 text-meta font-medium text-muted-foreground bg-muted/20 px-2 py-0.5 rounded-md border border-border/50">
             <span className="tabular-nums">
               {taiSanRows.length} / {totalTs > 0 ? totalTs.toLocaleString("vi-VN") : "—"} tài sản
             </span>
@@ -252,7 +252,7 @@ export function AssetTablePanel({
           <Button
             size="sm"
             variant="outline"
-            className="h-8 gap-1.5 px-2 text-[11px] font-semibold"
+            className="h-8 gap-1.5 px-2 text-meta font-semibold"
             disabled={loadingTsReal || filteredRows.length === 0}
             aria-label="Xuất CSV danh sách thành phần & tài sản đang lọc"
             onClick={() => xuatCsvTaiSan(filteredRows)}
@@ -330,7 +330,7 @@ export function AssetTablePanel({
                   title={`Thành phần đang lắp — ${r.ma}`}
                   content={r.danhSachThanhPhan}
                   preformatted
-                  className="line-clamp-2 whitespace-pre-line break-words text-[11px] leading-snug text-muted-foreground"
+                  className="line-clamp-2 whitespace-pre-line break-words text-meta leading-snug text-muted-foreground"
                 />
               </div>
             ) : (
@@ -381,7 +381,7 @@ export function AssetTablePanel({
                   />
                 </div>
                 {r.serial ? (
-                  <span className="block truncate font-mono text-[11px] text-muted-foreground">
+                  <span className="block truncate font-mono text-meta text-muted-foreground">
                     {r.serial}
                   </span>
                 ) : null}
@@ -457,7 +457,7 @@ export function AssetTablePanel({
               <InheritedValue
                 value={r.donViQuanLy}
                 nguon="Kế thừa từ đơn vị quản lý tài sản"
-                className="text-[11px]"
+                className="text-meta"
               />
             </div>
           ),
@@ -479,7 +479,7 @@ export function AssetTablePanel({
           filter: "cat",
           value: (r) => r.trangThai,
           priority: "secondary",
-          cell: (r) => r.trangThai ? <Badge variant="secondary" className="text-[10px]">{r.trangThai}</Badge> : <span className="text-xs text-muted-foreground">—</span>,
+          cell: (r) => r.trangThai ? <Badge variant="secondary" className="text-mini">{r.trangThai}</Badge> : <span className="text-xs text-muted-foreground">—</span>,
         },
         // ---- Metadata (chỉ hiện ở chế độ "Tất cả cột" / khi bật thủ công) ----
         ...([

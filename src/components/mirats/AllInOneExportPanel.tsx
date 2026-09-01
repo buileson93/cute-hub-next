@@ -158,7 +158,7 @@ export function AllInOneExportPanel() {
                           ({l.count})
                         </span>
                         {st.mode === "some" && (
-                          <Badge className="ml-1 bg-primary/90 text-[10px]">
+                          <Badge className="ml-1 bg-primary/90 text-mini">
                             {st.ids.size} chọn
                           </Badge>
                         )}
@@ -236,7 +236,7 @@ export function AllInOneExportPanel() {
                                   checked={st.ids.has(r.id)}
                                   onCheckedChange={() => toggleId(l.table, r.id)}
                                 />
-                                <span className="font-mono text-[11px] text-muted-foreground">
+                                <span className="font-mono text-meta text-muted-foreground">
                                   {r.ma}
                                 </span>
                                 <span className="truncate">{r.ten}</span>
@@ -286,7 +286,7 @@ export function AllInOneExportPanel() {
                 )}
                 Xuất file .xlsx theo phạm vi
               </Button>
-              <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+              <span className="flex items-center gap-1 text-meta text-muted-foreground">
                 <Info className="h-3 w-3" /> Giữ cột <b>mã</b> để nhập lại là cập nhật, không nhân
                 bản.
               </span>

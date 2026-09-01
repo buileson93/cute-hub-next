@@ -92,7 +92,7 @@ export function NhanVienSoftwareSheet({
                       <span className="text-sm font-bold">
                         {asset.ten_thiet_bi || asset.ma_thiet_bi}
                       </span>
-                      <span className="text-[10px] font-mono text-muted-foreground">
+                      <span className="text-mini font-mono text-muted-foreground">
                         · {asset.ma_thiet_bi}
                       </span>
                     </div>
@@ -100,7 +100,7 @@ export function NhanVienSoftwareSheet({
                       to="/thiet-bi/$maThietBi"
                       params={{ maThietBi: asset.ma_thiet_bi }}
                       search={{ tab: "tong-quan", doc: undefined, q: undefined }}
-                      className="text-[10px] text-primary hover:underline flex items-center gap-1"
+                      className="text-mini text-primary hover:underline flex items-center gap-1"
                     >
                       Sổ lý lịch <ExternalLink className="h-2.5 w-2.5" />
                     </Link>
@@ -127,24 +127,24 @@ export function NhanVienSoftwareSheet({
                                   <div className="flex items-center gap-1.5">
                                     <span className="text-sm font-bold">{sw.ten_phan_mem}</span>
                                     {sw.phien_ban && (
-                                      <Badge variant="outline" className="text-[9px] px-1 py-0 h-4">
+                                      <Badge variant="outline" className="text-micro px-1 py-0 h-4">
                                         {sw.phien_ban}
                                       </Badge>
                                     )}
                                   </div>
-                                  <div className="text-[10px] font-mono text-muted-foreground uppercase">
+                                  <div className="text-mini font-mono text-muted-foreground uppercase">
                                     {sw.ma_ban_quyen}
                                   </div>
                                 </div>
                                 <Badge
                                   variant="secondary"
-                                  className={`text-[9px] px-1.5 py-0 h-4 font-semibold uppercase tracking-wider ${STATUS_CLASS[status]}`}
+                                  className={`text-micro px-1.5 py-0 h-4 font-semibold uppercase tracking-wider ${STATUS_CLASS[status]}`}
                                 >
                                   {STATUS_LABEL[status]}
                                 </Badge>
                               </div>
 
-                              <div className="mt-2 grid grid-cols-2 gap-2 text-[10px] text-muted-foreground">
+                              <div className="mt-2 grid grid-cols-2 gap-2 text-mini text-muted-foreground">
                                 <div className="flex items-center gap-1">
                                   <Calendar className="h-3 w-3" />
                                   Cài: {new Date(sw.ngay_cai_dat).toLocaleDateString("vi-VN")}
@@ -158,7 +158,7 @@ export function NhanVienSoftwareSheet({
                               </div>
 
                               {sw.license_key && (
-                                <div className="mt-2 text-[10px] font-mono bg-muted/50 p-1.5 rounded truncate border border-dashed">
+                                <div className="mt-2 text-mini font-mono bg-muted/50 p-1.5 rounded truncate border border-dashed">
                                   <span className="text-muted-foreground/70 mr-1">KEY:</span>
                                   {sw.license_key}
                                 </div>

@@ -339,7 +339,7 @@ function MoTaXacNhan({ rows, tt }: { rows: readonly { ma: string }[]; tt: string
         Sẽ đặt trạng thái <b>{tt}</b> cho <b>{rows.length}</b> thành phần đã chọn (bao gồm cả dòng ở
         các trang khác). Thao tác này ghi trực tiếp vào dữ liệu.
       </div>
-      <div className="max-h-24 overflow-auto rounded bg-muted/50 p-2 font-mono text-[11px]">
+      <div className="max-h-24 overflow-auto rounded bg-muted/50 p-2 font-mono text-meta">
         {rows
           .slice(0, 30)
           .map((r) => r.ma)
@@ -396,7 +396,7 @@ export function ThanhPhanTable({
           <TabsTrigger
             value="component"
             title="Xem theo thành phần hệ thống"
-            className="h-6 gap-1.5 whitespace-nowrap rounded-sm px-2 text-[11px] font-medium tracking-tight"
+            className="h-6 gap-1.5 whitespace-nowrap rounded-sm px-2 text-meta font-medium tracking-tight"
           >
             <LayoutGrid className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
             <span className="hidden sm:inline">Thành phần</span>
@@ -404,7 +404,7 @@ export function ThanhPhanTable({
           <TabsTrigger
             value="asset"
             title="Xem theo tài sản"
-            className="h-6 gap-1.5 whitespace-nowrap rounded-sm px-2 text-[11px] font-medium tracking-tight"
+            className="h-6 gap-1.5 whitespace-nowrap rounded-sm px-2 text-meta font-medium tracking-tight"
           >
             <Package className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
             <span className="hidden sm:inline">Tài sản</span>
@@ -464,7 +464,7 @@ export function ModelCell({
 
   if (!entry) {
     return (
-      <span title={model} className="line-clamp-2 break-words text-[12px] font-medium leading-snug">
+      <span title={model} className="line-clamp-2 break-words text-xs font-medium leading-snug">
         {model || "—"}
       </span>
     );
@@ -472,7 +472,7 @@ export function ModelCell({
 
   return (
     <EntityHoverCard loai="dm_model" row={entry}>
-      <span className="line-clamp-2 cursor-pointer break-words text-[12px] font-medium leading-snug text-primary underline-offset-4 decoration-primary/30 hover:underline">
+      <span className="line-clamp-2 cursor-pointer break-words text-xs font-medium leading-snug text-primary underline-offset-4 decoration-primary/30 hover:underline">
         {model || entry.ten || "—"}
       </span>
     </EntityHoverCard>

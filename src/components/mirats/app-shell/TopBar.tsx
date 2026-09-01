@@ -49,7 +49,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
           <button
             id="powersearch-trigger"
             type="button"
-            className="h-8 w-full flex items-center justify-between rounded-full bg-[#0074e2]/5 px-3 text-[13px] font-normal text-muted-foreground border border-[#0074e2]/10 hover:bg-[#0074e2]/10 hover:text-[#0074e2] transition-all active:scale-[0.98] cursor-pointer group/search shadow-sm"
+            className="h-8 w-full flex items-center justify-between rounded-full bg-[#0074e2]/5 px-3 text-note font-normal text-muted-foreground border border-[#0074e2]/10 hover:bg-[#0074e2]/10 hover:text-[#0074e2] transition-all active:scale-[0.98] cursor-pointer group/search shadow-sm"
             onClick={handleOpenSearch}
             aria-label="Mở tìm kiếm PowerSearch"
           >
@@ -60,7 +60,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
               </span>
             </div>
 
-            <div className="hidden sm:flex items-center gap-1.5 rounded-md border border-[#0074e2]/20 bg-background/50 backdrop-blur-sm px-1.5 py-0.5 font-mono text-[9px] font-bold text-[#0074e2]/60 shrink-0 self-center ml-2">
+            <div className="hidden sm:flex items-center gap-1.5 rounded-md border border-[#0074e2]/20 bg-background/50 backdrop-blur-sm px-1.5 py-0.5 font-mono text-micro font-bold text-[#0074e2]/60 shrink-0 self-center ml-2">
               <CommandIcon className="h-2.5 w-2.5" />
               <span>K</span>
             </div>
@@ -83,7 +83,7 @@ export function TopBar({ renderMobileMenu }: { renderMobileMenu?: ReactNode }) {
           <AppTooltip
             ben="bottom"
             noiDung={
-              <div className="max-w-xs whitespace-pre-wrap text-[11px] leading-relaxed">
+              <div className="max-w-xs whitespace-pre-wrap text-meta leading-relaxed">
                 {"For the code present, I get the error below.\n\nPlease think step-by-step in order to resolve it.\n```\nTypeError: Cannot read properties of null (reading 'rpc')\n\n{\n  \"timestamp\": 1787483161643,\n  \"error_type\": \"RUNTIME_ERROR\",\n  \"filename\": \"http://localhost:8080/_serverFn/eyJmaWxlIjoiL3NyYy9saWIvbWlyYXRzL2RhdGEtcXVhbGl0eS5mdW5jdGlvbnMudHM_dHNzLXNlcnZlcmZuLXNwbGl0IiwiZXhwb3J0IjoiYW5hbHl6ZVJldmlld1F1ZXVlX2NyZWF0ZVNlcnZlckZuX2hhbmRsZXIifQ\",\n  \"lineno\": 0,\n  \"colno\": 0,\n  \"stack\": \"TypeError: Cannot read properties of null (reading 'rpc')\\n    at assertAdmin (/dev-server/src/lib/mirats/data-quality.functions.ts:25:42)\\n    at Object.missingRequired (/dev-server/src/lib/mirats/data-quality.functions.ts:102:11)\\n    at server (/dev-server/node_modules/@tanstack/start-client-core/src/createServerFn.ts:944:38)\\n    at callNextMiddleware (/dev-server/node_modules/@tanstack/start-client-core/src/createServerFn.ts:322:30)\\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\\n    at async userNext (/dev-server/node_modules/@tanstack/start-client-core/src/createServerFn.ts:312:26)\",\n  \"has_blank_screen\": true\n}\n```\n"}
               </div>
             }

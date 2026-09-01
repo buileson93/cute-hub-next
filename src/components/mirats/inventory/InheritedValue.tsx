@@ -29,7 +29,7 @@ export function InheritedValue({
       <span
         tabIndex={0}
         className={cn(
-          "inline-flex max-w-full items-center gap-1 rounded-md bg-primary/5 px-1.5 py-0.5 text-[12px] leading-snug text-foreground/90",
+          "inline-flex max-w-full items-center gap-1 rounded-md bg-primary/5 px-1.5 py-0.5 text-xs leading-snug text-foreground/90",
           "ring-1 ring-inset ring-primary/15 transition-colors hover:bg-primary/10",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
           className,
@@ -60,7 +60,7 @@ export function TextCell({
       tabIndex={0}
       className={cn(
         dong === 1 ? "block truncate" : "line-clamp-2 break-words",
-        "text-[12px] leading-snug focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm",
+        "text-xs leading-snug focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm",
         className,
       )}
     >

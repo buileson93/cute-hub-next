@@ -104,7 +104,7 @@ function KpiCard({
         </div>
         <div>
           <div className={cn("text-xl font-bold leading-none", tone)}>{value}</div>
-          <div className="text-[10px] uppercase tracking-wide text-muted-foreground mt-1">
+          <div className="text-mini uppercase tracking-wide text-muted-foreground mt-1">
             {label}
           </div>
         </div>

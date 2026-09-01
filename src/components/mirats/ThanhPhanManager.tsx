@@ -303,7 +303,7 @@ export function ThanhPhanManager({
                       </span>
                       <span className="font-medium">{v.ten}</span>
                       {hasChildren && (
-                        <Badge variant="outline" className="text-[10px]" title="Số thành phần con">
+                        <Badge variant="outline" className="text-mini" title="Số thành phần con">
                           {v.children.length} con
                         </Badge>
                       )}
@@ -347,7 +347,7 @@ export function ThanhPhanManager({
                                 <span className="opacity-70">· SN {tb.ma_serial}</span>
                               )}
                               <span
-                                className="ml-1 rounded px-1 text-[10px] font-semibold"
+                                className="ml-1 rounded px-1 text-mini font-semibold"
                                 style={{ backgroundColor: col!.border, color: "white" }}
                               >
                                 ×{mr!.count}
@@ -362,7 +362,7 @@ export function ThanhPhanManager({
                               />
                               Tài sản đa vai trò ({mr!.count})
                             </div>
-                            <div className="mb-1 font-mono text-[11px] text-muted-foreground">
+                            <div className="mb-1 font-mono text-meta text-muted-foreground">
                               {tb.ma_thiet_bi}
                               {tb.ma_serial ? ` · SN ${tb.ma_serial}` : ""}
                             </div>
@@ -377,12 +377,12 @@ export function ThanhPhanManager({
                                     <div className="flex items-baseline gap-1.5">
                                       <span className="font-medium">{r.ten_thanh_phan}</span>
                                       {here && (
-                                        <span className="text-[10px] text-primary">
+                                        <span className="text-mini text-primary">
                                           (vai trò này)
                                         </span>
                                       )}
                                     </div>
-                                    <div className="text-[11px] text-muted-foreground">
+                                    <div className="text-meta text-muted-foreground">
                                       {r.ma_thanh_phan}
                                       {r.ten_he_thong && (
                                         <>

@@ -283,7 +283,7 @@ function AdminUsers() {
                 label: "Đơn vị",
                 filter: "cat",
                 value: (u) => u.don_vi ?? "",
-                cell: (u) => <span className="font-mono text-[11px]">{u.don_vi ?? "—"}</span>,
+                cell: (u) => <span className="font-mono text-meta">{u.don_vi ?? "—"}</span>,
               },
               {
                 key: "roles",
@@ -293,7 +293,7 @@ function AdminUsers() {
                 cell: (u) => (
                   <div className="flex flex-wrap gap-1">
                     {u.roles.length === 0 ? (
-                      <span className="text-[11px] text-muted-foreground">—</span>
+                      <span className="text-meta text-muted-foreground">—</span>
                     ) : (
                       u.roles.map((r) => {
                         const meta = ROLES.find((x) => x.value === r);

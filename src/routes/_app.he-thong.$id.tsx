@@ -664,7 +664,7 @@ function HeThongInner({
               className="h-8 gap-2 border-primary/20 hover:bg-primary/5"
             >
               <Printer className="h-3.5 w-3.5 text-primary" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">In / PDF</span>
+              <span className="text-mini font-bold uppercase tracking-wider">In / PDF</span>
             </Button>
             <Button
               variant="outline"
@@ -678,7 +678,7 @@ function HeThongInner({
               ) : (
                 <Minimize2 className="h-3.5 w-3.5" />
               )}
-              <span className="text-[10px] font-bold uppercase tracking-wider">
+              <span className="text-mini font-bold uppercase tracking-wider">
                 {compact ? "Đầy đủ" : "Gọn"}
               </span>
             </Button>
@@ -1186,7 +1186,7 @@ function HeThongInner({
                                             {tb.ma_serial ? `· S/N: ${tb.ma_serial}` : ""}
                                           </span>
                                         </div>
-                                        <Badge variant="secondary" className="text-[10px]">
+                                        <Badge variant="secondary" className="text-mini">
                                           {item.phan_loai}
                                         </Badge>
                                       </div>
@@ -1331,7 +1331,7 @@ function ThanhPhanCard({
           <div className="flex items-center gap-2">
             <Puzzle className="h-4 w-4 text-primary" />
             <span>Thành phần hệ thống</span>
-            <Badge variant="secondary" className="font-mono text-[10px]">
+            <Badge variant="secondary" className="font-mono text-mini">
               {list.length}
             </Badge>
           </div>
@@ -1340,7 +1340,7 @@ function ThanhPhanCard({
               asChild
               variant="ghost"
               size="sm"
-              className="h-8 px-2 text-[10px] font-bold uppercase tracking-wider"
+              className="h-8 px-2 text-mini font-bold uppercase tracking-wider"
             >
               <Link to="/he-thong/thanh-phan" search={{ he_thong: heThongId } as never}>
                 Dạng bảng
@@ -1350,7 +1350,7 @@ function ThanhPhanCard({
               asChild
               variant="ghost"
               size="sm"
-              className="h-8 px-2 text-[10px] font-bold uppercase tracking-wider"
+              className="h-8 px-2 text-mini font-bold uppercase tracking-wider"
             >
               <Link to="/he-thong/cay">Cây hệ thống</Link>
             </Button>
@@ -1414,7 +1414,7 @@ function ThanhPhanCard({
                       <div className="min-w-0 flex-1">
                         <div className="truncate font-medium">{tp.ten}</div>
                         {tp.loai_thiet_bi_yeu_cau && (
-                          <div className="truncate text-[10px] text-muted-foreground uppercase tracking-tight">
+                          <div className="truncate text-mini text-muted-foreground uppercase tracking-tight">
                             {tp.loai_thiet_bi_yeu_cau}
                           </div>
                         )}
@@ -1423,18 +1423,18 @@ function ThanhPhanCard({
                         <div className="text-right">
                           <Badge
                             variant="secondary"
-                            className="font-mono text-[10px] bg-background"
+                            className="font-mono text-mini bg-background"
                           >
                             {dev.ma_thiet_bi}
                           </Badge>
-                          <div className="hidden text-[10px] text-muted-foreground md:block truncate max-w-[120px]">
+                          <div className="hidden text-mini text-muted-foreground md:block truncate max-w-[120px]">
                             {dev.ten_thiet_bi}
                           </div>
                         </div>
                       ) : (
                         <Badge
                           variant="outline"
-                          className="text-[10px] text-muted-foreground border-dashed"
+                          className="text-mini text-muted-foreground border-dashed"
                         >
                           Chờ lắp
                         </Badge>
@@ -1483,7 +1483,7 @@ function ThanhPhanCard({
                           {tp.mo_ta}
                         </p>
                       )}
-                      <p className="border-t pt-2 text-[11px] text-muted-foreground">
+                      <p className="border-t pt-2 text-meta text-muted-foreground">
                         Bấm để xem sổ lý lịch thành phần.
                       </p>
                     </div>
@@ -1946,7 +1946,7 @@ function GpktSidebarItem({
         )}
         <div className="min-w-0 flex-1">
           <div className="font-medium">Giấy phép PDF</div>
-          <div className="truncate text-[11px] opacity-80">{stateLabel}</div>
+          <div className="truncate text-meta opacity-80">{stateLabel}</div>
         </div>
         {url && !error && (
           <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-70 transition group-hover:opacity-100" />
@@ -2070,7 +2070,7 @@ function HealthBar({
           <button
             type="button"
             onClick={onConfigure}
-            className="no-print inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] text-muted-foreground hover:bg-muted"
+            className="no-print inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-mini text-muted-foreground hover:bg-muted"
             aria-label="Cấu hình ngưỡng HP"
             title="Cấu hình ngưỡng HP theo đơn vị"
           >
@@ -2105,7 +2105,7 @@ function HpChip({
     <div className="flex items-center gap-2 rounded-md border bg-background px-2 py-1.5 text-xs">
       <Icon className={`h-3.5 w-3.5 ${tone ?? "text-muted-foreground"}`} />
       <div className="min-w-0 flex-1">
-        <div className="truncate text-[10px] uppercase tracking-wide text-muted-foreground">
+        <div className="truncate text-mini uppercase tracking-wide text-muted-foreground">
           {label}
         </div>
         <div className={`text-sm font-semibold ${tone ?? ""}`}>{value}</div>
@@ -2225,7 +2225,7 @@ function MiniCharts({
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <ul className="min-w-0 flex-1 space-y-0.5 text-[11px]">
+              <ul className="min-w-0 flex-1 space-y-0.5 text-meta">
                 {statusGroups.slice(0, 5).map((s, i) => (
                   <li key={s.name} className="flex items-center gap-1.5">
                     <span
@@ -2401,7 +2401,7 @@ function BookStamp({
     >
       <Icon className="h-4 w-4 opacity-80" />
       <div className="min-w-0">
-        <div className="text-[10px] uppercase tracking-wider opacity-70">{label}</div>
+        <div className="text-mini uppercase tracking-wider opacity-70">{label}</div>
         <div className="font-serif text-lg leading-none">{value}</div>
       </div>
     </div>
@@ -2411,7 +2411,7 @@ function BookStamp({
 function StatLine({ label, value, tone }: { label: string; value: string; tone?: string }) {
   return (
     <div>
-      <div className="text-[10px] uppercase tracking-wider text-amber-900/70 dark:text-amber-100/60">
+      <div className="text-mini uppercase tracking-wider text-amber-900/70 dark:text-amber-100/60">
         {label}
       </div>
       <div className={`font-serif text-sm ${tone ?? "text-amber-950 dark:text-amber-100"}`}>
@@ -2424,7 +2424,7 @@ function StatLine({ label, value, tone }: { label: string; value: string; tone?:
 function MicroStat({ label, value, tone }: { label: string; value: string; tone?: string }) {
   return (
     <div className="rounded border bg-muted/40 px-2 py-1">
-      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="text-mini uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className={`text-sm font-medium ${tone ?? ""}`}>{value}</div>
     </div>
   );
@@ -2657,7 +2657,7 @@ function QuickActionsBar({ heThongId }: { heThongId: string }) {
               {a.native ? (
                 <Badge
                   variant="outline"
-                  className="h-4 gap-0.5 border-emerald-400/60 px-1 text-[9px] text-emerald-700"
+                  className="h-4 gap-0.5 border-emerald-400/60 px-1 text-micro text-emerald-700"
                 >
                   Nhanh
                 </Badge>
@@ -2864,7 +2864,7 @@ function SummaryStat({
     <div
       className={`rounded-md bg-background px-2 py-1.5 min-h-[44px] flex flex-col justify-center ${wide ? "col-span-2 sm:col-span-2" : ""}`}
     >
-      <div className="text-[10px] uppercase tracking-wide text-muted-foreground leading-none mb-0.5">
+      <div className="text-mini uppercase tracking-wide text-muted-foreground leading-none mb-0.5">
         {label}
       </div>
       <div className={`truncate text-sm font-semibold leading-tight ${tone || ""}`}>{value}</div>

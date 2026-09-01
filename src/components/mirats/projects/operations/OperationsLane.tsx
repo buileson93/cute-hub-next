@@ -39,13 +39,13 @@ export function OperationsLane({ incidents }: OperationsLaneProps) {
             <div className="flex items-center justify-between">
               <Badge
                 variant={incident.severity === "P0" ? "destructive" : "secondary"}
-                className="text-[10px]"
+                className="text-mini"
               >
                 {incident.severity}
               </Badge>
               <span
                 className={cn(
-                  "text-[10px] font-bold uppercase",
+                  "text-mini font-bold uppercase",
                   incident.sla_status === "breach" ? "text-rose-600" : "text-amber-600",
                 )}
               >
@@ -57,7 +57,7 @@ export function OperationsLane({ incidents }: OperationsLaneProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+            <div className="flex items-center justify-between text-meta text-muted-foreground">
               <span>Owner: {incident.owner}</span>
               <span>Load: {incident.interruption_load}%</span>
             </div>

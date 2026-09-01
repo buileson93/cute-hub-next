@@ -576,7 +576,7 @@ export function DashboardGrid({ page, isEditing, group, emptyState }: DashboardG
             <CardContent className="p-4 pt-6">
               <div className="flex flex-col gap-4">
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-muted-foreground/60 px-1">
+                  <div className="flex items-center justify-between text-meta font-bold uppercase tracking-wider text-muted-foreground/60 px-1">
                     <span>Tài sản cần cập nhật</span>
                     <span>% Xong</span>
                   </div>
@@ -585,7 +585,7 @@ export function DashboardGrid({ page, isEditing, group, emptyState }: DashboardG
                       key={tb.id}
                       to="/qr/thiet-bi/$id"
                       params={{ id: tb.id } as any}
-                      className="group flex justify-between items-center text-[12px] hover:bg-primary/5 p-2 rounded-xl border border-transparent hover:border-primary/10 transition-all"
+                      className="group flex justify-between items-center text-xs hover:bg-primary/5 p-2 rounded-xl border border-transparent hover:border-primary/10 transition-all"
                     >
                       <div className="flex items-center gap-2 min-w-0">
                         <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse shrink-0" />
@@ -603,7 +603,7 @@ export function DashboardGrid({ page, isEditing, group, emptyState }: DashboardG
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="w-full text-[10px] font-bold uppercase text-primary hover:bg-primary/5 mt-2"
+                  className="w-full text-mini font-bold uppercase text-primary hover:bg-primary/5 mt-2"
                   onClick={() => navigate({ to: "/thiet-bi", search: (prev: any) => prev } as any)}
                 >
                   Xem tất cả
@@ -742,7 +742,7 @@ export function DashboardGrid({ page, isEditing, group, emptyState }: DashboardG
                   <div className={cn("text-2xl font-black tabular-nums", item.tone)}>
                     {tasksQ.isLoading ? "…" : item.value}
                   </div>
-                  <div className="truncate text-[11px] font-medium text-muted-foreground">
+                  <div className="truncate text-meta font-medium text-muted-foreground">
                     {item.label}
                   </div>
                 </div>

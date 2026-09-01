@@ -218,7 +218,7 @@ export function TaskAttachmentButton({
               type="button"
               size="sm"
               variant="ghost"
-              className="size-9 md:size-7 md:w-auto md:px-1.5 px-0 text-[10px] font-medium text-muted-foreground"
+              className="size-9 md:size-7 md:w-auto md:px-1.5 px-0 text-mini font-medium text-muted-foreground"
               aria-label={`${count} tệp đính kèm của công việc ${taskName}`}
             >
               {count}
@@ -251,7 +251,7 @@ export function TaskAttachmentButton({
                 >
                   <Download className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                   <span className="min-w-0 flex-1 truncate text-xs">{f.file_name}</span>
-                  <span className="text-[10px] text-muted-foreground">
+                  <span className="text-mini text-muted-foreground">
                     {formatBytes(f.kich_thuoc)}
                   </span>
                   {canEdit ? (
