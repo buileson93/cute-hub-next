@@ -149,22 +149,28 @@ export function NodeEditorSheet({
   return (
     <Sheet open={!!target} onOpenChange={(o) => !o && yeuCauDong()}>
       <SheetContent side="right" className="flex w-full flex-col sm:max-w-md">
-        <SheetHeader>
-          <SheetTitle className="flex items-center gap-2">
-            <span>{title}</span>
-            {target && target.kind !== "pl" && (
-              <Badge
-                variant="outline"
-                className="shrink-0 border-primary/30 bg-primary/10 font-mono text-[11px] font-semibold text-primary"
-              >
-                {target.ma}
-              </Badge>
-            )}
+        <SheetHeader className="space-y-0 text-left">
+          <SheetTitle className="sr-only">
+            {title} {target?.ma ?? ""}
           </SheetTitle>
-          <SheetDescription>
+          <SheetDescription className="sr-only">
             {canManage ? "Thay đổi được lưu vào cơ sở dữ liệu." : "Chế độ xem (chỉ đọc)."}
           </SheetDescription>
+          {target && (
+            <EntityFormHeader
+              kind={target.kind as EntityKind}
+              title={ten || title}
+              code={target.kind === "pl" ? null : target.ma}
+              mode={canManage ? "edit" : "view"}
+              description={
+                canManage
+                  ? "Thay đổi được lưu vào cơ sở dữ liệu. Liên kết tài sản là quan hệ dùng chung — gỡ liên kết không xoá tài sản."
+                  : "Chế độ xem (chỉ đọc). Bạn không có quyền chỉnh sửa đối tượng này."
+              }
+            />
+          )}
         </SheetHeader>
+
 
         <fieldset
           disabled={!canManage}
