@@ -10405,6 +10405,7 @@ export type Database = {
         Args: { _column: string; _table: string }
         Returns: undefined
       }
+      admin_export_ddl: { Args: never; Returns: Json }
       admin_get_audit_retention: { Args: never; Returns: number }
       admin_import_rows: {
         Args: { p_rows: Json; p_table: string }
