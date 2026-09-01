@@ -516,7 +516,34 @@ export function CatalogTable({
       </div>
 
       {error && (
-        <p className="text-sm text-destructive">Lỗi tải dữ liệu: {(error as Error).message}</p>
+        // Trạng thái lỗi chuẩn: nêu nguyên nhân + hành động thử lại,
+        // đồng nhất với error state của bảng "Thành phần & Tài sản".
+        <div
+          role="alert"
+          className="flex flex-col gap-2 rounded-lg border border-destructive/40 bg-destructive/5 p-4 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <p className="min-w-0 text-sm text-destructive break-words">
+            Không tải được danh mục: {thongDiepLoi(error)}
+          </p>
+          <Button
+            size="sm"
+            variant="outline"
+            className="shrink-0"
+            disabled={isFetching}
+            onClick={() => void refetch()}
+          >
+            {isFetching ? (
+              <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+            ) : null}
+            Thử lại
+          </Button>
+        </div>
+      )}
+
+      {!error && supportsParent && view === "tree" && isLoading && (
+        <div className="rounded-lg border bg-card p-3 sm:p-5">
+          <HierarchySkeleton rows={6} />
+        </div>
       )}
 
       {!error && supportsParent && view === "tree" && !isLoading && (
@@ -533,6 +560,7 @@ export function CatalogTable({
           emptyText={`Không có ${singular.toLowerCase()} phù hợp.`}
         />
       )}
+
 
       {!error && !(supportsParent && view === "tree") && (
         <StandardTable<Row>
