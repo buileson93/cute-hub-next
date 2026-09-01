@@ -29,7 +29,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { LayoutPanel } from "@/components/astryx/layout-panel";
 import {
   useProjectEvents,
@@ -45,7 +44,13 @@ interface ProjectTimelineProps {
 export function ProjectTimeline({ projectId }: ProjectTimelineProps) {
   const [selectedEventId, setSelectedEventId] = React.useState<string | null>(null);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const { data: events, isLoading } = useProjectEvents(projectId);
+  const {
+    data: events,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useProjectEvents(projectId);
 
   const filteredEvents = React.useMemo(() => {
     if (!events) return [];
@@ -264,7 +269,7 @@ function TimelineInspector({ event, onClose }: { event: any; onClose: () => void
         </Button>
       }
     >
-      <div className="p-4 space-y-6 overflow-y-auto">
+      <div className="p-3 sm:p-4 space-y-5 overflow-y-auto min-h-0 flex-1 mirats-scroll">
         <div className="flex items-start gap-3">
           <div className={cn("p-2 rounded-lg border", color.bg, color.border)}>
             <Icon className={cn("h-5 w-5", color.text)} />
@@ -352,7 +357,7 @@ function TimelineInspector({ event, onClose }: { event: any; onClose: () => void
         )}
       </div>
 
-      <div className="mt-auto p-4 border-t bg-muted/10">
+      <div className="mt-auto p-3 border-t bg-muted/10">
         <Button className="w-full h-9 bg-primary text-primary-foreground hover:bg-primary/90 gap-2 font-semibold">
           <Eye className="h-4 w-4" /> Xem chi tiết
         </Button>
