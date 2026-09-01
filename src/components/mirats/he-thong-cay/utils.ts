@@ -391,7 +391,7 @@ export function buildTree(
     const count = fields.reduce((n, lv) => n + lv.count, 0);
     tree.push({
       id: plId,
-      ten: plTenMap.get(plId) || plId,
+      ten: displayLabel(plTenMap.get(plId), plId, "Chưa phân loại"),
       tone: plToneMap.get(plId) || "",
       fields,
       count,
