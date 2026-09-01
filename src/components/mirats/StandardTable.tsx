@@ -826,12 +826,38 @@ export function StandardTable<T>({
             })}
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <ColumnVisibilityMenu
-              columns={columns}
-              hidden={prefs.hidden}
-              toggle={prefs.toggle}
-              reset={prefs.reset}
-            />
+            {/* Chế độ cột: Gọn (mặc định) ↔ Tất cả cột */}
+            <div
+              role="group"
+              aria-label="Chế độ hiển thị cột"
+              className="flex h-8 items-center rounded-md border border-border/60 bg-muted/30 p-0.5"
+            >
+              {(["compact", "all"] as const).map(mode => (
+                <button
+                  key={mode}
+                  type="button"
+                  aria-pressed={colMode === mode}
+                  onClick={() => changeColMode(mode)}
+                  className={cn(
+                    "h-7 rounded-[5px] px-2 text-[11px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    colMode === mode
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {mode === "compact" ? "Gọn" : "Tất cả cột"}
+                </button>
+              ))}
+            </div>
+
+            {colMode === "compact" && (
+              <ColumnVisibilityMenu
+                columns={columns}
+                hidden={prefs.hidden}
+                toggle={prefs.toggle}
+                reset={prefs.reset}
+              />
+            )}
 
             {exportable && (
               <TableExportDialog<T>
