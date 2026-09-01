@@ -361,8 +361,15 @@ function HeThongInner({
     };
   }, [id, qcHt]);
 
-  const donVi = donViMa || devices[0]?.don_vi || "";
+  // Presentation: chỉ dùng mã/tên nghiệp vụ — không bao giờ render UUID.
+  const donViRaw = donViMa || devices[0]?.don_vi || "";
+  const donVi = laMaKyThuat(donViRaw) ? "" : donViRaw;
   const donViTenR = donViTen || devices[0]?._donViTen || "";
+  const donViHienThi = donViTenR
+    ? donVi
+      ? `${donVi} — ${donViTenR}`
+      : donViTenR
+    : donVi || DON_VI_FALLBACK;
 
   const timeline = useMemo<TimelineItem[]>(() => {
     const items: TimelineItem[] = [];
