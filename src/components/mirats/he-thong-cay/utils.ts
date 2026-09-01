@@ -47,16 +47,17 @@ export function badgeFilterActive(f: BadgeFilter): boolean {
 export function filterTreeByBadge(tree: PlGroup[], f: BadgeFilter): PlGroup[] {
   if (!badgeFilterActive(f)) return tree;
   const out: PlGroup[] = [];
-  for (const pl of tree) {
+  for (const pl of Array.isArray(tree) ? tree : []) {
     const fields: LvGroup[] = [];
-    for (const lv of pl.fields) {
+    for (const lv of pl?.fields ?? []) {
       const groups: NhGroup[] = [];
-      for (const nh of lv.groups) {
+      for (const nh of lv?.groups ?? []) {
         const systems: HtGroup[] = [];
-        for (const ht of nh.systems) {
+        for (const ht of nh?.systems ?? []) {
           const devices: DevNode[] = [];
-          for (const d of ht.devices) {
-            const children = d.children.filter((c: any) => deviceMatchesBadge(c, f));
+          for (const d of ht?.devices ?? []) {
+            if (!d || !d.tb) continue;
+            const children = (d.children ?? []).filter((c: any) => deviceMatchesBadge(c, f));
             const self = deviceMatchesBadge(d.tb, f);
             if (self || children.length) devices.push({ tb: d.tb, children });
           }
@@ -203,14 +204,15 @@ export function displayLabel(
 
 
 export function cmpDeviceByLoai(a: DevNode, b: DevNode): number {
-  const oa = a.tb._loaiTbOrder ?? 9999;
-  const ob = b.tb._loaiTbOrder ?? 9999;
-  const ta = (a.tb._loaiTbTen ?? "").trim();
-  const tb = (b.tb._loaiTbTen ?? "").trim();
+  const oa = a.tb?._loaiTbOrder ?? 9999;
+  const ob = b.tb?._loaiTbOrder ?? 9999;
+  const ta = (a.tb?._loaiTbTen ?? "").trim();
+  const tb = (b.tb?._loaiTbTen ?? "").trim();
   if (!ta !== !tb) return ta ? -1 : 1;
   if (oa !== ob) return oa - ob;
   if (ta !== tb) return ta.localeCompare(tb, "vi");
-  return a.tb.ma_thiet_bi.localeCompare(b.tb.ma_thiet_bi);
+  // Bản ghi cũ có thể thiếu mã tài sản → tuyệt đối không gọi trực tiếp trên null.
+  return (a.tb?.ma_thiet_bi ?? "").localeCompare(b.tb?.ma_thiet_bi ?? "");
 }
 
 export function buildTree(
@@ -227,13 +229,15 @@ export function buildTree(
   htDonVi: (htId: string) => string | null = () => null,
   realSystems: Array<{ ma: string; ten: string; nhMa: string; nhTen: string; plId: string }> = [],
 ): { tree: PlGroup[]; total: number } {
-  if (!devices || !Array.isArray(devices)) return { tree: [], total: 0 };
+  if (!Array.isArray(devices)) return { tree: [], total: 0 };
+  const safePlList = Array.isArray(plList) ? plList : [];
 
   // acc: plId -> nhMa -> htId -> devices
   const acc = new Map<string, Map<string, Map<string, DevNode[]>>>();
 
   // 1. Phân bổ tài sản hiện có
   for (const t of devices) {
+    if (!t || typeof t !== "object") continue;
     const pl = t._pl || "__nopl__";
     const nh = t._nhKey || "KHAC";
     const ht = t._htId || NONE_HT;
@@ -268,13 +272,13 @@ export function buildTree(
     }
     return count;
   };
-  const plOrder = new Map(plList.map((p, i) => [p.id, i]));
-  const plTenMap = new Map(plList.map((p) => [p.id, p.ten]));
-  const plToneMap = new Map(plList.map((p) => [p.id, p.tone]));
+  const plOrder = new Map(safePlList.map((p, i) => [p.id, i]));
+  const plTenMap = new Map(safePlList.map((p) => [p.id, p.ten]));
+  const plToneMap = new Map(safePlList.map((p) => [p.id, p.tone]));
 
   // Tập hợp tất cả PL ID cần hiển thị
   const plIdSet = new Set<string>(acc.keys());
-  for (const rs of realSystems) if (rs.plId) plIdSet.add(rs.plId);
+  for (const rs of realSystems) if (rs?.plId) plIdSet.add(rs.plId);
   for (const cg of customGroups) if (cg.plId) plIdSet.add(cg.plId);
   for (const cs of customSystems) if (cs.plId) plIdSet.add(cs.plId);
 
@@ -310,9 +314,10 @@ export function buildTree(
         const ma = htSysMa(nhMa, sysId);
         let donViMa: string | null = htDonVi(sysId);
 
-        // Phase 10L - Debug label fallback
-        const currentLabel = htLabel(ma);
-        if (process.env.NODE_ENV === "development" && currentLabel === ma) {
+        // Phase 10L - Debug label fallback.
+        // `process` không tồn tại trong bundle trình duyệt production → dùng
+        // import.meta.env.DEV để tránh ReferenceError làm sập cả trang.
+        if (import.meta.env.DEV && htLabel(ma) === ma) {
           console.warn(`[Taxonomy] Fallback detected for system: ${ma}`);
         }
 

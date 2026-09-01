@@ -28,22 +28,32 @@ interface CayContextType {
   setGroupCode: (s: string) => void;
 }
 
+const DISPLAY_MODES: DisplayMode[] = ["tree", "table", "mindmap", "health", "history"];
+
 export const CayContext = createContext<CayContextType | undefined>(undefined);
 
 export function CayProvider({ children }: { children: ReactNode }) {
+  // Giá trị cũ trong localStorage là dữ liệu KHÔNG tin cậy: phải xác thực theo
+  // danh sách chế độ hiện hành, và bọc try/catch cho chế độ riêng tư/bị chặn.
   const [display, setDisplayState] = useState<DisplayMode>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("mirats_cay_display");
-      if (saved && ["tree", "table", "mindmap", "health"].includes(saved))
-        return saved as DisplayMode;
+    if (typeof window === "undefined") return "tree";
+    try {
+      const saved = window.localStorage.getItem("mirats_cay_display");
+      if (saved && DISPLAY_MODES.includes(saved as DisplayMode)) return saved as DisplayMode;
+    } catch {
+      // bỏ qua — dùng mặc định
     }
     return "tree";
   });
 
   const setDisplay = React.useCallback((d: DisplayMode) => {
+    if (!DISPLAY_MODES.includes(d)) return;
     setDisplayState(d);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("mirats_cay_display", d);
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem("mirats_cay_display", d);
+    } catch {
+      // bỏ qua — trạng thái vẫn hoạt động trong phiên hiện tại
     }
   }, []);
 
@@ -64,7 +74,9 @@ export function CayProvider({ children }: { children: ReactNode }) {
   const seededTreeRef = React.useRef<string>("");
   React.useEffect(() => {
     // Generate a fingerprint of the tree structure to detect real data loads
-    const fingerprint = viewTree.map((pl) => `${pl.id}:${pl.count}`).join("|");
+    const fingerprint = (Array.isArray(viewTree) ? viewTree : [])
+      .map((pl) => `${pl?.id ?? "?"}:${pl?.count ?? 0}`)
+      .join("|");
     if (viewTree.length > 0 && seededTreeRef.current !== fingerprint) {
       seededTreeRef.current = fingerprint;
 
@@ -72,7 +84,8 @@ export function CayProvider({ children }: { children: ReactNode }) {
       if (searchQuery.trim() !== "") {
         const allKeys = new Set<string>(["root", "root-stopped"]);
         const walk = (nodes: any[]) => {
-          nodes.forEach((n) => {
+          (Array.isArray(nodes) ? nodes : []).forEach((n) => {
+            if (!n) return;
             allKeys.add(n.key || `pl:${n.id}`);
             if (n.sub) walk(n.sub);
             if (n.fields) walk(n.fields);
@@ -88,10 +101,14 @@ export function CayProvider({ children }: { children: ReactNode }) {
           next.add("root");
           next.add("root-stopped");
           viewTree.forEach((pl) => {
+            if (!pl) return;
             next.add(`pl:${pl.id}`);
-            pl.fields.forEach((lv) => {
+            (pl.fields ?? []).forEach((lv) => {
+              if (!lv) return;
               if (lv.id && lv.id !== "all") next.add(`lv:${pl.id}:${lv.id}`);
-              lv.groups.slice(0, 3).forEach((nh) => next.add(`nh:${pl.id}:${nh.ma}`));
+              (lv.groups ?? []).slice(0, 3).forEach((nh) => {
+                if (nh) next.add(`nh:${pl.id}:${nh.ma}`);
+              });
             });
           });
           return next;
