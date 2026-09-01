@@ -367,6 +367,7 @@ export function TreeView({
                   {pl.count}
                 </Badge>
               }
+              surface="plain"
               className="hover:bg-transparent"
             />
 
