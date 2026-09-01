@@ -302,7 +302,8 @@
     background-color: var(--color-card);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-container);
-    overflow: clip; /* Clip content for border-radius but allow internal overflow */
+    /* KHÔNG khai báo overflow ở đây: vùng bảng tự sở hữu trục cuộn của nó
+       (overflow-auto). Ép clip/hidden tại lớp skin từng làm hỏng cuộn ngang. */
   }
 
 

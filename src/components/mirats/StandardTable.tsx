@@ -27,7 +27,6 @@ import { ColumnVisibilityMenu } from "./ColumnVisibilityMenu";
 import { ColumnFilterMenu } from "./table/ColumnFilterMenu";
 import { Search } from "lucide-react";
 
-import { HorizontalScrollRail } from "./HorizontalScrollRail";
 import { BulkActionButton } from "./BulkActionButton";
 import { TableExportDialog } from "./TableExportDialog";
 import { toast } from "sonner";
@@ -188,6 +187,7 @@ interface StandardTableProps<T> {
   expandable?: boolean;
   renderExpansion?: (row: T) => React.ReactNode;
   virtualizerOptions?: any;
+  /** Ghi đè trần chiều cao vùng cuộn của bảng (mặc định `max-h-[70dvh]`). */
   maxHeightClass?: string;
   editMode?: boolean;
   onBulkDelete?: (ids: Set<string>) => Promise<void>;
@@ -229,7 +229,11 @@ export function StandardTable<T>({
   expandable,
   renderExpansion,
   virtualizerOptions,
-  maxHeightClass,
+  // Mặc định chặn chiều cao: khi trang không ràng buộc chiều cao (bảng nằm
+  // trong Card trôi theo nội dung), bảng sẽ tự cuộn thay vì cao 5000px khiến
+  // thanh cuộn ngang bị đẩy khỏi tầm nhìn. Trang có PageFrame vẫn nhỏ hơn mức
+  // này nên không bị ảnh hưởng.
+  maxHeightClass = "max-h-[70dvh]",
   editMode,
   onBulkDelete,
   allowBulkDelete,
@@ -735,6 +739,27 @@ export function StandardTable<T>({
     })(),
     paddingStart: 0,
     paddingEnd: 0,
+    // Khi vùng cuộn chưa đo được chiều cao (tab ẩn, môi trường test, lần render
+    // đầu trước khi layout ổn định) thì rect = 0 khiến virtualizer không render
+    // dòng nào → bảng trông như rỗng. Dùng kích thước dự phòng an toàn.
+    initialRect: { width: 1024, height: 800 },
+    observeElementRect: (instance, cb) => {
+      const el = instance.scrollElement as HTMLElement | null;
+      if (!el) return;
+      const report = () => {
+        const r = el.getBoundingClientRect();
+        cb({
+          width: r.width || el.clientWidth || 1024,
+          height: r.height || el.clientHeight || 800,
+        });
+      };
+      report();
+      if (typeof ResizeObserver === "undefined") return;
+      const ro = new ResizeObserver(report);
+      ro.observe(el);
+      return () => ro.disconnect();
+    },
+
     onChange: (instance) => {
       const offset = instance.scrollOffset;
       if (offset && offset > 0) {
@@ -1118,20 +1143,23 @@ export function StandardTable<T>({
           )}
         </div>
       ) : (
-        // Một chủ sở hữu cuộn dọc (outer) + một chủ sở hữu cuộn ngang (inner,
-        // cao bằng nội dung) → bảng ngắn không sinh thanh cuộn ngang thứ hai.
-        <div 
-          className="relative min-h-0 border rounded-md shadow-none bg-background astryx-table-container flex flex-col flex-1 mirats-scroll will-change-transform" 
+        // MỘT chủ sở hữu cuộn duy nhất cho CẢ HAI trục.
+        // Trước đây tách 2 tầng (ngoài: dọc, trong: ngang) khiến:
+        //  - overflow-y:visible ở tầng trong bị CSS ép thành auto → sticky header
+        //    neo vào tầng trong (không bao giờ cuộn dọc) nên header mất dính;
+        //  - thanh cuộn ngang nằm ở đáy nội dung (ngoài tầm nhìn) với bảng dài;
+        //  - HorizontalScrollRail điều khiển scrollLeft của phần tử có
+        //    overflow-x:hidden nên vô hiệu.
+        // `transform`/`contain` cũng bị gỡ vì tạo containing block phá sticky.
+        <div
+          className={cn(
+            "relative min-h-0 border rounded-md shadow-none bg-background astryx-table-container flex flex-col flex-1 overflow-auto overscroll-contain mirats-scroll mirats-table-scroll-container",
+            // Cửa thoát cho các panel cần ràng buộc chiều cao riêng (tab/dialog).
+            maxHeightClass,
+          )}
           ref={scrollContainerRef}
-          style={{
-            overflowX: 'hidden',
-            overflowY: 'auto',
-            contain: 'content',
-            WebkitOverflowScrolling: 'touch',
-            transform: 'translate3d(0,0,0)'
-          }}
+          style={{ WebkitOverflowScrolling: 'touch' }}
         >
-          <div className="w-full max-w-full shrink-0 overflow-x-auto overflow-y-visible mirats-scroll mirats-table-scroll-container">
           <Table 
             className="border-collapse border-separate border-spacing-0 w-full mirats-standard-table-element"
             style={{
@@ -1259,11 +1287,10 @@ export function StandardTable<T>({
                           }
                         }}
                         tabIndex={0}
-                        style={{
-                          willChange: 'transform',
-                          contain: 'layout inline-size',
-                          transform: 'translate3d(0,0,0)',
-                        }}
+                        // Không đặt transform/contain lên <tr>: nó tạo
+                        // containing block khiến ô cột "sticky left" mất dính
+                        // khi cuộn ngang. Hiệu năng đã do virtualization lo.
+
                       >
                         {selectable && (
                           <OptimizedCell
@@ -1316,8 +1343,6 @@ export function StandardTable<T>({
               )}
             </TableBody>
           </Table>
-          </div>
-          
           
           {infiniteScroll?.isFetchingNextPage && (
             <div className="flex items-center justify-center py-6 gap-3 text-muted-foreground bg-background/50 border-t backdrop-blur-sm sticky bottom-0 z-20">
@@ -1331,7 +1356,9 @@ export function StandardTable<T>({
           
           {/* Nút Tải thêm dữ liệu đã được gỡ bỏ để chuyển sang tải tự động hoàn toàn khi cuộn */}
           
-          {fullDisplay.length > 0 && <HorizontalScrollRail containerRef={scrollContainerRef} />}
+          {/* Thanh cuộn ngang tự chế đã gỡ: vùng bảng nay là scroller duy nhất,
+              thanh cuộn ngang gốc của trình duyệt luôn ghim ở đáy khung nhìn
+              bảng và được tạo kiểu qua .mirats-table-scroll-container. */}
         </div>
       )}
     </div>

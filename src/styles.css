@@ -562,7 +562,8 @@
 /* MIRATS Table Horizontal Scroll Rail
    Thanh cuộn ngang phải luôn nhìn thấy được (desktop) và không bị co mất chỗ. */
 .mirats-table-scroll-container {
-  overflow-x: auto;
+  /* Không khai báo overflow ở đây: component sở hữu cả hai trục
+     (overflow-auto). Ép overflow-x tại lớp này từng làm lệch trục cuộn dọc. */
   scrollbar-width: thin;
   scrollbar-gutter: stable;
   scrollbar-color: color-mix(in oklab, var(--color-primary) 45%, transparent) transparent;

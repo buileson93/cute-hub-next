@@ -30,6 +30,17 @@ export interface StatusDef {
   aliases: readonly string[];
 }
 
+const EMPTY_DEFS: readonly StatusDef[] = [];
+
+/**
+ * Tra cứu an toàn: các nơi gọi (vd StatusBadge) dùng `DomainKey` rộng hơn
+ * `Domain`, nên `DEFS[d]` có thể undefined → trước đây ném TypeError và làm
+ * sập cả trang (vd /giay-phep). Luôn đi qua hàm này thay vì index trực tiếp.
+ */
+function defsOf(d: Domain): readonly StatusDef[] {
+  return DEFS[d] ?? EMPTY_DEFS;
+}
+
 const DEFS: Record<Domain, readonly StatusDef[]> = {
   // ------------------------------------------------------------------------
   // SỰ CỐ — DB hiện lưu chuỗi tiếng Việt ("Mới", "Đang xử lý", ...)
@@ -201,11 +212,11 @@ const DEFS: Record<Domain, readonly StatusDef[]> = {
 
 /** Trả về danh sách trạng thái đã định nghĩa cho một domain. */
 export function statuses(d: Domain): StatusDef[] {
-  return [...DEFS[d]];
+  return [...defsOf(d)];
 }
 
 function findByCode(d: Domain, code: string): StatusDef | null {
-  return DEFS[d].find((s) => s.code === code) ?? null;
+  return defsOf(d).find((s) => s.code === code) ?? null;
 }
 
 /** Trả về `phase` của một mã trạng thái chuẩn; `null` nếu không nhận diện. */
@@ -231,13 +242,13 @@ export function isOpen(d: Domain, code: string): boolean {
 export function normalizeLegacy(d: Domain, stored: string): string {
   const raw = (stored ?? "").trim();
   if (!raw) return "";
-  for (const s of DEFS[d]) {
+  for (const s of defsOf(d)) {
     if (raw === s.code) return s.code;
     if (s.aliases.includes(raw)) return s.code;
   }
   // Không nhận diện — thử so khớp bỏ dấu / lowercase để an toàn thêm.
   const lower = raw.toLowerCase();
-  for (const s of DEFS[d]) {
+  for (const s of defsOf(d)) {
     if (s.code.toLowerCase() === lower) return s.code;
     if (s.aliases.some((a) => a.toLowerCase() === lower)) return s.code;
   }
@@ -247,7 +258,7 @@ export function normalizeLegacy(d: Domain, stored: string): string {
 /** Tất cả giá trị stored (aliases) cho các phase chỉ định. */
 export function storedValuesFor(d: Domain, phases: readonly Phase[]): Set<string> {
   const out = new Set<string>();
-  for (const s of DEFS[d]) {
+  for (const s of defsOf(d)) {
     if (!phases.includes(s.phase)) continue;
     out.add(s.code);
     out.add(s.label);
