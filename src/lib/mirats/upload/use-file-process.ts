@@ -60,7 +60,8 @@ export function useFileProcess({ rules, upload, onCompleted }: UseFileProcessOpt
       const { PdfExtractor } = await import("@/lib/mirats/document-ocr/pdf-extractor");
       const extractor = new PdfExtractor();
       let canvas: HTMLCanvasElement | null = null;
-      let provider: { recognize: Function; dispose: () => Promise<void> } | null = null;
+      let provider: import("@/lib/mirats/document-ocr/providers/tesseract-provider").TesseractProvider | null =
+        null;
       try {
         const pageCount = await extractor.load(file);
         if (pageCount <= 0) return { kind: "failed", message: "PDF không có trang nào" };
@@ -85,10 +86,7 @@ export function useFileProcess({ rules, upload, onCompleted }: UseFileProcessOpt
         const { TesseractProvider } = await import(
           "@/lib/mirats/document-ocr/providers/tesseract-provider"
         );
-        provider = new TesseractProvider() as unknown as {
-          recognize: Function;
-          dispose: () => Promise<void>;
-        };
+        provider = new TesseractProvider();
 
         canvas = document.createElement("canvas");
         const out: string[] = [];
@@ -100,7 +98,7 @@ export function useFileProcess({ rules, upload, onCompleted }: UseFileProcessOpt
             language: "vie+eng",
             onProgress: (v: number) => patch(id, { progress: (p - 1 + v) / probe }),
           });
-          out.push(String(res?.normalizedText ?? res?.rawText ?? ""));
+          out.push(res.normalizedText || res.rawText || "");
           patch(id, { progress: p / probe });
         }
 
@@ -167,7 +165,7 @@ export function useFileProcess({ rules, upload, onCompleted }: UseFileProcessOpt
       if (!mounted.current) return;
 
       patch(id, { phase: "verifying", progress: 1 });
-      let provider = null;
+      let provider: ReturnType<typeof resolveStorageProvider> = null;
       try {
         provider = resolveStorageProvider(await fetchStorageConfig());
       } catch {
