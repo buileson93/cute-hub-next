@@ -169,7 +169,10 @@ const ChartTooltipContent = React.forwardRef<
               const displayUnit = unit || itemConfig?.unit || "";
 
               return (
-                <div key={item.dataKey} className="flex items-center gap-2.5">
+                <div
+                  key={`${item.dataKey ?? item.name ?? key}-${index}`}
+                  className="flex items-center gap-2.5"
+                >
                   {!hideIndicator && (
                     <div
                       className={cn("h-1.5 w-1.5 rounded-full shrink-0")}
