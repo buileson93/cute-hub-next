@@ -27,6 +27,8 @@ export type FlatRow = {
   count: number;
   meta?: string | null;
   trangThai?: string | null;
+  /** Tên node cha trực tiếp (null = cấp gốc). */
+  parentTen: string | null;
 };
 
 const MAX_DEPTH = 8;
@@ -54,8 +56,9 @@ export function flattenHierarchy(tree: PlGroup[], expanded: Set<string>): FlatRo
     const plHas = (pl.fields ?? []).length > 0;
     if (!push({
       key: plKey, ma: pl.id, kind: "pl", ten: pl.ten || pl.id,
-      depth: 0, hasChildren: plHas, count: pl.count ?? 0,
+      depth: 0, hasChildren: plHas, count: pl.count ?? 0, parentTen: null,
     })) continue;
+    const plTen = pl.ten || pl.id;
     if (!plHas || !expanded.has(plKey)) continue;
 
     for (const lv of pl.fields ?? []) {
@@ -66,11 +69,13 @@ export function flattenHierarchy(tree: PlGroup[], expanded: Set<string>): FlatRo
       if (lvVisible) {
         if (!push({
           key: lvKey, ma: lv.id, kind: "lv", ten: lv.ten || lv.id,
-          depth: 1, hasChildren: lvHas, count: lv.count ?? 0,
+          depth: 1, hasChildren: lvHas, count: lv.count ?? 0, parentTen: plTen,
         })) continue;
         if (!lvHas || !expanded.has(lvKey)) continue;
       }
       const lvDepth = lvVisible ? 2 : 1;
+      // Node "passthrough" không hiện dòng riêng ⇒ cha hiển thị là cấp trên nó.
+      const lvTen = lvVisible ? lv.ten || lv.id : plTen;
 
       for (const nh of lv.groups ?? []) {
         if (!nh?.ma) continue;
@@ -80,11 +85,12 @@ export function flattenHierarchy(tree: PlGroup[], expanded: Set<string>): FlatRo
         if (nhVisible) {
           if (!push({
             key: nhKey, ma: nh.ma, kind: "nh", ten: nh.ten || nh.ma,
-            depth: lvDepth, hasChildren: nhHas, count: nh.count ?? 0,
+            depth: lvDepth, hasChildren: nhHas, count: nh.count ?? 0, parentTen: lvTen,
           })) continue;
           if (!nhHas || !expanded.has(nhKey)) continue;
         }
         const nhDepth = nhVisible ? lvDepth + 1 : lvDepth;
+        const nhTen = nhVisible ? nh.ten || nh.ma : lvTen;
 
         for (const ht of nh.systems ?? []) {
           if (!ht?.ma) continue;
@@ -93,7 +99,7 @@ export function flattenHierarchy(tree: PlGroup[], expanded: Set<string>): FlatRo
           if (!push({
             key: htKey, ma: ht.ma, kind: "ht", ten: ht.ten || ht.ma,
             depth: nhDepth, hasChildren: htHas, count: ht.count ?? 0,
-            meta: ht.donViMa ?? null,
+            meta: ht.donViMa ?? null, parentTen: nhTen,
           })) continue;
           if (!htHas || !expanded.has(htKey)) continue;
 
@@ -111,6 +117,7 @@ export function flattenHierarchy(tree: PlGroup[], expanded: Set<string>): FlatRo
               count: 0,
               meta: tb.vi_tri ?? null,
               trangThai: tb.trang_thai ?? null,
+              parentTen: ht.ten || ht.ma,
             });
           }
         }
@@ -152,11 +159,12 @@ export function HierarchyTable({
 
   return (
     <div className={cn("h-full overflow-auto mirats-scroll", className)}>
-      <table className="w-full min-w-[720px] border-collapse text-sm">
+      <table className="w-full min-w-[880px] border-collapse text-sm">
         <thead className="sticky top-0 z-10 bg-background/95 backdrop-blur">
           <tr className="border-b text-meta uppercase tracking-wide text-muted-foreground">
             <th className="py-2 pl-3 pr-2 text-left font-semibold">Tên</th>
             <th className="w-36 px-2 py-2 text-left font-semibold">Cấp</th>
+            <th className="w-44 px-2 py-2 text-left font-semibold">Cha trực tiếp</th>
             <th className="w-44 px-2 py-2 text-left font-semibold">Mã</th>
             <th className="w-24 px-2 py-2 text-right font-semibold">Số lượng</th>
             <th className="w-56 px-2 py-2 text-left font-semibold">Thông tin</th>
@@ -170,6 +178,7 @@ export function HierarchyTable({
             return (
               <tr
                 key={r.key}
+                aria-level={r.depth + 1}
                 className="border-b border-border/50 transition-colors hover:bg-muted/40"
               >
                 <td className="py-1.5 pl-3 pr-2">
@@ -212,6 +221,15 @@ export function HierarchyTable({
                   <Badge variant="outline" className={cn("text-mini", meta.badge)}>
                     {meta.label}
                   </Badge>
+                </td>
+                <td className="px-2 py-1.5 text-mini text-muted-foreground">
+                  {r.parentTen ? (
+                    <span className="truncate" title={r.parentTen}>
+                      {r.parentTen}
+                    </span>
+                  ) : (
+                    <span className="italic">Cấp gốc</span>
+                  )}
                 </td>
                 <td className="px-2 py-1.5 font-mono text-mini text-muted-foreground">
                   {UUID_RE.test(r.ma) ? "—" : r.ma}
