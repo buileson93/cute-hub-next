@@ -68,6 +68,10 @@ export function NodeEditorSheet({
   const [viTri, setViTri] = useState("");
   const [viTriGoc, setViTriGoc] = useState("");
 
+  const isRealPhanLoai =
+    target?.kind === "pl" &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(target.ma);
+
   const isReal = target
     ? target.kind === "tb" ||
       target.kind === "pl" ||
