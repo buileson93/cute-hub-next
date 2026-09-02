@@ -2,7 +2,18 @@ import { thongDiepLoi } from "@/lib/mirats/errors";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Network, Loader2, Pencil, Boxes, Trash2, Power, PowerOff, Wrench } from "lucide-react";
+import {
+  Network,
+  Loader2,
+  Pencil,
+  Boxes,
+  Trash2,
+  Power,
+  PowerOff,
+  Wrench,
+  Plus,
+} from "lucide-react";
+
 import { StandardTable } from "@/components/mirats/StandardTable";
 import { PageHeader } from "@/components/mirats/PageHeader";
 import { UI_DENSITY } from "@/lib/mirats/ui/ui-density";
