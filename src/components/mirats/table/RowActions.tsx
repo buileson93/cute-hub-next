@@ -104,6 +104,8 @@ export interface RowActionMenuItem {
   onSelect: () => void;
   tone?: RowActionTone;
   disabled?: boolean;
+  /** Chèn đường kẻ phía trên mục này — dùng để tách nhóm thao tác nguy hiểm. */
+  separatorBefore?: boolean;
 }
 
 /** Menu ba chấm cho các thao tác phụ — dùng khi một dòng có quá nhiều nút. */
