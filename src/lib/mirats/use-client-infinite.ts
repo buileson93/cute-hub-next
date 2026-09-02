@@ -23,6 +23,18 @@ export function computeClientPageSlice(total: number, visible: number, pageSize:
   return { shown, hasNextPage: shown < total, next: Math.min(shown + pageSize, total) };
 }
 
+/**
+ * Số dòng hiển thị sau khi "tải thêm": lô cuối chỉ lấy đúng phần còn lại
+ * (`remaining`), không bao giờ xin đủ `pageSize` khi dữ liệu đã gần hết.
+ */
+export function nextVisibleCount(total: number, visible: number, pageSize: number) {
+  const safeTotal = Number.isFinite(total) && total > 0 ? total : 0;
+  const cur = Math.min(Math.max(visible, 0), safeTotal);
+  if (cur >= safeTotal) return cur;
+  const remaining = safeTotal - cur;
+  return cur + Math.min(Math.max(pageSize, 1), remaining);
+}
+
 export function useClientInfinite<T>(source: readonly T[], pageSize = 100): ClientInfinite<T> {
   const [visible, setVisible] = useState(pageSize);
   const sourceRef = useRef(source);
@@ -36,13 +48,15 @@ export function useClientInfinite<T>(source: readonly T[], pageSize = 100): Clie
   }, [source, pageSize]);
 
   const total = source.length;
-  const { shown, hasNextPage, next } = computeClientPageSlice(total, visible, pageSize);
+  const { shown, hasNextPage } = computeClientPageSlice(total, visible, pageSize);
 
   const rows = useMemo(() => source.slice(0, shown) as T[], [source, shown]);
 
+  // Lô cuối chỉ lấy đúng số bản ghi còn lại (remaining), không bao giờ vượt
+  // `total` — tránh "trang cuối luôn xin đủ pageSize" và tránh gọi thừa khi hết.
   const fetchNextPage = useCallback(() => {
-    setVisible((v) => (v >= total ? v : Math.max(next, v + pageSize)));
-  }, [next, pageSize, total]);
+    setVisible((v) => nextVisibleCount(total, v, pageSize));
+  }, [pageSize, total]);
 
   const reset = useCallback(() => setVisible(pageSize), [pageSize]);
 
