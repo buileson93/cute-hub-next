@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/backend/client";
 import type { ThietBi } from "@/lib/mirats/types";
 import type { DbDevice } from "./db-taxonomy";
