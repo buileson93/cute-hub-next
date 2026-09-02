@@ -47,4 +47,22 @@ describe("flattenHierarchy", () => {
     ] as any;
     expect(() => flattenHierarchy(tree, new Set(["pl:PL1", "pl:PL1/lv:LV1"]))).not.toThrow();
   });
+  it("gán đúng cha trực tiếp: gốc là null, con lấy tên cha", () => {
+    const tree = [
+      pl({
+        fields: [
+          {
+            id: "LV1",
+            ten: "Lĩnh vực",
+            count: 1,
+            groups: [{ ma: "NH1", ten: "Nhóm", count: 1, systems: [] }],
+          },
+        ],
+      }),
+    ] as any;
+    const rows = flattenHierarchy(tree, new Set(["pl:PL1", "pl:PL1/lv:LV1"]));
+    expect(rows[0].parentTen).toBeNull();
+    expect(rows[1].parentTen).toBe(rows[0].ten);
+    expect(rows[2].parentTen).toBe("Lĩnh vực");
+  });
 });
