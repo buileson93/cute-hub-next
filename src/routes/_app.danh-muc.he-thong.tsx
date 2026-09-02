@@ -136,7 +136,17 @@ function HeThongPage() {
 
   const delMut = useMutation({
     mutationFn: async (list: Row[]) => {
-      const removable = list.filter((r) => r.soTb === 0);
+      // Kiểm tra lại tại CSDL (chỉ số tài sản ở client có thể cũ/chưa tải xong).
+      const { data: conTs, error: countErr } = await supabase
+        .from("thiet_bi")
+        .select("he_thong_id")
+        .in(
+          "he_thong_id",
+          list.map((r) => r.id),
+        );
+      if (countErr) throw countErr;
+      const busy = new Set((conTs ?? []).map((t) => t.he_thong_id as string));
+      const removable = list.filter((r) => !busy.has(r.id));
       const blocked = list.length - removable.length;
       if (removable.length === 0)
         throw new Error("Các hệ thống đã chọn đều còn tài sản — không thể xoá.");
@@ -149,6 +159,7 @@ function HeThongPage() {
       }
       return { deleted: removable.length, blocked };
     },
+
     onSuccess: ({ deleted, blocked }) => {
       invalidateTaxonomy(qc);
       setDelTargets(null);
