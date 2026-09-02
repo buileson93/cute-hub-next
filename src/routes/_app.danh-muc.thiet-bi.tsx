@@ -925,24 +925,27 @@ function DanhMucThietBiPage() {
               header: "",
               group: "Thao tác",
               type: "actions" as const,
-              width: 112,
+              width: 84,
               align: "right" as const,
+              // Chỉ 1 nút chính (Chi tiết) + menu ba chấm cho phần còn lại:
+              // giảm nhiễu thị giác nhưng không mất bất kỳ thao tác nào.
               render: (d: DbDevice) => (
                 <RowActionBar>
                   <RowActionButton
                     icon={Info}
-                    label="Xem chi tiết thiết bị"
+                    label={`Xem chi tiết ${tbName(d)}`}
                     tooltip="Chi tiết"
                     onClick={() => openDetail(d)}
                   />
-                  <RowActionButton
-                    icon={Pencil}
-                    label="Chỉnh sửa thiết bị"
-                    tooltip="Sửa"
-                    onClick={() => openEdit(d)}
-                  />
                   <RowActionMenu
+                    label={`Thao tác khác với ${tbName(d)}`}
                     items={[
+                      {
+                        key: "edit",
+                        icon: Pencil,
+                        label: "Chỉnh sửa tài sản",
+                        onSelect: () => openEdit(d),
+                      },
                       {
                         key: "assign",
                         icon: PackagePlus,
@@ -962,8 +965,9 @@ function DanhMucThietBiPage() {
                             {
                               key: "delete",
                               icon: Trash2,
-                              label: "Xoá thiết bị",
+                              label: "Xoá / ngừng khai thác",
                               tone: "destructive" as const,
+                              separatorBefore: true,
                               onSelect: () => {
                                 setDeleteTargets([d]);
                                 setDeleteKind("retire");
