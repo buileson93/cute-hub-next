@@ -103,6 +103,10 @@ function HeThongPage() {
       .sort((a, b) => b.soTb - a.soTb);
   }, [data, scopeAll, donViCode]);
 
+  // Cuộn tới đâu dựng tới đó (lô 100 dòng) — nguồn dữ liệu vốn đã ở client.
+  const htPage = useClientInfinite(rows, 100);
+
+
   const delMut = useMutation({
     mutationFn: async (list: Row[]) => {
       const removable = list.filter((r) => r.soTb === 0);
