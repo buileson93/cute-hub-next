@@ -54,6 +54,7 @@ export function DataState({
   state,
   loadingType = "none",
   title,
+  loadingLabel,
   description,
   onRetry,
   emptyAction,
@@ -72,7 +73,7 @@ export function DataState({
       case "drawer":
         return <DrawerSkeleton className={className} />;
       default:
-        return <LoadingState label={title} className={className} />;
+        return <LoadingState label={loadingLabel ?? "Đang tải dữ liệu…"} className={className} />;
     }
   }
 
