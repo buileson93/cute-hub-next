@@ -119,3 +119,15 @@ export function useHeThongTaiSan() {
     },
   });
 }
+
+/**
+ * Tách danh sách hệ thống thành nhóm có thể xoá và nhóm bị chặn vì còn tài sản.
+ * `busyIds` là tập id hệ thống còn tài sản (đọc lại từ CSDL ngay trước khi xoá).
+ */
+export function locHeThongCoTheXoa<T extends { id: string }>(
+  list: readonly T[],
+  busyIds: ReadonlySet<string>,
+): { removable: T[]; blocked: number } {
+  const removable = list.filter((r) => !busyIds.has(r.id));
+  return { removable, blocked: list.length - removable.length };
+}

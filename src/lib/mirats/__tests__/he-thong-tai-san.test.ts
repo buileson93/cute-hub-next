@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   demTaiSanTheoHeThong,
+  locHeThongCoTheXoa,
   sinhMaHeThong,
   taiSanCuaHeThong,
   ungVienGanVaoHeThong,
@@ -37,5 +38,17 @@ describe("quan hệ tài sản ↔ hệ thống", () => {
     expect(sinhMaHeThong("NAV", "Đài dẫn đường", ["NAV_DAI_DAN_DUONG"])).toBe(
       "NAV_DAI_DAN_DUONG_2",
     );
+  });
+});
+
+describe("chốt chặn xoá hệ thống", () => {
+  const list = [{ id: "a" }, { id: "b" }, { id: "c" }];
+  it("chặn hệ thống còn tài sản, cho xoá phần còn lại", () => {
+    const kq = locHeThongCoTheXoa(list, new Set(["b"]));
+    expect(kq.removable.map((r) => r.id)).toEqual(["a", "c"]);
+    expect(kq.blocked).toBe(1);
+  });
+  it("chặn toàn bộ khi mọi hệ thống đều còn tài sản", () => {
+    expect(locHeThongCoTheXoa(list, new Set(["a", "b", "c"])).removable).toHaveLength(0);
   });
 });
