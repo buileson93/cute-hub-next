@@ -232,22 +232,29 @@ function DanhMucThietBiPage() {
   const sp = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
 
-  // PHÂN TRANG 10H
-  const [page, setPage] = useState(0);
+  // PHÂN TRANG: cuộn tới đâu tải tới đó (đồng bộ với /he-thong/thanh-phan).
   const pageSize = 100;
-  
-  // Clear search/filters when they change, reset page
-  const spMemo = JSON.stringify(sp);
-  useEffect(() => {
-    setPage(0);
-  }, [spMemo]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { data: pagedData, isLoading: pagedLoading } = useThietBiList(
-    page,
-    pageSize,
-    scopeAll ? null : donViCode,
+  const {
+    data: tbPages,
+    isLoading: pagedLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    error: pagedError,
+    refetch: refetchTb,
+  } = useThietBiInfinite(pageSize, scopeAll ? null : donViCode);
+
+  // Giữ nguyên hình dạng `{ rows, total }` để toàn bộ logic phía dưới không đổi.
+  const pagedData = useMemo(
+    () =>
+      tbPages
+        ? { rows: tbPages.pages.flatMap((p) => p.rows), total: tbPages.pages[0]?.total ?? 0 }
+        : undefined,
+    [tbPages],
   );
   const isLoading = taxoLoading || pagedLoading;
+
 
   const { hasRole } = useSession();
   const canManage = hasRole("admin") || hasRole("phong_kt");
