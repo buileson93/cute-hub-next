@@ -640,6 +640,3 @@ function HeThongDialog({ row, onClose }: { row: Row | null; onClose: () => void 
     </>
   );
 }
-
-  );
-}
