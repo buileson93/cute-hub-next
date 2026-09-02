@@ -196,15 +196,21 @@ function HeThongPage() {
         }
         actions={
           canManage ? (
-            <label className="inline-flex items-center gap-2 rounded-md border bg-card px-2.5 py-1.5 text-xs">
-              <Wrench
-                className={`h-3.5 w-3.5 ${editOn ? "text-primary" : "text-muted-foreground"}`}
-              />
-              Chế độ chỉnh sửa
-              <Switch checked={editMode} onCheckedChange={setEditMode} />
-            </label>
+            <div className="flex items-center gap-2">
+              <label className="inline-flex items-center gap-2 rounded-md border bg-card px-2.5 py-1.5 text-xs">
+                <Wrench
+                  className={`h-3.5 w-3.5 ${editOn ? "text-primary" : "text-muted-foreground"}`}
+                />
+                Chế độ chỉnh sửa
+                <Switch checked={editMode} onCheckedChange={setEditMode} />
+              </label>
+              <Button size="sm" className="gap-1.5" onClick={() => setCreating(true)}>
+                <Plus className="h-4 w-4" /> Thêm hệ thống
+              </Button>
+            </div>
           ) : null
         }
+
       />
 
       {error && (
