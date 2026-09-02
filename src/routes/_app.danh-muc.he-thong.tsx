@@ -57,6 +57,7 @@ import { Combobox } from "@/components/mirats/Combobox";
 import { HeThongTaiSanDialog } from "@/components/mirats/HeThongTaiSanDialog";
 import {
   demTaiSanTheoHeThong,
+  locHeThongCoTheXoa,
   sinhMaHeThong,
   useHeThongTaiSan,
 } from "@/lib/mirats/he-thong-tai-san";
@@ -146,8 +147,7 @@ function HeThongPage() {
         );
       if (countErr) throw countErr;
       const busy = new Set((conTs ?? []).map((t) => t.he_thong_id as string));
-      const removable = list.filter((r) => !busy.has(r.id));
-      const blocked = list.length - removable.length;
+      const { removable, blocked } = locHeThongCoTheXoa(list, busy);
       if (removable.length === 0)
         throw new Error("Các hệ thống đã chọn đều còn tài sản — không thể xoá.");
       for (const r of removable) {
