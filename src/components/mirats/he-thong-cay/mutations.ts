@@ -346,8 +346,11 @@ export function useCayMutations() {
         he_thong_id: req.toHtId, // target system
         mo_ta: `Di chuyển tài sản "${req.tenThietBi}" sang hệ thống "${req.toHtTen}"`,
         payload: {
-          ma_thiet_bi: req.maThietBi,
+          // RPC _cay_apply đọc đúng 2 khoá này: device_ma + to_ht_id.
+          device_ma: req.maThietBi,
+          to_ht_id: req.toHtId,
         },
+
       });
     },
     onSuccess: () => {
