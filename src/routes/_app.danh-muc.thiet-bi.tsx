@@ -1523,37 +1523,26 @@ function DanhMucThietBiPage() {
                 </div>
                 <div className="flex items-center justify-between mt-2 pt-2 border-t border-dashed w-full">
                   <div className="text-meta text-muted-foreground italic">
-                    Hiển thị {devices.length} / {totalCount} tài sản (Trang {page + 1})
+                    Hiển thị {devices.length} / {totalCount} tài sản
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      aria-label="Trang trước"
-                      className="h-7 text-mini px-2"
-                      disabled={page === 0 || pagedLoading}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPage((p) => Math.max(0, p - 1));
-                      }}
-                    >
-                      Trước
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      aria-label="Trang sau"
-                      className="h-7 text-mini px-2"
-                      disabled={(page + 1) * pageSize >= totalCount || pagedLoading}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPage((p) => p + 1);
-                      }}
-                    >
-                      Tiếp
-                    </Button>
+                  {/* Không còn nút Trước/Tiếp: bảng tự tải thêm khi cuộn gần đáy. */}
+                  <div
+                    className="flex items-center gap-2 text-meta text-muted-foreground"
+                    aria-live="polite"
+                  >
+                    {isFetchingNextPage ? (
+                      <>
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                        Đang tải thêm…
+                      </>
+                    ) : hasNextPage ? (
+                      "Cuộn xuống để tải thêm"
+                    ) : (
+                      "Đã tải hết danh sách"
+                    )}
                   </div>
                 </div>
+
               </div>
             }
 
