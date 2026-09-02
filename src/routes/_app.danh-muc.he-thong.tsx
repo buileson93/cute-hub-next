@@ -41,6 +41,8 @@ import { useDbTaxonomy, invalidateTaxonomy } from "@/lib/mirats/db-taxonomy";
 import { useScope } from "@/lib/mirats/scope";
 import { useSession } from "@/hooks/use-session";
 import { useUserPref } from "@/hooks/use-user-pref";
+import { useClientInfinite } from "@/lib/mirats/use-client-infinite";
+
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/danh-muc/he-thong")({
