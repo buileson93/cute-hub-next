@@ -217,12 +217,16 @@ const ChartLegendContent = React.forwardRef<
     >
       {payload
         .filter((item) => item.type !== "none")
-        .map((item) => {
+        .map((item, index) => {
           const key = `${nameKey || item.dataKey || "value"}`;
           const itemConfig = getPayloadConfigFromPayload(config, item, key);
 
           return (
-            <div key={item.value} className="flex items-center gap-2 cursor-default group">
+            <div
+              key={`${item.value ?? item.dataKey ?? key}-${index}`}
+              className="flex items-center gap-2 cursor-default group"
+            >
+
               {itemConfig?.icon && !hideIcon ? (
                 <itemConfig.icon />
               ) : (
