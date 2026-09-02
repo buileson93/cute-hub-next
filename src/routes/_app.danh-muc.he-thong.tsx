@@ -184,11 +184,18 @@ function HeThongPage() {
         <StandardTable<Row>
           tableKey="catalog:dm_he_thong"
           trangThai={{ dangTai: isLoading }}
-          rows={rows}
+          rows={htPage.rows}
+          infiniteScroll={{
+            hasNextPage: htPage.hasNextPage,
+            isFetchingNextPage: htPage.isFetchingNextPage,
+            fetchNextPage: htPage.fetchNextPage,
+            totalCount: htPage.totalCount,
+          }}
           getRowId={(r) => r.id}
           emptyText="Không có hệ thống phù hợp."
           countUnit="hệ thống"
           selectable={editOn}
+
           bulkActions={
             editOn
               ? ({ selectedRows, clear }) => (
