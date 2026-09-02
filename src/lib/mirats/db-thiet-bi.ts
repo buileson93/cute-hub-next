@@ -93,18 +93,28 @@ export function useThietBiList(page: number, pageSize: number, donViCode?: strin
  * Điều kiện dừng: trang trả về rỗng, trang ngắn hơn `pageSize`, hoặc đã nạp đủ
  * `total` — nên không bao giờ quay vòng vô hạn khi API trả dữ liệu bất thường.
  */
+export type ThietBiPage = { rows: readonly unknown[]; total: number };
+
+/** Tính trang kế tiếp (offset-based). Tách riêng để kiểm thử được. */
+export function nextThietBiPageParam(
+  lastPage: ThietBiPage,
+  allPages: readonly ThietBiPage[],
+  pageSize: number,
+): number | undefined {
+  if (lastPage.rows.length === 0) return undefined;
+  if (lastPage.rows.length < pageSize) return undefined;
+  const loaded = allPages.reduce((n, p) => n + p.rows.length, 0);
+  return loaded < lastPage.total ? allPages.length : undefined;
+}
+
 export function useThietBiInfinite(pageSize: number, donViCode?: string | null) {
   return useInfiniteQuery({
     queryKey: ["thiet_bi_infinite", { pageSize, donViCode }],
     initialPageParam: 0,
     queryFn: ({ pageParam }) =>
       fetchThietBi(pageParam * pageSize, pageParam * pageSize + pageSize - 1, donViCode),
-    getNextPageParam: (lastPage, allPages) => {
-      if (lastPage.rows.length === 0) return undefined;
-      if (lastPage.rows.length < pageSize) return undefined;
-      const loaded = allPages.reduce((n, p) => n + p.rows.length, 0);
-      return loaded < lastPage.total ? allPages.length : undefined;
-    },
+    getNextPageParam: (lastPage, allPages) =>
+      nextThietBiPageParam(lastPage, allPages, pageSize),
     staleTime: 5 * 60_000,
   });
 }
