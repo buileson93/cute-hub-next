@@ -55,12 +55,7 @@ export function useClientInfinite<T>(source: readonly T[], pageSize = 100): Clie
   // Lô cuối chỉ lấy đúng số bản ghi còn lại (remaining), không bao giờ vượt
   // `total` — tránh "trang cuối luôn xin đủ pageSize" và tránh gọi thừa khi hết.
   const fetchNextPage = useCallback(() => {
-    setVisible((v) => {
-      const cur = Math.min(Math.max(v, 0), total);
-      if (cur >= total) return cur;
-      const remaining = total - cur;
-      return cur + Math.min(pageSize, remaining);
-    });
+    setVisible((v) => nextVisibleCount(total, v, pageSize));
   }, [pageSize, total]);
 
   const reset = useCallback(() => setVisible(pageSize), [pageSize]);
