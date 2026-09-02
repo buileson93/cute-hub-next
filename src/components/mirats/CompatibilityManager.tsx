@@ -34,6 +34,10 @@ export function CompatibilityManager({
   onChange,
   systemOptions,
 }: CompatibilityManagerProps) {
+  // Khớp với RLS `can_manage_equipment()` trên bảng thiet_bi_he_thong_tuong_thich:
+  // chỉ admin / phòng kỹ thuật mới được thêm - xoá dữ liệu tương thích.
+  const { hasRole } = useSession();
+  const canManage = hasRole("admin") || hasRole("phong_kt");
   const [adding, setAdding] = useState(false);
   const [newItem, setNewItem] = useState<CompatibilityItem>({
     he_thong_id: "",
