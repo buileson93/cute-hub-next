@@ -237,7 +237,9 @@ export const ENTITIES: EntityDef[] = [
       { key: "thanh_phan", label: "Thành phần", kind: "text" },
       { key: "giay_phep_khai_thac", label: "Giấy phép khai thác", kind: "text" },
       { key: "giay_phep_tan_so", label: "Giấy phép tần số", kind: "text" },
-      { key: "tyLeTuoiTho", label: "Tỷ lệ tuổi thọ (%)", kind: "num", col: "tyLeTuoiTho" },
+      // Cột CSDL thật là `ty_le_tuoi_tho`; giữ nguyên key/header "tyLeTuoiTho" để
+      // các file mẫu đã phát hành vẫn nhập được.
+      { key: "tyLeTuoiTho", label: "Tỷ lệ tuổi thọ (%)", kind: "num", col: "ty_le_tuoi_tho" },
       { key: "ghi_chu", label: "Ghi chú", kind: "text", common: true },
     ],
   },
