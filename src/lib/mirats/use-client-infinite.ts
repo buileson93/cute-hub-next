@@ -40,9 +40,16 @@ export function useClientInfinite<T>(source: readonly T[], pageSize = 100): Clie
 
   const rows = useMemo(() => source.slice(0, shown) as T[], [source, shown]);
 
+  // Lô cuối chỉ lấy đúng số bản ghi còn lại (remaining), không bao giờ vượt
+  // `total` — tránh "trang cuối luôn xin đủ pageSize" và tránh gọi thừa khi hết.
   const fetchNextPage = useCallback(() => {
-    setVisible((v) => (v >= total ? v : Math.max(next, v + pageSize)));
-  }, [next, pageSize, total]);
+    setVisible((v) => {
+      const cur = Math.min(Math.max(v, 0), total);
+      if (cur >= total) return cur;
+      const remaining = total - cur;
+      return cur + Math.min(pageSize, remaining);
+    });
+  }, [pageSize, total]);
 
   const reset = useCallback(() => setVisible(pageSize), [pageSize]);
 
