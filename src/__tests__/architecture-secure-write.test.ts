@@ -9,6 +9,11 @@ describe("Kiểm thử chống hồi quy: Secure Write Pipeline", () => {
 
     const forbiddenPatterns = [/\.update\(\{\s*ten\s*:/, /\.update\(\{\s*ten_thiet_bi\s*:/];
 
+    // Quy tắc chỉ áp cho phân cấp kỹ thuật (dm_*, thiet_bi). Các miền nghiệp vụ
+    // khác (ví dụ `du_an`) không đi qua rename-entity nên được miễn trừ.
+    const allowedFiles = ["_app.du-an.$id.tsx"];
+
+
     const violations: string[] = [];
 
     function scan(dir: string) {
@@ -17,7 +22,7 @@ describe("Kiểm thử chống hồi quy: Secure Write Pipeline", () => {
         const fullPath = path.join(dir, file);
         if (fs.statSync(fullPath).isDirectory()) {
           scan(fullPath);
-        } else if (file.endsWith(".tsx") || file.endsWith(".ts")) {
+        } else if ((file.endsWith(".tsx") || file.endsWith(".ts")) && !allowedFiles.includes(file)) {
           const content = fs.readFileSync(fullPath, "utf-8");
           for (const pattern of forbiddenPatterns) {
             if (pattern.test(content)) {

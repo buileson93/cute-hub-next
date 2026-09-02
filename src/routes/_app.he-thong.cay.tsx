@@ -62,7 +62,7 @@ import {
 } from "@/components/mirats/he-thong-cay/normalize";
 import { captureError } from "@/lib/observability/capture";
 import { TreeView } from "@/components/mirats/he-thong-cay/TreeView";
-import { CayMindMap } from "@/components/mirats/he-thong-cay/CayMindMap";
+import { HierarchyTable } from "@/components/mirats/he-thong-cay/HierarchyTable";
 import { NodeEditorSheet } from "@/components/mirats/he-thong-cay/NodeEditorSheet";
 import { NodeSearch } from "@/components/mirats/he-thong-cay/NodeSearch";
 import {
@@ -714,7 +714,7 @@ function HeThongCayPage() {
                 className="h-7 gap-2 px-3 text-meta font-medium tracking-tight"
               >
                 <Share2 className="h-3 w-3" />
-                <span>SƠ ĐỒ TỔNG THỂ</span>
+                <span>BẢNG PHÂN CẤP</span>
               </TabsTrigger>
               <TabsTrigger
                 value="health"
@@ -807,43 +807,10 @@ function HeThongCayPage() {
               </ScrollArea>
             )}
             {display === "mindmap" && (
-              <div className="flex-1 relative">
-                <CayMindMap
+              <div className="flex-1 min-h-0">
+                <HierarchyTable
                   tree={viewTree as any}
-                  posByHt={posByHt || new Map()}
-                  scopeText="Cấu trúc CNS/ATM"
-                   canManage={canManageNodes}
-
-                  onRename={async (kind, ma, ten) =>
-                    renameEntity.mutateAsync({ kind, id: ma, ten, userRoles: roles })
-                  }
-                  onOpenEditor={onOpenEditor}
-                  onHistory={onHistory}
-                  onIncident={onIncident}
-                  onMaint={onMaint}
-                  onRecord={onRecord}
-                  canManageNodes={canManageNodes}
-
-
-
-                  onMoveSystem={(req) =>
-                    nav({
-                      to: "/he-thong/cay",
-                      search: (prev: any) => ({ ...prev, moveHt: req.heThongId }),
-                    })
-                  }
-                  onMoveGroup={() => {}}
-                  onMoveDevice={(req) =>
-                    nav({
-                      to: "/he-thong/cay",
-                      search: (prev: any) => ({ ...prev, moveTb: req.deviceMa }),
-                    })
-                  }
-                  plMind={plMind}
-                  nhMind={nhMind}
-                  htMind={htMind}
-                  tbMind={tbMind}
-                  devices={devices}
+                  onOpenEditor={(kind, ma) => onOpenEditor(kind as any, ma)}
                 />
               </div>
             )}

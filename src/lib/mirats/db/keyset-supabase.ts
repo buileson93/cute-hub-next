@@ -71,9 +71,14 @@ export async function fetchKeyset<T extends Record<string, unknown>>(
   const end = performance.now();
   
   if (error) {
-    console.error(`[KeysetFetch] Lỗi tải bảng ${cfg.bang}:`, error);
+    // Huỷ request (đổi trang / unmount) không phải lỗi thật → không ghi console.error.
+    const aborted =
+      (error as any)?.name === "AbortError" ||
+      String((error as any)?.message ?? "").includes("aborted");
+    if (!aborted) console.error(`[KeysetFetch] Lỗi tải bảng ${cfg.bang}:`, error);
     throw error;
   }
+
   
   const rows = (data ?? []) as unknown as T[];
   const duration = Math.round(end - start);
