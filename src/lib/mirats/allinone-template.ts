@@ -883,9 +883,14 @@ export async function buildAllInOneWorkbook({
         cfAny.addConditionalFormatting({
           ref: range,
           rules: [
+            // exceljs 4.4.0 KHÔNG serialize được rule "containsBlanks": nó ghi ra
+            // <conditionalFormatting sqref="..."/> RỖNG (thiếu <cfRule>) — sai lược đồ
+            // OOXML nên Microsoft Excel báo hỏng và yêu cầu repair. Dùng rule
+            // "expression" + ISBLANK() cho kết quả hiển thị tương đương và hợp lệ.
             {
-              type: "containsBlanks",
+              type: "expression",
               priority: 1,
+              formulae: [`ISBLANK(${excelCol}2)`],
               style: {
                 fill: { type: "pattern", pattern: "solid", bgColor: { argb: "FFFEE2E2" } },
                 font: { color: { argb: "FF991B1B" } },
