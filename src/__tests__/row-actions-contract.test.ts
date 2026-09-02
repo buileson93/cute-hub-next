@@ -45,3 +45,32 @@ describe("Danh mục — hợp đồng nút thao tác dòng", () => {
     expect(src).toContain('destructive: "text-destructive');
   });
 });
+
+describe("Danh mục tài sản — cột thao tác gọn", () => {
+  const src = read("src/routes/_app.danh-muc.thiet-bi.tsx");
+  // Lấy đúng phần render của cột "actions" để không đếm nhầm nút ở nơi khác.
+  const actionsCol = src.slice(src.indexOf('key: "actions"'), src.indexOf("</RowActionBar>"));
+
+  it("mỗi dòng chỉ còn 1 nút chính, phần còn lại nằm trong menu ba chấm", () => {
+    expect(actionsCol.match(/<RowActionButton/g)?.length).toBe(1);
+    expect(actionsCol).toContain("<RowActionMenu");
+  });
+
+  it("giữ đủ các thao tác cũ trong menu", () => {
+    for (const key of ['key: "edit"', 'key: "assign"', 'key: "remove"', 'key: "delete"']) {
+      expect(actionsCol).toContain(key);
+    }
+  });
+
+  it("thao tác xoá được tách nhóm và đánh dấu nguy hiểm", () => {
+    expect(actionsCol).toContain("separatorBefore: true");
+    expect(actionsCol).toContain('tone: "destructive" as const');
+  });
+
+  it("RowActionMenu hỗ trợ separator và chống bị cắt ở mép viewport", () => {
+    const rowActions = read("src/components/mirats/table/RowActions.tsx");
+    expect(rowActions).toContain("separatorBefore");
+    expect(rowActions).toContain("<DropdownMenuSeparator />");
+    expect(rowActions).toContain("collisionPadding={12}");
+  });
+});

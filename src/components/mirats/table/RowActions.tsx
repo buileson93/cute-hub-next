@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import type { ComponentType, ReactNode, MouseEvent } from "react";
 import { MoreHorizontal } from "lucide-react";
 
@@ -7,6 +8,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -104,6 +106,8 @@ export interface RowActionMenuItem {
   onSelect: () => void;
   tone?: RowActionTone;
   disabled?: boolean;
+  /** Chèn đường kẻ phía trên mục này — dùng để tách nhóm thao tác nguy hiểm. */
+  separatorBefore?: boolean;
 }
 
 /** Menu ba chấm cho các thao tác phụ — dùng khi một dòng có quá nhiều nút. */
@@ -132,10 +136,12 @@ export function RowActionMenu({
           </Button>
         </DropdownMenuTrigger>
       </AppTooltip>
-      <DropdownMenuContent align="end" className="w-52">
-        {items.map((it) => (
+      {/* collisionPadding: menu gần mép viewport/vùng cuộn vẫn lật vào trong, không bị cắt. */}
+      <DropdownMenuContent align="end" collisionPadding={12} className="w-56">
+        {items.map((it, i) => (
+          <Fragment key={it.key}>
+            {it.separatorBefore && i > 0 ? <DropdownMenuSeparator /> : null}
           <DropdownMenuItem
-            key={it.key}
             disabled={it.disabled}
             onSelect={(e) => {
               e.preventDefault();
@@ -147,9 +153,10 @@ export function RowActionMenu({
               it.tone === "warning" && "text-amber-600 focus:text-amber-700",
             )}
           >
-            <it.icon className="h-4 w-4" />
-            {it.label}
-          </DropdownMenuItem>
+              <it.icon className="h-4 w-4" />
+              {it.label}
+            </DropdownMenuItem>
+          </Fragment>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
