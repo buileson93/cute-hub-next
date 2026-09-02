@@ -366,10 +366,15 @@ function HeThongPage() {
                             icon={Trash2}
                             label="Xoá hệ thống"
                             tone="destructive"
-                            disabled={r.soTb > 0}
+                            disabled={r.soTb > 0 || tsIndex.isLoading}
                             tooltip={
-                              r.soTb > 0 ? `Còn ${r.soTb} tài sản — không thể xoá` : "Xoá hệ thống"
+                              tsIndex.isLoading
+                                ? "Đang kiểm tra tài sản liên quan…"
+                                : r.soTb > 0
+                                  ? `Còn ${r.soTb} tài sản — không thể xoá`
+                                  : "Xoá hệ thống"
                             }
+
                             onClick={() => setDelTargets([r])}
                           />
                         )}
