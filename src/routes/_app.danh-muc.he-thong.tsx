@@ -67,15 +67,20 @@ type Row = {
   donVi: string;
   gpSo: string;
   soTb: number;
+  nhomId: string;
+  donViId: string;
 };
 
 function HeThongPage() {
   const { scopeAll, donViCode } = useScope();
   const { data, isLoading, error } = useDbTaxonomy();
+  const tsIndex = useHeThongTaiSan();
   const { hasRole } = useSession();
   const canManage = hasRole("admin") || hasRole("phong_kt");
   const qc = useQueryClient();
   const [editing, setEditing] = useState<Row | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [assetTarget, setAssetTarget] = useState<Row | null>(null);
   // Chế độ chỉnh sửa: BẬT mới hiện chọn dòng, nút xoá và các action hàng loạt.
   const [editMode, setEditMode] = useUserPref<boolean>("danh-muc-ht:edit-mode", false);
   const editOn = canManage && editMode;
@@ -86,10 +91,8 @@ function HeThongPage() {
     if (!data) return [];
     const dvId = data.donViList.find((d) => d.ma === donViCode)?.id ?? null;
     const dvNameMap = new Map(data.donViList.map((d) => [d.id, d.ten]));
-    const plNameMap = new Map(data.plList.map((p) => [p.id, p.ten]));
-    // TỐI ƯU 10H: Tạm thời không đếm devices từ memory (data.devices đã bị gỡ).
-    // Sẽ được cập nhật ở prompt sau hoặc fetch riêng count.
-    const tbCount = new Map<string, number>();
+    // Đếm tài sản thật theo thiet_bi.he_thong_id (nguồn quan hệ duy nhất).
+    const tbCount = demTaiSanTheoHeThong(tsIndex.data ?? []);
 
     return data.htList
       .filter((h) => scopeAll || (!!dvId && h.donViId === dvId))
@@ -97,16 +100,19 @@ function HeThongPage() {
         id: h.id,
         ma: h.ma,
         ten: h.ten,
-        phanLoai: plNameMap.get(h.nhomId) ?? "(Chưa phân loại)",
+        phanLoai: data.nhomNameMap.get(h.nhomId) ?? "(Chưa phân nhóm)",
         donVi: dvNameMap.get(h.donViId) ?? "—",
         gpSo: h.gpSo ?? "",
         soTb: tbCount.get(h.id) ?? 0,
+        nhomId: h.nhomId,
+        donViId: h.donViId,
       }))
       .sort((a, b) => b.soTb - a.soTb);
-  }, [data, scopeAll, donViCode]);
+  }, [data, scopeAll, donViCode, tsIndex.data]);
 
   // Cuộn tới đâu dựng tới đó (lô 100 dòng) — nguồn dữ liệu vốn đã ở client.
   const htPage = useClientInfinite(rows, 100);
+
 
 
   const delMut = useMutation({
