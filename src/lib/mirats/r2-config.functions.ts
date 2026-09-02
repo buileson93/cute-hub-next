@@ -258,3 +258,17 @@ export const testR2Config = createServerFn({ method: "POST" })
       }
     },
   );
+
+/**
+ * Cho biết R2 đã sẵn sàng nhận tệp hay chưa (bật + đủ endpoint/bucket/khoá).
+ * Chỉ trả về boolean — KHÔNG lộ endpoint, bucket hay khoá bí mật.
+ */
+export const r2IsReady = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async (): Promise<{ ready: boolean }> => {
+    const { getR2Settings } = await import("./r2.server");
+    const s = await getR2Settings();
+    return {
+      ready: !!(s.enabled && s.endpoint && s.bucketName && s.accessKeyId && s.secretAccessKey),
+    };
+  });
