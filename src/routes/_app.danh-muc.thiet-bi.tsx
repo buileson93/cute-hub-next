@@ -97,7 +97,7 @@ import {
   useDeviceNameOverrides,
   type DbDevice,
 } from "@/lib/mirats/db-taxonomy";
-import { useThietBiList } from "@/lib/mirats/db-thiet-bi";
+import { useThietBiInfinite } from "@/lib/mirats/db-thiet-bi";
 import { isRetiredStatus } from "@/components/mirats/ThietBiLifecycleActions";
 import { supabase } from "@/integrations/backend/client";
 import { sortDacTinh, matchFilter, type DacTinh, type CheDoLoc } from "@/lib/mirats/dac-tinh";
@@ -232,22 +232,29 @@ function DanhMucThietBiPage() {
   const sp = Route.useSearch();
   const navigate = useNavigate({ from: Route.fullPath });
 
-  // PHÂN TRANG 10H
-  const [page, setPage] = useState(0);
+  // PHÂN TRANG: cuộn tới đâu tải tới đó (đồng bộ với /he-thong/thanh-phan).
   const pageSize = 100;
-  
-  // Clear search/filters when they change, reset page
-  const spMemo = JSON.stringify(sp);
-  useEffect(() => {
-    setPage(0);
-  }, [spMemo]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { data: pagedData, isLoading: pagedLoading } = useThietBiList(
-    page,
-    pageSize,
-    scopeAll ? null : donViCode,
+  const {
+    data: tbPages,
+    isLoading: pagedLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    error: pagedError,
+    refetch: refetchTb,
+  } = useThietBiInfinite(pageSize, scopeAll ? null : donViCode);
+
+  // Giữ nguyên hình dạng `{ rows, total }` để toàn bộ logic phía dưới không đổi.
+  const pagedData = useMemo(
+    () =>
+      tbPages
+        ? { rows: tbPages.pages.flatMap((p) => p.rows), total: tbPages.pages[0]?.total ?? 0 }
+        : undefined,
+    [tbPages],
   );
   const isLoading = taxoLoading || pagedLoading;
+
 
   const { hasRole } = useSession();
   const canManage = hasRole("admin") || hasRole("phong_kt");
@@ -1490,6 +1497,22 @@ function DanhMucThietBiPage() {
             onRowClick={(d) => openDetail(d)}
             rowClassName={() => "cursor-pointer"}
             emptyText={pagedLoading ? "Đang tải dữ liệu..." : "Không có tài sản phù hợp."}
+            // Cùng cơ chế với /he-thong/thanh-phan: StandardTable sở hữu việc
+            // tải thêm khi cuộn gần đáy và khi lọc cần quét toàn bộ dữ liệu.
+            infiniteScroll={{
+              hasNextPage,
+              isFetchingNextPage,
+              fetchNextPage: () => {
+                void fetchNextPage();
+              },
+              totalCount,
+            }}
+            trangThai={{
+              dangTai: pagedLoading || isFetchingNextPage,
+              loi: pagedError
+                ? { message: "Không tải được danh sách tài sản.", retry: () => void refetchTb() }
+                : undefined,
+            }}
             toolbarLeft={
               <div className="flex flex-col gap-2 w-full">
                 <div className="flex flex-wrap items-center gap-4">
@@ -1516,37 +1539,26 @@ function DanhMucThietBiPage() {
                 </div>
                 <div className="flex items-center justify-between mt-2 pt-2 border-t border-dashed w-full">
                   <div className="text-meta text-muted-foreground italic">
-                    Hiển thị {devices.length} / {totalCount} tài sản (Trang {page + 1})
+                    Hiển thị {devices.length} / {totalCount} tài sản
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      aria-label="Trang trước"
-                      className="h-7 text-mini px-2"
-                      disabled={page === 0 || pagedLoading}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPage((p) => Math.max(0, p - 1));
-                      }}
-                    >
-                      Trước
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      aria-label="Trang sau"
-                      className="h-7 text-mini px-2"
-                      disabled={(page + 1) * pageSize >= totalCount || pagedLoading}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setPage((p) => p + 1);
-                      }}
-                    >
-                      Tiếp
-                    </Button>
+                  {/* Không còn nút Trước/Tiếp: bảng tự tải thêm khi cuộn gần đáy. */}
+                  <div
+                    className="flex items-center gap-2 text-meta text-muted-foreground"
+                    aria-live="polite"
+                  >
+                    {isFetchingNextPage ? (
+                      <>
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                        Đang tải thêm…
+                      </>
+                    ) : hasNextPage ? (
+                      "Cuộn xuống để tải thêm"
+                    ) : (
+                      "Đã tải hết danh sách"
+                    )}
                   </div>
                 </div>
+
               </div>
             }
 
