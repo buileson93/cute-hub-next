@@ -72,24 +72,37 @@ function TaiLieuLibraryPage() {
   const { data: allDocs, isLoading } = useQuery({
     queryKey: ["all_tai_lieu"],
     queryFn: async () => {
-      const [thietBiTep, modelTep] = await Promise.all([
+      // `tai_lieu_ocr` là bảng đa hình (source_type/source_id) nên không có FK
+      // để PostgREST embed — phải nạp riêng rồi ghép theo source_id.
+      const [thietBiTep, modelTep, ocrRows] = await Promise.all([
         supabase
           .from("thiet_bi_tep_dinh_kem")
-          .select("*, thiet_bi:thiet_bi_id(ma_thiet_bi, ten_thiet_bi), tai_lieu_ocr(status)")
+          .select("*, thiet_bi:thiet_bi_id(ma_thiet_bi, ten_thiet_bi)")
           .eq("loai", "tai_lieu")
           .order("created_at", { ascending: false }),
         supabase
           .from("model_tai_lieu")
-          .select("*, model:model_id(ten, ma), tai_lieu_ocr(status)")
+          .select("*, model:model_id(ten, ma)")
           .order("created_at", { ascending: false }),
+        supabase.from("tai_lieu_ocr").select("source_id,status"),
       ]);
 
       if (thietBiTep.error) throw thietBiTep.error;
       if (modelTep.error) throw modelTep.error;
+      if (ocrRows.error) throw ocrRows.error;
+
+      const ocrBySource = new Map<string, { status: string }[]>();
+      for (const row of ocrRows.data ?? []) {
+        if (!row.source_id) continue;
+        const list = ocrBySource.get(row.source_id) ?? [];
+        list.push({ status: row.status });
+        ocrBySource.set(row.source_id, list);
+      }
 
       const combined: TaiLieuRow[] = [
         ...(thietBiTep.data || []).map((d) => ({
           ...d,
+          tai_lieu_ocr: ocrBySource.get(d.id) ?? [],
           sourceType: "thiet_bi" as const,
           sourceName: d.thiet_bi?.ten_thiet_bi || d.thiet_bi?.ma_thiet_bi || "Tài sản",
           sourceCode: d.thiet_bi?.ma_thiet_bi || "",
@@ -97,6 +110,7 @@ function TaiLieuLibraryPage() {
         })),
         ...(modelTep.data || []).map((m) => ({
           ...m,
+          tai_lieu_ocr: ocrBySource.get(m.id) ?? [],
           sourceType: "model" as const,
           sourceName: m.model?.ten || m.model?.ma || "Model",
           sourceCode: m.model?.ma || "",
@@ -107,6 +121,7 @@ function TaiLieuLibraryPage() {
       return combined;
     },
   });
+
 
   const filteredDocs = useMemo(() => {
     if (!allDocs) return [];
