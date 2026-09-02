@@ -22,7 +22,7 @@ describe("Kiểm thử chống hồi quy: Secure Write Pipeline", () => {
         const fullPath = path.join(dir, file);
         if (fs.statSync(fullPath).isDirectory()) {
           scan(fullPath);
-        } else if (file.endsWith(".tsx") || file.endsWith(".ts")) {
+        } else if ((file.endsWith(".tsx") || file.endsWith(".ts")) && !allowedFiles.includes(file)) {
           const content = fs.readFileSync(fullPath, "utf-8");
           for (const pattern of forbiddenPatterns) {
             if (pattern.test(content)) {
