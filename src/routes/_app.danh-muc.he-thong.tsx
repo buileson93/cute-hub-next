@@ -337,6 +337,12 @@ function HeThongPage() {
                     cell: (r: Row) => (
                       <RowActionBar>
                         <RowActionButton
+                          icon={Boxes}
+                          label="Tài sản thuộc hệ thống"
+                          tooltip="Quản lý tài sản thuộc hệ thống"
+                          onClick={() => setAssetTarget(r)}
+                        />
+                        <RowActionButton
                           icon={Pencil}
                           label="Chỉnh sửa hệ thống"
                           tooltip="Sửa thông tin"
@@ -365,6 +371,16 @@ function HeThongPage() {
       )}
 
       {editing && <HeThongDialog row={editing} onClose={() => setEditing(null)} />}
+      {creating && <HeThongDialog row={null} onClose={() => setCreating(false)} />}
+      {assetTarget && (
+        <HeThongTaiSanDialog
+          heThongId={assetTarget.id}
+          heThongTen={assetTarget.ten}
+          canManage={canManage}
+          onClose={() => setAssetTarget(null)}
+        />
+      )}
+
 
       <AlertDialog
         open={!!delTargets}
