@@ -4,7 +4,7 @@ import asyncio, os, sys, time
 from playwright.async_api import async_playwright
 
 sys.path.insert(0, os.path.dirname(__file__))
-from _auth import BASE, restore_session, ensure_authenticated, step  # noqa: E402
+from _auth import BASE, restore_session, ensure_authenticated, step, login_with_password  # noqa: E402
 
 SHOTS = "/tmp/browser/so-cong-van"
 TAG = f"E2E-CV-{int(time.time())}"
@@ -114,6 +114,7 @@ async def main():
         await c.tracing.start(screenshots=True, snapshots=True)
         pg = await c.new_page()
         await restore_session(c, pg)
+        await login_with_password(pg)
         try:
             log, errs = await run(pg)
         except Exception as e:  # noqa: BLE001

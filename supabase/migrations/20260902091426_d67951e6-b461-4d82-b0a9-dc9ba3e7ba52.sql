@@ -1,0 +1,14 @@
+ALTER FUNCTION public._try_date(text) SET search_path = public;
+ALTER FUNCTION public.handle_updated_at_tai_lieu_ocr() SET search_path = public;
+ALTER FUNCTION public.get_completeness_stats() SET search_path = public;
+ALTER FUNCTION public.pmbq_auto_ma() SET search_path = public;
+ALTER FUNCTION public.dashboard_top_thiet_bi_hong_lap(uuid[],integer) SET search_path = public;
+ALTER FUNCTION public.dashboard_su_co_heatmap(uuid[],integer) SET search_path = public;
+ALTER FUNCTION public.calculate_completeness(text,jsonb) SET search_path = public;
+ALTER FUNCTION public.trg_update_completeness() SET search_path = public;
+ALTER FUNCTION public._debug_test_insert() SET search_path = public;
+ALTER FUNCTION public.dashboard_activity_feed(uuid[],integer) SET search_path = public;
+ALTER FUNCTION public.dashboard_health(uuid[],date,date) SET search_path = public;
+ALTER FUNCTION public.dashboard_brief_today(uuid[]) SET search_path = public;
+ALTER FUNCTION public.dashboard_top_he_thong_su_co(uuid[],integer) SET search_path = public;
+ALTER FUNCTION public.dashboard_expiry_timeline(uuid[],integer) SET search_path = public;
