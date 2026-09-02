@@ -57,6 +57,7 @@ import { Combobox } from "@/components/mirats/Combobox";
 import { HeThongTaiSanDialog } from "@/components/mirats/HeThongTaiSanDialog";
 import {
   demTaiSanTheoHeThong,
+  locHeThongCoTheXoa,
   sinhMaHeThong,
   useHeThongTaiSan,
 } from "@/lib/mirats/he-thong-tai-san";
@@ -136,8 +137,17 @@ function HeThongPage() {
 
   const delMut = useMutation({
     mutationFn: async (list: Row[]) => {
-      const removable = list.filter((r) => r.soTb === 0);
-      const blocked = list.length - removable.length;
+      // Kiểm tra lại tại CSDL (chỉ số tài sản ở client có thể cũ/chưa tải xong).
+      const { data: conTs, error: countErr } = await supabase
+        .from("thiet_bi")
+        .select("he_thong_id")
+        .in(
+          "he_thong_id",
+          list.map((r) => r.id),
+        );
+      if (countErr) throw countErr;
+      const busy = new Set((conTs ?? []).map((t) => t.he_thong_id as string));
+      const { removable, blocked } = locHeThongCoTheXoa(list, busy);
       if (removable.length === 0)
         throw new Error("Các hệ thống đã chọn đều còn tài sản — không thể xoá.");
       for (const r of removable) {
@@ -149,8 +159,11 @@ function HeThongPage() {
       }
       return { deleted: removable.length, blocked };
     },
+
     onSuccess: ({ deleted, blocked }) => {
       invalidateTaxonomy(qc);
+      void qc.invalidateQueries({ queryKey: ["he_thong_tai_san_index"] });
+
       setDelTargets(null);
       setDelReason("");
       toast.success(
@@ -241,14 +254,21 @@ function HeThongPage() {
                       size="sm"
                       variant="outline"
                       className="h-7 gap-1"
+                      disabled={toggleActiveMut.isPending}
                       onClick={() => toggleActiveMut.mutate({ list: selectedRows, active: true })}
                     >
-                      <Power className="h-3.5 w-3.5" /> Kích hoạt
+                      {toggleActiveMut.isPending ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Power className="h-3.5 w-3.5" />
+                      )}{" "}
+                      Kích hoạt
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
                       className="h-7 gap-1"
+                      disabled={toggleActiveMut.isPending}
                       onClick={() => toggleActiveMut.mutate({ list: selectedRows, active: false })}
                     >
                       <PowerOff className="h-3.5 w-3.5" /> Tạm dừng
@@ -257,10 +277,12 @@ function HeThongPage() {
                       size="sm"
                       variant="destructive"
                       className="h-7 gap-1"
+                      disabled={delMut.isPending || tsIndex.isLoading}
                       onClick={() => setDelTargets(selectedRows)}
                     >
                       <Trash2 className="h-3.5 w-3.5" /> Xoá ({selectedRows.length})
                     </Button>
+
                     <Button size="sm" variant="ghost" className="h-7" onClick={clear}>
                       Bỏ chọn
                     </Button>
@@ -353,10 +375,15 @@ function HeThongPage() {
                             icon={Trash2}
                             label="Xoá hệ thống"
                             tone="destructive"
-                            disabled={r.soTb > 0}
+                            disabled={r.soTb > 0 || tsIndex.isLoading}
                             tooltip={
-                              r.soTb > 0 ? `Còn ${r.soTb} tài sản — không thể xoá` : "Xoá hệ thống"
+                              tsIndex.isLoading
+                                ? "Đang kiểm tra tài sản liên quan…"
+                                : r.soTb > 0
+                                  ? `Còn ${r.soTb} tài sản — không thể xoá`
+                                  : "Xoá hệ thống"
                             }
+
                             onClick={() => setDelTargets([r])}
                           />
                         )}
