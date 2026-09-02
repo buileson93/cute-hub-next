@@ -130,6 +130,7 @@ export const ICON_REGISTRY = {
   "entity.system": Network,
   "entity.user": User,
   "entity.document": FileText,
+  "entity.info": Info,
   "entity.dashboard": LayoutDashboard,
   "entity.history": Clock,
   "entity.calendar": Calendar,
