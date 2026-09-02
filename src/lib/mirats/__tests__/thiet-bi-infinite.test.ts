@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { nextThietBiPageParam, type ThietBiPage } from "@/lib/mirats/db-thiet-bi";
-import { computeClientPageSlice } from "@/lib/mirats/use-client-infinite";
+import { computeClientPageSlice, nextVisibleCount } from "@/lib/mirats/use-client-infinite";
 
 const page = (n: number, total: number): ThietBiPage => ({
   rows: Array.from({ length: n }, (_, i) => i),
@@ -64,5 +64,30 @@ describe("computeClientPageSlice — cuộn tải thêm phía client", () => {
 
   it("danh sách rỗng thì không còn trang kế tiếp", () => {
     expect(computeClientPageSlice(0, 100, 100)).toEqual({ shown: 0, hasNextPage: false, next: 0 });
+  });
+});
+
+describe("nextVisibleCount — lô cuối của bảng Kế hoạch khai thác", () => {
+  it("lô cuối chỉ lấy đúng số bản ghi còn lại", () => {
+    expect(nextVisibleCount(832, 800, 100)).toBe(832);
+  });
+
+  it("tải bình thường khi còn nhiều hơn một lô", () => {
+    expect(nextVisibleCount(832, 700, 100)).toBe(800);
+  });
+
+  it("bội số chính xác của page size thì dừng đúng ở tổng", () => {
+    expect(nextVisibleCount(200, 100, 100)).toBe(200);
+    expect(nextVisibleCount(200, 200, 100)).toBe(200);
+  });
+
+  it("tổng nhỏ hơn page size hoặc rỗng thì không xin dư", () => {
+    expect(nextVisibleCount(30, 0, 100)).toBe(30);
+    expect(nextVisibleCount(0, 100, 100)).toBe(0);
+  });
+
+  it("metadata không hợp lệ vẫn an toàn", () => {
+    expect(nextVisibleCount(Number.NaN, 100, 100)).toBe(0);
+    expect(nextVisibleCount(50, -10, 100)).toBe(50);
   });
 });
