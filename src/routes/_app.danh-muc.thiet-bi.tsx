@@ -1737,8 +1737,17 @@ function DanhMucThietBiPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Xoá / Ngừng khai thác tài sản?</AlertDialogTitle>
             <AlertDialogDescription>
-              Đang thao tác trên <b>{deleteTargets?.length ?? 0}</b> tài sản. Chọn cách xử lý phù
-              hợp bên dưới.
+              {deleteTargets?.length === 1 ? (
+                <>
+                  Đang thao tác trên tài sản <b>{tbName(deleteTargets[0]!)}</b> (mã{" "}
+                  <b>{deleteTargets[0]!.ma_thiet_bi}</b>). Chọn cách xử lý phù hợp bên dưới.
+                </>
+              ) : (
+                <>
+                  Đang thao tác trên <b>{deleteTargets?.length ?? 0}</b> tài sản. Chọn cách xử lý
+                  phù hợp bên dưới.
+                </>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
 
