@@ -36,7 +36,7 @@ export function useClientInfinite<T>(source: readonly T[], pageSize = 100): Clie
   }, [source, pageSize]);
 
   const total = source.length;
-  const { shown, hasNextPage, next } = computeClientPageSlice(total, visible, pageSize);
+  const { shown, hasNextPage } = computeClientPageSlice(total, visible, pageSize);
 
   const rows = useMemo(() => source.slice(0, shown) as T[], [source, shown]);
 
