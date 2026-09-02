@@ -31,6 +31,9 @@ export type FlatRow = {
 
 const MAX_DEPTH = 8;
 
+/** Không hiển thị khoá kỹ thuật (UUID) lên giao diện nghiệp vụ. */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 /** Làm phẳng cây theo tập node đang mở. Thuần tuý, có test riêng. */
 export function flattenHierarchy(tree: PlGroup[], expanded: Set<string>): FlatRow[] {
   const rows: FlatRow[] = [];
@@ -210,7 +213,9 @@ export function HierarchyTable({
                     {meta.label}
                   </Badge>
                 </td>
-                <td className="px-2 py-1.5 font-mono text-mini text-muted-foreground">{r.ma}</td>
+                <td className="px-2 py-1.5 font-mono text-mini text-muted-foreground">
+                  {UUID_RE.test(r.ma) ? "—" : r.ma}
+                </td>
                 <td className="px-2 py-1.5 text-right tabular-nums text-muted-foreground">
                   {r.kind === "tb" ? "—" : r.count}
                 </td>
