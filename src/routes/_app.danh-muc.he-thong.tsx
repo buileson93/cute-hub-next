@@ -254,14 +254,21 @@ function HeThongPage() {
                       size="sm"
                       variant="outline"
                       className="h-7 gap-1"
+                      disabled={toggleActiveMut.isPending}
                       onClick={() => toggleActiveMut.mutate({ list: selectedRows, active: true })}
                     >
-                      <Power className="h-3.5 w-3.5" /> Kích hoạt
+                      {toggleActiveMut.isPending ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Power className="h-3.5 w-3.5" />
+                      )}{" "}
+                      Kích hoạt
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
                       className="h-7 gap-1"
+                      disabled={toggleActiveMut.isPending}
                       onClick={() => toggleActiveMut.mutate({ list: selectedRows, active: false })}
                     >
                       <PowerOff className="h-3.5 w-3.5" /> Tạm dừng
@@ -270,10 +277,12 @@ function HeThongPage() {
                       size="sm"
                       variant="destructive"
                       className="h-7 gap-1"
+                      disabled={delMut.isPending || tsIndex.isLoading}
                       onClick={() => setDelTargets(selectedRows)}
                     >
                       <Trash2 className="h-3.5 w-3.5" /> Xoá ({selectedRows.length})
                     </Button>
+
                     <Button size="sm" variant="ghost" className="h-7" onClick={clear}>
                       Bỏ chọn
                     </Button>
