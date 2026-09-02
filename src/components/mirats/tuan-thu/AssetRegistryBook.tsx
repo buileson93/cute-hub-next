@@ -5,6 +5,7 @@ import { Eye, Pencil } from "lucide-react";
 import { type LicenseRow } from "@/lib/mirats/db-licenses";
 import { StatusBadge } from "@/components/mirats/StatusBadge";
 import { getExpiryCode, getExpiryLabel } from "@/lib/mirats/ui/status-tokens";
+import { useClientInfinite } from "@/lib/mirats/use-client-infinite";
 
 interface AssetRegistryBookProps {
   rows: LicenseRow[];
@@ -14,12 +15,22 @@ interface AssetRegistryBookProps {
 }
 
 export function AssetRegistryBook({ rows, canManage, onEdit, onView }: AssetRegistryBookProps) {
+  // Cuộn tới đâu dựng tới đó — dữ liệu giấy phép đã có sẵn ở client.
+  const page = useClientInfinite(rows, 100);
+
   return (
     <StandardTable<LicenseRow>
       tableKey="giay_phep_registry"
-      rows={rows}
+      rows={page.rows}
       getRowId={(r) => r.rowId}
       requireFilterToShow={false}
+      infiniteScroll={{
+        hasNextPage: page.hasNextPage,
+        isFetchingNextPage: page.isFetchingNextPage,
+        fetchNextPage: page.fetchNextPage,
+        totalCount: page.totalCount,
+      }}
+
       columns={[
         {
           key: "so_gp",
