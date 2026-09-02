@@ -151,9 +151,10 @@ export function RowActionMenu({
               it.tone === "warning" && "text-amber-600 focus:text-amber-700",
             )}
           >
-            <it.icon className="h-4 w-4" />
-            {it.label}
-          </DropdownMenuItem>
+              <it.icon className="h-4 w-4" />
+              {it.label}
+            </DropdownMenuItem>
+          </Fragment>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
