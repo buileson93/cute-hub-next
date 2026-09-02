@@ -27,6 +27,9 @@ interface DataStateProps {
   /** Tiêu đề cho trạng thái rỗng hoặc lỗi. */
   title?: string;
 
+  /** Nhãn hiển thị khi đang tải. Mặc định "Đang tải dữ liệu…". */
+  loadingLabel?: string;
+
   /** Chi tiết thông báo (cho cả empty và error). */
   description?: string;
 
@@ -51,6 +54,7 @@ export function DataState({
   state,
   loadingType = "none",
   title,
+  loadingLabel,
   description,
   onRetry,
   emptyAction,
@@ -69,7 +73,7 @@ export function DataState({
       case "drawer":
         return <DrawerSkeleton className={className} />;
       default:
-        return <LoadingState label={title} className={className} />;
+        return <LoadingState label={loadingLabel ?? "Đang tải dữ liệu…"} className={className} />;
     }
   }
 

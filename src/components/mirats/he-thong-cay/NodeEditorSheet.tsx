@@ -68,6 +68,10 @@ export function NodeEditorSheet({
   const [viTri, setViTri] = useState("");
   const [viTriGoc, setViTriGoc] = useState("");
 
+  const isRealPhanLoai =
+    target?.kind === "pl" &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(target.ma);
+
   const isReal = target
     ? target.kind === "tb" ||
       target.kind === "pl" ||
@@ -274,7 +278,14 @@ export function NodeEditorSheet({
               <div className="flex items-center gap-1.5 text-sm font-medium">
                 <FolderTree className="h-4 w-4 text-violet-600" /> Nhóm hệ thống
               </div>
-              {canManage && (
+              {canManage && !isRealPhanLoai && (
+                <p className="border-t pt-3 text-xs text-muted-foreground">
+                  Đây là nhóm gom tạm “{target.ma}”, chưa phải phân loại thật trong danh mục nên
+                  không thể thêm nhóm hệ thống tại đây. Hãy tạo phân loại ở Danh mục → Phân loại,
+                  sau đó thêm nhóm vào phân loại đó.
+                </p>
+              )}
+              {canManage && isRealPhanLoai && (
                 <div className="space-y-2 border-t pt-3">
                   <Input
                     value={newGroupTen}

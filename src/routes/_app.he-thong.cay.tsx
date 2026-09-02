@@ -753,6 +753,8 @@ function HeThongCayPage() {
       >
         <DataState
           state={state}
+          isFiltering={isFiltering}
+          loadingLabel="Đang tải cấu trúc hệ thống…"
           title="Không có dữ liệu phù hợp"
           description="Hãy thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm."
         >

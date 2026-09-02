@@ -357,6 +357,8 @@ export function TreeView({
               expanded={isExpanded}
               onToggle={() => toggle(plId)}
               toggleLabel={pl.ten}
+              onActivate={() => onOpenEditor("pl", pl.id)}
+              activateHint="Mở bảng chỉnh sửa phân loại & thêm nhóm hệ thống"
               title={<span className="font-semibold tracking-tight">{pl.ten}</span>}
               badges={
                 <Badge
