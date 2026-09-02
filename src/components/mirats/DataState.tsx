@@ -27,6 +27,9 @@ interface DataStateProps {
   /** Tiêu đề cho trạng thái rỗng hoặc lỗi. */
   title?: string;
 
+  /** Nhãn hiển thị khi đang tải. Mặc định "Đang tải dữ liệu…". */
+  loadingLabel?: string;
+
   /** Chi tiết thông báo (cho cả empty và error). */
   description?: string;
 
