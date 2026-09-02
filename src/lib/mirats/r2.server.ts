@@ -11,6 +11,7 @@ import {
   ListPartsCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { withKeyPrefix } from "./r2-upload-policy";
 
 export type R2Settings = {
   enabled: boolean;
@@ -131,31 +132,40 @@ export async function getR2PublicBase(): Promise<string | null> {
 
 export const EMPTY_R2_SETTINGS = EMPTY;
 
+/**
+ * Khoá vật lý trên bucket = key_prefix (nếu admin cấu hình) + khoá logic lưu
+ * trong CSDL. Idempotent nên gọi nhiều lần vẫn an toàn.
+ */
+export async function resolveR2Key(key: string): Promise<string> {
+  const s = await getR2Settings();
+  return withKeyPrefix(s.keyPrefix, key);
+}
+
 export async function r2PresignPut(key: string, contentType?: string, expiresIn = 900) {
   const cmd = new PutObjectCommand({
     Bucket: await getR2Bucket(),
-    Key: key,
+    Key: await resolveR2Key(key),
     ContentType: contentType,
   });
   return getSignedUrl(await getR2Client(), cmd, { expiresIn });
 }
 
 export async function r2PresignGet(key: string, expiresIn = 900) {
-  const cmd = new GetObjectCommand({ Bucket: await getR2Bucket(), Key: key });
+  const cmd = new GetObjectCommand({ Bucket: await getR2Bucket(), Key: await resolveR2Key(key) });
   return getSignedUrl(await getR2Client(), cmd, { expiresIn });
 }
 
 export async function r2Delete(key: string) {
   await (
     await getR2Client()
-  ).send(new DeleteObjectCommand({ Bucket: await getR2Bucket(), Key: key }));
+  ).send(new DeleteObjectCommand({ Bucket: await getR2Bucket(), Key: await resolveR2Key(key) }));
 }
 
 export async function r2Head(key: string) {
   try {
     const res = await (
       await getR2Client()
-    ).send(new HeadObjectCommand({ Bucket: await getR2Bucket(), Key: key }));
+    ).send(new HeadObjectCommand({ Bucket: await getR2Bucket(), Key: await resolveR2Key(key) }));
     return { exists: true, size: res.ContentLength ?? 0, contentType: res.ContentType ?? null };
   } catch {
     return { exists: false, size: 0, contentType: null };
@@ -165,7 +175,8 @@ export async function r2Head(key: string) {
 export async function r2PublicUrl(key: string): Promise<string | null> {
   const base = await getR2PublicBase();
   if (!base) return null;
-  return `${base.replace(/\/$/, "")}/${key.replace(/^\//, "")}`;
+  const full = await resolveR2Key(key);
+  return `${base.replace(/\/$/, "")}/${full.replace(/^\//, "")}`;
 }
 
 // ---- Multipart helpers ----
@@ -175,7 +186,7 @@ export async function r2MultipartCreate(key: string, contentType?: string) {
   ).send(
     new CreateMultipartUploadCommand({
       Bucket: await getR2Bucket(),
-      Key: key,
+      Key: await resolveR2Key(key),
       ContentType: contentType,
     }),
   );
@@ -190,7 +201,7 @@ export async function r2MultipartSignPart(
 ) {
   const cmd = new UploadPartCommand({
     Bucket: await getR2Bucket(),
-    Key: key,
+    Key: await resolveR2Key(key),
     UploadId: uploadId,
     PartNumber: partNumber,
   });
@@ -210,7 +221,7 @@ export async function r2MultipartComplete(
   ).send(
     new CompleteMultipartUploadCommand({
       Bucket: await getR2Bucket(),
-      Key: key,
+      Key: await resolveR2Key(key),
       UploadId: uploadId,
       MultipartUpload: { Parts: parts.sort((a, b) => a.PartNumber - b.PartNumber) },
     }),
@@ -223,7 +234,7 @@ export async function r2MultipartAbort(key: string, uploadId: string) {
   ).send(
     new AbortMultipartUploadCommand({
       Bucket: await getR2Bucket(),
-      Key: key,
+      Key: await resolveR2Key(key),
       UploadId: uploadId,
     }),
   );
@@ -238,7 +249,7 @@ export async function r2MultipartList(key: string, uploadId: string) {
     ).send(
       new ListPartsCommand({
         Bucket: await getR2Bucket(),
-        Key: key,
+        Key: await resolveR2Key(key),
         UploadId: uploadId,
         PartNumberMarker: marker ? String(marker) : undefined,
       }),

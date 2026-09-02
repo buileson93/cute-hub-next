@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/backend/auth-middleware";
 import { z } from "zod";
+import { assertUploadAllowed } from "./r2-upload-policy";
 
 // ---------- Category & expiry policy ----------
 export type R2Category = "image" | "pdf" | "office" | "video" | "other";
@@ -127,6 +128,14 @@ export const r2GetUploadUrl = createServerFn({ method: "POST" })
     const key = sanitizeKey(context.userId, data.key);
     const category = categorize(data.originalName || key, data.contentType);
     const expiresIn = ttlFor(category, "put");
+    // Chặn tại biên tin cậy: MIME allowlist + dung lượng + đuôi tệp nguy hiểm.
+    assertUploadAllowed({
+      category,
+      contentType: data.contentType,
+      size: data.size,
+      originalName: data.originalName,
+      key,
+    });
     try {
       await assertAccess(context.supabase, context.userId, key, "put");
     } catch (err: any) {
@@ -282,8 +291,15 @@ export const r2MultipartInit = createServerFn({ method: "POST" })
     const { r2MultipartCreate } = await import("./r2.server");
     const key = sanitizeKey(context.userId, data.key);
     await assertAccess(context.supabase, context.userId, key, "put");
-    const uploadId = await r2MultipartCreate(key, data.contentType);
     const category = categorize(data.originalName || key, data.contentType);
+    assertUploadAllowed({
+      category,
+      contentType: data.contentType,
+      size: data.size,
+      originalName: data.originalName,
+      key,
+    });
+    const uploadId = await r2MultipartCreate(key, data.contentType);
     const { supabaseAdmin } = await import("@/integrations/backend/admin.server");
     await supabaseAdmin.from("r2_file").upsert(
       {
