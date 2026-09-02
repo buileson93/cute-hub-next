@@ -1,72 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { PageBody } from "@/components/mirats/PageBody";
-import { PageHeader } from "@/components/mirats/PageHeader";
-import { DataTableCore, type DataTableColumn } from "@/components/mirats/DataTableCore";
-import { useDbTaxonomy } from "@/lib/mirats/db-taxonomy";
-import { useThietBiList } from "@/lib/mirats/db-thiet-bi";
-import { DataState } from "@/components/mirats/DataState";
-import { useMemo, useState } from "react";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
-
+/**
+ * Hợp nhất màn hình Tài sản: `/thiet-bi/danh-sach` và `/danh-muc/thiet-bi`
+ * dùng cùng entity (`thiet_bi`), cùng query và cùng nghiệp vụ, nên chỉ giữ một
+ * màn hình chuẩn tại `/danh-muc/thiet-bi`. Route cũ chỉ còn nhiệm vụ chuyển
+ * hướng để không mất deep-link đang tồn tại.
+ */
 export const Route = createFileRoute("/_app/thiet-bi/danh-sach")({
-  head: () => ({
-    meta: [
-      { title: "Danh sách thiết bị — MIRATS" },
-      { name: "description", content: "Quản lý danh sách thiết bị tập trung." },
-    ],
-  }),
-  component: ThietBiListPage,
+  beforeLoad: () => {
+    throw redirect({ to: "/danh-muc/thiet-bi", replace: true });
+  },
 });
-
-function ThietBiListPage() {
-  const { data: taxo, isLoading: taxoLoading, error } = useDbTaxonomy();
-  const [page, setPage] = useState(0);
-  const { data: pagedData, isLoading: pagedLoading } = useThietBiList(page, 100);
-  const isLoading = taxoLoading || pagedLoading;
-
-
-  const columns = useMemo<DataTableColumn<any>[]>(
-    () => [
-      { key: "ma_thiet_bi", header: "Mã thiết bị", sticky: true, width: 120 },
-      { key: "ten", header: "Tên thiết bị", width: 250 },
-      { key: "trang_thai", header: "Trạng thái", type: "status", width: 150 },
-      { key: "model", header: "Model", width: 150 },
-      { key: "serial", header: "Số Serial", width: 150 },
-      { key: "nha_san_xuat", header: "Nhà sản xuất", width: 150 },
-      { key: "don_vi", header: "Đơn vị", width: 120 },
-      { key: "ngay_mua", header: "Ngày mua", type: "date", width: 120 },
-      { key: "gia_tri", header: "Giá trị", type: "currency", width: 150, align: "right" },
-    ],
-    [],
-  );
-
-  const state = isLoading
-    ? "loading"
-    : error
-      ? "error"
-      : !(pagedData?.rows.length)
-        ? "empty"
-        : "success";
-
-
-  return (
-    <PageBody noPadding className="flex flex-col flex-1 min-h-0 overflow-hidden">
-      <PageHeader
-        title="Danh sách thiết bị"
-        subtitle="Quản lý tập trung toàn bộ tài sản thiết bị"
-      />
-
-      <div className="flex-1 min-h-0 p-4">
-        <DataState state={state}>
-          <DataTableCore
-            rows={pagedData?.rows || []}
-            columns={columns}
-            getRowId={(row) => row.ma_thiet_bi || row.id}
-            fitViewport
-            className="border shadow-sm"
-          />
-        </DataState>
-      </div>
-    </PageBody>
-  );
-}
