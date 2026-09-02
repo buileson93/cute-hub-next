@@ -90,32 +90,45 @@ export function useThietBiList(page: number, pageSize: number, donViCode?: strin
  * sẵn có của `fetchThietBi`, chỉ đổi cách nạp trang để StandardTable tự cuộn
  * tải thêm (giống `/he-thong/thanh-phan`).
  *
- * Điều kiện dừng: trang trả về rỗng, trang ngắn hơn `pageSize`, hoặc đã nạp đủ
- * `total` — nên không bao giờ quay vòng vô hạn khi API trả dữ liệu bất thường.
+ * Trang cuối chỉ yêu cầu đúng số bản ghi còn lại: `limit = min(pageSize,
+ * total - loaded)` — không bao giờ đọc thừa 100 dòng ở DB.
+ *
+ * Điều kiện dừng: trang trả về rỗng, trang ngắn hơn `limit` đã yêu cầu, hoặc
+ * đã nạp đủ `total` — nên không quay vòng vô hạn khi API trả dữ liệu bất thường.
  */
 export type ThietBiPage = { rows: readonly unknown[]; total: number };
 
-/** Tính trang kế tiếp (offset-based). Tách riêng để kiểm thử được. */
+/** Con trỏ trang: offset + số bản ghi thực sự cần đọc. */
+export type ThietBiCursor = { offset: number; limit: number };
+
+/** Tính trang kế tiếp (offset-based, limit co lại ở trang cuối). */
 export function nextThietBiPageParam(
   lastPage: ThietBiPage,
   allPages: readonly ThietBiPage[],
   pageSize: number,
-): number | undefined {
+  lastCursor?: ThietBiCursor,
+): ThietBiCursor | undefined {
+  const requested = lastCursor?.limit ?? pageSize;
   if (lastPage.rows.length === 0) return undefined;
-  if (lastPage.rows.length < pageSize) return undefined;
+  if (lastPage.rows.length < requested) return undefined;
   const loaded = allPages.reduce((n, p) => n + p.rows.length, 0);
-  return loaded < lastPage.total ? allPages.length : undefined;
+  const total = lastPage.total;
+  if (!Number.isFinite(total) || total <= 0) return undefined;
+  const remaining = Math.max(total - loaded, 0);
+  if (remaining === 0) return undefined;
+  return { offset: loaded, limit: Math.min(pageSize, remaining) };
 }
 
 export function useThietBiInfinite(pageSize: number, donViCode?: string | null) {
   return useInfiniteQuery({
     queryKey: ["thiet_bi_infinite", { pageSize, donViCode }],
-    initialPageParam: 0,
+    initialPageParam: { offset: 0, limit: pageSize } as ThietBiCursor,
     queryFn: ({ pageParam }) =>
-      fetchThietBi(pageParam * pageSize, pageParam * pageSize + pageSize - 1, donViCode),
-    getNextPageParam: (lastPage, allPages) =>
-      nextThietBiPageParam(lastPage, allPages, pageSize),
+      fetchThietBi(pageParam.offset, pageParam.offset + pageParam.limit - 1, donViCode),
+    getNextPageParam: (lastPage, allPages, lastPageParam) =>
+      nextThietBiPageParam(lastPage, allPages, pageSize, lastPageParam),
     staleTime: 5 * 60_000,
   });
 }
+
 

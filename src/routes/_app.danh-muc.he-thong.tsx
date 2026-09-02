@@ -41,6 +41,8 @@ import { useDbTaxonomy, invalidateTaxonomy } from "@/lib/mirats/db-taxonomy";
 import { useScope } from "@/lib/mirats/scope";
 import { useSession } from "@/hooks/use-session";
 import { useUserPref } from "@/hooks/use-user-pref";
+import { useClientInfinite } from "@/lib/mirats/use-client-infinite";
+
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/danh-muc/he-thong")({
@@ -102,6 +104,10 @@ function HeThongPage() {
       }))
       .sort((a, b) => b.soTb - a.soTb);
   }, [data, scopeAll, donViCode]);
+
+  // Cuộn tới đâu dựng tới đó (lô 100 dòng) — nguồn dữ liệu vốn đã ở client.
+  const htPage = useClientInfinite(rows, 100);
+
 
   const delMut = useMutation({
     mutationFn: async (list: Row[]) => {
@@ -184,11 +190,18 @@ function HeThongPage() {
         <StandardTable<Row>
           tableKey="catalog:dm_he_thong"
           trangThai={{ dangTai: isLoading }}
-          rows={rows}
+          rows={htPage.rows}
+          infiniteScroll={{
+            hasNextPage: htPage.hasNextPage,
+            isFetchingNextPage: htPage.isFetchingNextPage,
+            fetchNextPage: htPage.fetchNextPage,
+            totalCount: htPage.totalCount,
+          }}
           getRowId={(r) => r.id}
           emptyText="Không có hệ thống phù hợp."
           countUnit="hệ thống"
           selectable={editOn}
+
           bulkActions={
             editOn
               ? ({ selectedRows, clear }) => (
