@@ -134,10 +134,12 @@ export function RowActionMenu({
           </Button>
         </DropdownMenuTrigger>
       </AppTooltip>
-      <DropdownMenuContent align="end" className="w-52">
-        {items.map((it) => (
+      {/* collisionPadding: menu gần mép viewport/vùng cuộn vẫn lật vào trong, không bị cắt. */}
+      <DropdownMenuContent align="end" collisionPadding={12} className="w-56">
+        {items.map((it, i) => (
+          <Fragment key={it.key}>
+            {it.separatorBefore && i > 0 ? <DropdownMenuSeparator /> : null}
           <DropdownMenuItem
-            key={it.key}
             disabled={it.disabled}
             onSelect={(e) => {
               e.preventDefault();
