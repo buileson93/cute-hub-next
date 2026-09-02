@@ -1497,6 +1497,22 @@ function DanhMucThietBiPage() {
             onRowClick={(d) => openDetail(d)}
             rowClassName={() => "cursor-pointer"}
             emptyText={pagedLoading ? "Đang tải dữ liệu..." : "Không có tài sản phù hợp."}
+            // Cùng cơ chế với /he-thong/thanh-phan: StandardTable sở hữu việc
+            // tải thêm khi cuộn gần đáy và khi lọc cần quét toàn bộ dữ liệu.
+            infiniteScroll={{
+              hasNextPage,
+              isFetchingNextPage,
+              fetchNextPage: () => {
+                void fetchNextPage();
+              },
+              totalCount,
+            }}
+            trangThai={{
+              dangTai: pagedLoading || isFetchingNextPage,
+              loi: pagedError
+                ? { message: "Không tải được danh sách tài sản.", retry: () => void refetchTb() }
+                : undefined,
+            }}
             toolbarLeft={
               <div className="flex flex-col gap-2 w-full">
                 <div className="flex flex-wrap items-center gap-4">
