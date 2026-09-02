@@ -23,6 +23,18 @@ export function computeClientPageSlice(total: number, visible: number, pageSize:
   return { shown, hasNextPage: shown < total, next: Math.min(shown + pageSize, total) };
 }
 
+/**
+ * Số dòng hiển thị sau khi "tải thêm": lô cuối chỉ lấy đúng phần còn lại
+ * (`remaining`), không bao giờ xin đủ `pageSize` khi dữ liệu đã gần hết.
+ */
+export function nextVisibleCount(total: number, visible: number, pageSize: number) {
+  const safeTotal = Number.isFinite(total) && total > 0 ? total : 0;
+  const cur = Math.min(Math.max(visible, 0), safeTotal);
+  if (cur >= safeTotal) return cur;
+  const remaining = safeTotal - cur;
+  return cur + Math.min(Math.max(pageSize, 1), remaining);
+}
+
 export function useClientInfinite<T>(source: readonly T[], pageSize = 100): ClientInfinite<T> {
   const [visible, setVisible] = useState(pageSize);
   const sourceRef = useRef(source);
