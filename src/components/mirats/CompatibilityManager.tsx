@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Combobox } from "@/components/mirats/Combobox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useSession } from "@/hooks/use-session";
 
 export interface CompatibilityItem {
   he_thong_id: string;
@@ -34,6 +35,10 @@ export function CompatibilityManager({
   onChange,
   systemOptions,
 }: CompatibilityManagerProps) {
+  // Khớp với RLS `can_manage_equipment()` trên bảng thiet_bi_he_thong_tuong_thich:
+  // chỉ admin / phòng kỹ thuật mới được thêm - xoá dữ liệu tương thích.
+  const { hasRole } = useSession();
+  const canManage = hasRole("admin") || hasRole("phong_kt");
   const [adding, setAdding] = useState(false);
   const [newItem, setNewItem] = useState<CompatibilityItem>({
     he_thong_id: "",
@@ -48,13 +53,14 @@ export function CompatibilityManager({
   );
 
   const add = () => {
-    if (!newItem.he_thong_id) return;
+    if (!canManage || !newItem.he_thong_id) return;
     onChange([...value, newItem]);
     setNewItem({ he_thong_id: "", phan_loai: "Thay thế trực tiếp", danh_gia: "" });
     setAdding(false);
   };
 
   const remove = (id: string) => {
+    if (!canManage) return;
     onChange(value.filter((v) => v.he_thong_id !== id));
   };
 
@@ -83,14 +89,14 @@ export function CompatibilityManager({
             </Tooltip>
           </TooltipProvider>
         </div>
-        {!adding && (
+        {!adding && canManage && (
           <Button type="button" variant="outline" size="sm" onClick={() => setAdding(true)}>
             <Plus className="h-3.5 w-3.5 mr-1" /> Thêm hệ thống
           </Button>
         )}
       </div>
 
-      {adding && (
+      {adding && canManage && (
         <Card className="bg-muted/30 border-dashed">
           <CardContent className="p-3 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -152,7 +158,9 @@ export function CompatibilityManager({
       <div className="space-y-2">
         {value.length === 0 && !adding && (
           <div className="text-center py-6 border-2 border-dashed rounded-lg text-muted-foreground text-sm">
-            Chưa có thông tin hệ thống tương thích
+            {canManage
+              ? "Chưa có thông tin hệ thống tương thích"
+              : "Chưa có thông tin hệ thống tương thích (bạn không có quyền chỉnh sửa)"}
           </div>
         )}
         {value.map((item) => {
@@ -184,6 +192,7 @@ export function CompatibilityManager({
                   type="button"
                   variant="ghost"
                   size="icon"
+                  disabled={!canManage}
                   className="h-8 w-8 text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={() => remove(item.he_thong_id)}
                   aria-label="Xoá hệ thống tương thích"
