@@ -436,17 +436,34 @@ function HeThongPage() {
   );
 }
 
-function HeThongDialog({ row, onClose }: { row: Row; onClose: () => void }) {
+/** Dialog dùng chung: `row = null` → tạo mới, ngược lại → sửa. */
+function HeThongDialog({ row, onClose }: { row: Row | null; onClose: () => void }) {
   const qc = useQueryClient();
-  const [ten, setTen] = useState(row.ten);
+  const { data: tax } = useDbTaxonomy();
+  const isCreate = !row;
+  const [ten, setTen] = useState(row?.ten ?? "");
   const [moTa, setMoTa] = useState("");
-  const [gpSo, setGpSo] = useState(row.gpSo);
+  const [gpSo, setGpSo] = useState(row?.gpSo ?? "");
+  const [nhomId, setNhomId] = useState(row?.nhomId ?? "");
+  const [donViId, setDonViId] = useState(row?.donViId ?? "");
   const [active, setActive] = useState(true);
-  const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(isCreate);
   const [saving, setSaving] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  const [confirmClose, setConfirmClose] = useState(false);
 
-  // Nạp mô tả & trạng thái từ dm_he_thong khi mở.
+  const nhomOptions = useMemo(
+    () => (tax?.nhomList ?? []).map((n) => ({ value: n.id, label: n.ten, hint: n.ma })),
+    [tax],
+  );
+  const dvOptions = useMemo(
+    () => (tax?.donViList ?? []).map((d) => ({ value: d.id, label: d.ten, hint: d.ma })),
+    [tax],
+  );
+
+  // Nạp mô tả & trạng thái từ dm_he_thong khi mở (chỉ khi sửa).
   useEffect(() => {
+    if (!row) return;
     let cancelled = false;
     supabase
       .from("dm_he_thong")
@@ -462,24 +479,65 @@ function HeThongDialog({ row, onClose }: { row: Row; onClose: () => void }) {
     return () => {
       cancelled = true;
     };
-  }, [row.id]);
+  }, [row]);
+
+  function mark<T>(setter: (v: T) => void) {
+    return (v: T) => {
+      setDirty(true);
+      setter(v);
+    };
+  }
+
+  function requestClose() {
+    if (dirty && !saving) setConfirmClose(true);
+    else onClose();
+  }
 
   async function save() {
+    if (saving) return; // chống submit trùng
     if (!ten.trim()) {
       toast.error("Vui lòng nhập tên hệ thống.");
       return;
     }
+    if (isCreate && !nhomId) {
+      toast.error("Vui lòng chọn nhóm hệ thống.");
+      return;
+    }
     setSaving(true);
     try {
-      // Đổi tên qua SSoT chung (ghi thẳng dm_he_thong.ten).
-      await renameEntity({ kind: "ht", id: row.id, ten: ten.trim() });
-      const { error } = await supabase
-        .from("dm_he_thong")
-        .update({ mo_ta: moTa.trim() || null, gp_so: gpSo.trim() || null, active })
-        .eq("id", row.id);
-      if (error) throw error;
-      toast.success("Đã cập nhật hệ thống.");
-      qc.invalidateQueries({ queryKey: ["db_taxonomy"] });
+      if (isCreate) {
+        const nhom = tax?.nhomList.find((n) => n.id === nhomId);
+        const ma = sinhMaHeThong(nhom?.ma ?? "HT", ten, (tax?.htList ?? []).map((h) => h.ma));
+        const { error } = await supabase.from("dm_he_thong").insert({
+          ma,
+          ten: ten.trim(),
+          nhom_he_thong_id: nhomId,
+          phan_loai_id: nhom?.phanLoaiId || null,
+          don_vi_id: donViId || null,
+          mo_ta: moTa.trim() || null,
+          gp_so: gpSo.trim() || null,
+          active,
+        } as never);
+        if (error) throw error;
+        toast.success(`Đã tạo hệ thống ${ma}.`);
+      } else {
+        // Đổi tên qua SSoT chung (ghi thẳng dm_he_thong.ten).
+        await renameEntity({ kind: "ht", id: row.id, ten: ten.trim() });
+        const { error } = await supabase
+          .from("dm_he_thong")
+          .update({
+            mo_ta: moTa.trim() || null,
+            gp_so: gpSo.trim() || null,
+            nhom_he_thong_id: nhomId || null,
+            don_vi_id: donViId || null,
+            active,
+          })
+          .eq("id", row.id);
+        if (error) throw error;
+        toast.success("Đã cập nhật hệ thống.");
+      }
+      invalidateTaxonomy(qc);
+      qc.invalidateQueries({ queryKey: ["he_thong_tai_san_index"] });
       onClose();
     } catch (e) {
       toast.error(thongDiepLoi(e, "Lưu thất bại: "));
@@ -489,53 +547,99 @@ function HeThongDialog({ row, onClose }: { row: Row; onClose: () => void }) {
   }
 
   return (
-    <ResponsiveDialog
-      open
-      onOpenChange={(o) => !o && onClose()}
-      title="Sửa hệ thống"
-      description="Chỉnh thông tin cơ bản. Cấu trúc cây (nhóm, lĩnh vực, tài sản) được quản lý tại Hệ Thống tài sản."
-      className="max-w-md"
-    >
-      <div className="space-y-3">
-        <div className="space-y-1.5">
-          <Label>Tên hệ thống *</Label>
-          <Input value={ten} onChange={(e) => setTen(e.target.value)} autoFocus />
+    <>
+      <ResponsiveDialog
+        open
+        onOpenChange={(o) => !o && requestClose()}
+        title={isCreate ? "Thêm hệ thống" : "Sửa hệ thống"}
+        description="Thông tin cơ bản và quan hệ nhóm/đơn vị. Tài sản thuộc hệ thống quản lý ở nút Tài sản."
+        className="max-w-md"
+      >
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <Label>Tên hệ thống *</Label>
+            <Input value={ten} onChange={(e) => mark(setTen)(e.target.value)} autoFocus />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Nhóm hệ thống {isCreate ? "*" : ""}</Label>
+            <Combobox
+              options={nhomOptions}
+              value={nhomId}
+              onChange={mark(setNhomId)}
+              placeholder="Chọn nhóm hệ thống…"
+              loading={!tax}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Đơn vị quản lý</Label>
+            <Combobox
+              options={dvOptions}
+              value={donViId}
+              onChange={mark(setDonViId)}
+              placeholder="Chọn đơn vị…"
+              loading={!tax}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Số giấy phép</Label>
+            <Input
+              value={gpSo}
+              onChange={(e) => mark(setGpSo)(e.target.value)}
+              className="font-mono"
+              placeholder="VD: GP-123/…"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Mô tả</Label>
+            <Textarea
+              value={moTa}
+              onChange={(e) => mark(setMoTa)(e.target.value)}
+              rows={2}
+              disabled={!loaded}
+              placeholder={loaded ? "Ghi chú (không bắt buộc)…" : "Đang tải…"}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={active}
+              onCheckedChange={mark(setActive)}
+              id="ht-active"
+              disabled={!loaded}
+            />
+            <Label htmlFor="ht-active" className="cursor-pointer">
+              Đang sử dụng
+            </Label>
+          </div>
         </div>
-        <div className="space-y-1.5">
-          <Label>Số giấy phép</Label>
-          <Input
-            value={gpSo}
-            onChange={(e) => setGpSo(e.target.value)}
-            className="font-mono"
-            placeholder="VD: GP-123/…"
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Mô tả</Label>
-          <Textarea
-            value={moTa}
-            onChange={(e) => setMoTa(e.target.value)}
-            rows={2}
-            disabled={!loaded}
-            placeholder={loaded ? "Ghi chú (không bắt buộc)…" : "Đang tải…"}
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <Switch checked={active} onCheckedChange={setActive} id="ht-active" disabled={!loaded} />
-          <Label htmlFor="ht-active" className="cursor-pointer">
-            Đang sử dụng
-          </Label>
-        </div>
-      </div>
 
-      <DialogFooter className="mt-4">
-        <Button variant="outline" onClick={onClose} disabled={saving}>
-          Huỷ
-        </Button>
-        <Button onClick={save} disabled={saving} className="gap-1.5">
-          {saving && <Loader2 className="h-4 w-4 animate-spin" />} Lưu
-        </Button>
-      </DialogFooter>
-    </ResponsiveDialog>
+        <DialogFooter className="mt-4">
+          <Button variant="outline" onClick={requestClose} disabled={saving}>
+            Huỷ
+          </Button>
+          <Button onClick={() => void save()} disabled={saving} className="gap-1.5">
+            {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+            {isCreate ? "Tạo hệ thống" : "Lưu"}
+          </Button>
+        </DialogFooter>
+      </ResponsiveDialog>
+
+      <AlertDialog open={confirmClose} onOpenChange={setConfirmClose}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Bỏ thay đổi chưa lưu?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Các thông tin vừa nhập sẽ không được lưu vào cơ sở dữ liệu.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Tiếp tục chỉnh sửa</AlertDialogCancel>
+            <AlertDialogAction onClick={onClose}>Bỏ thay đổi</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
+
   );
 }
