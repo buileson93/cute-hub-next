@@ -29,66 +29,98 @@ interface AuthState {
   roles: AppRole[];
 }
 
+const INITIAL: AuthState = {
+  loading: true,
+  session: null,
+  user: null,
+  profile: null,
+  roles: [],
+};
+
+/**
+ * Store phiên đăng nhập dùng chung (singleton).
+ *
+ * Trước đây mỗi component gọi `useSession()` sẽ tự chạy `getSession()` +
+ * truy vấn `profiles`/`user_roles` riêng → trùng lặp hàng chục request và
+ * dễ kẹt ở trạng thái loading khi effect bị huỷ giữa chừng (StrictMode).
+ * Nay chỉ có một tiến trình hydrate duy nhất, các component chỉ subscribe.
+ */
+let state: AuthState = INITIAL;
+const listeners = new Set<(s: AuthState) => void>();
+let initialized = false;
+let hydrateSeq = 0;
+
+function setState(next: AuthState) {
+  state = next;
+  listeners.forEach((l) => l(next));
+}
+
+async function hydrate(session: Session | null) {
+  const seq = ++hydrateSeq;
+  if (!session?.user) {
+    setState({ loading: false, session: null, user: null, profile: null, roles: [] });
+    return;
+  }
+  try {
+    const [profileRes, rolesRes] = await Promise.all([
+      supabase
+        .from("profiles")
+        .select("id,email,ho_ten,don_vi,active,avatar_url,tour_hoan_thanh")
+        .eq("id", session.user.id)
+        .maybeSingle(),
+      supabase.from("user_roles").select("role").eq("user_id", session.user.id),
+    ]);
+    if (seq !== hydrateSeq) return; // đã có lần hydrate mới hơn
+    setState({
+      loading: false,
+      session,
+      user: session.user,
+      profile: (profileRes.data as Profile | null) ?? null,
+      roles: ((rolesRes.data ?? []) as { role: AppRole }[]).map((r) => r.role),
+    });
+  } catch {
+    if (seq !== hydrateSeq) return;
+    // Vẫn thoát khỏi trạng thái loading để UI hiển thị được (fail-soft).
+    setState({ loading: false, session, user: session.user, profile: null, roles: [] });
+  }
+}
+
+function init() {
+  if (initialized || typeof window === "undefined") return;
+  initialized = true;
+  supabase.auth.getSession().then(({ data }) => hydrate(data.session));
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (
+      event === "SIGNED_IN" ||
+      event === "SIGNED_OUT" ||
+      event === "USER_UPDATED" ||
+      event === "TOKEN_REFRESHED"
+    ) {
+      hydrate(session);
+    }
+  });
+}
+
 export function useSession(): AuthState & {
   hasRole: (r: AppRole) => boolean;
   refresh: () => void;
 } {
-  const [state, setState] = useState<AuthState>({
-    loading: true,
-    session: null,
-    user: null,
-    profile: null,
-    roles: [],
-  });
-  const [tick, setTick] = useState(0);
+  const [local, setLocal] = useState<AuthState>(state);
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function hydrate(session: Session | null) {
-      if (!session?.user) {
-        if (!cancelled)
-          setState({ loading: false, session: null, user: null, profile: null, roles: [] });
-        return;
-      }
-      const [profileRes, rolesRes] = await Promise.all([
-        supabase
-          .from("profiles")
-          .select("id,email,ho_ten,don_vi,active,avatar_url,tour_hoan_thanh")
-          .eq("id", session.user.id)
-          .maybeSingle(),
-        supabase.from("user_roles").select("role").eq("user_id", session.user.id),
-      ]);
-      if (cancelled) return;
-      setState({
-        loading: false,
-        session,
-        user: session.user,
-        profile: (profileRes.data as Profile | null) ?? null,
-        roles: ((rolesRes.data ?? []) as { role: AppRole }[]).map((r) => r.role),
-      });
-    }
-
-    supabase.auth.getSession().then(({ data }) => hydrate(data.session));
-    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (
-        event === "SIGNED_IN" ||
-        event === "SIGNED_OUT" ||
-        event === "USER_UPDATED" ||
-        event === "TOKEN_REFRESHED"
-      ) {
-        hydrate(session);
-      }
-    });
+    init();
+    listeners.add(setLocal);
+    setLocal(state);
     return () => {
-      cancelled = true;
-      sub.subscription.unsubscribe();
+      listeners.delete(setLocal);
     };
-  }, [tick]);
+  }, []);
 
   return {
-    ...state,
-    hasRole: (r) => state.roles.includes(r),
-    refresh: () => setTick((t) => t + 1),
+    ...local,
+    hasRole: (r) => local.roles.includes(r),
+    refresh: () => {
+      void supabase.auth.getSession().then(({ data }) => hydrate(data.session));
+    },
   };
 }

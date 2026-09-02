@@ -48,34 +48,47 @@ function AuditLogPage() {
   const { data: logs = [], isLoading, error, refetch } = useQuery({
     queryKey: ["audit-logs", filter],
     queryFn: async () => {
+      // `nhat_ky_he_thong.user_id` không có FK tới `profiles` nên không embed được:
+      // nạp log trước, sau đó nạp hồ sơ người dùng và ghép thủ công.
       let query = supabase
         .from("nhat_ky_he_thong" as any)
-        .select(`
-          *,
-          profiles:user_id (
-            ho_ten,
-            email
-          )
-        `)
+        .select("*")
         .order("thoi_gian", { ascending: false })
         .limit(500);
 
       if (filter.action) query = (query as any).ilike("hanh_dong", `%${filter.action}%`);
       if (filter.domain) query = (query as any).ilike("doi_tuong", `%${filter.domain}%`);
-      
+
       const { data, error } = await query;
       if (error) throw error;
-      
-      let result = (data as any[]) || [];
+
+      const rows = ((data as any[]) || []).map((r) => ({ ...r }));
+      const userIds = [...new Set(rows.map((r) => r.user_id).filter(Boolean))] as string[];
+
+      if (userIds.length) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id,ho_ten,email")
+          .in("id", userIds);
+        const byId = new Map((profiles ?? []).map((p) => [p.id, p]));
+        for (const r of rows) {
+          const p = r.user_id ? byId.get(r.user_id) : undefined;
+          r.profiles = p ? { ho_ten: p.ho_ten, email: p.email } : null;
+        }
+      }
+
+      let result = rows;
       if (filter.user) {
-        result = result.filter(log => 
-          log.profiles?.ho_ten?.toLowerCase().includes(filter.user.toLowerCase()) ||
-          log.profiles?.email?.toLowerCase().includes(filter.user.toLowerCase())
+        result = result.filter(
+          (log) =>
+            log.profiles?.ho_ten?.toLowerCase().includes(filter.user.toLowerCase()) ||
+            log.profiles?.email?.toLowerCase().includes(filter.user.toLowerCase()),
         );
       }
-      
+
       return result as AuditLog[];
     },
+
   });
 
   const columns = useMemo<ColumnDef<AuditLog>[]>(() => [

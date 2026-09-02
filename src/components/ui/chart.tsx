@@ -169,7 +169,10 @@ const ChartTooltipContent = React.forwardRef<
               const displayUnit = unit || itemConfig?.unit || "";
 
               return (
-                <div key={item.dataKey} className="flex items-center gap-2.5">
+                <div
+                  key={`${item.dataKey ?? item.name ?? key}-${index}`}
+                  className="flex items-center gap-2.5"
+                >
                   {!hideIndicator && (
                     <div
                       className={cn("h-1.5 w-1.5 rounded-full shrink-0")}
@@ -217,12 +220,16 @@ const ChartLegendContent = React.forwardRef<
     >
       {payload
         .filter((item) => item.type !== "none")
-        .map((item) => {
+        .map((item, index) => {
           const key = `${nameKey || item.dataKey || "value"}`;
           const itemConfig = getPayloadConfigFromPayload(config, item, key);
 
           return (
-            <div key={item.value} className="flex items-center gap-2 cursor-default group">
+            <div
+              key={`${item.value ?? item.dataKey ?? key}-${index}`}
+              className="flex items-center gap-2 cursor-default group"
+            >
+
               {itemConfig?.icon && !hideIcon ? (
                 <itemConfig.icon />
               ) : (

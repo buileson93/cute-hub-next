@@ -138,19 +138,23 @@ export function PrepareCatalogs({
 
   return (
     <div className="rounded-lg border border-primary/25 bg-primary/[0.03]">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center gap-2 px-3 py-2.5 text-left"
-      >
-        {open ? (
-          <ChevronDown className="h-4 w-4 text-primary" />
-        ) : (
-          <ChevronRight className="h-4 w-4 text-primary" />
-        )}
-        <span className="text-sm font-semibold">
-          Bước 0 — Chuẩn bị danh mục (chọn có sẵn hoặc tạo mới)
-        </span>
+      {/* InfoHint là <button>, nên phải đặt cạnh nút mở/đóng (không lồng nhau) */}
+      <div className="flex w-full items-center gap-2 px-3 py-2.5">
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+          className="flex flex-1 items-center gap-2 text-left"
+        >
+          {open ? (
+            <ChevronDown className="h-4 w-4 text-primary" />
+          ) : (
+            <ChevronRight className="h-4 w-4 text-primary" />
+          )}
+          <span className="text-sm font-semibold">
+            Bước 0 — Chuẩn bị danh mục (chọn có sẵn hoặc tạo mới)
+          </span>
+        </button>
         <InfoHint>
           Nếu file thiếu <b>Hệ thống / Vị trí cha / Mẫu</b>, chọn sẵn ở đây — giá trị áp cho mọi
           dòng bỏ trống. Chọn <b>Hệ thống</b> Nhóm 3 thì mọi tài sản tự kế thừa Nhóm 3.
@@ -172,7 +176,8 @@ export function PrepareCatalogs({
             </Badge>
           )}
         </span>
-      </button>
+      </div>
+
 
       {open && (
         <div className="space-y-4 border-t border-primary/15 p-3">
