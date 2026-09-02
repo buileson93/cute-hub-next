@@ -162,6 +162,8 @@ function HeThongPage() {
 
     onSuccess: ({ deleted, blocked }) => {
       invalidateTaxonomy(qc);
+      void qc.invalidateQueries({ queryKey: ["he_thong_tai_san_index"] });
+
       setDelTargets(null);
       setDelReason("");
       toast.success(
