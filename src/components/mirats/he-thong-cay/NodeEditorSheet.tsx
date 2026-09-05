@@ -15,7 +15,7 @@ import { HT_KHAC } from "@/lib/mirats/phan-loai";
 import { physKeyValue } from "@/lib/mirats/editable-columns";
 import { ThanhPhanManager } from "@/components/mirats/ThanhPhanManager";
 import { HeThongTruongEditor } from "@/components/mirats/HeThongTruongEditor";
-import { Save, Loader2, Trash2, FolderTree, Network, Plus, Cpu, RefreshCcw } from "lucide-react";
+import { Save, Loader2, Trash2, FolderTree, Network, Plus, Cpu, RefreshCcw, Boxes } from "lucide-react";
 import { Combobox, type ComboOption } from "@/components/mirats/Combobox";
 import {
   EntityFormHeader,
@@ -26,6 +26,9 @@ import {
 import { useCayMutations } from "./mutations";
 import { useCayContext } from "./CayContext";
 import { useSession } from "@/hooks/use-session";
+import { NodeAnhField } from "./NodeAnhField";
+import type { NodeAnhKind } from "@/lib/mirats/node-anh";
+import { HeThongTaiSanDialog } from "@/components/mirats/HeThongTaiSanDialog";
 
 export function NodeEditorSheet({
   target,
@@ -401,9 +404,31 @@ export function NodeEditorSheet({
             </FormSection>
           )}
 
+          {target?.kind === "ht" && (
+            <FormSection
+              title="Tài sản đã gắn"
+              icon={Boxes}
+              description="Chọn tài sản có sẵn để gắn/gỡ khỏi hệ thống này."
+            >
+              <Button type="button" size="sm" variant="outline" onClick={() => setMoTaiSan(true)}>
+                <Boxes className="mr-1 h-4 w-4" aria-hidden="true" />
+                Chọn tài sản có sẵn
+              </Button>
+            </FormSection>
+          )}
+
+          {target?.kind === "ht" && moTaiSan && (
+            <HeThongTaiSanDialog
+              heThongId={physKeyValue("ht", target.ma)}
+              heThongTen={ten || target.ma}
+              canManage={canManage}
+              onClose={() => setMoTaiSan(false)}
+            />
+          )}
+
           {target?.kind === "ht" && canManage && (
             <FormSection
-              title="Thêm tài sản vào hệ thống"
+              title="Thêm tài sản mới vào hệ thống"
               icon={Plus}
               description="Tài sản là đối tượng vật lý; một tài sản có thể dùng chung cho nhiều thành phần."
             >
