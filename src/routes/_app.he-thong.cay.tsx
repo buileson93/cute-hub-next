@@ -812,6 +812,7 @@ function HeThongCayPage() {
               <div className="flex-1 min-h-0">
                 <HierarchyTable
                   tree={viewTree as any}
+                  canManage={canManageNodes}
                   onOpenEditor={(kind, ma) => onOpenEditor(kind as any, ma)}
                 />
               </div>

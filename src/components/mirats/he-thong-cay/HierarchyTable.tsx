@@ -7,9 +7,10 @@
 //   độ sâu vượt ngưỡng.
 // ============================================================================
 import { useCallback, useMemo, useState } from "react";
-import { ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronRight, ChevronDown, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { LEVEL_META, STATUS_TONE, type PlGroup } from "./types";
 import { statusCat } from "./utils";
 
@@ -37,8 +38,13 @@ const MAX_DEPTH = 8;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** Làm phẳng cây theo tập node đang mở. Thuần tuý, có test riêng. */
-export function flattenHierarchy(tree: PlGroup[], expanded: Set<string>): FlatRow[] {
+export function flattenHierarchy(
+  tree: PlGroup[],
+  expanded: Set<string>,
+  opts?: { expandAll?: boolean },
+): FlatRow[] {
   const rows: FlatRow[] = [];
+  const isOpen = (k: string) => opts?.expandAll === true || expanded.has(k);
   const seenKeys = new Set<string>();
 
   const push = (r: FlatRow) => {
@@ -59,7 +65,7 @@ export function flattenHierarchy(tree: PlGroup[], expanded: Set<string>): FlatRo
       depth: 0, hasChildren: plHas, count: pl.count ?? 0, parentTen: null,
     })) continue;
     const plTen = pl.ten || pl.id;
-    if (!plHas || !expanded.has(plKey)) continue;
+    if (!plHas || !isOpen(plKey)) continue;
 
     for (const lv of pl.fields ?? []) {
       if (!lv?.id) continue;
@@ -71,7 +77,7 @@ export function flattenHierarchy(tree: PlGroup[], expanded: Set<string>): FlatRo
           key: lvKey, ma: lv.id, kind: "lv", ten: lv.ten || lv.id,
           depth: 1, hasChildren: lvHas, count: lv.count ?? 0, parentTen: plTen,
         })) continue;
-        if (!lvHas || !expanded.has(lvKey)) continue;
+        if (!lvHas || !isOpen(lvKey)) continue;
       }
       const lvDepth = lvVisible ? 2 : 1;
       // Node "passthrough" không hiện dòng riêng ⇒ cha hiển thị là cấp trên nó.
@@ -87,7 +93,7 @@ export function flattenHierarchy(tree: PlGroup[], expanded: Set<string>): FlatRo
             key: nhKey, ma: nh.ma, kind: "nh", ten: nh.ten || nh.ma,
             depth: lvDepth, hasChildren: nhHas, count: nh.count ?? 0, parentTen: lvTen,
           })) continue;
-          if (!nhHas || !expanded.has(nhKey)) continue;
+          if (!nhHas || !isOpen(nhKey)) continue;
         }
         const nhDepth = nhVisible ? lvDepth + 1 : lvDepth;
         const nhTen = nhVisible ? nh.ten || nh.ma : lvTen;
@@ -101,7 +107,7 @@ export function flattenHierarchy(tree: PlGroup[], expanded: Set<string>): FlatRo
             depth: nhDepth, hasChildren: htHas, count: ht.count ?? 0,
             meta: ht.donViMa ?? null, parentTen: nhTen,
           })) continue;
-          if (!htHas || !expanded.has(htKey)) continue;
+          if (!htHas || !isOpen(htKey)) continue;
 
           for (const dev of ht.devices ?? []) {
             const tb: any = dev?.tb;
@@ -130,15 +136,22 @@ export function flattenHierarchy(tree: PlGroup[], expanded: Set<string>): FlatRo
 export function HierarchyTable({
   tree,
   onOpenEditor,
+  canManage = false,
   className,
 }: {
   tree: PlGroup[];
   onOpenEditor?: (kind: HierarchyKind, ma: string) => void;
+  /** Bật cột thao tác (thêm con / sửa / xoá qua bảng chỉnh sửa node). */
+  canManage?: boolean;
   className?: string;
 }) {
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
+  const [expandAll, setExpandAll] = useState(false);
 
-  const rows = useMemo(() => flattenHierarchy(tree ?? [], expanded), [tree, expanded]);
+  const rows = useMemo(
+    () => flattenHierarchy(tree ?? [], expanded, { expandAll }),
+    [tree, expanded, expandAll],
+  );
 
   const toggle = useCallback((key: string) => {
     setExpanded((prev) => {
@@ -149,16 +162,41 @@ export function HierarchyTable({
     });
   }, []);
 
+  const toolbar = (
+    <div className="flex shrink-0 items-center justify-between gap-2 border-b bg-background/60 px-3 py-1.5">
+      <span className="text-mini uppercase tracking-wide text-muted-foreground">
+        {rows.length} dòng đang hiển thị
+      </span>
+      <div className="flex items-center gap-1.5">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="h-7 gap-1.5 text-mini"
+          onClick={() => setExpandAll((v) => !v)}
+        >
+          {expandAll ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+          {expandAll ? "Thu gọn tất cả" : "Mở rộng tất cả"}
+        </Button>
+      </div>
+    </div>
+  );
+
   if (!rows.length) {
     return (
-      <div className="flex h-full items-center justify-center p-8 text-sm text-muted-foreground">
-        Chưa có dữ liệu phân cấp để hiển thị.
+      <div className="flex h-full flex-col">
+        {toolbar}
+        <div className="flex flex-1 items-center justify-center p-8 text-sm text-muted-foreground">
+          Chưa có dữ liệu phân cấp để hiển thị.
+        </div>
       </div>
     );
   }
 
   return (
-    <div className={cn("h-full overflow-auto mirats-scroll", className)}>
+    <div className={cn("flex h-full flex-col", className)}>
+      {toolbar}
+      <div className="min-h-0 flex-1 overflow-auto mirats-scroll">
       <table className="w-full min-w-[880px] border-collapse text-sm">
         <thead className="sticky top-0 z-10 bg-background/95 backdrop-blur">
           <tr className="border-b text-meta uppercase tracking-wide text-muted-foreground">
@@ -168,13 +206,16 @@ export function HierarchyTable({
             <th className="w-44 px-2 py-2 text-left font-semibold">Mã</th>
             <th className="w-24 px-2 py-2 text-right font-semibold">Số lượng</th>
             <th className="w-56 px-2 py-2 text-left font-semibold">Thông tin</th>
+            {canManage && onOpenEditor ? (
+              <th className="w-28 px-2 py-2 text-right font-semibold">Thao tác</th>
+            ) : null}
           </tr>
         </thead>
         <tbody>
           {rows.map((r) => {
             const meta = LEVEL_META[r.kind];
             const Icon = meta.Icon;
-            const open = expanded.has(r.key);
+            const open = expandAll || expanded.has(r.key);
             return (
               <tr
                 key={r.key}
@@ -250,11 +291,27 @@ export function HierarchyTable({
                     {r.meta ? <span className="truncate">{r.meta}</span> : null}
                   </div>
                 </td>
+                {canManage && onOpenEditor ? (
+                  <td className="px-2 py-1.5 text-right">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 gap-1.5 text-mini"
+                      onClick={() => onOpenEditor(r.kind, r.ma)}
+                      aria-label={`Quản lý ${r.ten}: thêm con, sửa hoặc xoá`}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                      Quản lý
+                    </Button>
+                  </td>
+                ) : null}
               </tr>
             );
           })}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
