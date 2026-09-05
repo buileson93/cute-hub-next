@@ -7,9 +7,10 @@
 //   độ sâu vượt ngưỡng.
 // ============================================================================
 import { useCallback, useMemo, useState } from "react";
-import { ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronRight, ChevronDown, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { LEVEL_META, STATUS_TONE, type PlGroup } from "./types";
 import { statusCat } from "./utils";
 
