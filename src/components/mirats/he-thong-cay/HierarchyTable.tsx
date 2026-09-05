@@ -290,11 +290,27 @@ export function HierarchyTable({
                     {r.meta ? <span className="truncate">{r.meta}</span> : null}
                   </div>
                 </td>
+                {canManage && onOpenEditor ? (
+                  <td className="px-2 py-1.5 text-right">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 gap-1.5 text-mini"
+                      onClick={() => onOpenEditor(r.kind, r.ma)}
+                      aria-label={`Quản lý ${r.ten}: thêm con, sửa hoặc xoá`}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                      Quản lý
+                    </Button>
+                  </td>
+                ) : null}
               </tr>
             );
           })}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
