@@ -63,6 +63,7 @@ import {
 import { captureError } from "@/lib/observability/capture";
 import { TreeView } from "@/components/mirats/he-thong-cay/TreeView";
 import { HierarchyTable } from "@/components/mirats/he-thong-cay/HierarchyTable";
+import { CayMindMap } from "@/components/mirats/he-thong-cay/CayMindMap";
 import { NodeEditorSheet } from "@/components/mirats/he-thong-cay/NodeEditorSheet";
 import { NodeSearch } from "@/components/mirats/he-thong-cay/NodeSearch";
 import {
@@ -297,10 +298,21 @@ function HeThongCayPage() {
   const { renameEntity, moveSystem, moveDevice } = useCayMutations();
 
   useEffect(() => {
+    // "table" (Danh sách) là một route riêng — nếu URL yêu cầu chế độ này thì
+    // điều hướng hẳn sang trang danh sách, tránh render nhầm sơ đồ/sức khỏe.
+    if (search.view === "table") {
+      nav({ to: "/he-thong/thanh-phan", replace: true });
+      return;
+    }
     if (search.view && search.view !== display) {
       setDisplay(search.view as any);
     }
-  }, [search.view, setDisplay, display]);
+  }, [search.view, setDisplay, display, nav]);
+
+  // Giá trị cũ còn sót trong bộ nhớ trình duyệt không được làm trắng trang.
+  useEffect(() => {
+    if (display === "table") setDisplay("tree");
+  }, [display, setDisplay]);
 
   const handleDisplayChange = (v: string) => {
     if (v === "table") {
@@ -714,6 +726,13 @@ function HeThongCayPage() {
                 className="h-7 gap-2 px-3 text-meta font-medium tracking-tight"
               >
                 <Share2 className="h-3 w-3" />
+                <span>SƠ ĐỒ TỔNG THỂ</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="bang"
+                className="h-7 gap-2 px-3 text-meta font-medium tracking-tight"
+              >
+                <LayoutGrid className="h-3 w-3" />
                 <span>BẢNG PHÂN CẤP</span>
               </TabsTrigger>
               <TabsTrigger
@@ -809,12 +828,57 @@ function HeThongCayPage() {
               </ScrollArea>
             )}
             {display === "mindmap" && (
+              <div className="flex-1 min-h-0 relative" data-testid="cay-mindmap">
+                <CayMindMap
+                  tree={viewTree as any}
+                  posByHt={posByHt || new Map()}
+                  scopeText="Toàn hệ thống"
+                  canManage={canManageNodes}
+                  canManageNodes={canManageNodes}
+                  devices={devices as any}
+                  plMind={plMind}
+                  nhMind={nhMind}
+                  htMind={htMind}
+                  tbMind={tbMind}
+                  onRename={async (kind: any, ma: string, ten: string) => {
+                    await renameEntity.mutateAsync({ kind, id: ma, ten, userRoles: roles });
+                  }}
+                  onOpenEditor={(kind: any, ma: string) => onOpenEditor(kind, ma)}
+                  onHistory={onHistory}
+                  onIncident={onIncident}
+                  onMaint={onMaint}
+                  onRecord={onRecord}
+                  onMoveSystem={(req: any) =>
+                    nav({
+                      to: "/he-thong/cay",
+                      search: (prev: any) => ({ ...prev, moveHt: req.heThongId }),
+                    })
+                  }
+                  onMoveGroup={() => {}}
+                  onMoveDevice={(req: any) =>
+                    nav({
+                      to: "/he-thong/cay",
+                      search: (prev: any) => ({ ...prev, moveTb: req.deviceMa }),
+                    })
+                  }
+                />
+              </div>
+            )}
+            {display === "bang" && (
               <div className="flex-1 min-h-0">
                 <HierarchyTable
                   tree={viewTree as any}
                   canManage={canManageNodes}
                   onOpenEditor={(kind, ma) => onOpenEditor(kind as any, ma)}
                 />
+              </div>
+            )}
+            {display === "history" && (
+              <div className="flex-1 flex flex-col items-center justify-center gap-3 p-8 text-center text-sm text-muted-foreground">
+                <span>Nhật ký thay đổi cấu trúc được mở trong bảng riêng.</span>
+                <Button type="button" variant="outline" size="sm" onClick={() => setReorgOpen(true)}>
+                  Mở nhật ký tổ chức lại
+                </Button>
               </div>
             )}
             {display === "health" && (

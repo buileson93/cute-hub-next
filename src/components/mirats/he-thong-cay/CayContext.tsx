@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import type { SearchItem, FocusTarget, BadgeFilter, PlGroup } from "./types";
 
-export type DisplayMode = "tree" | "table" | "mindmap" | "health" | "history";
+export type DisplayMode = "tree" | "table" | "mindmap" | "bang" | "health" | "history";
 
 interface CayContextType {
   display: DisplayMode;
@@ -28,7 +28,15 @@ interface CayContextType {
   setGroupCode: (s: string) => void;
 }
 
-const DISPLAY_MODES: DisplayMode[] = ["tree", "table", "mindmap", "health", "history"];
+const DISPLAY_MODES: DisplayMode[] = ["tree", "table", "mindmap", "bang", "health", "history"];
+
+/** Chuẩn hoá chế độ hiển thị đọc từ localStorage/URL cho trang Cây hệ thống. */
+export function normalizeDisplayMode(value: string | null | undefined): DisplayMode {
+  if (!value) return "tree";
+  // "table" (Danh sách) sống ở route /he-thong/thanh-phan.
+  if (value === "table") return "tree";
+  return DISPLAY_MODES.includes(value as DisplayMode) ? (value as DisplayMode) : "tree";
+}
 
 export const CayContext = createContext<CayContextType | undefined>(undefined);
 
@@ -39,7 +47,8 @@ export function CayProvider({ children }: { children: ReactNode }) {
     if (typeof window === "undefined") return "tree";
     try {
       const saved = window.localStorage.getItem("mirats_cay_display");
-      if (saved && DISPLAY_MODES.includes(saved as DisplayMode)) return saved as DisplayMode;
+      // "table" là màn hình danh sách nằm ở route khác — không khôi phục ở đây.
+      if (saved) return normalizeDisplayMode(saved);
     } catch {
       // bỏ qua — dùng mặc định
     }

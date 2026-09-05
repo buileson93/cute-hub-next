@@ -78,6 +78,13 @@ function ThanhPhanListPage() {
               <span>SƠ ĐỒ TỔNG THỂ</span>
             </TabsTrigger>
             <TabsTrigger
+              value="bang"
+              className="h-7 gap-2 px-3 text-meta font-medium tracking-tight"
+            >
+              <LayoutGrid className="h-3.5 w-3.5" />
+              <span>BẢNG PHÂN CẤP</span>
+            </TabsTrigger>
+            <TabsTrigger
               value="health"
               className="h-7 gap-2 px-3 text-meta font-medium tracking-tight"
             >
