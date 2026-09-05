@@ -214,7 +214,7 @@ export function HierarchyTable({
           {rows.map((r) => {
             const meta = LEVEL_META[r.kind];
             const Icon = meta.Icon;
-            const open = expanded.has(r.key);
+            const open = expandAll || expanded.has(r.key);
             return (
               <tr
                 key={r.key}
