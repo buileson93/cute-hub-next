@@ -37,8 +37,13 @@ const MAX_DEPTH = 8;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** Làm phẳng cây theo tập node đang mở. Thuần tuý, có test riêng. */
-export function flattenHierarchy(tree: PlGroup[], expanded: Set<string>): FlatRow[] {
+export function flattenHierarchy(
+  tree: PlGroup[],
+  expanded: Set<string>,
+  opts?: { expandAll?: boolean },
+): FlatRow[] {
   const rows: FlatRow[] = [];
+  const isOpen = (k: string) => opts?.expandAll === true || expanded.has(k);
   const seenKeys = new Set<string>();
 
   const push = (r: FlatRow) => {
@@ -59,7 +64,7 @@ export function flattenHierarchy(tree: PlGroup[], expanded: Set<string>): FlatRo
       depth: 0, hasChildren: plHas, count: pl.count ?? 0, parentTen: null,
     })) continue;
     const plTen = pl.ten || pl.id;
-    if (!plHas || !expanded.has(plKey)) continue;
+    if (!plHas || !isOpen(plKey)) continue;
 
     for (const lv of pl.fields ?? []) {
       if (!lv?.id) continue;
@@ -71,7 +76,7 @@ export function flattenHierarchy(tree: PlGroup[], expanded: Set<string>): FlatRo
           key: lvKey, ma: lv.id, kind: "lv", ten: lv.ten || lv.id,
           depth: 1, hasChildren: lvHas, count: lv.count ?? 0, parentTen: plTen,
         })) continue;
-        if (!lvHas || !expanded.has(lvKey)) continue;
+        if (!lvHas || !isOpen(lvKey)) continue;
       }
       const lvDepth = lvVisible ? 2 : 1;
       // Node "passthrough" không hiện dòng riêng ⇒ cha hiển thị là cấp trên nó.
@@ -87,7 +92,7 @@ export function flattenHierarchy(tree: PlGroup[], expanded: Set<string>): FlatRo
             key: nhKey, ma: nh.ma, kind: "nh", ten: nh.ten || nh.ma,
             depth: lvDepth, hasChildren: nhHas, count: nh.count ?? 0, parentTen: lvTen,
           })) continue;
-          if (!nhHas || !expanded.has(nhKey)) continue;
+          if (!nhHas || !isOpen(nhKey)) continue;
         }
         const nhDepth = nhVisible ? lvDepth + 1 : lvDepth;
         const nhTen = nhVisible ? nh.ten || nh.ma : lvTen;
@@ -101,7 +106,7 @@ export function flattenHierarchy(tree: PlGroup[], expanded: Set<string>): FlatRo
             depth: nhDepth, hasChildren: htHas, count: ht.count ?? 0,
             meta: ht.donViMa ?? null, parentTen: nhTen,
           })) continue;
-          if (!htHas || !expanded.has(htKey)) continue;
+          if (!htHas || !isOpen(htKey)) continue;
 
           for (const dev of ht.devices ?? []) {
             const tb: any = dev?.tb;

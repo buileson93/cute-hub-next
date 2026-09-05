@@ -61,6 +61,13 @@ async function hydrate(session: Session | null) {
     setState({ loading: false, session: null, user: null, profile: null, roles: [] });
     return;
   }
+  // Vừa đăng nhập xong: phải công bố NGAY trạng thái "đang tải" kèm phiên mới.
+  // Nếu không, store vẫn còn {loading:false, session:null} trong lúc tải hồ sơ
+  // → route bảo vệ tưởng người dùng chưa đăng nhập và đá ngược về /auth
+  // (đúng triệu chứng: giật màn hình, phải F5 mới vào được).
+  if (state.session?.user?.id !== session.user.id) {
+    setState({ loading: true, session, user: session.user, profile: null, roles: [] });
+  }
   try {
     const [profileRes, rolesRes] = await Promise.all([
       supabase
