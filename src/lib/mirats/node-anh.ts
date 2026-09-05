@@ -8,6 +8,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { storage } from "@/lib/storage";
+import type { Json } from "@/integrations/supabase/types";
 
 export type NodeAnhKind = "pl" | "lv" | "nh" | "ht" | "tb";
 
@@ -116,8 +117,8 @@ export function useNodeAnhMutations() {
 
       const duLieuCu =
         cu?.du_lieu && typeof cu.du_lieu === "object"
-          ? (cu.du_lieu as Record<string, unknown>)
-          : {};
+          ? (cu.du_lieu as Record<string, Json>)
+          : ({} as Record<string, Json>);
       const anhCu = readAnhPath(duLieuCu);
 
       const { error } = await supabase
@@ -147,10 +148,10 @@ export function useNodeAnhMutations() {
         .maybeSingle();
       const duLieuCu =
         cu?.du_lieu && typeof cu.du_lieu === "object"
-          ? (cu.du_lieu as Record<string, unknown>)
-          : {};
+          ? (cu.du_lieu as Record<string, Json>)
+          : ({} as Record<string, Json>);
       const anhCu = readAnhPath(duLieuCu);
-      const con = { ...duLieuCu };
+      const con: Record<string, Json> = { ...duLieuCu };
       delete con["anh_url"];
 
       const { error } = await supabase
