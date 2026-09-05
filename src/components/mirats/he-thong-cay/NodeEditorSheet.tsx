@@ -193,10 +193,20 @@ export function NodeEditorSheet({
           disabled={!canManage}
           className="flex-1 space-y-4 overflow-y-auto px-0 py-4 border-0"
         >
+          {target && (
+            <NodeAnhField
+              kind={target.kind as NodeAnhKind}
+              ma={target.ma}
+              ten={ten || target.ma}
+              canManage={canManage}
+            />
+          )}
+
           <div className="space-y-1.5">
             <Label htmlFor="edit-ten">Tên đầy đủ</Label>
             <Input id="edit-ten" value={ten} onChange={(e) => setTen(e.target.value)} />
           </div>
+
 
           {target?.kind === "nh" && canManage && target.ma !== HT_KHAC && (
             <div className="space-y-1.5">
