@@ -46,7 +46,7 @@ export function NodeAnhField({ kind, ma, ten, canManage }: Props) {
       { kind, ma, ten, file },
       {
         onSuccess: () => toast.success("Đã cập nhật ảnh"),
-        onError: (e) => toast.error(thongDiepLoi(e)),
+        onError: (e) => toast.error(thongDiepLoi(e, "Không thao tác được với ảnh")),
       },
     );
   }
@@ -116,7 +116,7 @@ export function NodeAnhField({ kind, ma, ten, canManage }: Props) {
                     { kind, ma },
                     {
                       onSuccess: () => toast.success("Đã gỡ ảnh"),
-                      onError: (e) => toast.error(thongDiepLoi(e)),
+                      onError: (e) => toast.error(thongDiepLoi(e, "Không thao tác được với ảnh")),
                     },
                   )
                 }
