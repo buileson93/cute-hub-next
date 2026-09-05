@@ -63,6 +63,7 @@ export function NodeEditorSheet({
   const [newGroupMa, setNewGroupMa] = useState("");
   const [newSystemTen, setNewSystemTen] = useState("");
   const [newSystemDonViId, setNewSystemDonViId] = useState("");
+  const [moTaiSan, setMoTaiSan] = useState(false);
   const [newDeviceTen, setNewDeviceTen] = useState("");
   const [newDeviceMa, setNewDeviceMa] = useState("");
 
