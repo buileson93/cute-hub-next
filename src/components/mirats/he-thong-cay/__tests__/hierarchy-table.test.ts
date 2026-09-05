@@ -66,3 +66,43 @@ describe("flattenHierarchy", () => {
     expect(rows[2].parentTen).toBe("Lĩnh vực");
   });
 });
+
+describe("flattenHierarchy — expandAll", () => {
+  const tree = [
+    pl({
+      fields: [
+        {
+          id: "LV1",
+          ten: "Lĩnh vực",
+          count: 1,
+          groups: [
+            {
+              ma: "NH1",
+              ten: "Nhóm",
+              count: 1,
+              systems: [
+                {
+                  ma: "HT1",
+                  ten: "Hệ thống",
+                  count: 1,
+                  devices: [{ tb: { ma_thiet_bi: "TB1", ten_thiet_bi: "Tài sản 1" }, children: [] }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    }),
+  ] as any;
+
+  it("mở toàn bộ cây mà không cần tập expanded", () => {
+    const rows = flattenHierarchy(tree, new Set(), { expandAll: true });
+    expect(rows.map((r) => r.kind)).toEqual(["pl", "lv", "nh", "ht", "tb"]);
+    expect(rows.at(-1)?.ten).toBe("Tài sản 1");
+    expect(rows.at(-1)?.parentTen).toBe("Hệ thống");
+  });
+
+  it("không mở gì khi expandAll = false và expanded rỗng", () => {
+    expect(flattenHierarchy(tree, new Set(), { expandAll: false })).toHaveLength(1);
+  });
+});
