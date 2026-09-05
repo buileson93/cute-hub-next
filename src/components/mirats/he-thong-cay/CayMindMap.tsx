@@ -98,6 +98,7 @@ import { LEVEL_META, STATUS_TONE } from "./types";
 import { parseHtSysMa, HT_KHAC } from "@/lib/mirats/phan-loai";
 import { DUNG_KHAI_THAC_TEN, isRealSystemId, NONE_HT, nhMindTone } from "./utils";
 import { toast } from "sonner";
+import { nodeAnhKey, useNodeAnhMap } from "@/lib/mirats/node-anh";
 
 const KIND_STYLE: Record<string, string> = {
   root: "border-primary/80 bg-primary/20 text-foreground",
@@ -188,7 +189,12 @@ type Raw = {
 function MindNode({ data }: { data: MindData }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(data.label);
+  const [anhLoi, setAnhLoi] = useState(false);
   const Icon = KIND_ICON[data.kind];
+  // Ảnh node (nếu đã tải lên) — dùng chung cache react-query, không gọi mạng thêm.
+  const { data: anhMap } = useNodeAnhMap();
+  const anhUrl =
+    data.ma && data.kind !== "root" ? (anhMap?.get(nodeAnhKey(data.kind, data.ma)) ?? null) : null;
 
   const startInline = () => {
     if (!data.canManage || data.kind === "root") return;
@@ -290,7 +296,17 @@ function MindNode({ data }: { data: MindData }) {
         ) : (
           <span className={cn("h-1.5 w-1.5 shrink-0 rounded-sm", KIND_DOT[data.kind])} />
         )}
-        <Icon className="h-3 w-3 shrink-0 opacity-60" />
+        {anhUrl && !anhLoi ? (
+          <img
+            src={anhUrl}
+            alt={`Ảnh của ${data.label}`}
+            loading="lazy"
+            onError={() => setAnhLoi(true)}
+            className="h-4 w-4 shrink-0 rounded-sm border object-cover"
+          />
+        ) : (
+          <Icon className="h-3 w-3 shrink-0 opacity-60" />
+        )}
 
         <div className="flex min-w-0 flex-1 items-center gap-1 overflow-hidden">
           <TruncatedNodeLabel label={data.label} code={data.code} identity={data.identity} />
