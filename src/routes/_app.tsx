@@ -40,7 +40,6 @@ function AppLayout() {
       : { kieu: "da_dang_nhap", is_active_user: !!profile?.active };
 
   const qd = decideAccess(phien, location.pathname);
-  if (import.meta.env.DEV) console.log("[dbg-gate]", JSON.stringify({phien, qd, path: location.pathname}));
 
   // Route-level RBAC: chặn user không đủ quyền vào các route giới hạn.
   const rbacBlocked =
