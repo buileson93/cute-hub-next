@@ -98,6 +98,7 @@ import { LEVEL_META, STATUS_TONE } from "./types";
 import { parseHtSysMa, HT_KHAC } from "@/lib/mirats/phan-loai";
 import { DUNG_KHAI_THAC_TEN, isRealSystemId, NONE_HT, nhMindTone } from "./utils";
 import { toast } from "sonner";
+import { nodeAnhKey, useNodeAnhMap } from "@/lib/mirats/node-anh";
 
 const KIND_STYLE: Record<string, string> = {
   root: "border-primary/80 bg-primary/20 text-foreground",
