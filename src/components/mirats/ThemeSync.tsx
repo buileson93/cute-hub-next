@@ -22,18 +22,9 @@ export function ThemeSync() {
       root.setAttribute('data-astryx-theme-mode', resolvedTheme);
     };
 
-    if (theme === 'system') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const handleChange = () => {
-        applyTheme(mediaQuery.matches ? 'dark' : 'light');
-      };
-      
-      handleChange();
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
-    } else {
-      applyTheme(theme);
-    }
+    // 'system' (cũ) hoặc giá trị lạ được chuẩn hoá về LIGHT — không tự bật dark
+    // theo hệ điều hành. Dark chỉ áp dụng khi người dùng chọn 'dark'.
+    applyTheme(theme === 'dark' ? 'dark' : 'light');
   }, [theme]);
 
   return null;
