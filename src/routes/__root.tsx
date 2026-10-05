@@ -172,12 +172,13 @@ function RootShell({ children }: { children: ReactNode }) {
                 var d = localStorage.getItem('mirats.density');
                 if (d === 'compact') document.documentElement.dataset.density = 'compact';
                 
-                var t = localStorage.getItem('mirats-theme');
-                if (t === '"dark"' || (t === '"system"' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                var t = localStorage.getItem('mirats:pref:mirats-theme');
+                if (t === '"dark"') {
                   document.documentElement.classList.add('dark');
                   document.documentElement.dataset.theme = 'dark';
                   document.documentElement.style.colorScheme = 'dark';
-                } else if (t === '"light"') {
+                } else {
+                  // Mặc định LIGHT: dark không tự bật theo hệ điều hành.
                   document.documentElement.classList.add('light');
                   document.documentElement.dataset.theme = 'light';
                   document.documentElement.style.colorScheme = 'light';

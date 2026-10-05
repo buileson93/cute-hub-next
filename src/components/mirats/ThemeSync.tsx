@@ -3,8 +3,11 @@ import { useUserPref } from '@/hooks/use-user-pref';
 
 export type Theme = 'light' | 'dark' | 'system';
 
+/** Giá trị mặc định là LIGHT: dark chỉ bật khi người dùng tự chọn. */
+export const DEFAULT_THEME: Theme = 'light';
+
 export function ThemeSync() {
-  const [theme] = useUserPref<Theme>('mirats-theme', 'system');
+  const [theme] = useUserPref<Theme>('mirats-theme', DEFAULT_THEME);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -19,18 +22,9 @@ export function ThemeSync() {
       root.setAttribute('data-astryx-theme-mode', resolvedTheme);
     };
 
-    if (theme === 'system') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const handleChange = () => {
-        applyTheme(mediaQuery.matches ? 'dark' : 'light');
-      };
-      
-      handleChange();
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
-    } else {
-      applyTheme(theme);
-    }
+    // 'system' (cũ) hoặc giá trị lạ được chuẩn hoá về LIGHT — không tự bật dark
+    // theo hệ điều hành. Dark chỉ áp dụng khi người dùng chọn 'dark'.
+    applyTheme(theme === 'dark' ? 'dark' : 'light');
   }, [theme]);
 
   return null;
