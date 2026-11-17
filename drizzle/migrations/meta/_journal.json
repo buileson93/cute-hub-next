@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1794957587288,
+      "tag": "0000_tighten_selected_rls_and_storage_access",
+      "breakpoints": true
+    }
+  ]
+}
